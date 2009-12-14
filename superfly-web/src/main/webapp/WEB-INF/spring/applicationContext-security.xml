@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+    <sec:http auto-config="false">
+        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
+        <sec:intercept-url pattern="/css*"   filters="none"/>
+        <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        
+        <sec:intercept-url pattern="/remoting/AlertingService" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <sec:intercept-url pattern="/remoting/AlertingPost" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        
+        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_USER"/>
+        
+        <!--<sec:form-login login-page="/login"/>-->
+        <sec:http-basic />
+        <sec:logout />
+        <sec:form-login default-target-url="/"/>
+        <sec:anonymous/>
+
+    </sec:http>
+    
+    <sec:authentication-provider>
+        <sec:user-service>
+            <sec:user name="admin"    password="admin"  authorities="ROLE_ADMIN"/>
+            <sec:user name="user"   password="user"    authorities="ROLE_USER"/>            
+        </sec:user-service>
+    </sec:authentication-provider><!--
+    
+    <bean id="userDetailsService" class="com.payneteasy.alerting.web.security.UserDetailsServiceImpl">
+    	<property name="userService" ref="userService"/>
+    </bean>
+
+--></beans>

@@ -4,7 +4,7 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-remote-api</artifactId>
 	<name>Superfly Remote API</name>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-1-SNAPSHOT</version>
 	<build>
 		<plugins>
 			<plugin>
