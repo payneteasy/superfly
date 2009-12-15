@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
 <Configure id='wac' class="org.mortbay.jetty.webapp.WebAppContext">
-<New id="txDatasource" class="org.mortbay.jetty.plus.naming.Resource">
-        <Arg>jdbc/superfly</Arg>
-        <!--<Arg>
+
+    <New id="txDatasource" class="org.mortbay.jetty.plus.naming.Resource">
+        <Arg>java:/comp/env/jdbc/superfly</Arg>
+        <Arg>
             <New class="org.apache.commons.dbcp.BasicDataSource">
                 <Set name="url">jdbc:mysql://localhost:3306/superfly?autoReconnect=false&amp;characterEncoding=utf8</Set>
                 <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
@@ -11,7 +13,13 @@
                 <Set name="password">123superfly123</Set>
                 <Set name="accessToUnderlyingConnectionAllowed">true</Set>
                 <Set name="testOnBorrow">true</Set>
+                <!--<property name="maxActive" value="-1"      />-->
+                <!--<property name="maxIdle"   value="2"       />-->
+                <!--<property name="maxWait"   value="5000"    />-->
             </New>
         </Arg>
-    --></New>
+    </New>
+
 </Configure>
+
+

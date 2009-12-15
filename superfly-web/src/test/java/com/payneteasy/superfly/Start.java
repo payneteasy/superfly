@@ -35,6 +35,12 @@ public class Start {
 	        paynet.setServer(server);
 	        paynet.setContextPath("/alerting");
 	        paynet.setWar("src/main/webapp");
+	        paynet.setConfigurationClasses(new String[] {
+	                "org.mortbay.jetty.webapp.WebInfConfiguration",
+	                "org.mortbay.jetty.plus.webapp.EnvConfiguration",
+	                "org.mortbay.jetty.plus.webapp.Configuration",
+	                "org.mortbay.jetty.webapp.JettyWebXmlConfiguration"
+	        });
 	        
 	        server.addHandler(paynet);
 

@@ -18,7 +18,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
 		</dependency>
-		<!-- proc jdbc -->
 		<dependency>
 			<artifactId>jdbc-proc-daofactory</artifactId>
 			<groupId>com.googlecode.jdbc-proc</groupId>
@@ -27,5 +26,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
+	    <dependency>
+	    	<groupId>org.aspectj</groupId>
+	    	<artifactId>aspectjrt</artifactId>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.aspectj</groupId>
+	    	<artifactId>aspectjweaver</artifactId>
+	    </dependency>
 	</dependencies>
 </project>

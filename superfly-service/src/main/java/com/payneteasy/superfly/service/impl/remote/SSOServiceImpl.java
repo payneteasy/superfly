@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.service;
+package com.payneteasy.superfly.service.impl.remote;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
