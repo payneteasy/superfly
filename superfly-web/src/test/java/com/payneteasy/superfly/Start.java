@@ -33,7 +33,7 @@ public class Start {
 
 	        WebAppContext paynet = new WebAppContext();
 	        paynet.setServer(server);
-	        paynet.setContextPath("/alerting");
+	        paynet.setContextPath("/superfly");
 	        paynet.setWar("src/main/webapp");
 	        paynet.setConfigurationClasses(new String[] {
 	                "org.mortbay.jetty.webapp.WebInfConfiguration",
