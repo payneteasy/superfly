@@ -84,11 +84,8 @@ create procedure get_user_actions(i_user_name varchar(32),
            join
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
-     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name
-
-;
-  end
-;
+     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name;
+  end;
 $$
 delimiter ;
 call save_routine_information('get_user_actions',
