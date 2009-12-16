@@ -28,6 +28,10 @@
     	<param-name>configuration</param-name>
     	<param-value>development</param-value>
     </context-param>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>superfly</param-value>
+	</context-param>
 	
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>

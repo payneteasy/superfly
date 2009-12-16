@@ -1,11 +1,13 @@
 package com.payneteasy.superfly.api;
 
+import java.io.Serializable;
+
 /**
  * SSO action (corresponds to a role in JEE security model).
  * 
  * @author Roman Puchkovskiy
  */
-public class SSOAction {
+public class SSOAction implements Serializable {
 	private String name;
 	private boolean loggingNeeded;
 	

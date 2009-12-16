@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.api;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Map;
  * 
  * @author Roman Puchkovskiy
  */
-public class SSOUser {
+public class SSOUser implements Serializable {
 	private String name;
 	private Map<SSORole, SSOAction[]> actionsMap;
 	private Map<String, String> preferences;

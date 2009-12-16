@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+    <sec:http auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint">
+        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
+        <sec:intercept-url pattern="/css*"   filters="none"/>
+        <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        
+        <sec:intercept-url pattern="/**" access="ROLE_ADMINPAGE1,ROLE_ADMINPAGE2,ROLE_USERPAGE1,ROLE_USERPAGE2"/>
+        
+        <sec:logout />
+        <sec:anonymous/>
+
+    </sec:http>
+    
+    <sec:authentication-manager alias="authenticationManager"/>
+    
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+    	<property name="loginFormUrl" value="/login.jsp"/>
+    </bean>
+    
+    <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
+    	<sec:custom-filter position="AUTHENTICATION_PROCESSING_FILTER"/>
+    	<property name="authenticationManager" ref="authenticationManager"/>
+    	<property name="ssoService" ref="ssoService"/>
+    	<property name="defaultTargetUrl" value="/"/>
+    	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
+    </bean>
+    
+    <bean id="ssoService" class="com.payneteasy.superfly.mock.SSOServiceMock"/>
+    
+    <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
+    	<sec:custom-authentication-provider/>
+    	<property name="transformers">
+    		<list>
+    			<bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
+    			<bean class="com.payneteasy.superfly.security.PrependingTransformer">
+    				<property name="prefix" value="ROLE_"/>
+    			</bean>
+    		</list>
+    	</property>
+    </bean>
+
+</beans>

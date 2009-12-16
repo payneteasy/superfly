@@ -1,13 +1,20 @@
 package com.payneteasy.superfly.api;
 
+import java.io.Serializable;
+
 /**
  * Role: defines possible actions, plus it specifies database 'profile'.
  * It's not a JEE role equivalent.
  * 
  * @author Roman Puchkovskiy
  */
-public class SSORole {
+public class SSORole implements Serializable {
 	private String name;
+
+	public SSORole(String name) {
+		super();
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;
