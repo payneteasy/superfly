@@ -9,14 +9,11 @@
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
         <sec:intercept-url pattern="/css*"   filters="none"/>
         <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-        
-        <sec:intercept-url pattern="/remoting/AlertingService" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-        <sec:intercept-url pattern="/remoting/AlertingPost" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+
+		<sec:intercept-url pattern="/sso.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>        
         
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_USER"/>
         
-        <!--<sec:form-login login-page="/login"/>-->
-        <sec:http-basic />
         <sec:logout />
         <sec:form-login default-target-url="/"/>
         <sec:anonymous/>

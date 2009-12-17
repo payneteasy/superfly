@@ -4,6 +4,7 @@
 <title>Login page</title>
 </head>
 <body>
+	${reason}
 	<form action="<%= request.getContextPath() %>/j_superfly_security_check" method="POST">
 		<table>
 			<tr>

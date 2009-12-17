@@ -10,6 +10,10 @@
         <sec:intercept-url pattern="/css*"   filters="none"/>
         <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         
+        <sec:intercept-url pattern="/adminpage1.html" access="ROLE_ADMINPAGE1"/>
+        <sec:intercept-url pattern="/adminpage2.html" access="ROLE_ADMINPAGE2"/>
+        <sec:intercept-url pattern="/userpage1.html" access="ROLE_USERPAGE1"/>
+        <sec:intercept-url pattern="/userpage2.html" access="ROLE_USERPAGE2"/>
         <sec:intercept-url pattern="/**" access="ROLE_ADMINPAGE1,ROLE_ADMINPAGE2,ROLE_USERPAGE1,ROLE_USERPAGE2"/>
         
         <sec:logout />
@@ -28,10 +32,23 @@
     	<property name="authenticationManager" ref="authenticationManager"/>
     	<property name="ssoService" ref="ssoService"/>
     	<property name="defaultTargetUrl" value="/"/>
+    	<property name="loginFormStepOneUrl" value="/login.jsp"/>
     	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
+    	<property name="subsystemIdentifier" value="test1"/>
     </bean>
     
-    <bean id="ssoService" class="com.payneteasy.superfly.mock.SSOServiceMock"/>
+<!--
+    <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
+-->
+
+	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+		<property name="serviceUrl">
+			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+				<property name="initParamName" value="superfly-sso-service-url"/>
+			</bean>
+		</property>
+	</bean>
     
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
     	<sec:custom-authentication-provider/>

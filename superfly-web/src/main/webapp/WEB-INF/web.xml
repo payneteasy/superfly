@@ -14,7 +14,7 @@
         	/WEB-INF/spring/applicationContext-dao.xml
         	/WEB-INF/spring/applicationContext-service.xml
         	/WEB-INF/spring/applicationContext-aop.xml
-            /WEB-INF/spring/remoting.xml
+            /WEB-INF/spring/applicationContext-remote.xml
         </param-value>
     </context-param>
     <context-param>
@@ -51,7 +51,6 @@
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-<!--     
     <servlet>
         <servlet-name>remoting</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -59,9 +58,8 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>remoting</servlet-name>
-        <url-pattern>/remoting/*</url-pattern>
+        <url-pattern>*.service</url-pattern>
     </servlet-mapping>
- -->
     
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

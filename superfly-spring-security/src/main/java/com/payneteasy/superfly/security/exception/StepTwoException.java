@@ -1,6 +1,8 @@
-package com.payneteasy.superfly.security;
+package com.payneteasy.superfly.security.exception;
 
 import org.springframework.security.AuthenticationException;
+
+import com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter;
 
 /**
  * Thrown to signal that step 2 of two-step authentication process

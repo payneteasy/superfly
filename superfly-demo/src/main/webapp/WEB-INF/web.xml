@@ -27,6 +27,10 @@
 		<param-name>webAppRootKey</param-name>
 		<param-value>superfly-demo</param-value>
 	</context-param>
+	<context-param>
+		<param-name>superfly-sso-service-url</param-name>
+		<param-value>http://localhost:8080/superfly/sso.service</param-value>
+	</context-param>
 
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>

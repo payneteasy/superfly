@@ -6,7 +6,18 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 		
 	<tx:annotation-driven/>
+	
+	<bean id="internalSsoService" class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
+		<property name="userDao" ref="userDao"/>
+	</bean>
 
-	<bean id="ssoService" class="com.payneteasy.superfly.service.impl.remote.SSOServiceImpl"/>
+	<bean id="ssoService" class="com.payneteasy.superfly.service.impl.remote.SSOServiceImpl">
+		<property name="internalSSOService" ref="internalSsoService"/>
+<!--
+		<property name="subsystemIdentifierObtainer">
+			<bean class="com.payneteasy.superfly.web.obtainer.AuthenticationPrincipalSubsystemIdentifierObtainer"/>
+		</property>
+-->
+	</bean>
 
 </beans>

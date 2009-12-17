@@ -11,13 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
-import org.springframework.security.BadCredentialsException;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
 
+import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.security.exception.BadLoginException;
+import com.payneteasy.superfly.security.exception.StepTwoException;
 
 /**
  * Processing filter which carries out a two-step authentication process.
@@ -32,9 +34,19 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 	
 	public static final String SPRING_SECURITY_FORM_ROLE_KEY = "j_role";
 
+	private String loginFormStepOneUrl;
 	private String loginFormStepTwoUrl;
     private String roleParameter = SPRING_SECURITY_FORM_ROLE_KEY;
 	private SSOService ssoService;
+	private String subsystemIdentifier = null;
+
+	public String getLoginFormStepOneUrl() {
+		return loginFormStepOneUrl;
+	}
+
+	public void setLoginFormStepOneUrl(String loginFormStepOneUrl) {
+		this.loginFormStepOneUrl = loginFormStepOneUrl;
+	}
 
 	public String getLoginFormStepTwoUrl() {
 		return loginFormStepTwoUrl;
@@ -51,7 +63,11 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 	@Required
 	public void setSsoService(SSOService ssoService) {
 		this.ssoService = ssoService;
-	}	
+	}
+
+	public void setSubsystemIdentifier(String subsystemIdentifier) {
+		this.subsystemIdentifier = subsystemIdentifier;
+	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request)
@@ -89,21 +105,23 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 	}
 
 	protected Authentication doStepOne(HttpServletRequest request,
-			Authentication authentication) {
+			Authentication authentication) throws BadLoginException {
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
 		
 		if (password == null) {
-			throw new BadCredentialsException("Null password");
+			throw new BadLoginException("Null password");
 		}
 		
-		SSOUser ssoUser = ssoService.authenticate(username, password);
+		AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
+		SSOUser ssoUser = ssoService.authenticate(username, password,
+				authRequestInfo);
 		if (ssoUser == null) {
-			throw new BadCredentialsException("Bad password");
+			throw new BadLoginException("Bad password");
 		}
 		
 		if (ssoUser.getActionsMap().isEmpty()) {
-			throw new BadCredentialsException("No roles assigned");
+			throw new BadLoginException("No roles assigned");
 		}
 		
 		if (ssoUser.getActionsMap().keySet().size() > 1) {
@@ -116,9 +134,16 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 			return selectRole(ssoUser, ssoUser.getActionsMap().keySet().iterator().next());
 		}
 	}
+
+	protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
+		AuthenticationRequestInfo result = new AuthenticationRequestInfo();
+		result.setIpAddress(request.getRemoteAddr());
+		result.setSubsystemIdentifier(subsystemIdentifier);
+		return result;
+	}
 	
 	protected Authentication doStepTwo(HttpServletRequest request,
-			Authentication authentication) {
+			Authentication authentication) throws BadLoginException {
 		String roleKey = obtainRoleKey(request);
 		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
 		SSOUser ssoUser = token.getSsoUser();
@@ -130,7 +155,7 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 			}
 		}
 		if (selectedRole == null) {
-			throw new BadCredentialsException("Unknown role: " + roleKey);
+			throw new BadLoginException("Unknown role: " + roleKey);
 		}
 		
 		return selectRole(ssoUser, selectedRole);
@@ -149,9 +174,19 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 			// something to request or session
 			prepareForStepTwo(request);
     		doForwardToStepTwo(request, response);
+    	} else if (failed instanceof BadLoginException) {
+    		// we must re-trigger step one
+    		prepareForStepOne(request, (BadLoginException) failed);
+    		doForwardToStepOne(request, response);
     	} else {
     		super.unsuccessfulAuthentication(request, response, failed);
     	}
+	}
+    
+	protected void doForwardToStepOne(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		RequestDispatcher rd = request.getRequestDispatcher(determineUrlForStepOne());
+		rd.forward(request, response);
 	}
 
 	protected void doForwardToStepTwo(HttpServletRequest request,
@@ -159,9 +194,18 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 		RequestDispatcher rd = request.getRequestDispatcher(determineUrlForStepTwo());
 		rd.forward(request, response);
 	}
+	
+	protected String determineUrlForStepOne() {
+		return getLoginFormStepOneUrl();
+	}
 
 	protected String determineUrlForStepTwo() {
 		return getLoginFormStepTwoUrl();
+	}
+	
+	protected void prepareForStepOne(HttpServletRequest request, BadLoginException e) {
+		request.setAttribute("reason", e.getMessage());
+//		request.setAttribute("ctxPath", request.getContextPath());
 	}
 
 	protected void prepareForStepTwo(HttpServletRequest request) {

@@ -11,15 +11,30 @@ import java.io.Serializable;
 public class SSORole implements Serializable {
 	private String name;
 
+	/**
+	 * Constructs role.
+	 * 
+	 * @param name	role name
+	 */
 	public SSORole(String name) {
 		super();
 		this.name = name;
 	}
 
+	/**
+	 * Returns role name.
+	 * 
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets role name.
+	 * 
+	 * @param name	name to set
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}

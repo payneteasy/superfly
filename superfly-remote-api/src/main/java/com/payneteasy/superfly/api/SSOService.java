@@ -13,8 +13,10 @@ public interface SSOService {
 	 * 
 	 * @param username	username to use when authenticating
 	 * @param password	password to use when authenticating
+	 * @param authRequestInfo TODO
 	 * @return user object on success or null when authentication failed (for
 	 * instance, no such user, or password mismatched, or user is blocked...)
 	 */
-	SSOUser authenticate(String username, String password);
+	SSOUser authenticate(String username, String password,
+			AuthenticationRequestInfo authRequestInfo);
 }

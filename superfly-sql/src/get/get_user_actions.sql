@@ -14,7 +14,7 @@ create procedure get_user_actions(i_user_name varchar(32),
       into v_user_id
       from users u
      where     u.user_name = i_user_name
-           and i_user_password = i_user_password
+           and u.user_password = i_user_password
            and coalesce(u.is_account_locked, 'N') = 'N';
 
     if v_user_id is null then
@@ -40,8 +40,8 @@ create procedure get_user_actions(i_user_name varchar(32),
     select r.role_name,
            r.principal_name,
            ss.callback_information,
-           a.action_name,
-           a.log_action
+           a.action_name role_action_name,
+           a.log_action role_log_action
       from             user_roles ur
                      join
                        roles r
@@ -66,8 +66,8 @@ create procedure get_user_actions(i_user_name varchar(32),
     select r.role_name,
            r.principal_name,
            ss.callback_information,
-           a.action_name,
-           a.log_action
+           a.action_name role_action_name,
+           a.log_action role_log_action
       from           user_roles ur
                    join
                      roles r
@@ -93,7 +93,7 @@ call save_routine_information('get_user_actions',
                                         'role_name varchar',
                                         'principal_name varchar',
                                         'callback_information varchar',
-                                        'action_name varchar',
-                                        'log_action varchar'
+                                        'role_action_name varchar',
+                                        'role_log_action varchar'
                               )
      );
