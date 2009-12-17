@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.service.impl.remote;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 
@@ -8,6 +10,7 @@ import com.payneteasy.superfly.api.SSOUser;
  * 
  * @author Roman Puchkovskiy
  */
+@Transactional
 public class SSOServiceImpl implements SSOService {
 
 	/**

@@ -10,6 +10,8 @@ create table mysql_routines_return_arguments (
 
 \. save_routine_information.sql
 
+\. get/get_procedures_resultset.prc
+
 \. run_install_command.sql
 
 \. uninject.sql

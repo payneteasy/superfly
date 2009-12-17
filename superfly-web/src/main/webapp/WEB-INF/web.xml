@@ -11,6 +11,7 @@
         	/WEB-INF/spring/applicationContext-security.xml
         	/WEB-INF/spring/applicationContext-common.xml
         	/WEB-INF/spring/applicationContext-datasource.xml
+        	/WEB-INF/spring/applicationContext-dao.xml
         	/WEB-INF/spring/applicationContext-service.xml
         	/WEB-INF/spring/applicationContext-aop.xml
             /WEB-INF/spring/remoting.xml
