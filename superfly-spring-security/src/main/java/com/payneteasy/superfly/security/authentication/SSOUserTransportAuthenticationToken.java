@@ -1,6 +1,7 @@
-package com.payneteasy.superfly.security;
+package com.payneteasy.superfly.security.authentication;
 
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter;
 
 /**
  * Authentication implementation which is actually used to transport SSOUser
@@ -12,6 +13,8 @@ import com.payneteasy.superfly.api.SSOUser;
  * @see TwoStepAuthenticationProcessingFilter
  */
 public class SSOUserTransportAuthenticationToken extends EmptyAuthenticationToken {
+	
+	public static final String SESSION_KEY = "superfly-sso-user-transport-token";
 	
 	private SSOUser ssoUser;
 

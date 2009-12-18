@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.security;
+package com.payneteasy.superfly.security.authentication;
 
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;

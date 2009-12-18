@@ -5,7 +5,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 		
-    <sec:http auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint">
+    <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
         <sec:intercept-url pattern="/css*"   filters="none"/>
         <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
@@ -22,21 +22,20 @@
     </sec:http>
     
     <sec:authentication-manager alias="authenticationManager"/>
-    
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+
+    <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
     	<property name="loginFormUrl" value="/login.jsp"/>
+    	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
     </bean>
     
     <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
     	<sec:custom-filter position="AUTHENTICATION_PROCESSING_FILTER"/>
     	<property name="authenticationManager" ref="authenticationManager"/>
-    	<property name="ssoService" ref="ssoService"/>
     	<property name="defaultTargetUrl" value="/"/>
-    	<property name="loginFormStepOneUrl" value="/login.jsp"/>
-    	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
+    	<property name="authenticationFailureUrl" value="/login.jsp"/>
     	<property name="subsystemIdentifier" value="test1"/>
     </bean>
-    
+
 <!--
     <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
 -->
@@ -52,6 +51,7 @@
     
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
     	<sec:custom-authentication-provider/>
+    	<property name="ssoService" ref="ssoService"/>
     	<property name="transformers">
     		<list>
     			<bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>

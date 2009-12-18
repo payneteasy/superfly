@@ -1,25 +1,19 @@
 package com.payneteasy.superfly.security;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
+import org.springframework.security.BadCredentialsException;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
 
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.exception.BadLoginException;
-import com.payneteasy.superfly.security.exception.StepTwoException;
+import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
 /**
  * Processing filter which carries out a two-step authentication process.
@@ -34,35 +28,11 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 	
 	public static final String SPRING_SECURITY_FORM_ROLE_KEY = "j_role";
 
-	private String loginFormStepOneUrl;
-	private String loginFormStepTwoUrl;
     private String roleParameter = SPRING_SECURITY_FORM_ROLE_KEY;
-	private SSOService ssoService;
-	private String subsystemIdentifier = null;
-
-	public String getLoginFormStepOneUrl() {
-		return loginFormStepOneUrl;
-	}
-
-	public void setLoginFormStepOneUrl(String loginFormStepOneUrl) {
-		this.loginFormStepOneUrl = loginFormStepOneUrl;
-	}
-
-	public String getLoginFormStepTwoUrl() {
-		return loginFormStepTwoUrl;
-	}
-
-	public void setLoginFormStepTwoUrl(String loginFormStepTwoUrl) {
-		this.loginFormStepTwoUrl = loginFormStepTwoUrl;
-	}
-
+    private String subsystemIdentifier = null;
+	
 	public void setRoleParameter(String roleParameter) {
 		this.roleParameter = roleParameter;
-	}
-
-	@Required
-	public void setSsoService(SSOService ssoService) {
-		this.ssoService = ssoService;
 	}
 
 	public void setSubsystemIdentifier(String subsystemIdentifier) {
@@ -105,48 +75,31 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 	}
 
 	protected Authentication doStepOne(HttpServletRequest request,
-			Authentication authentication) throws BadLoginException {
+			Authentication authentication) {
 		String username = obtainUsername(request);
 		String password = obtainPassword(request);
 		
-		if (password == null) {
-			throw new BadLoginException("Null password");
-		}
-		
-		AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
-		SSOUser ssoUser = ssoService.authenticate(username, password,
-				authRequestInfo);
-		if (ssoUser == null) {
-			throw new BadLoginException("Bad password");
-		}
-		
-		if (ssoUser.getActionsMap().isEmpty()) {
-			throw new BadLoginException("No roles assigned");
-		}
-		
-		if (ssoUser.getActionsMap().keySet().size() > 1) {
-			// we have to trigger step 2 because user is to select role
-			Authentication token = new SSOUserTransportAuthenticationToken(ssoUser);
-			SecurityContextHolder.getContext().setAuthentication(token);
-			throw new StepTwoException("Going to step two");
-		} else {
-			// exactly one role - that's all, short-circuit
-			return selectRole(ssoUser, ssoUser.getActionsMap().keySet().iterator().next());
-		}
+		return createUsernamePasswordAuthRequest(request, username, password);
 	}
 
-	protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
-		AuthenticationRequestInfo result = new AuthenticationRequestInfo();
-		result.setIpAddress(request.getRemoteAddr());
-		result.setSubsystemIdentifier(subsystemIdentifier);
-		return result;
+	protected Authentication createUsernamePasswordAuthRequest(
+			HttpServletRequest request, String username, String password) {
+		AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
+		Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
+				username, password, authRequestInfo);
+		return authRequest;
 	}
 	
 	protected Authentication doStepTwo(HttpServletRequest request,
-			Authentication authentication) throws BadLoginException {
+			Authentication authentication) {
 		String roleKey = obtainRoleKey(request);
-		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
-		SSOUser ssoUser = token.getSsoUser();
+		SSOUser ssoUser = (SSOUser) request.getSession().getAttribute(
+				SSOUserTransportAuthenticationToken.SESSION_KEY);
+		request.getSession().removeAttribute(
+				SSOUserTransportAuthenticationToken.SESSION_KEY);
+		if (ssoUser == null) {
+			throw new BadCredentialsException("Session expired");
+		}
 		SSORole selectedRole = null;
 		for (SSORole role : ssoUser.getActionsMap().keySet()) {
 			if (role.getName().equals(roleKey)) {
@@ -155,65 +108,21 @@ public class TwoStepAuthenticationProcessingFilter extends AuthenticationProcess
 			}
 		}
 		if (selectedRole == null) {
-			throw new BadLoginException("Unknown role: " + roleKey);
+			throw new BadCredentialsException("Unknown role: " + roleKey);
 		}
 		
-		return selectRole(ssoUser, selectedRole);
+		return createUserRoleAuthRequest(ssoUser, selectedRole);
 	}
 	
-	protected Authentication selectRole(SSOUser ssoUser, SSORole role) {
+	protected Authentication createUserRoleAuthRequest(SSOUser ssoUser, SSORole role) {
 		return new SSOUserAndSelectedRoleAuthenticationToken(ssoUser, role);
 	}
-	
-    @Override
-	protected void unsuccessfulAuthentication(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException failed)
-			throws IOException, ServletException {
-    	if (failed instanceof StepTwoException) {
-			// triggering step two, but before this we must probably put
-			// something to request or session
-			prepareForStepTwo(request);
-    		doForwardToStepTwo(request, response);
-    	} else if (failed instanceof BadLoginException) {
-    		// we must re-trigger step one
-    		prepareForStepOne(request, (BadLoginException) failed);
-    		doForwardToStepOne(request, response);
-    	} else {
-    		super.unsuccessfulAuthentication(request, response, failed);
-    	}
-	}
-    
-	protected void doForwardToStepOne(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher(determineUrlForStepOne());
-		rd.forward(request, response);
-	}
 
-	protected void doForwardToStepTwo(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher(determineUrlForStepTwo());
-		rd.forward(request, response);
-	}
-	
-	protected String determineUrlForStepOne() {
-		return getLoginFormStepOneUrl();
-	}
-
-	protected String determineUrlForStepTwo() {
-		return getLoginFormStepTwoUrl();
-	}
-	
-	protected void prepareForStepOne(HttpServletRequest request, BadLoginException e) {
-		request.setAttribute("reason", e.getMessage());
-//		request.setAttribute("ctxPath", request.getContextPath());
-	}
-
-	protected void prepareForStepTwo(HttpServletRequest request) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
-		Set<SSORole> roles = token.getSsoUser().getActionsMap().keySet();
-		request.setAttribute("superflyRoles", roles);
-		request.setAttribute("ctxPath", request.getContextPath());
+	protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
+		AuthenticationRequestInfo result = new AuthenticationRequestInfo();
+		result.setIpAddress(request.getRemoteAddr());
+		result.setSubsystemIdentifier(subsystemIdentifier);
+		return result;
 	}
 
 }
