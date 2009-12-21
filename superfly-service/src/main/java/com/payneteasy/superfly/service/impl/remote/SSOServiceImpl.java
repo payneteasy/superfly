@@ -2,7 +2,9 @@ package com.payneteasy.superfly.service.impl.remote;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.service.InternalSSOService;
@@ -33,13 +35,23 @@ public class SSOServiceImpl implements SSOService {
 	public SSOUser authenticate(String username, String password,
 			AuthenticationRequestInfo authRequestInfo) {
 		return internalSSOService.authenticate(username, password,
-				obtainSubsystemIdentifier(authRequestInfo),
+				obtainSubsystemIdentifier(authRequestInfo.getSubsystemIdentifier()),
 				authRequestInfo.getIpAddress(),
 				authRequestInfo.getSessionInfo());
 	}
 
-	protected String obtainSubsystemIdentifier(AuthenticationRequestInfo authRequestInfo) {
-		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(authRequestInfo);
+	/**
+	 * @see SSOService#sendSystemData(String, com.payneteasy.superfly.api.RoleDescription[], com.payneteasy.superfly.api.ActionDescription[])
+	 */
+	public void sendSystemData(String systemIdentifier,
+			RoleDescription[] roleDescriptions,
+			ActionDescription[] actionDescriptions) {
+		internalSSOService.saveSystemData(obtainSubsystemIdentifier(systemIdentifier),
+				roleDescriptions, actionDescriptions);
+	}
+	
+	protected String obtainSubsystemIdentifier(String systemIdentifier) {
+		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
 }

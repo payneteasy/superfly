@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOService;
@@ -40,6 +42,11 @@ public class SSOServiceMock implements SSOService {
 		Map<String, String> prefs = Collections.emptyMap();
 		
 		return new SSOUser(username, Collections.unmodifiableMap(actionsMap), prefs);
+	}
+
+	public void sendSystemData(String systemIdentifier,
+			RoleDescription[] roleDescriptions,
+			ActionDescription[] actionDescriptions) {
 	}
 
 }

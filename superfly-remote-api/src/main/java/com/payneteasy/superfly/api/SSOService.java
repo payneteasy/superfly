@@ -13,10 +13,22 @@ public interface SSOService {
 	 * 
 	 * @param username	username to use when authenticating
 	 * @param password	password to use when authenticating
-	 * @param authRequestInfo TODO
+	 * @param authRequestInfo additional info about authentication request
 	 * @return user object on success or null when authentication failed (for
 	 * instance, no such user, or password mismatched, or user is blocked...)
 	 */
 	SSOUser authenticate(String username, String password,
 			AuthenticationRequestInfo authRequestInfo);
+	
+	/**
+	 * Sends data about this system to SSO server.
+	 * 
+	 * @param systemIdentifier		identifier of this system (it's just a
+	 * hint for SSO server)
+	 * @param roleDescriptions		descriptions of roles of this system
+	 * @param actionDescriptions	descriptions of actions of this system
+	 */
+	void sendSystemData(String systemIdentifier,
+			RoleDescription[] roleDescriptions,
+			ActionDescription[] actionDescriptions);
 }

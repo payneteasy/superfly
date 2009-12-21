@@ -1,9 +1,8 @@
 package com.payneteasy.superfly.service.impl.remote;
 
-import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 
 /**
- * Used to somehow obtain a subsystem identifier
+ * Used to somehow obtain a subsystem identifier.
  * 
  * @author Roman Puchkovskiy
  */
@@ -11,8 +10,8 @@ public interface SubsystemIdentifierObtainer {
 	/**
 	 * Obtains a subsystem identifier.
 	 * 
-	 * @param authRequestInfo	info used to request authentication
+	 * @param systemIdentifier	hint which possibly may be used as identifier
 	 * @return subsystem identifier
 	 */
-	String obtainSubsystemIdentifier(AuthenticationRequestInfo authRequestInfo);
+	String obtainSubsystemIdentifier(String systemIdentifier);
 }

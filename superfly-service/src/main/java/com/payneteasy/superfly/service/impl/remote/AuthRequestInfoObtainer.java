@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.service.impl.remote;
 
-import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 
 /**
  * Obtainer which obtains subsystem identifier from AuthenticationRequestInfo.
@@ -10,9 +9,8 @@ import com.payneteasy.superfly.api.AuthenticationRequestInfo;
  */
 public class AuthRequestInfoObtainer implements SubsystemIdentifierObtainer {
 
-	public String obtainSubsystemIdentifier(
-			AuthenticationRequestInfo authRequestInfo) {
-		return authRequestInfo.getSubsystemIdentifier();
+	public String obtainSubsystemIdentifier(String hint) {
+		return hint;
 	}
 
 }
