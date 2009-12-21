@@ -77,7 +77,8 @@ create procedure save_actions(i_subsystem_name varchar(32))
            on ta.action_name = a.action_name and a.ssys_ssys_id = v_ssys_id
        set a.action_description    = ta.action_description
      where ta.action_description <> a.action_description;
-
+		 
+    truncate table temp_actions;
     select 'OK' status, null error_message;
   end
 $$
