@@ -19,5 +19,7 @@
 		</property>
 -->
 	</bean>
+	
+	<bean id="subsystemService" class="com.payneteasy.superfly.service.mock.SubsystemServiceMock"/>
 
 </beans>
