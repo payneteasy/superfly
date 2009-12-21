@@ -9,8 +9,8 @@ insert into subsystems
       (
          subsystem_name, callback_information
       )
-  select concat('Subystem - ', rownum),
-         concat('Call back link for subystem - ', rownum)
+  select concat('Subsystem - ', rownum),
+         concat('Call back link for subsystem - ', rownum)
     from (select @sv_row_number   := @sv_row_number + 1 rownum
             from information_schema.columns c, (select @sv_row_number   := 0) sv)
          dl
