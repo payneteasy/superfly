@@ -35,6 +35,7 @@ create table groups(
   group_name   varchar(32),
   ssys_ssys_id int(10),
   primary key pk_group(grop_id),
+  unique unq_groups_grop_name (group_name),
   constraint fk_groups_subsystems foreign key (ssys_ssys_id) references subsystems (ssys_id)
 );
 create table group_actions(

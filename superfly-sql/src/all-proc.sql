@@ -22,4 +22,26 @@ create table mysql_routines_return_arguments (
 
 \. ui_copy/ui_copy_action_properties.prc
 
+\. ui_filter/ui_filter_subsystems.prc
+
+\. ui_create/ui_create_group.prc
+
+\. ui_create/ui_clone_group.prc
+
+\. ui_create/ui_link_group_actions.prc
+
+\. ui_create/ui_link_role_groups.prc
+
+\. ui_delete/ui_delete_group.prc
+
+\. ui_delete/ui_delete_group_actions.prc
+
+\. ui_delete/ui_delete_role_groups.prc
+
 \. save/save_actions.prc
+
+\. ui_get/ui_get_groups_list.prc
+
+\. ui_get/ui_get_mapped_actions_list.prc
+
+\. ui_get/ui_get_unmapped_actions_list.prc
