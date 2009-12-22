@@ -8,15 +8,13 @@ create procedure ui_get_unmapped_actions_list(i_grop_id int(10))
            a.action_description,
            "Unmapped" mapping_status
       from     actions a
-             left join
-               group_actions ga
-             on ga.actn_actn_id = a.actn_id
+             join
+               groups g
+             on g.ssys_ssys_id = a.ssys_ssys_id
            left join
-             groups g
-           on ga.grop_grop_id = g.grop_id
-     where     g.ssys_ssys_id = a.ssys_ssys_id
-           and g.grop_id = i_grop_id
-           and ga.gpac_id is null;
+             group_actions ga
+           on ga.actn_actn_id = a.actn_id and ga.grop_grop_id = g.grop_id
+     where g.grop_id = i_grop_id and ga.gpac_id is null;
   end
 $$
 delimiter ;

@@ -18,6 +18,7 @@ create table subsystems(
   ssys_id              int(10) auto_increment,
   subsystem_name       varchar(32),
   callback_information varchar(64),
+	unique unq_subsystems_subsystem_name (subsystem_name),
   primary key pk_subsystems(ssys_id)
 );
 create table actions(
@@ -102,7 +103,6 @@ create table complect_preferences(
 );
 create table users(
   user_id           int(10) auto_increment,
-  comp_comp_id      int(10),
   user_name         varchar(32),
   user_password     varchar(32),
   is_account_locked varchar(1),
@@ -141,13 +141,15 @@ create table actions_log(
   alog_id       int(10) auto_increment,
   partition_key int(6),
   actn_actn_id  int(10),
+	action_name   varchar(128),
   user_user_id  int(10),
+	user_name     varchar(32),
   log_date      datetime,
   ip_address    varchar(15),
   session_info  text,
   primary key pk_operations_log (alog_id, partition_key),
-  index idx_operations_log_actn (actn_actn_id),
-  index idx_operations_log_user (user_user_id),
+  index idx_operations_log_action_name (action_name),
+  index idx_operations_log_user_name (user_name),
   index idx_operations_log_log_date (log_date)
   )
   engine = innodb

@@ -10,6 +10,8 @@ create procedure get_user_actions(i_user_name varchar(32),
   begin
     declare v_user_id   int(10);
 
+    set v_user_id   = null;
+
     select user_id
       into v_user_id
       from users u
@@ -18,6 +20,11 @@ create procedure get_user_actions(i_user_name varchar(32),
            and coalesce(u.is_account_locked, 'N') = 'N';
 
     if v_user_id is null then
+      update users u
+         set u.logins_failed    = coalesce(u.logins_failed, 0) + 1
+       where u.user_name = i_user_name
+             and coalesce(u.is_account_locked, 'N') = 'N';
+
       insert into unauthorised_access
             (
                printed_user_name,
@@ -36,6 +43,11 @@ create procedure get_user_actions(i_user_name varchar(32),
 
       leave main_sql;
     end if;
+
+    update users u
+       set u.last_login_date    = now()
+     where u.user_name = i_user_name
+           and coalesce(u.is_account_locked, 'N') = 'N';
 
     select r.role_name,
            r.principal_name,
@@ -84,8 +96,11 @@ create procedure get_user_actions(i_user_name varchar(32),
            join
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
-     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name;
-  end;
+     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name
+
+;
+  end
+;
 $$
 delimiter ;
 call save_routine_information('get_user_actions',
