@@ -26,7 +26,7 @@ public class UISubsystem implements Serializable {
 		this.identifier = identifier;
 	}
 
-	@Column(name = "subsystemname_name")
+	@Column(name = "subsystem_name")
 	public String getName() {
 		return name;
 	}

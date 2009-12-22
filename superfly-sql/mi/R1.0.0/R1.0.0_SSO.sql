@@ -108,6 +108,7 @@ create table users(
   is_account_locked varchar(1),
   logins_failed     int(10),
   last_login_date   datetime,
+  comp_comp_id      int(10),
   primary key pk_users (user_id),
   unique unq_users_user_name (user_name),
   constraint fk_users_complects foreign key (comp_comp_id) references complects (comp_id)
