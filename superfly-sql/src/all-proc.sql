@@ -40,6 +40,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_create/ui_link_user_roles.prc
 
+\. ui_create/ui_clone_user.prc
+
 \. ui_delete/ui_delete_group.prc
 
 \. ui_delete/ui_delete_group_actions.prc
@@ -68,8 +70,14 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_unmapped_roles_list.prc
 
+\. ui_get/ui_get_users_list.prc
+
+\. ui_get/ui_get_subsystems_list.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
 
-\. ui_get/ui_get_subsystems_list.prc
+\. ui_update/ui_update_user.prc
+
+\. int/int_users_list.prc

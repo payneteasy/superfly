@@ -3,6 +3,7 @@ drop table if exists unauthorised_access;
 drop table if exists user_preferences;
 drop table if exists user_role_actions;
 drop table if exists user_roles;
+drop table if exists user_complects;
 drop table if exists users;
 drop table if exists complect_preferences;
 drop table if exists complects;
@@ -36,7 +37,7 @@ create table groups(
   group_name   varchar(32),
   ssys_ssys_id int(10),
   primary key pk_group(grop_id),
-  unique unq_groups_grop_name (group_name),
+  unique unq_groups_grop_name (group_name, ssys_ssys_id),
   constraint fk_groups_subsystems foreign key (ssys_ssys_id) references subsystems (ssys_id)
 );
 create table group_actions(
@@ -53,6 +54,7 @@ create table roles(
 	principal_name varchar(32),
   ssys_ssys_id int(10),
   primary key pk_roles(role_id),
+	unique unq_roles_role_name (role_name, ssys_ssys_id),
   constraint fk_roles_subsystems foreign key (ssys_ssys_id) references subsystems (ssys_id)
 );
 create table role_groups(
@@ -110,8 +112,7 @@ create table users(
   last_login_date   datetime,
   comp_comp_id      int(10),
   primary key pk_users (user_id),
-  unique unq_users_user_name (user_name),
-  constraint fk_users_complects foreign key (comp_comp_id) references complects (comp_id)
+  unique unq_users_user_name (user_name)
 );
 create table user_roles(
   urol_id      int(10) auto_increment,
@@ -128,6 +129,14 @@ create table user_role_actions(
   primary key pk_user_role_actions (urac_id),
   constraint fk_user_role_actions_users foreign key (user_user_id) references users (user_id),
   constraint fk_user_role_actions_role_actions foreign key (ract_ract_id) references role_actions (ract_id)
+);
+create table user_complects(
+  ucom_id      int(10) auto_increment,
+  user_user_id int(10),
+  comp_comp_id int(10),
+  primary key pk_user_complects (ucom_id),
+  constraint fk_user_complects_users foreign key (user_user_id) references users (user_id),
+  constraint fk_user_complects_complects foreign key (comp_comp_id) references complects (comp_comp_id)
 );
 create table user_preferences(
   uprf_id      int(10) auto_increment,

@@ -3,7 +3,7 @@ delimiter $$
 create procedure ui_get_subsystems_list()
  main_sql:
   begin
-    select *
+    select ssys_id, subsystem_name, callback_information
       from subsystems;
   end
 $$
