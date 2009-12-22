@@ -58,7 +58,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>remoting</servlet-name>
-        <url-pattern>*.service</url-pattern>
+        <url-pattern>/remoting/*</url-pattern>
     </servlet-mapping>
     
 	<welcome-file-list>
@@ -73,6 +73,10 @@
         <init-param>
             <param-name>applicationClassName</param-name>
             <param-value>com.payneteasy.superfly.web.WicketApplication</param-value>
+        </init-param>
+        <init-param>
+        	<param-name>ignorePaths</param-name>
+        	<param-value>/remoting/</param-value>
         </init-param>
     </filter>
 
