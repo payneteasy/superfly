@@ -2,6 +2,8 @@ package com.payneteasy.superfly.model.ui;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+
 public class UISubsystem implements Serializable {
 	private Long id;
 	private String identifier;
@@ -24,6 +26,7 @@ public class UISubsystem implements Serializable {
 		this.identifier = identifier;
 	}
 
+	@Column(name = "subsystemname_name")
 	public String getName() {
 		return name;
 	}
@@ -32,6 +35,7 @@ public class UISubsystem implements Serializable {
 		this.name = name;
 	}
 
+	@Column(name = "callback_information")
 	public String getCallbackInformation() {
 		return callbackInformation;
 	}

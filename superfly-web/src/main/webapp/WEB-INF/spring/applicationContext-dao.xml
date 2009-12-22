@@ -24,8 +24,13 @@
 	</bean>
 	
 	<!-- DAO definitions follow -->
+	
 	<bean id="userDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
 		<property name="interface" value="com.payneteasy.superfly.dao.UserDao"/>
+	</bean>
+	
+	<bean id="subsystemDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao"/>
 	</bean>
 
 </beans>

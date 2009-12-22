@@ -13,6 +13,7 @@
                 <Set name="password">123superfly123</Set>
                 <Set name="accessToUnderlyingConnectionAllowed">true</Set>
                 <Set name="testOnBorrow">true</Set>
+                <Set name="validationQuery">{call create_collections()}</Set>
                 <!--<property name="maxActive" value="-1"      />-->
                 <!--<property name="maxIdle"   value="2"       />-->
                 <!--<property name="maxWait"   value="5000"    />-->

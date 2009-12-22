@@ -50,7 +50,7 @@ create table mysql_routines_return_arguments (
 
 \. ui_delete/ui_delete_role_groups.prc
 
-\. ui_delete/ui_delete_user_roles
+\. ui_delete/ui_delete_user_roles.prc
 
 \. save/save_actions.prc
 
@@ -71,3 +71,5 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
+
+\. ui_get/ui_get_subsystems_list.prc

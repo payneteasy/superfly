@@ -20,6 +20,8 @@
 -->
 	</bean>
 	
-	<bean id="subsystemService" class="com.payneteasy.superfly.service.mock.SubsystemServiceMock"/>
+	<bean id="subsystemService" class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
+		<property name="subsystemDao" ref="subsystemDao"/>
+	</bean>
 
 </beans>
