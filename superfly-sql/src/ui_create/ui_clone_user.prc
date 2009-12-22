@@ -2,7 +2,8 @@ drop procedure if exists ui_clone_user;
 delimiter $$
 create procedure ui_clone_user(i_new_user_name varchar(32),
                                i_new_user_password varchar(32),
-                               i_templete_user_id int(10)
+                               i_templete_user_id int(10),
+                               out o_user_id int(10)
 )
  main_sql:
   begin
@@ -15,6 +16,7 @@ create procedure ui_clone_user(i_new_user_name varchar(32),
     values (i_new_user_name, i_new_user_password);
 
     set v_user_id   = last_insert_id();
+    set o_user_id   = v_user_id;
 
     insert into user_roles
           (

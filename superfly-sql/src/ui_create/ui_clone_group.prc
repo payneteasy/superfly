@@ -1,7 +1,8 @@
 drop procedure if exists ui_clone_group;
 delimiter $$
 create procedure ui_clone_group(i_new_group_name varchar(32),
-                                i_templete_grop_id int(10)
+                                i_templete_grop_id int(10),
+                                out o_grop_id int(10)
 )
  main_sql:
   begin
@@ -16,6 +17,7 @@ create procedure ui_clone_group(i_new_group_name varchar(32),
        where grop_id = i_templete_grop_id;
 
     set v_grop_id   = last_insert_id();
+    set o_grop_id   = v_grop_id;
 
     insert into role_groups
           (
