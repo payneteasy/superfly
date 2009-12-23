@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.ui.UISubsystem;
+import com.payneteasy.superfly.model.ui.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.UISubsystemForList;
 import com.payneteasy.superfly.service.SubsystemService;
 
@@ -35,6 +36,10 @@ public class SubsystemServiceImpl implements SubsystemService {
 	public void updateSubsystem(UISubsystem subsystem) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public List<UISubsystemForFilter> getSubsystemsForFilter() {
+		return subsystemDao.getSubsystemsForFilter();
 	}
 
 }
