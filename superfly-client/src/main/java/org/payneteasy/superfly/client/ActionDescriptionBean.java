@@ -1,6 +1,6 @@
 package org.payneteasy.superfly.client;
 
-class RoleDescriptionBean {
+class ActionDescriptionBean {
 	private String name;
 	private String description;
 

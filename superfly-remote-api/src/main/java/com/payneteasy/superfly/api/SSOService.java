@@ -25,10 +25,8 @@ public interface SSOService {
 	 * 
 	 * @param systemIdentifier		identifier of this system (it's just a
 	 * hint for SSO server)
-	 * @param roleDescriptions		descriptions of roles of this system
 	 * @param actionDescriptions	descriptions of actions of this system
 	 */
 	void sendSystemData(String systemIdentifier,
-			RoleDescription[] roleDescriptions,
 			ActionDescription[] actionDescriptions);
 }

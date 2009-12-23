@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.xml.sax.SAXException;
 
-import com.payneteasy.superfly.api.RoleDescription;
+import com.payneteasy.superfly.api.ActionDescription;
 
-public class XmlRoleDescriptionCollector implements RoleDescriptionCollector {
+public class XmlActionDescriptionCollector implements ActionDescriptionCollector {
 	
 	private Resource resource;
 
@@ -22,16 +22,16 @@ public class XmlRoleDescriptionCollector implements RoleDescriptionCollector {
 		this.resource = resource;
 	}
 
-	public List<RoleDescription> collect() throws CollectionException {
-		List<RoleDescriptionBean> list = new ArrayList<RoleDescriptionBean>();
+	public List<ActionDescription> collect() throws CollectionException {
+		List<ActionDescriptionBean> list = new ArrayList<ActionDescriptionBean>();
 		Digester digester = new Digester();
 		digester.push(list);
 		digester.setNamespaceAware(false);
 		digester.setValidating(false);
 
-		digester.addObjectCreate("roles/role", RoleDescriptionBean.class);
-		digester.addSetProperties("roles/role");
-		digester.addSetNext("roles/role", "add", RoleDescriptionBean.class.getName());
+		digester.addObjectCreate("actions/action", ActionDescriptionBean.class);
+		digester.addSetProperties("actions/action");
+		digester.addSetNext("actions/action", "add", ActionDescriptionBean.class.getName());
 		
 		try {
 			digester.parse(resource.getInputStream());
@@ -41,14 +41,14 @@ public class XmlRoleDescriptionCollector implements RoleDescriptionCollector {
 			throw new CollectionException(e);
 		}
 		
-		List<RoleDescription> roles = new ArrayList<RoleDescription>(list.size());
-		for (RoleDescriptionBean bean : list) {
-			RoleDescription role = new RoleDescription();
-			BeanUtils.copyProperties(bean, role);
-			roles.add(role);
+		List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
+		for (ActionDescriptionBean bean : list) {
+			ActionDescription action = new ActionDescription();
+			BeanUtils.copyProperties(bean, action);
+			actions.add(action);
 		}
 		
-		return roles;
+		return actions;
 	}
 
 }

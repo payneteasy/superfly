@@ -1,5 +1,10 @@
 package org.payneteasy.superfly.client.exception;
 
+/**
+ * Thrown when a problem occurs during collection.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class CollectionException extends Exception {
 
 	public CollectionException() {

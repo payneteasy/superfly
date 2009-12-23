@@ -1,7 +1,6 @@
 package com.payneteasy.superfly.service;
 
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOUser;
 
 /**
@@ -33,6 +32,5 @@ public interface InternalSSOService {
 	 * @param actionDescriptions	descriptions of actions
 	 */
 	void saveSystemData(String subsystemIdentifier,
-			RoleDescription[] roleDescriptions,
 			ActionDescription[] actionDescriptions);
 }

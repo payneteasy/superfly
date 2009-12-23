@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
-import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.service.InternalSSOService;
@@ -41,13 +40,12 @@ public class SSOServiceImpl implements SSOService {
 	}
 
 	/**
-	 * @see SSOService#sendSystemData(String, com.payneteasy.superfly.api.RoleDescription[], com.payneteasy.superfly.api.ActionDescription[])
+	 * @see SSOService#sendSystemData(String, com.payneteasy.superfly.api.ActionDescription[])
 	 */
 	public void sendSystemData(String systemIdentifier,
-			RoleDescription[] roleDescriptions,
 			ActionDescription[] actionDescriptions) {
 		internalSSOService.saveSystemData(obtainSubsystemIdentifier(systemIdentifier),
-				roleDescriptions, actionDescriptions);
+				actionDescriptions);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
@@ -56,7 +55,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	public void saveSystemData(String subsystemIdentifier,
-			RoleDescription[] roleDescriptions,
 			ActionDescription[] actionDescriptions) {
 		// TODO Auto-generated method stub
 	}

@@ -13,15 +13,23 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.classreading.MultipleAnnotationValuesCachingMetadataReaderFactory;
 import org.springframework.security.annotation.Secured;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 import com.payneteasy.superfly.api.ActionDescription;
 
+/**
+ * ActionDescriptionCollector implementation which scans classes in the given
+ * packages looking for a given annotation (by default Secured) and extracts
+ * action names from its attributes.
+ * Descriptions of resulting actions are null.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class ScanningActionDescriptionCollector implements
 		ActionDescriptionCollector {
 	
@@ -30,8 +38,9 @@ public class ScanningActionDescriptionCollector implements
 	private String[] basePackages = new String[0];
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
-	private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(this.resourcePatternResolver);
+	private MetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
 	private Class<? extends Annotation> annotationClass = Secured.class;
+	private ValuesExtractor valuesExtractor = new DefaultValuesExtractor();
 
 	@Required
 	public void setBasePackages(String[] basePackages) {
@@ -53,6 +62,10 @@ public class ScanningActionDescriptionCollector implements
 
 	public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
 		this.annotationClass = annotationClass;
+	}
+
+	public void setValuesExtractor(ValuesExtractor valuesExtractor) {
+		this.valuesExtractor = valuesExtractor;
 	}
 
 	public List<ActionDescription> collect() throws CollectionException {
@@ -79,16 +92,9 @@ public class ScanningActionDescriptionCollector implements
 						.getAnnotationMetadata()
 						.getAnnotationAttributes(annotationClass.getName());
 				if (attributes != null) {
-					Object value = attributes.get("value");
+					Object value = attributes.get(null);
 					if (value != null) {
-						String[] values;
-						if (value instanceof String[]) {
-							values = (String[]) value;
-						} else if (value instanceof String) {
-							values = new String[]{(String) value};
-						} else {
-							values = new String[]{value.toString()};
-						}
+						String[] values = valuesExtractor.extract(value);
 						for (String v : values) {
 							names.add(v);
 						}

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.RoleDescription;
 import com.payneteasy.superfly.api.SSOService;
 
 /**
@@ -19,19 +18,12 @@ import com.payneteasy.superfly.api.SSOService;
 public class SuperflyDataSender implements InitializingBean {
 	
 	private SSOService ssoService;
-	private RoleDescriptionCollector roleDescriptionCollector;
 	private ActionDescriptionCollector actionDescriptionCollector;
 	private String subsystemIdentifier = null;
 
 	@Required
 	public void setSsoService(SSOService ssoService) {
 		this.ssoService = ssoService;
-	}
-
-	@Required
-	public void setRoleDescriptionCollector(
-			RoleDescriptionCollector roleDescriptionCollector) {
-		this.roleDescriptionCollector = roleDescriptionCollector;
 	}
 
 	@Required
@@ -50,14 +42,9 @@ public class SuperflyDataSender implements InitializingBean {
 
 	public void afterPropertiesSet() throws Exception {
 		ssoService.sendSystemData(getSubsystemIdentifier(),
-				obtainRoleDescriptions(), obtainActionDescriptions());
+				obtainActionDescriptions());
 	}
 
-	protected RoleDescription[] obtainRoleDescriptions() throws CollectionException {
-		List<RoleDescription> roles = roleDescriptionCollector.collect();
-		return roles.toArray(new RoleDescription[roles.size()]);
-	}
-	
 	protected ActionDescription[] obtainActionDescriptions() throws CollectionException {
 		List<ActionDescription> actions = actionDescriptionCollector.collect();
 		return actions.toArray(new ActionDescription[actions.size()]);
