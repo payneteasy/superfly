@@ -2,9 +2,25 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Add Subsystem</title>
 </head>
 <body>
-
+<wicket:extend>
+<form wicket:id="form">
+   <table class="form">
+		<tr>
+			<td>Name:</td>
+			<td><input type="text" wicket:id="name" /></td>
+		</tr>
+		<tr>
+			<td>Callback Info:</td>
+			<td><input type="text" wicket:id="callbackInformation" /></td>
+		</tr>
+	</table>
+	<p><input type="submit" value="Add" /> <input
+		type="submit" value="Cancel" wicket:id="cancel" /></p>
+</form>
+</wicket:extend>
 </body>
 </html>

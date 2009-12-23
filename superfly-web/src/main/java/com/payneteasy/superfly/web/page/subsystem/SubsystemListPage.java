@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -46,7 +47,7 @@ public class SubsystemListPage extends BasePage {
 				item.add(new Label("subsystem-identifier", subWrapperItem
 						.getObject().getIdentifier()));
 				item.add(new BookmarkablePageLink("subsystem-edit",
-						EditSubsytemPage.class));
+						EditSubsytemPage.class).setParameter("id", subWrapperItem.getObject().getId()));
 				item.add(new CheckBox("selected", new PropertyModel<Boolean>(
 						subWrapperItem, "selected")));
 				item.add(new Label("subsystem-callback",subWrapperItem.getObject().getCallbackInformation()));
@@ -102,6 +103,14 @@ public class SubsystemListPage extends BasePage {
 				return true;
 			}
 		});
+		form.add(new Button("add-subsystem"){
+
+			@Override
+			public void onSubmit() {
+				setResponsePage(AddSubsystemPage.class);
+			}
+			
+		}.setDefaultFormProcessing(false));
 		add(form);
 	}
 }
