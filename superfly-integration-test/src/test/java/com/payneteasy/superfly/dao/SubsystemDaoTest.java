@@ -24,5 +24,6 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		subsystem.setIdentifier("subsystem-identifier");
 		subsystem.setCallbackInformation("http://no-such-host.dlm");
 		subsystemDao.createSubsystem(subsystem);
+		assertNotNull("ID must be generated", subsystem.getId());
 	}
 }

@@ -10,6 +10,7 @@ public class UISubsystem implements Serializable {
 	private String name;
 	private String callbackInformation;
 
+	@Column(name = "ssys_id")
 	public Long getId() {
 		return id;
 	}
