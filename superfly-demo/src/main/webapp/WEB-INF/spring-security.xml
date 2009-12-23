@@ -35,19 +35,6 @@
     	<property name="authenticationFailureUrl" value="/login.jsp"/>
     	<property name="subsystemIdentifier" value="test1"/>
     </bean>
-
-<!--
-    <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
--->
-
-	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
-		<property name="serviceUrl">
-			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-				<property name="initParamName" value="superfly-sso-service-url"/>
-			</bean>
-		</property>
-	</bean>
     
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
     	<sec:custom-authentication-provider/>

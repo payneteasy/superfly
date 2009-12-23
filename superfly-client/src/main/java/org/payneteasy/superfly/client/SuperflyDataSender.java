@@ -1,8 +1,12 @@
 package org.payneteasy.superfly.client;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.payneteasy.superfly.client.exception.CollectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -17,9 +21,12 @@ import com.payneteasy.superfly.api.SSOService;
  */
 public class SuperflyDataSender implements InitializingBean {
 	
+	private Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
+	
 	private SSOService ssoService;
 	private ActionDescriptionCollector actionDescriptionCollector;
 	private String subsystemIdentifier = null;
+	private long delay = 0;
 
 	@Required
 	public void setSsoService(SSOService ssoService) {
@@ -40,9 +47,23 @@ public class SuperflyDataSender implements InitializingBean {
 		this.subsystemIdentifier = subsystemIdentifier;
 	}
 
+	public void setDelay(long delay) {
+		this.delay = delay;
+	}
+
 	public void afterPropertiesSet() throws Exception {
-		ssoService.sendSystemData(getSubsystemIdentifier(),
-				obtainActionDescriptions());
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					ssoService.sendSystemData(getSubsystemIdentifier(),
+							obtainActionDescriptions());
+				} catch (CollectionException e) {
+					logger.error("Cannot send subsystem data", e);
+				}
+			}
+		}, delay);
 	}
 
 	protected ActionDescription[] obtainActionDescriptions() throws CollectionException {

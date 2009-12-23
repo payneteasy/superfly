@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+<!--
+    <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
+-->
+
+	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+		<property name="serviceUrl">
+			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+				<property name="initParamName" value="superfly-sso-service-url"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="xmlActionDescriptionCollector" class="org.payneteasy.superfly.client.XmlActionDescriptionCollector">
+		<property name="resource">
+			<bean class="org.springframework.core.io.ClassPathResource">
+				<constructor-arg value="actions.xml"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="scanningActionDescriptionCollector" class="org.payneteasy.superfly.client.ScanningActionDescriptionCollector">
+		<property name="basePackages">
+			<list>
+				<value>com.payneteasy.superflydemo.web.wicket</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="mergingActionDescriptionCollector" class="org.payneteasy.superfly.client.MergingActionDescriptionCollector">
+		<property name="collectors">
+			<list>
+				<ref bean="xmlActionDescriptionCollector"/>
+				<ref bean="scanningActionDescriptionCollector"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="superflyDataSender" class="org.payneteasy.superfly.client.SuperflyDataSender">
+		<property name="ssoService" ref="ssoService"/>
+		<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+		<property name="subsystemIdentifier" value="test1"/>
+		<property name="delay" value="20000"/>
+	</bean>
+    
+</beans>
