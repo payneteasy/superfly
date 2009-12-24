@@ -8,18 +8,27 @@
 <body>
 <wicket:extend>
 <h1>Groups</h1>
-<table class="data">
+<p><span wicket:id="confirmPanel"></span></p>
+	<form wicket:id="form">
+	<p>
+	<input type="submit" wicket:id="add-group" value="Add">&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Delete"></p>
+	<table class="data">
 		<thead>
 			<tr>
+				<th><input type="checkbox" wicket:id="groupselector">Select</input></th>
 				<th>Name</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="list-group">
+				<td><input type="checkbox" wicket:id="selected" /></td>
 				<td><span wicket:id="name-group">[Name]</span></td>
 			</tr>
 		</tbody>
 	</table>
+
+	</form>
 </wicket:extend>
 </body>
 </html>

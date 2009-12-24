@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.GroupDao;
+import com.payneteasy.superfly.model.ui.UIGroup;
 import com.payneteasy.superfly.model.ui.UIGroupForList;
 import com.payneteasy.superfly.service.*;
 
@@ -20,6 +21,16 @@ public class GroupServiceImpl implements GroupService {
 
 	public List<UIGroupForList> getGroups() {
 		return this.groupDao.getGroups();
+	}
+
+	public void createGroup(UIGroup group) {
+		groupDao.createGroup(group);
+		
+	}
+
+	public void deleteGorup(long id) {
+		groupDao.deleteGorup(id);
+		
 	}
 
 }
