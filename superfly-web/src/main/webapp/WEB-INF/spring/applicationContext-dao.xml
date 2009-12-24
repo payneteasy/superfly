@@ -2,16 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-	
+
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
+
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
+
 	<bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 	</bean>
@@ -22,15 +22,24 @@
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 		<property name="daoMethodInfoFactory" ref="daoMethodInfoFactory" />
 	</bean>
-	
+
 	<!-- DAO definitions follow -->
-	
-	<bean id="userDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.UserDao"/>
+
+	<bean id="userDao"
+		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+		parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.UserDao" />
 	</bean>
-	
-	<bean id="subsystemDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao"/>
+
+	<bean id="subsystemDao"
+		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+		parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao" />
+	</bean>
+	<bean id="groupDao"
+		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+		parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.GroupDao" />
 	</bean>
 
 </beans>

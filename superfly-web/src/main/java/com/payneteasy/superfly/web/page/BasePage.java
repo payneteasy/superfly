@@ -5,6 +5,8 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
+import com.payneteasy.superfly.web.page.action.ActionsList;
+import com.payneteasy.superfly.web.page.group.GroupListPage;
 import com.payneteasy.superfly.web.page.subsystem.SubsystemListPage;
 
 public class BasePage extends WebPage{
@@ -16,5 +18,7 @@ public class BasePage extends WebPage{
 		FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
 		add(feedbackPanel);
         add(new BookmarkablePageLink<SubsystemListPage>("subsystems",SubsystemListPage.class));
+        add(new BookmarkablePageLink<ActionsList>("actions",ActionsList.class));
+        add(new BookmarkablePageLink<GroupListPage>("groups",GroupListPage.class));
 	}
 }

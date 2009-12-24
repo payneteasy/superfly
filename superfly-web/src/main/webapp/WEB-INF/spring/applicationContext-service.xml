@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
-		
-	<tx:annotation-driven/>
-	
-	<bean id="internalSsoService" class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
-		<property name="userDao" ref="userDao"/>
+
+	<tx:annotation-driven />
+
+	<bean id="internalSsoService"
+		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
+		<property name="userDao" ref="userDao" />
 	</bean>
 
-	<bean id="ssoService" class="com.payneteasy.superfly.service.impl.remote.SSOServiceImpl">
-		<property name="internalSSOService" ref="internalSsoService"/>
-<!--
-		<property name="subsystemIdentifierObtainer">
-			<bean class="com.payneteasy.superfly.web.obtainer.AuthenticationPrincipalSubsystemIdentifierObtainer"/>
-		</property>
--->
-	</bean>
-	
-	<bean id="subsystemService" class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
-		<property name="subsystemDao" ref="subsystemDao"/>
+	<bean id="ssoService"
+		class="com.payneteasy.superfly.service.impl.remote.SSOServiceImpl">
+		<property name="internalSSOService" ref="internalSsoService" />
+		<!--
+			<property name="subsystemIdentifierObtainer"> <bean
+			class="com.payneteasy.superfly.web.obtainer.AuthenticationPrincipalSubsystemIdentifierObtainer"/>
+			</property>
+		-->
 	</bean>
 
+	<bean id="subsystemService"
+		class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
+		<property name="subsystemDao" ref="subsystemDao" />
+	</bean>
+	<bean id="groupService"
+		class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
+		<property name="groupDao" ref="groupDao" />
+	</bean>
 </beans>
