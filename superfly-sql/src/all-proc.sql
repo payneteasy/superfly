@@ -72,6 +72,12 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_users_list.prc
 
+\. ui_get/ui_get_users_list_count.prc
+
+\. ui_get/ui_get_actions_list.prc
+
+\. ui_get/ui_get_actions_list_count.prc
+
 \. ui_get/ui_get_subsystems_list.prc
 
 \. ui_update/ui_lock_user.prc
@@ -80,4 +86,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_update/ui_update_user.prc
 
+\. ui_update/ui_change_actions_log_level.prc
+
 \. int/int_users_list.prc
+
+\. int/int_actions_list.prc
