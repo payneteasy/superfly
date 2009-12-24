@@ -28,8 +28,6 @@ create table mysql_routines_return_arguments (
 
 \. ui_create/ui_clone_group.prc
 
-\. ui_create/ui_link_group_actions.prc
-
 \. ui_create/ui_link_role_groups.prc
 
 \. ui_create/ui_create_subsystem.prc
@@ -43,8 +41,6 @@ create table mysql_routines_return_arguments (
 \. ui_create/ui_clone_user.prc
 
 \. ui_delete/ui_delete_group.prc
-
-\. ui_delete/ui_delete_group_actions.prc
 
 \. ui_delete/ui_delete_role.prc
 
@@ -80,6 +76,12 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_subsystems_list.prc
 
+\. ui_get/ui_get_groups_list_count.prc
+
+\. ui_get/ui_get_group_actions_list.prc
+
+\. ui_get/ui_get_group_actions_list_count.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
@@ -88,6 +90,16 @@ create table mysql_routines_return_arguments (
 
 \. ui_update/ui_change_actions_log_level.prc
 
+\. ui_update/ui_change_group_actions.prc
+
+\. ui_update/ui_edit_group_properties.prc
+
 \. int/int_users_list.prc
 
 \. int/int_actions_list.prc
+
+\. int/int_link_group_actions.prc
+
+\. int/int_groups_list.prc
+
+\. int/int_unlink_group_actions.prc
