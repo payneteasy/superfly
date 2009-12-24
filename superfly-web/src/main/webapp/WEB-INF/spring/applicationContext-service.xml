@@ -9,6 +9,7 @@
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
+		<property name="actionDao" ref="actionDao" />
 	</bean>
 
 	<bean id="ssoService"
@@ -25,6 +26,7 @@
 		class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
 		<property name="subsystemDao" ref="subsystemDao" />
 	</bean>
+	
 	<bean id="groupService"
 		class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
 		<property name="groupDao" ref="groupDao" />
