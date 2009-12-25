@@ -82,4 +82,9 @@ public class SSOUser implements Serializable {
 	public void setPreferences(Map<String, String> preferences) {
 		this.preferences = preferences;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

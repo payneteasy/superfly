@@ -9,12 +9,10 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-integration-test</artifactId>
 	<name>Superfly Integration Tests</name>
-	<version>1.0-1-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-service</artifactId>
-			<version>1.0-1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

@@ -65,7 +65,7 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 	
-	    <!-- WICKET -->
+    <!-- WICKET -->
 
     <filter>
         <filter-name>wicket.superfly</filter-name>

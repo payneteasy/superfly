@@ -13,6 +13,12 @@ import org.xml.sax.SAXException;
 
 import com.payneteasy.superfly.api.ActionDescription;
 
+/**
+ * ActionDescriptionCollector implementation which returns a list of actions
+ * defined in an XML file.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class XmlActionDescriptionCollector implements ActionDescriptionCollector {
 	
 	private Resource resource;

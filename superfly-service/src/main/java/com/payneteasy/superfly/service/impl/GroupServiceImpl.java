@@ -20,7 +20,7 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	public List<UIGroupForList> getGroups() {
-		return this.groupDao.getGroups();
+		return this.groupDao.getGroups(0, 10, 1, "asc", null, null);
 	}
 
 	public void createGroup(UIGroup group) {

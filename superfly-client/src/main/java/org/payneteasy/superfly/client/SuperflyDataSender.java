@@ -27,6 +27,7 @@ public class SuperflyDataSender implements InitializingBean {
 	private ActionDescriptionCollector actionDescriptionCollector;
 	private String subsystemIdentifier = null;
 	private long delay = 0;
+	private StringTransformer[] transformers = new StringTransformer[0];
 
 	@Required
 	public void setSsoService(SSOService ssoService) {
@@ -51,6 +52,10 @@ public class SuperflyDataSender implements InitializingBean {
 		this.delay = delay;
 	}
 
+	public void setTransformers(StringTransformer[] transformers) {
+		this.transformers = transformers;
+	}
+
 	public void afterPropertiesSet() throws Exception {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -68,7 +73,17 @@ public class SuperflyDataSender implements InitializingBean {
 
 	protected ActionDescription[] obtainActionDescriptions() throws CollectionException {
 		List<ActionDescription> actions = actionDescriptionCollector.collect();
+		for (ActionDescription action : actions) {
+			action.setName(applyTransformers(action.getName()));
+		}
 		return actions.toArray(new ActionDescription[actions.size()]);
+	}
+
+	protected String applyTransformers(String name) {
+		for (StringTransformer transformer : transformers) {
+			name = transformer.transform(name);
+		}
+		return name;
 	}
 
 }
