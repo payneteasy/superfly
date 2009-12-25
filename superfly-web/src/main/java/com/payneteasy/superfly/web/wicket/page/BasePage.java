@@ -1,13 +1,13 @@
-package com.payneteasy.superfly.web.page;
+package com.payneteasy.superfly.web.wicket.page;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
-import com.payneteasy.superfly.web.page.action.ActionsList;
-import com.payneteasy.superfly.web.page.group.GroupListPage;
-import com.payneteasy.superfly.web.page.subsystem.SubsystemListPage;
+import com.payneteasy.superfly.web.wicket.page.action.ActionsList;
+import com.payneteasy.superfly.web.wicket.page.group.GroupListPage;
+import com.payneteasy.superfly.web.wicket.page.subsystem.SubsystemListPage;
 
 public class BasePage extends WebPage{
 	public BasePage(PageParameters params) {

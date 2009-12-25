@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.component;
+package com.payneteasy.superfly.web.wicket.component;
 
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import com.payneteasy.superfly.model.ui.*;

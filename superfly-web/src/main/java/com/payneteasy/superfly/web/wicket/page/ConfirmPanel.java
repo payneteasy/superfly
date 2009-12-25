@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page;
+package com.payneteasy.superfly.web.wicket.page;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;

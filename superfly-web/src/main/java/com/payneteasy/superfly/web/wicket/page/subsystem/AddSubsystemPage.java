@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page.subsystem;
+package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -8,7 +8,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.payneteasy.superfly.model.ui.UISubsystem;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 public class AddSubsystemPage extends BasePage {
 	@SpringBean

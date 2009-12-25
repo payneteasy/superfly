@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page.group;
+package com.payneteasy.superfly.web.wicket.page.group;
 
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -11,8 +11,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import com.payneteasy.superfly.model.ui.UIGroup;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.component.SubsystemChoiceRenderer;
-import com.payneteasy.superfly.web.page.BasePage;
+import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 public class AddGroupPage extends BasePage {
 	@SpringBean

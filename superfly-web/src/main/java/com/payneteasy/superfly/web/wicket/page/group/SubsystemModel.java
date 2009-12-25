@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page.group;
+package com.payneteasy.superfly.web.wicket.page.group;
 import java.io.Serializable;
 
 import com.payneteasy.superfly.model.ui.UISubsystemForFilter;

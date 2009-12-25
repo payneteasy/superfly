@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page;
+package com.payneteasy.superfly.web.wicket.page;
 
 import java.io.Serializable;
 

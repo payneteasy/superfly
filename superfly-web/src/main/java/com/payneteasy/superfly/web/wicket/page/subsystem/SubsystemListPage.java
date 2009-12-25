@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page.subsystem;
+package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import com.payneteasy.superfly.model.ui.UISubsystemForList;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.page.BasePage;
-import com.payneteasy.superfly.web.page.ConfirmPanel;
-import com.payneteasy.superfly.web.page.EmptyPanel;
-import com.payneteasy.superfly.web.page.SelectObjectWrapper;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.ConfirmPanel;
+import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
+import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
 public class SubsystemListPage extends BasePage {
 	@SpringBean

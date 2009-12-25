@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.page.group;
+package com.payneteasy.superfly.web.wicket.page.group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.payneteasy.superfly.model.ui.UIGroupForList;
 import com.payneteasy.superfly.service.GroupService;
-import com.payneteasy.superfly.web.page.BasePage;
-import com.payneteasy.superfly.web.page.ConfirmPanel;
-import com.payneteasy.superfly.web.page.EmptyPanel;
-import com.payneteasy.superfly.web.page.SelectObjectWrapper;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.ConfirmPanel;
+import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
+import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
 public class GroupListPage extends BasePage {
 	@SpringBean

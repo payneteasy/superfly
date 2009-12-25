@@ -1,9 +1,9 @@
-package com.payneteasy.superfly.web;
+package com.payneteasy.superfly.web.wicket;
 
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
-import com.payneteasy.superfly.web.page.HomePage;
+import com.payneteasy.superfly.web.wicket.page.HomePage;
 
 public class WicketApplication extends WebApplication{
 
@@ -16,7 +16,6 @@ public class WicketApplication extends WebApplication{
 
 	@Override
 	public Class getHomePage() {
-		// TODO Auto-generated method stub
 		return HomePage.class;
 	}
 
