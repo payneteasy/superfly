@@ -35,9 +35,3 @@ create procedure int_link_role_groups(i_role_id int(10), i_groups_list text)
   end
 $$
 delimiter ;
-call save_routine_information('int_link_role_groups',
-                              concat_ws(',',
-                                        'status varchar',
-                                        'error_message varchar'
-                              )
-     );

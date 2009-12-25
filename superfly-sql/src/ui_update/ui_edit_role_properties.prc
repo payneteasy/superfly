@@ -1,12 +1,14 @@
 drop procedure if exists ui_edit_role_properties;
 delimiter $$
 create procedure ui_edit_role_properties(i_role_id int(10),
-                                         i_role_name varchar(32)
+                                         i_role_name varchar(32),
+                                         i_principal_name varchar(32)
 )
  main_sql:
   begin
     update roles
-       set role_name    = i_role_name
+       set role_name        = coalesce(i_role_name, role_name),
+           principal_name   = coalesce(i_principal_name, principal_name)
      where role_id = i_role_id;
 
     commit;

@@ -20,6 +20,46 @@ create table mysql_routines_return_arguments (
 
 \. create/create_collections.prc
 
+\. int/int_users_list.prc
+
+\. int/int_actions_list.prc
+
+\. int/int_link_group_actions.prc
+
+\. int/int_groups_list.prc
+
+\. int/int_unlink_group_actions.prc
+
+\. int/int_link_role_groups.prc
+
+\. int/int_unlink_role_groups.prc
+
+\. int/int_link_role_actions.prc
+
+\. int/int_unlink_role_actions.prc
+
+\. int/int_roles_list.prc
+
+\. int/int_link_user_roles.prc
+
+\. int/int_unlink_user_roles.prc
+
+\. int/int_group_actions_list.prc
+
+\. int/int_group_actions_list_count.prc
+
+\. int/int_role_groups_list.prc
+
+\. int/int_role_groups_list_count.prc
+
+\. int/int_role_actions_list.prc
+
+\. int/int_role_actions_list_count.prc
+
+\. int/int_user_roles_list.prc
+
+\. int/int_user_roles_list_count.prc
+
 \. ui_copy/ui_copy_action_properties.prc
 
 \. ui_filter/ui_filter_subsystems.prc
@@ -34,8 +74,6 @@ create table mysql_routines_return_arguments (
 
 \. ui_create/ui_create_user.prc
 
-\. ui_create/ui_link_user_roles.prc
-
 \. ui_create/ui_clone_user.prc
 
 \. ui_delete/ui_delete_group.prc
@@ -44,23 +82,57 @@ create table mysql_routines_return_arguments (
 
 \. ui_delete/ui_delete_subsystem.prc
 
-\. ui_delete/ui_delete_user_roles.prc
-
 \. save/save_actions.prc
 
 \. ui_get/ui_get_groups_list.prc
 
-\. ui_get/ui_get_mapped_actions_list.prc
+\. ui_get/ui_get_mapped_group_actions_list.prc
 
-\. ui_get/ui_get_unmapped_actions_list.prc
+\. ui_get/ui_get_mapped_group_actions_list_count.prc
 
-\. ui_get/ui_get_mapped_groups_list.prc
+\. ui_get/ui_get_unmapped_group_actions_list.prc
 
-\. ui_get/ui_get_unmapped_groups_list.prc
+\. ui_get/ui_get_unmapped_group_actions_list_count.prc
 
-\. ui_get/ui_get_mapped_roles_list.prc
+\. ui_get/ui_get_all_group_actions_list.prc
 
-\. ui_get/ui_get_unmapped_roles_list.prc
+\. ui_get/ui_get_all_group_actions_list_count.prc
+
+\. ui_get/ui_get_mapped_role_groups_list.prc
+
+\. ui_get/ui_get_mapped_role_groups_list_count.prc
+
+\. ui_get/ui_get_unmapped_role_groups_list.prc
+
+\. ui_get/ui_get_unmapped_role_groups_list_count.prc
+
+\. ui_get/ui_get_all_role_groups_list.prc
+
+\. ui_get/ui_get_all_role_groups_list_count.prc
+
+\. ui_get/ui_get_mapped_role_actions_list.prc
+
+\. ui_get/ui_get_mapped_role_actions_list_count.prc
+
+\. ui_get/ui_get_unmapped_role_actions_list.prc
+
+\. ui_get/ui_get_unmapped_role_actions_list_count.prc
+
+\. ui_get/ui_get_all_role_actions_list.prc
+
+\. ui_get/ui_get_all_role_actions_list_count.prc
+
+\. ui_get/ui_get_mapped_user_roles_list.prc
+
+\. ui_get/ui_get_mapped_user_roles_list_count.prc
+
+\. ui_get/ui_get_unmapped_user_roles_list.prc
+
+\. ui_get/ui_get_unmapped_user_roles_list_count.prc
+
+\. ui_get/ui_get_all_user_roles_list.prc
+
+\. ui_get/ui_get_all_user_roles_list_count.prc
 
 \. ui_get/ui_get_users_list.prc
 
@@ -74,17 +146,9 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_groups_list_count.prc
 
-\. ui_get/ui_get_group_actions_list.prc
-
-\. ui_get/ui_get_group_actions_list_count.prc
-
 \. ui_get/ui_get_roles_list.prc
 
 \. ui_get/ui_get_roles_list_count.prc
-
-\. ui_get/ui_get_role_groups_list.prc
-
-\. ui_get/ui_get_role_groups_list_count.prc
 
 \. ui_update/ui_lock_user.prc
 
@@ -100,22 +164,10 @@ create table mysql_routines_return_arguments (
 
 \. ui_update/ui_change_role_groups.prc
 
+\. ui_update/ui_change_role_actions.prc
+
 \. ui_update/ui_edit_role_properties.prc
 
 \. ui_update/ui_edit_subsystem_properties.prc
 
-\. int/int_users_list.prc
-
-\. int/int_actions_list.prc
-
-\. int/int_link_group_actions.prc
-
-\. int/int_groups_list.prc
-
-\. int/int_unlink_group_actions.prc
-
-\. int/int_link_role_groups.prc
-
-\. int/int_unlink_role_groups.prc
-
-\. int/int_roles_list.prc
+\. ui_update/ui_change_user_roles.prc
