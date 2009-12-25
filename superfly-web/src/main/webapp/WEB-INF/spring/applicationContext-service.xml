@@ -36,4 +36,10 @@
 		class="com.payneteasy.superfly.service.impl.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
 	</bean>
+	
+	<bean id="roleService"
+		class="com.payneteasy.superfly.service.impl.RoleServiceImpl">
+		<property name="roleDao" ref="roleDao" />
+	</bean>
+	
 </beans>

@@ -171,3 +171,5 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_edit_subsystem_properties.prc
 
 \. ui_update/ui_change_user_roles.prc
+
+\. stub/ui_filter_roles.prc

@@ -22,9 +22,15 @@ public class UserDaoTest extends AbstractDaoTest {
 		List<UIUserForList> users;
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
 				"asc", null, null, null);
-		assertNotNull(users);
+		assertNotNull("List cannot be null", users);
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
 				"asc", "someprefix", 1L, 2L);
-		assertNotNull(users);
+		assertNotNull("List cannot be null", users);
+	}
+	
+	public void testGetUsersCount() {
+		int count = userDao.getUsersCount(null, null, null);
+		assertTrue("Must get some users", count > 0);
+		userDao.getUsersCount("someprefix", 1L, 2L);
 	}
 }
