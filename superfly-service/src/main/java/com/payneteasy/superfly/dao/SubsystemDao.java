@@ -3,9 +3,9 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
-import com.payneteasy.superfly.model.ui.UISubsystem;
-import com.payneteasy.superfly.model.ui.UISubsystemForFilter;
-import com.payneteasy.superfly.model.ui.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
 /**
  * DAO to work with subsystems.

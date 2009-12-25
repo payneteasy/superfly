@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
-import com.payneteasy.superfly.model.ui.UISubsystem;
-import com.payneteasy.superfly.model.ui.UISubsystemForFilter;
-import com.payneteasy.superfly.model.ui.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.SubsystemService;
 
 @Transactional

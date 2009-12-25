@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.model.ui;
+package com.payneteasy.superfly.model.ui.group;
 
 import java.io.Serializable;
 

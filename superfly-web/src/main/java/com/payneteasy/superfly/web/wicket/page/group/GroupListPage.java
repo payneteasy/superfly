@@ -13,7 +13,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.payneteasy.superfly.model.ui.UIGroupForList;
+import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.ConfirmPanel;

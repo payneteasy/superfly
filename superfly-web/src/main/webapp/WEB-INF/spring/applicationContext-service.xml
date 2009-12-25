@@ -31,4 +31,9 @@
 		class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
 		<property name="groupDao" ref="groupDao" />
 	</bean>
+	
+	<bean id="userService"
+		class="com.payneteasy.superfly.service.impl.UserServiceImpl">
+		<property name="userDao" ref="userDao" />
+	</bean>
 </beans>

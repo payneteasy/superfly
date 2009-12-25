@@ -2,9 +2,9 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
-import com.payneteasy.superfly.model.ui.UISubsystem;
-import com.payneteasy.superfly.model.ui.UISubsystemForFilter;
-import com.payneteasy.superfly.model.ui.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
 /**
  * Service for subsystems.

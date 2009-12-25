@@ -48,7 +48,7 @@ create procedure ui_get_actions_list(i_start_from int(10),
   end
 $$
 delimiter ;
-call save_routine_information('ui_get_users_list',
+call save_routine_information('ui_get_actions_list',
                               concat_ws(',',
                                         'action_name varchar',
                                         'action_description varchar',

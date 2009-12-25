@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.group;
 import java.io.Serializable;
 
-import com.payneteasy.superfly.model.ui.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 
 public class SubsystemModel implements Serializable{
 	

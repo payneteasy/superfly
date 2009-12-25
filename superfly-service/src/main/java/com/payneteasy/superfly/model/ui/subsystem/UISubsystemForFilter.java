@@ -1,27 +1,28 @@
-package com.payneteasy.superfly.model.ui;
+package com.payneteasy.superfly.model.ui.subsystem;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 
-public class UIGroupForList implements Serializable {
+public class UISubsystemForFilter implements Serializable {
 	private long id;
 	private String name;
-	
-	@Column(name = "grop_id")
+
+	@Column(name = "ssys_id")
 	public long getId() {
 		return id;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
-	@Column(name = "group_name")
+
+	@Column(name = "subsystem_name")
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 }

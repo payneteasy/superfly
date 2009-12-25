@@ -1,21 +1,21 @@
-package com.payneteasy.superfly.model.ui;
+package com.payneteasy.superfly.model.ui.subsystem;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 
-public class UISubsystem implements Serializable {
-	private Long id;
+public class UISubsystemForList implements Serializable {
+	private long id;
 	private String identifier;
 	private String name;
 	private String callbackInformation;
 
 	@Column(name = "ssys_id")
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
