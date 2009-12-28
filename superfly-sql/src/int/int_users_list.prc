@@ -7,7 +7,7 @@ create procedure int_users_list(i_user_name varchar(32),
 )
  main_sql:
   begin
-    declare v_search_conditions   text;
+    declare v_search_conditions   text default '';
 
     if i_user_name is not null then
       set v_search_conditions   =
@@ -19,7 +19,7 @@ create procedure int_users_list(i_user_name varchar(32),
             concat(v_search_conditions,
                    " and exists (select 1 from user_roles where role_role_id = ",
                    i_role_id,
-                   ")"
+                   " and user_user_id = u.user_id)"
             );
     end if;
 

@@ -7,7 +7,7 @@ create procedure int_actions_list(i_action_name varchar(128),
 )
  main_sql:
   begin
-    declare v_search_conditions   text;
+    declare v_search_conditions   text default '';
 
     if i_action_name is not null then
       set v_search_conditions   =

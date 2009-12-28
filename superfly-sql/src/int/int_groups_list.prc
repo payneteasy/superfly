@@ -6,7 +6,7 @@ create procedure int_groups_list(i_group_name varchar(32),
 )
  main_sql:
   begin
-    declare v_search_conditions   text;
+    declare v_search_conditions   text default '';
 
     if i_group_name is not null then
       set v_search_conditions   =
