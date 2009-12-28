@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.service.UserService;
@@ -55,6 +56,16 @@ public class UserServiceImpl implements UserService {
 
 	public void unlockUser(long userId) {
 		userDao.unlockUser(userId);
+	}
+
+	public long cloneUser(long templateUserId, String newUsername,
+			String newPassword) {
+		UICloneUserRequest request = new UICloneUserRequest();
+		request.setTemplateUserId(templateUserId);
+		request.setUsername(newUsername);
+		request.setPassword(newPassword);
+		userDao.cloneUser(request);
+		return request.getId();
 	}
 
 }

@@ -83,4 +83,14 @@ public interface UserService {
 	 * @param userId	ID of the user to unlock
 	 */
 	void unlockUser(long userId);
+
+	/**
+	 * Clones a user.
+	 * 
+	 * @param templateUserId	ID of the user which will be cloned
+	 * @param newUsername		new user's name
+	 * @param newPassword		new user's password
+	 * @return new user ID
+	 */
+	long cloneUser(long templateUserId, String newUsername, String newPassword);
 }

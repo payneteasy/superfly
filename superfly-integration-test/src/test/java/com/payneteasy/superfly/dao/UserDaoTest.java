@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 
@@ -94,5 +95,18 @@ public class UserDaoTest extends AbstractDaoTest {
 		long userId = getAnyUserId();
 		RoutineResult result = userDao.unlockUser(userId);
 		assertRoutineResult(result);
+	}
+	
+	public void testCloneUser() {
+		long userId = getAnyUserId();
+		UICloneUserRequest request = new UICloneUserRequest();
+		request.setUsername("newuser");
+		request.setPassword("newpassword");
+		request.setTemplateUserId(userId);
+		RoutineResult result = userDao.cloneUser(request);
+		assertRoutineResult(result);
+		
+		UIUser newUser = userDao.getUser(request.getId());
+		assertNotNull("User must be cloned", newUser);
 	}
 }

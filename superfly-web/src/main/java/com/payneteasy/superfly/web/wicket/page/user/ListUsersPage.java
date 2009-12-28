@@ -102,10 +102,12 @@ public class ListUsersPage extends BasePage {
 				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
 				
-				PageParameters editParameters = new PageParameters();
-				editParameters.add("userId", String.valueOf(user.getId()));
+				PageParameters editCloneParameters = new PageParameters();
+				editCloneParameters.add("userId", String.valueOf(user.getId()));
 				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
-						EditUserPage.class, editParameters));
+						EditUserPage.class, editCloneParameters));
+				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
+						CloneUserPage.class, editCloneParameters));
 				item.add(new Link<Void>("delete-user") {
 					@Override
 					public void onClick() {

@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 
@@ -113,4 +114,13 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_unlock_user")
 	RoutineResult unlockUser(long userId);
+	
+	/**
+	 * Creates a clone of the given user with new name and password.
+	 *
+	 * @param cloneUserRequest	clone request
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_clone_user")
+	RoutineResult cloneUser(UICloneUserRequest cloneUserRequest);
 }
