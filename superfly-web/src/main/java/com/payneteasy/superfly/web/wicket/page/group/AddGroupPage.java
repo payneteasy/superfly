@@ -9,6 +9,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import com.payneteasy.superfly.model.ui.group.UIGroup;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
@@ -38,9 +39,9 @@ public class AddGroupPage extends BasePage {
 
 		};
 		add(form);
-		form.add(new RequiredTextField<String>("name-group", new PropertyModel(
+		form.add(new RequiredTextField<String>("name-group", new PropertyModel<String>(
 				group, "name")));
-		form.add(new DropDownChoice("uiSubsystemForFilter", subsystemService
+		form.add(new DropDownChoice<UISubsystemForFilter>("uiSubsystemForFilter", subsystemService
 				.getSubsystemsForFilter(), new SubsystemChoiceRenderer())
 				.setNullValid(true));
 		form.add(new Button("cancel") {

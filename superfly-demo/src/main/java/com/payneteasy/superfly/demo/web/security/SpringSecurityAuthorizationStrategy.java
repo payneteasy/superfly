@@ -41,8 +41,8 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
             ret = isComponentAllowed(superPath, securityProperties);
         } else if (component.getClass().isAnnotationPresent(Secured.class)) {
             ret = SecurityUtils.isComponentVisible(component.getClass());
-        } else if (component instanceof BookmarkablePageLink) {
-            BookmarkablePageLink link = (BookmarkablePageLink) component;
+        } else if (component instanceof BookmarkablePageLink<?>) {
+            BookmarkablePageLink<?> link = (BookmarkablePageLink<?>) component;
             ret = SecurityUtils.isComponentVisible(link.getPageClass());
         } else {
             ret = true;

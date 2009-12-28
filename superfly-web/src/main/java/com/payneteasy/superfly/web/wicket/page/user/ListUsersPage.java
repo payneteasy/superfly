@@ -3,10 +3,13 @@ package com.payneteasy.superfly.web.wicket.page.user;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -50,12 +53,16 @@ public class ListUsersPage extends BasePage {
 		add(filtersForm);
 		filtersForm.add(new TextField<String>("username-filter",
 				new PropertyModel<String>(userFilters, "usernamePrefix")));
-		filtersForm.add(new DropDownChoice<UIRoleForFilter>("role-filter",
+		DropDownChoice<UIRoleForFilter> roleDropdown = new DropDownChoice<UIRoleForFilter>("role-filter",
 				new PropertyModel<UIRoleForFilter>(userFilters, "role"),
-				roleService.getRolesForFilter(), new RoleChoiceRenderer()));
-		filtersForm.add(new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
+				roleService.getRolesForFilter(), new RoleChoiceRenderer());
+		roleDropdown.setNullValid(true);
+		filtersForm.add(roleDropdown);
+		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
 				new PropertyModel<UISubsystemForFilter>(userFilters, "subsystem"),
-				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer()));
+				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+		subsystemDropdown.setNullValid(true);
+		filtersForm.add(subsystemDropdown);
 		
 		IDataProvider<UIUserForList> usersDataProvider = new BaseDataProvider<UIUserForList>() {
 			public Iterator<? extends UIUserForList> iterator(int first,
@@ -76,16 +83,30 @@ public class ListUsersPage extends BasePage {
 		DataView<UIUserForList> usersDataView = new PagingDataView<UIUserForList>("usersList", usersDataProvider) {
 			@Override
 			protected void populateItem(Item<UIUserForList> item) {
-				UIUserForList user = item.getModelObject();
+				final UIUserForList user = item.getModelObject();
 				item.add(new Label("user-name", user.getUsername()));
 				item.add(new Label("locked-status", user.isAccountLocked() ? "Yes" : "No"));
-				item.add(new Label("logins-failed", String.valueOf(user.getUsername())));
+				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
+				
+				PageParameters editParameters = new PageParameters();
+				editParameters.add("userId", String.valueOf(user.getId()));
+				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
+						EditUserPage.class, editParameters));
+				item.add(new Link<Void>("delete-user") {
+					@Override
+					public void onClick() {
+						userService.deleteUser(user.getId());
+						info("User deleted: " + user.getUsername());
+					}
+				});
 			}
 		};
 		add(usersDataView);
 		
 		add(new PagingNavigator("paging-navigator", usersDataView));
+		
+		add(new BookmarkablePageLink<AddUserPage>("add-user", AddUserPage.class));
 	}
 
 	@SuppressWarnings("unused")

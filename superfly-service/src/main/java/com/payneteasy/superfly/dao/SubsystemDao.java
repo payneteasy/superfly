@@ -3,6 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -26,17 +27,19 @@ public interface SubsystemDao {
 	 * Creates a subsystem.
 	 * 
 	 * @param subsystem	subsystem to create
+	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_create_subsystem")
-	void createSubsystem(UISubsystem subsystem);
+	RoutineResult createSubsystem(UISubsystem subsystem);
 	
 	/**
 	 * Deletes a subsystem.
 	 * 
 	 * @param subsystemId	ID of a subsystem to delete
+	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_delete_subsystem")
-	void deleteSubsystem(long subsystemId);
+	RoutineResult deleteSubsystem(long subsystemId);
 	
 	/**
 	 * Returns a list of all subsystems for a subsystem-based filter.

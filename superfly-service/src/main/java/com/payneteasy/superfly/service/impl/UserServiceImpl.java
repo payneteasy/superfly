@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.service.UserService;
 
@@ -30,6 +31,22 @@ public class UserServiceImpl implements UserService {
 
 	public int getUsersCount(String userNamePrefix, Long roleId, Long complectId) {
 		return userDao.getUsersCount(userNamePrefix, roleId, complectId);
+	}
+
+	public void createUser(UIUser user) {
+		userDao.createUser(user);
+	}
+
+	public UIUser getUser(long userId) {
+		return userDao.getUser(userId);
+	}
+
+	public void updateUser(UIUser user) {
+		userDao.updateUser(user);
+	}
+	
+	public void deleteUser(long userId) {
+		userDao.deleteUser(userId);
 	}
 
 }

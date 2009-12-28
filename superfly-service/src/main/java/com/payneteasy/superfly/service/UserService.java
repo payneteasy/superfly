@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 
 /**
@@ -39,4 +40,33 @@ public interface UserService {
 	 * @return users count
 	 */
 	int getUsersCount(String userNamePrefix, Long roleId, Long complectId);
+	
+	/**
+	 * Returns a user for editing.
+	 * 
+	 * @param userId	ID of the user to return
+	 * @return user of null if not found
+	 */
+	UIUser getUser(long userId);
+	
+	/**
+	 * Creates a user.
+	 * 
+	 * @param user	user to create
+	 */
+	void createUser(UIUser user);
+
+	/**
+	 * Updates a user.
+	 * 
+	 * @param user	user to update (username is not changed)
+	 */
+	void updateUser(UIUser user);
+
+	/**
+	 * Deleletes a user.
+	 * 
+	 * @param userId	ID of the user to delete
+	 */
+	void deleteUser(long userId);
 }

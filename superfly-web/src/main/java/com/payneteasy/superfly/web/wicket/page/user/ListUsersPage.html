@@ -7,7 +7,8 @@
 </head>
 <body>
 <wicket:extend>
-	<div style="">
+	<button wicket:id="add-user">Add</button>
+	<div class="filters">
 		<form wicket:id="filters-form">
 			<span>Username prefix: <input wicket:id="username-filter"/></span>
 			<span>Role:
@@ -28,26 +29,35 @@
 		</form>
 	</div>
 	<table class="data">
-		<tr>
-			<th>Username</th>
-			<th>Locked</th>
-			<th>Logins failed</th>
-			<th>Last login date</th>
-		</tr>
-		<tr wicket:id="usersList">
-			<td>
-				<span wicket:id="user-name">bond</span>
-			</td>
-			<td>
-				<span wicket:id="locked-status">Yes</span>
-			</td>
-			<td>
-				<span wicket:id="logins-failed">777</span>
-			</td>
-			<td>
-				<span wicket:id="last-login-date">2008-01-01 03:33:44</span>
-			</td>
-		</tr>
+		<thead>
+			<tr>
+				<th>Username</th>
+				<th>Locked</th>
+				<th>Logins failed</th>
+				<th>Last login date</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="usersList">
+				<td>
+					<span wicket:id="user-name">bond</span>
+				</td>
+				<td>
+					<span wicket:id="locked-status">Yes</span>
+				</td>
+				<td>
+					<span wicket:id="logins-failed">777</span>
+				</td>
+				<td>
+					<span wicket:id="last-login-date">2008-01-01 03:33:44</span>
+				</td>
+				<td>
+					<a href="#" wicket:id="edit-user">Edit</a>
+					<a href="#" wicket:id="delete-user">Delete</a>
+				</td>
+			</tr>
+		</tbody>
 	</table>
 	<div wicket:id="paging-navigator">
 	</div>

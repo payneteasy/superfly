@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.demo.web.wicket;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
@@ -17,7 +18,7 @@ public class DemoApplication extends WebApplication{
 	}
 
 	@Override
-	public Class getHomePage() {
+	public Class<? extends Page> getHomePage() {
 		return HomePage.class;
 	}
 

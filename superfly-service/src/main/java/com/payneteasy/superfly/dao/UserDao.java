@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 
 /**
@@ -57,4 +59,40 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_get_users_list_count")
 	int getUsersCount(String userNamePrefix, Long roleId, Long complectId);
+	
+	/**
+	 * Returns a user for editing.
+	 * 
+	 * @param userId	ID of the user to return
+	 * @return user of null if not found
+	 */
+	@AStoredProcedure(name = "ui_get_user")
+	UIUser getUser(long userId);
+
+	/**
+	 * Creates a user.
+	 * 
+	 * @param user	user to create
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_create_user")
+	RoutineResult createUser(UIUser user);
+
+	/**
+	 * Updates a user.
+	 * 
+	 * @param user	user to update (username is not changed)
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_update_user")
+	RoutineResult updateUser(UIUser user);
+
+	/**
+	 * Deletes a user.
+	 * 
+	 * @param userId	ID of the user to delete
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_delete_user")
+	RoutineResult deleteUser(long userId);
 }
