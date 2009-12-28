@@ -21,7 +21,7 @@ public class AddSubsystemPage extends BasePage {
 		@Override
 		protected void onSubmit() {
 			subsystemService.createSubsystem(subsystem);
-			setResponsePage(SubsystemListPage.class);
+			setResponsePage(ListSubsystemPage.class);
 		}
     	  
       };
@@ -32,7 +32,7 @@ public class AddSubsystemPage extends BasePage {
 
 		@Override
 		public void onSubmit() {
-			setResponsePage(SubsystemListPage.class);
+			setResponsePage(ListSubsystemPage.class);
 		}
     	  
       }.setDefaultFormProcessing(false));

@@ -21,12 +21,12 @@ import com.payneteasy.superfly.web.wicket.page.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
-public class SubsystemListPage extends BasePage {
+public class ListSubsystemPage extends BasePage {
 	@SpringBean
 	private SubsystemService subsystemService;
 
 	@SuppressWarnings("unchecked")
-	public SubsystemListPage() {
+	public ListSubsystemPage() {
 		add(new EmptyPanel("confirmPanel"));
 
 		List<UISubsystemForList> subsystems = subsystemService.getSubsystems();
@@ -78,7 +78,7 @@ public class SubsystemListPage extends BasePage {
 									subsystemService.deleteSubsystem(ui
 											.getObject().getId());
 								this.getParent().setResponsePage(
-										SubsystemListPage.class);
+										ListSubsystemPage.class);
 							}
 
 							public void onCancel() {

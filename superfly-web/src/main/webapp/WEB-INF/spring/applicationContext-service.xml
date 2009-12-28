@@ -42,4 +42,9 @@
 		<property name="roleDao" ref="roleDao" />
 	</bean>
 	
+	<bean id="actionService"
+		class="com.payneteasy.superfly.service.impl.ActionServiceImpl">
+		<property name="actionDao" ref="actionDao" />
+	</bean>
+	
 </beans>

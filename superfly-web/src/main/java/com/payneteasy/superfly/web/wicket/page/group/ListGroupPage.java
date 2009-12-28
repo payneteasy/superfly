@@ -20,12 +20,12 @@ import com.payneteasy.superfly.web.wicket.page.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
-public class GroupListPage extends BasePage {
+public class ListGroupPage extends BasePage {
 	@SpringBean
 	private GroupService groupService;
 
 	@SuppressWarnings("unchecked")
-	public GroupListPage() {
+	public ListGroupPage() {
 		add(new EmptyPanel("confirmPanel"));
 
 		List<UIGroupForList> groups = groupService.getGroups();
@@ -72,7 +72,7 @@ public class GroupListPage extends BasePage {
 									groupService.deleteGorup(ui.getObject()
 											.getId());
 								this.getParent().setResponsePage(
-										GroupListPage.class);
+										ListGroupPage.class);
 							}
 
 							public void onCancel() {

@@ -34,7 +34,7 @@ public class AddGroupPage extends BasePage {
 			protected void onSubmit() {
 				group.setSubsystemId(subsystemModel.getUiSubsystemForFilter().getId());
 				groupService.createGroup(group);
-				setResponsePage(GroupListPage.class);
+				setResponsePage(ListGroupPage.class);
 			}
 
 		};
@@ -48,7 +48,7 @@ public class AddGroupPage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				setResponsePage(GroupListPage.class);
+				setResponsePage(ListGroupPage.class);
 			}
 
 		}.setDefaultFormProcessing(false));
