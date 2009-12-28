@@ -49,4 +49,12 @@ public class UserServiceImpl implements UserService {
 		userDao.deleteUser(userId);
 	}
 
+	public void lockUser(long userId) {
+		userDao.lockUser(userId);
+	}
+
+	public void unlockUser(long userId) {
+		userDao.unlockUser(userId);
+	}
+
 }

@@ -85,7 +85,20 @@ public class ListUsersPage extends BasePage {
 			protected void populateItem(Item<UIUserForList> item) {
 				final UIUserForList user = item.getModelObject();
 				item.add(new Label("user-name", user.getUsername()));
-				item.add(new Label("locked-status", user.isAccountLocked() ? "Yes" : "No"));
+				Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
+					@Override
+					public void onClick() {
+						if (user.isAccountLocked()) {
+							userService.unlockUser(user.getId());
+							info("User unlocked: " + user.getUsername());
+						} else {
+							userService.lockUser(user.getId());
+							info("User locked: " + user.getUsername());
+						}
+					}
+				};
+				switchLockedStatusLink.add(new Label("locked-status", user.isAccountLocked() ? "Yes" : "No"));
+				item.add(switchLockedStatusLink);
 				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
 				

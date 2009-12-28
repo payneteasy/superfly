@@ -69,4 +69,18 @@ public interface UserService {
 	 * @param userId	ID of the user to delete
 	 */
 	void deleteUser(long userId);
+
+	/**
+	 * Locks a user.
+	 * 
+	 * @param userId	ID of the user to lock
+	 */
+	void lockUser(long userId);
+	
+	/**
+	 * Unlocks a user.
+	 * 
+	 * @param userId	ID of the user to unlock
+	 */
+	void unlockUser(long userId);
 }

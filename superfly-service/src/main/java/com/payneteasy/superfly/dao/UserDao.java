@@ -95,4 +95,22 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_delete_user")
 	RoutineResult deleteUser(long userId);
+
+	/**
+	 * Locks a user.
+	 * 
+	 * @param userId	ID of the user to lock
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_lock_user")
+	RoutineResult lockUser(long userId);
+	
+	/**
+	 * Unlocks a user.
+	 * 
+	 * @param userId	ID of the user to unlock
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_unlock_user")
+	RoutineResult unlockUser(long userId);
 }

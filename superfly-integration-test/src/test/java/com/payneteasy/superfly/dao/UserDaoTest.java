@@ -83,4 +83,16 @@ public class UserDaoTest extends AbstractDaoTest {
 		// TODO: uncomment the assertion when user deletion is implemented
 //		assertNull("User must not be found as it has been deleted", user);
 	}
+	
+	public void testLockUser() {
+		long userId = getAnyUserId();
+		RoutineResult result = userDao.lockUser(userId);
+		assertRoutineResult(result);
+	}
+	
+	public void testUnlockUser() {
+		long userId = getAnyUserId();
+		RoutineResult result = userDao.unlockUser(userId);
+		assertRoutineResult(result);
+	}
 }
