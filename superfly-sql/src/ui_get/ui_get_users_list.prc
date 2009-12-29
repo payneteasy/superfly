@@ -6,14 +6,20 @@ create procedure ui_get_users_list(i_start_from int(10),
                                    i_order_type varchar(4),
                                    i_user_name varchar(32),
                                    i_role_id int(10),
-                                   i_comp_id int(10)
+                                   i_comp_id int(10),
+                                   i_ssys_id int(10)
 )
  main_sql:
   begin
     declare v_sql_core            text;
     declare v_search_conditions   text;
 
-    call int_users_list(i_user_name, i_role_id, i_comp_id, v_search_conditions);
+    call int_users_list(i_user_name,
+                        i_role_id,
+                        i_comp_id,
+                        i_ssys_id,
+                        v_search_conditions
+         );
 
     set v_sql_core   =
           concat('select u.user_id, ',

@@ -3,6 +3,7 @@ delimiter $$
 create procedure int_users_list(i_user_name varchar(32),
                                 i_role_id int(10),
                                 i_comp_id int(10),
+                                i_ssys_id int(10),
                                 out o_search_conditions text
 )
  main_sql:
@@ -38,6 +39,18 @@ create procedure int_users_list(i_user_name varchar(32),
                    "                        ) ",
                    "                    and uc.comp_comp_id = c.comp_id ",
                    "                    and uc.user_user_id = u.user_id)"
+            );
+    end if;
+
+    if i_ssys_id is not null then
+      set v_search_conditions   =
+            concat(v_search_conditions,
+                   " and exists (select 1 ",
+                   "               from user_roles ur, roles r ",
+                   "              where     ur.role_role_id = r.role_id ",
+                   "                    and r.ssys_ssys_id = ",
+                   i_ssys_id,
+                   "                    and ur.user_user_id = u.user_id)"
             );
     end if;
 

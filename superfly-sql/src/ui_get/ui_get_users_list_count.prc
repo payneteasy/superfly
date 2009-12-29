@@ -2,14 +2,20 @@ drop procedure if exists ui_get_users_list_count;
 delimiter $$
 create procedure ui_get_users_list_count(i_user_name varchar(32),
                                          i_role_id int(10),
-                                         i_comp_id int(10)
+                                         i_comp_id int(10),
+                                         i_ssys_id int(10)
 )
  main_sql:
   begin
     declare v_sql_core            text;
     declare v_search_conditions   text;
 
-    call int_users_list(i_user_name, i_role_id, i_comp_id, v_search_conditions);
+    call int_users_list(i_user_name,
+                        i_role_id,
+                        i_comp_id,
+                        i_ssys_id,
+                        v_search_conditions
+         );
 
     set v_sql_core   =
           concat('select count(1) records_count ',
