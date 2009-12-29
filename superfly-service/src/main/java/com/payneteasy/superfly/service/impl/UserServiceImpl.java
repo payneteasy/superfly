@@ -24,15 +24,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
-			Long complectId, int startFrom, int recordsCount,
+			Long complectId, Long subsystemId, int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc) {
 		return userDao.getUsers(startFrom, recordsCount, orderFieldNumber,
 				asc ? DaoConstants.ASC : DaoConstants.DESC, userNamePrefix,
-				roleId, complectId);
+				roleId, complectId, subsystemId);
 	}
 
-	public int getUsersCount(String userNamePrefix, Long roleId, Long complectId) {
-		return userDao.getUsersCount(userNamePrefix, roleId, complectId);
+	public int getUsersCount(String userNamePrefix, Long roleId,
+			Long complectId, Long subsystemId) {
+		return userDao.getUsersCount(userNamePrefix, roleId, complectId,
+				subsystemId);
 	}
 
 	public void createUser(UIUser user) {

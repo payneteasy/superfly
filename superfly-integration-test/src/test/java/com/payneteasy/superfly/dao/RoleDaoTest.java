@@ -33,7 +33,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 	
 	private long getAnyUserId() {
 		List<UIUserForList> users = userDao.getUsers(0, 1, 1, "asc", null, null,
-				null);
+				null, null);
 		UIUserForList userForList = users.get(0);
 		long userId = userForList.getId();
 		return userId;

@@ -41,12 +41,15 @@ public interface UserDao {
 	 * 							if null)
 	 * @param complectId		ID of the complect which users must have
 	 * 							(ignored if null)
+	 * @param subsystemId		ID of the subsystem to which user has access
+	 * 							(ignored if null)
 	 * @return users
 	 */
 	@AStoredProcedure(name = "ui_get_users_list")
 	List<UIUserForList> getUsers(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType,
-			String userNamePrefix, Long roleId, Long complectId);
+			String userNamePrefix, Long roleId, Long complectId,
+			Long subsystemId);
 
 	/**
 	 * Returns total count of users satisfy to the given conditions.
@@ -56,10 +59,13 @@ public interface UserDao {
 	 * 							if null)
 	 * @param complectId		ID of the complect which users must have
 	 * 							(ignored if null)
+	 * @param subsystemId		ID of the subsystem to which user has access
+	 * 							(ignored if null)
 	 * @return users count
 	 */
 	@AStoredProcedure(name = "ui_get_users_list_count")
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId);
+	int getUsersCount(String userNamePrefix, Long roleId, Long complectId,
+			Long subsystemId);
 	
 	/**
 	 * Returns a user for editing.

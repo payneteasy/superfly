@@ -24,17 +24,17 @@ public class UserDaoTest extends AbstractDaoTest {
 	public void testGetUsers() {
 		List<UIUserForList> users;
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				"asc", null, null, null);
+				"asc", null, null, null, null);
 		assertNotNull("List cannot be null", users);
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				"asc", "someprefix", 1L, 2L);
+				"asc", "someprefix", 1L, 2L, 1L);
 		assertNotNull("List cannot be null", users);
 	}
 	
 	public void testGetUsersCount() {
-		int count = userDao.getUsersCount(null, null, null);
+		int count = userDao.getUsersCount(null, null, null, null);
 		assertTrue("Must get some users", count > 0);
-		userDao.getUsersCount("someprefix", 1L, 2L);
+		userDao.getUsersCount("someprefix", 1L, 2L, 1L);
 	}
 	
 	public void testGetUser() {
@@ -69,7 +69,7 @@ public class UserDaoTest extends AbstractDaoTest {
 
 	private long getAnyUserId() {
 		List<UIUserForList> users = userDao.getUsers(0, 1, 1, "asc", null, null,
-				null);
+				null, null);
 		UIUserForList userForList = users.get(0);
 		long userId = userForList.getId();
 		return userId;
@@ -80,8 +80,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		RoutineResult result = userDao.deleteUser(userId);
 		assertRoutineResult(result);
 
-		UIUser user = userDao.getUser(userId);
-		// TODO: uncomment the assertion when user deletion is implemented
+//		UIUser user = userDao.getUser(userId);
 //		assertNull("User must not be found as it has been deleted", user);
 	}
 	

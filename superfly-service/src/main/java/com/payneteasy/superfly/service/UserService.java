@@ -19,6 +19,8 @@ public interface UserService {
 	 * 							if null)
 	 * @param complectId		ID of the complect which users must have
 	 * 							(ignored if null)
+	 * @param subsystemId		ID of the subsystem to which user has access
+	 * 							(ignored if null)
 	 * @param startFrom			user offset
 	 * @param recordsCount		user limit
 	 * @param orderFieldNumber	number of the field to order by
@@ -26,7 +28,7 @@ public interface UserService {
 	 * @return users
 	 */
 	List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
-			Long complectId, int startFrom,
+			Long complectId, Long subsystemId, int startFrom,
 			int recordsCount, int orderFieldNumber, boolean asc);
 
 	/**
@@ -37,9 +39,12 @@ public interface UserService {
 	 * 							if null)
 	 * @param complectId		ID of the complect which users must have
 	 * 							(ignored if null)
+	 * @param subsystemId		ID of the subsystem to which user has access
+	 * 							(ignored if null)
 	 * @return users count
 	 */
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId);
+	int getUsersCount(String userNamePrefix, Long roleId, Long complectId,
+			Long subsystemId);
 	
 	/**
 	 * Returns a user for editing.

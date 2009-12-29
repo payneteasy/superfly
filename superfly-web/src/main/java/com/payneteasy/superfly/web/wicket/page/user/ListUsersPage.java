@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -13,11 +15,9 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -29,7 +29,7 @@ import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.label.DateLabels;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
+import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
 /**
  * Displays a list of users.
@@ -64,19 +64,25 @@ public class ListUsersPage extends BasePage {
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
 		
-		IDataProvider<UIUserForList> usersDataProvider = new BaseDataProvider<UIUserForList>() {
+		String[] fieldNames = {"userId", "username", "password", "locked",
+				"loginsFailed", "lastLoginDate"};
+		SortableDataProvider<UIUserForList> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
 			public Iterator<? extends UIUserForList> iterator(int first,
 					int count) {
 				UIRoleForFilter role = userFilters.getRole();
+				UISubsystemForFilter subsystem = userFilters.getSubsystem();
 				return userService.getUsers(userFilters.getUsernamePrefix(),
-						role == null ? null : role.getId(), null, first, count,
-						DaoConstants.DEFAULT_SORT_FIELD_NUMBER, true).iterator();
+						role == null ? null : role.getId(), null,
+						subsystem == null ? null : subsystem.getId(),
+						first, count, getSortFieldIndex(), isAscending()).iterator();
 			}
 
 			public int size() {
 				UIRoleForFilter role = userFilters.getRole();
+				UISubsystemForFilter subsystem = userFilters.getSubsystem();
 				return userService.getUsersCount(userFilters.getUsernamePrefix(),
-						role == null ? null : role.getId(), null);
+						role == null ? null : role.getId(), null,
+						subsystem == null ? null : subsystem.getId());
 			}
 
 		};
@@ -120,6 +126,11 @@ public class ListUsersPage extends BasePage {
 			}
 		};
 		add(usersDataView);
+		
+		add(new OrderByLink("order-by-username", "username", usersDataProvider));
+		add(new OrderByLink("order-by-locked", "locked", usersDataProvider));
+		add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
+		add(new OrderByLink("order-by-last-login-date", "lastLoginDate", usersDataProvider));
 		
 		add(new PagingNavigator("paging-navigator", usersDataView));
 		
