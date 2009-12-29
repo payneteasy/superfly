@@ -11,7 +11,7 @@ create procedure int_user_roles_list(i_start_from int(10),
   begin
     declare v_sql_core   text;
     set v_sql_core   =
-          concat('select u.user_id, u.user_name, ss.subsystem_name, r.role_id, r.role_name ',
+          concat('select u.user_id, u.user_name, ss.subsystem_name, r.role_id, r.role_name, if(ur.urol_id is null, "U", "M") mapping_status ',
                  '  from       users u ',
                  '           join ',
                  '             roles r ',

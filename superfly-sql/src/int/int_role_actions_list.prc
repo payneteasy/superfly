@@ -16,6 +16,7 @@ create procedure int_role_actions_list(i_start_from int(10),
                  '       ss.subsystem_name, ',
                  '       a.actn_id, ',
                  '       a.action_name, ',
+                 '       if(ra.ract_id is null, "U", "M") mapping_status, ',
                  '       concat("Already granted thru groups: ", group_concat(v.group_name)) ',
                  '         granted_group_name ',
                  '  from         roles r ',
@@ -46,7 +47,7 @@ create procedure int_role_actions_list(i_start_from int(10),
                  '       and(   (? = "M" and ra.ract_id is not null) ',
                  '           or(? = "U" and ra.ract_id is null) ',
                  '           or coalesce(?, "A") = "A") ',
-                 'group by r.role_id, r.role_name, ss.subsystem_name, a.actn_id, a.action_name'
+                 'group by r.role_id, r.role_name, ss.subsystem_name, a.actn_id, a.action_name, if(ra.ract_id is null, "U", "M")'
           );
 
     set @v_ddl_statement   =

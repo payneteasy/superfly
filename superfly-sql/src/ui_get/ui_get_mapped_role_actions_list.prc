@@ -25,6 +25,7 @@ call save_routine_information('ui_get_mapped_role_actions_list',
                                         'subsystem_name varchar',
                                         'actn_id int',
                                         'action_name varchar',
+                                        'mapping_status varchar',
                                         'granted_group_name varchar'
                               )
      );

@@ -24,6 +24,7 @@ call save_routine_information('ui_get_all_user_roles_list',
                                         'user_name varchar',
                                         'subsystem_name varchar',
                                         'role_id int',
-                                        'role_name varchar'
+                                        'role_name varchar',
+                                        'mapping_status varchar'
                               )
      );

@@ -11,7 +11,7 @@ create procedure int_group_actions_list(i_start_from int(10),
   begin
     declare v_sql_core   text;
     set v_sql_core   =
-          concat('select g.grop_id, g.group_name, ss.subsystem_name, a.actn_id, a.action_name ',
+          concat('select g.grop_id, g.group_name, ss.subsystem_name, a.actn_id, a.action_name, if(ga.gpac_id is null, "U", "M") mapping_status ',
                  '  from         groups g ',
                  '             join ',
                  '               subsystems ss ',

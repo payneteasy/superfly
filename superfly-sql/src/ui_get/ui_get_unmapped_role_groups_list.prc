@@ -24,6 +24,7 @@ call save_routine_information('ui_get_unmapped_role_groups_list',
                                         'role_name varchar',
                                         'subsystem_name varchar',
                                         'grop_id int',
-                                        'group_name varchar'
+                                        'group_name varchar',
+                                        'mapping_status varchar'
                               )
      );

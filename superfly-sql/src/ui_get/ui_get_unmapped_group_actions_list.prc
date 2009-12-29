@@ -24,6 +24,7 @@ call save_routine_information('ui_get_unmapped_group_actions_list',
                                         'group_name varchar',
                                         'subsystem_name varchar',
                                         'actn_id int',
-                                        'action_name varchar'
+                                        'action_name varchar',
+                                        'mapping_status varchar'
                               )
      );
