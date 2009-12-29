@@ -93,4 +93,15 @@ public interface UserService {
 	 * @return new user ID
 	 */
 	long cloneUser(long templateUserId, String newUsername, String newPassword);
+	
+	/**
+	 * Changes a list of roles assigned to a user.
+	 * 
+	 * @param userId			ID of the user to change
+	 * @param rolesToAddIds		list of IDs of roles to be added
+	 * @param rolesToRemoveIds	list of IDs of roles to be removed
+	 * @return routine result
+	 */
+	void changeUserRoles(long userId, List<Long> rolesToAddIds,
+			List<Long> rolesToRemoveIds);
 }

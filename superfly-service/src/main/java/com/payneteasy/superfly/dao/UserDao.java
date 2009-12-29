@@ -123,4 +123,17 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_clone_user")
 	RoutineResult cloneUser(UICloneUserRequest cloneUserRequest);
+
+	/**
+	 * Changes a list of roles assigned to a user.
+	 * 
+	 * @param userId			ID of the user to change
+	 * @param rolesToAddIds		comma-separated list of IDs of roles to be added
+	 * @param rolesToRemoveIds	comma-separated list of IDs of roles to be
+	 * 							removed
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_change_user_roles")
+	RoutineResult changeUserRoles(long userId, String rolesToAddIds,
+			String rolesToRemoveIds);
 }

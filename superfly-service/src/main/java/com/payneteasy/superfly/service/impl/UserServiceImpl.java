@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
@@ -66,6 +67,13 @@ public class UserServiceImpl implements UserService {
 		request.setPassword(newPassword);
 		userDao.cloneUser(request);
 		return request.getId();
+	}
+
+	public void changeUserRoles(long userId, List<Long> rolesToAddIds,
+			List<Long> rolesToRemoveIds) {
+		userDao.changeUserRoles(userId,
+				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
+				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds));
 	}
 
 }

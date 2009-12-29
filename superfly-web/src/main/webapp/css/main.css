@@ -180,3 +180,8 @@ div.release-date {
 	position: static;
 	color: #3366CC;
 }
+
+.filters {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}

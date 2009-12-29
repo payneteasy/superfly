@@ -109,4 +109,11 @@ public class UserDaoTest extends AbstractDaoTest {
 		UIUser newUser = userDao.getUser(request.getId());
 		assertNotNull("User must be cloned", newUser);
 	}
+	
+	public void testChangeUserRoles() {
+		long userId = getAnyUserId();
+		userDao.changeUserRoles(userId, "1,2,3", "4,5,6");
+		userDao.changeUserRoles(userId, null, "");
+		userDao.changeUserRoles(userId, "", null);
+	}
 }

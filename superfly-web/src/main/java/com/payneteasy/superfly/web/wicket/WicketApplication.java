@@ -9,6 +9,7 @@ import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.user.AddUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
@@ -29,6 +30,7 @@ public class WicketApplication extends WebApplication{
         mountBookmarkablePage("/users/create", AddUserPage.class);
         mountBookmarkablePage("/users/update", EditUserPage.class);
         mountBookmarkablePage("/users/clone", CloneUserPage.class);
+        mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
 	}
 
 	@Override
