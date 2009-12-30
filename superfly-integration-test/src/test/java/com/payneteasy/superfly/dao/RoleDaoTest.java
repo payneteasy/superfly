@@ -24,7 +24,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 	}
 	
 	public void testGetAllUserRoles() {
-		roleDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId());
+		roleDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId());
 	}
 	
 	public void testGetMappedUserRoles() {

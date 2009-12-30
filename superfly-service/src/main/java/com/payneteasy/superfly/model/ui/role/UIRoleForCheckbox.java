@@ -13,6 +13,7 @@ public class UIRoleForCheckbox implements Serializable {
 	private long id;
 	private String subsystemName;
 	private String roleName;
+	private String mappingStatus;
 	private boolean mapped;
 
 	@Column(name = "role_id")
@@ -40,6 +41,16 @@ public class UIRoleForCheckbox implements Serializable {
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
+	}
+
+	@Column(name = "mapping_status")
+	public String getMappingStatus() {
+		return mappingStatus;
+	}
+
+	public void setMappingStatus(String mappingStatus) {
+		this.mappingStatus = mappingStatus;
+		mapped = "M".equalsIgnoreCase(mappingStatus);
 	}
 
 	public boolean isMapped() {

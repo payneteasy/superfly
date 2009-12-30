@@ -26,17 +26,8 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId) {
-		// TODO: implement using a single DAO call when procedure is able to
-		// return 'mapped' status
 		List<UIRoleForCheckbox> allRoles = roleDao.getAllUserRoles(0,
 				Integer.MAX_VALUE, 4 /*role_id*/, DaoConstants.ASC, userId);
-		List<UIRoleForCheckbox> mappedRoles = roleDao.getMappedUserRoles(0,
-				Integer.MAX_VALUE, 4 /*role_id*/, DaoConstants.ASC, userId);
-		for (UIRoleForCheckbox mappedRole : mappedRoles) {
-			int index = allRoles.indexOf(mappedRole);
-			UIRoleForCheckbox role = allRoles.get(index);
-			role.setMapped(true);
-		}
 		return allRoles;
 	}
 
