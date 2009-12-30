@@ -116,13 +116,13 @@ public class ListUsersPage extends BasePage {
 						ChangeUserRolesPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
-				item.add(new Link<Void>("delete-user") {
-					@Override
-					public void onClick() {
-						userService.deleteUser(user.getId());
-						info("User deleted: " + user.getUsername());
-					}
-				});
+//				item.add(new Link<Void>("delete-user") {
+//					@Override
+//					public void onClick() {
+//						userService.deleteUser(user.getId());
+//						info("User deleted: " + user.getUsername());
+//					}
+//				});
 			}
 		};
 		add(usersDataView);
