@@ -8,10 +8,14 @@
 <body>
 <wicket:extend>
 	<h1>Actions</h1>
+	<div class="filters">
 	<form wicket:id="form">
-	  Subsystem:<select wicket:id="subsystem-filter"></select><p><input type="submit" value="Filter" /></p>
-	</form>
-	
+	  Subsystem:<select wicket:id="subsystem-filter"></select><input type="submit" value="Filter" />
+	  </form>
+	  </div>
+	  <form wicket:id="formList">
+	  <p>
+	<input type="submit" value="LogLevel"></p>
 	<table class="data">
 		<thead>
 			<tr>
@@ -19,6 +23,7 @@
 				<th>Description</th>
 				<th>Subsystem</th>
 				<th>Action Log</th>
+				<th><input type="checkbox" wicket:id="groupselector">Select</input></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -26,10 +31,13 @@
 				<td><span wicket:id="name-action">[Name]</span></td>
 				<td><span wicket:id="description-action">[Name]</span></td>
 				<td><span wicket:id="subsystem-name">[Name]</span></td>
-				<td><span wicket:id="log-action">[Name]</span></td>
+				<td><a href="#" wicket:id="switch-loglevel"><span wicket:id="log-action">Yes</span></a></td>
+                <td><input type="checkbox" wicket:id="selected" /></td>
 			</tr>
 		</tbody>
 	</table>
+	
+	</form>
 </wicket:extend>
 </body>
 </html>

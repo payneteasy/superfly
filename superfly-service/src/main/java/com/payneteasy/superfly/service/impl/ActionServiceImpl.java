@@ -19,10 +19,18 @@ public class ActionServiceImpl implements ActionService {
 	}
 
 	public List<UIActionForList> getAction(List<Long> subsystemIds) {
-		
+
 		return this.actionDao.getActions(0, 10,
-				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-				null, null, StringUtils.collectionToCommaDelimitedString(subsystemIds));
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC, null,
+				null, StringUtils
+						.collectionToCommaDelimitedString(subsystemIds));
+	}
+
+	public void changeActionsLogLevel(List<Long> actnListLogOn,
+			List<Long> actnListLogOff) {
+		this.actionDao.changeActionsLogLevel(StringUtils
+				.collectionToCommaDelimitedString(actnListLogOn), StringUtils
+				.collectionToCommaDelimitedString(actnListLogOff));
 	}
 
 }

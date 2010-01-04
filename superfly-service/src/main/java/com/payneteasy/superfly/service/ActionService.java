@@ -5,6 +5,7 @@ import java.util.List;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 
 public interface ActionService {
-   List<UIActionForList> getAction(List<Long> subsystemIds);
-}
+	List<UIActionForList> getAction(List<Long> subsystemIds);
 
+	void changeActionsLogLevel(List<Long> actnListLogOn, List<Long> actnListLogOff);
+}
