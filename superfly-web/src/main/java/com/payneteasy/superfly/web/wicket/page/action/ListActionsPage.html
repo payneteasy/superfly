@@ -3,16 +3,21 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
-<title>Superfly Groups</title>
+<title>Superfly Action</title>
 </head>
 <body>
 <wicket:extend>
-<h1>Actions</h1>
+	<h1>Actions</h1>
+	<form wicket:id="form">
+	  Subsystem:<select wicket:id="subsystem-filter"></select><p><input type="submit" value="Filter" /></p>
+	</form>
+	
 	<table class="data">
 		<thead>
 			<tr>
 				<th>Name</th>
 				<th>Description</th>
+				<th>Subsystem</th>
 				<th>Action Log</th>
 			</tr>
 		</thead>
@@ -20,6 +25,7 @@
 			<tr wicket:id="list-action">
 				<td><span wicket:id="name-action">[Name]</span></td>
 				<td><span wicket:id="description-action">[Name]</span></td>
+				<td><span wicket:id="subsystem-name">[Name]</span></td>
 				<td><span wicket:id="log-action">[Name]</span></td>
 			</tr>
 		</tbody>

@@ -8,6 +8,7 @@ import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.utils.StringUtils;
 
 public class ActionServiceImpl implements ActionService {
 	private ActionDao actionDao;
@@ -17,10 +18,11 @@ public class ActionServiceImpl implements ActionService {
 		this.actionDao = actionDao;
 	}
 
-	public List<UIActionForList> getAction() {
+	public List<UIActionForList> getAction(List<Long> subsystemIds) {
+		
 		return this.actionDao.getActions(0, 10,
 				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-				null, null, null);
+				null, null, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
 }
