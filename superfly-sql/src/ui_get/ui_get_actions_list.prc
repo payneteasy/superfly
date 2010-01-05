@@ -20,7 +20,7 @@ create procedure ui_get_actions_list(i_start_from int(10),
 
 
     set v_sql_core   =
-          concat('select a.action_name, ',
+          concat('select a.actn_id, a.action_name, ',
                  '       a.action_description, ',
                  '       a.log_action, ',
                  '       ss.subsystem_name ',
@@ -50,6 +50,7 @@ $$
 delimiter ;
 call save_routine_information('ui_get_actions_list',
                               concat_ws(',',
+                              			'actn_id int',
                                         'action_name varchar',
                                         'action_description varchar',
                                         'log_action varchar',
