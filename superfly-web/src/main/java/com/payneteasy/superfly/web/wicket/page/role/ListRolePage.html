@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Roles</title>
+</head>
+<body>
+<wicket:extend>
+	<div class="filters">
+	<form wicket:id="filters-form"><span>Subsystem: <select
+		wicket:id="subsystem-filter">
+		<option>Subsystem 1</option>
+		<option>Subsystem 2</option>
+		<option>Subsystem 3</option>
+	</select> </span> <input type="submit" value="Filter" /></form>
+	</div>
+	<table class="data">
+		<thead>
+			<tr>
+				<th><a wicket:id="order-by-roleName">Rolename</a></th>
+				<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="roleList">
+				<td><span wicket:id="role-name">bond</span></td>
+				<td><span wicket:id="subsystem-name">bond</span></td>
+			</tr>
+		</tbody>
+	</table>
+	<div wicket:id="paging-navigator"></div>
+</wicket:extend>
+</body>
+</html>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
+import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 
 public interface RoleService {
 	/**
@@ -12,13 +13,19 @@ public interface RoleService {
 	 * @return roles
 	 */
 	List<UIRoleForFilter> getRolesForFilter();
-	
+
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or
 	 * 'unmapped' depending on whether it's assigned this user or not.
 	 * 
-	 * @param userId	ID of the user
+	 * @param userId
+	 *            ID of the user
 	 * @return list of roles
 	 */
 	List<UIRoleForCheckbox> getAllUserRoles(long userId);
+
+	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
+			int orderFieldNumber, boolean asc,String rolesName, List<Long> subsystems);
+	
+	int getRoleCount(String rolesName, List<Long> subsystems);
 }
