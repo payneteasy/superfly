@@ -2,6 +2,7 @@ package com.payneteasy.superfly.dao;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -54,5 +55,16 @@ public class RoleDaoTest extends AbstractDaoTest {
 		int count = roleDao.getRoleCount(null, null);
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
+	}
+	private long getAnyRoleId(){
+		List<UIRoleForList> roles = roleDao.getRoles(0, 1, 1, "asc", null, null);
+		UIRoleForList roleForList = roles.get(0);
+		long roleId = roleForList.getId();
+		return roleId;	
+	}
+	public void testDeleteRole(){
+		long roleId = getAnyRoleId();
+		RoutineResult result = roleDao.deleteRole(roleId);
+		assertRoutineResult(result);
 	}
 }

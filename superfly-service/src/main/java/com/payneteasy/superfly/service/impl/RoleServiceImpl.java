@@ -46,4 +46,9 @@ public class RoleServiceImpl implements RoleService {
 				StringUtils.collectionToCommaDelimitedString(subsystems));
 	}
 
+	public void deleteRole(long roleId) {
+		roleDao.deleteRole(roleId);
+	}
+	
+
 }

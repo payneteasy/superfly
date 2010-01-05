@@ -25,7 +25,10 @@ public interface RoleService {
 	List<UIRoleForCheckbox> getAllUserRoles(long userId);
 
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
-			int orderFieldNumber, boolean asc,String rolesName, List<Long> subsystems);
-	
+			int orderFieldNumber, boolean asc, String rolesName,
+			List<Long> subsystems);
+
 	int getRoleCount(String rolesName, List<Long> subsystems);
+
+	void deleteRole(long roleId);
 }

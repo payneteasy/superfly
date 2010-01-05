@@ -10,6 +10,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -82,9 +83,18 @@ public class ListRolePage extends BasePage {
 
 			@Override
 			protected void populateItem(Item<UIRoleForList> item) {
-				UIRoleForList role = item.getModelObject();
+				final UIRoleForList role = item.getModelObject();
 				item.add(new Label("role-name", role.getName()));
 				item.add(new Label("subsystem-name", role.getSubsystem()));
+				item.add(new Link("delete-role"){
+
+					@Override
+					public void onClick() {
+						roleService.deleteRole(role.getId());
+						
+					}
+					
+				});
 			}
 
 		};

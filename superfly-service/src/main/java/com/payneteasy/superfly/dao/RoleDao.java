@@ -3,6 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
@@ -67,4 +68,7 @@ public interface RoleDao {
 
 	@AStoredProcedure(name = "ui_get_roles_list_count")
 	int getRoleCount(String rolesName, String subsystemsName);
+	
+	@AStoredProcedure(name = "ui_delete_role")
+	RoutineResult deleteRole(long roleId);
 }

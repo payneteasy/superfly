@@ -10,7 +10,8 @@ public class UIActionForList implements Serializable {
 	private String descroption;
 	private boolean logAction;
 	private String subsystemName;
-
+	
+	@Column(name = "actn_id")
 	public long getId() {
 		return id;
 	}
