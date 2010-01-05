@@ -32,7 +32,10 @@ public interface ActionDao {
 	List<UIActionForList> getActions(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, String actionNamePrefix,
 			String description, String subsystemIds);
-	
+
 	@AStoredProcedure(name = "ui_change_actions_log_level")
 	void changeActionsLogLevel(String actnListLogOn, String actnListLogOff);
+
+	@AStoredProcedure(name = "ui_get_actions_list_count")
+	int getActionCount(String actionName, String description, String subsystemIds);
 }

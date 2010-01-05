@@ -1,21 +1,19 @@
 package com.payneteasy.superfly.web.wicket.page.action;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -23,10 +21,10 @@ import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
-import com.payneteasy.superfly.web.wicket.page.group.SubsystemModel;
+import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
 public class ListActionsPage extends BasePage {
 	@SpringBean
@@ -34,117 +32,110 @@ public class ListActionsPage extends BasePage {
 	@SpringBean
 	private SubsystemService subsystemService;
 
-	@SuppressWarnings( { "serial", "unchecked" })
 	public ListActionsPage() {
-
-		final SubsystemModel subsystemModel = new SubsystemModel();
-		Form form = new Form("form"){
-		};
-		add(form);
-		form.add(new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
-				new PropertyModel<UISubsystemForFilter>(subsystemModel,
-						"uiSubsystemForFilter"), subsystemService
+		super();
+		final ActionFilter actionFilter = new ActionFilter();
+		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
+		add(filtersForm);
+		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
+				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
+						actionFilter, "subsystem"), subsystemService
 						.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer()).setNullValid(true));
-		IModel actionListModel = new LoadableDetachableModel() {
+				new SubsystemChoiceRenderer());
+		subsystemDropdown.setNullValid(true);
+		filtersForm.add(subsystemDropdown);
 
-			@Override
-			protected Object load() {
-				final List<Long> subsystemIds = new ArrayList<Long>();
-				if (subsystemModel.getUiSubsystemForFilter() != null) {
+		final List<Long> subsystemIds = new ArrayList<Long>();
+		if (actionFilter.getSubsystem() != null) {
 
-					subsystemIds.add(subsystemModel.getUiSubsystemForFilter()
-							.getId());
+			subsystemIds.add(actionFilter.getSubsystem().getId());
+		}
+
+		String[] fieldName = { "actionId", "actionName", "actionDescription",
+				"subsystemName" };
+		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
+				fieldName) {
+
+			public Iterator<? extends UIActionForList> iterator(int first,
+					int count) {
+				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
+				List<Long> subsystemId = new ArrayList<Long>();
+				if (subsystem == null) {
+					return actionService.getActions(first, count,
+							getSortFieldIndex(), isAscending(), null, null,
+							subsystem == null ? null : null).iterator();
+				} else {
+					subsystemId.add(subsystem.getId());
+					return actionService.getActions(first, count,
+							getSortFieldIndex(), isAscending(), null, null,
+							subsystem == null ? null : subsystemId).iterator();
 				}
-				List<UIActionForList> actionList = actionService
-						.getAction(subsystemIds);
-				List<SelectObjectWrapper<UIActionForList>> actionListWrapper = new ArrayList<SelectObjectWrapper<UIActionForList>>();
-				for (UIActionForList uia : actionList) {
-					actionListWrapper
-							.add(new SelectObjectWrapper<UIActionForList>(uia));
-				}
+			}
 
-				return actionListWrapper;
+			public int size() {
+				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
+				List<Long> subsystemId = new ArrayList<Long>();
+				if(subsystem==null){
+					return actionService.getActionCount(null, null, subsystem == null ? null : null);
+				}else{
+					subsystemId.add(subsystem.getId());
+					return actionService.getActionCount(null, null, subsystem == null ? null : subsystemId);
+				}
 			}
 
 		};
-
-		final ListView<SelectObjectWrapper<UIActionForList>> listViewAction = new ListView<SelectObjectWrapper<UIActionForList>>(
-				"list-action", actionListModel) {
+		DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
 
 			@Override
-			protected void populateItem(
-					ListItem<SelectObjectWrapper<UIActionForList>> item) {
-				final SelectObjectWrapper<UIActionForList> action = item
-						.getModelObject();
-				item
-						.add(new Label("name-action", action.getObject()
-								.getName()));
-				item.add(new Label("description-action", action.getObject()
-						.getDescroption()));
-				item.add(new Label("subsystem-name", action.getObject()
-						.getSubsystemName()));
+			protected void populateItem(Item<UIActionForList> item) {
+				final UIActionForList action = item.getModelObject();
+				item.add(new Label("action-name",action.getName()));
+				item.add(new Label("action-description",action.getDescroption()));
+				item.add(new Label("subsystem-name",action.getSubsystemName()));
 				Link<Void> switchLogLevel = new Link<Void>("switch-loglevel") {
 
 					@Override
 					public void onClick() {
 						List<Long> logLevelOn = new ArrayList<Long>();
 						List<Long> logLevelOff = new ArrayList<Long>();
-						if (action.getObject().isLogAction()) {
-							logLevelOff.add(action.getObject().getId());
+						if (action.isLogAction()) {
+							logLevelOff.add(action.getId());
 							actionService.changeActionsLogLevel(null, logLevelOff);
 						} else {
-							logLevelOn.add(action.getObject().getId());
+							logLevelOn.add(action.getId());
 							actionService.changeActionsLogLevel(logLevelOn, null);
 						}
 						
 					}
 
 				};
-				switchLogLevel.add(new Label("log-action", action.getObject()
+				switchLogLevel.add(new Label("log-action", action
 						.isLogAction() ? "yes" : "NO"));
 				item.add(switchLogLevel);
-				item.add(new CheckBox("selected", new PropertyModel<Boolean>(
-						action, "selected")));
 			}
+			
 		};
-		Form formList = new Form("formList") {
-			@Override
-			protected void onSubmit() {
-				ArrayList<SelectObjectWrapper<UIActionForList>> actionListWrapper = (ArrayList<SelectObjectWrapper<UIActionForList>>) listViewAction
-						.getModelObject();
-				List<Long> listLogLevelOn = new ArrayList<Long>();
-				List<Long> listLogLevelOff = new ArrayList<Long>();
-				for (SelectObjectWrapper<UIActionForList> suia : actionListWrapper) {
-					if (suia.isSelected()) {
-						if (suia.getObject().isLogAction()) {
-							listLogLevelOff.add(suia.getObject().getId());
-						}
-						listLogLevelOn.add(suia.getObject().getId());
-					}
-				}
-				actionService.changeActionsLogLevel(listLogLevelOn,
-						listLogLevelOff);
-				setResponsePage(ListActionsPage.class);
-			}
-
-		};
-		formList.add(listViewAction);
-		formList.add(new CheckBox("groupselector", new Model("empty")) {
-			@Override
-			public void onSelectionChanged(Object newSelection) {
-				boolean flag = ((Boolean) newSelection).booleanValue();
-				for (SelectObjectWrapper<UIActionForList> suia : listViewAction
-						.getModelObject()) {
-					suia.setSelected(flag);
-				}
-			}
-
-			public boolean wantOnSelectionChangedNotifications() {
-				return true;
-			}
-		});
-		add(formList);
+		add(actionDataView);
+		add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
+		add(new OrderByLink("order-by-actionDescription", "actionDescription",
+				actionDataProvider));
+		add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
+		add(new PagingNavigator("paging-navigator", actionDataView));
 
 	}
+
+	@SuppressWarnings("unused")
+	private class ActionFilter implements Serializable {
+		private UISubsystemForFilter subsystem;
+
+		public UISubsystemForFilter getSubsystem() {
+			return subsystem;
+		}
+
+		public void setSubsystem(UISubsystemForFilter subsystem) {
+			this.subsystem = subsystem;
+		}
+
+	}
+
 }

@@ -33,6 +33,11 @@ public class ActionDaoTest extends AbstractDaoTest {
 				"asc", null, null, "1,2");
 		assertTrue("Action list should not be empty", actionList.size() > 0);
 	}
+	public void testGetActionCount(){
+		int count = actionDao.getActionCount(null, null, null);
+		assertTrue("Must get some action", count > 0);
+		actionDao.getActionCount("someActionName", "someActionDescription", "1,2");
+	}
 
 	public void testchangeActionsLogLevel() {
 		List<Long> logLevelsOn = new ArrayList<Long>();
