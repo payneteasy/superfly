@@ -64,6 +64,12 @@ create table mysql_routines_return_arguments (
 
 \. ui_filter/ui_filter_subsystems.prc
 
+\. ui_filter/ui_filter_dyn_actions.prc
+
+\. ui_filter/ui_filter_dyn_roles.prc
+
+\. ui_filter/ui_filter_dyn_groups.prc
+
 \. ui_create/ui_create_group.prc
 
 \. ui_create/ui_clone_group.prc
@@ -152,6 +158,16 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_roles_list_count.prc
 
+\. ui_get/ui_get_user.prc
+
+\. ui_get/ui_get_action.prc
+
+\. ui_get/ui_get_subsystem.prc
+
+\. ui_get/ui_get_role.prc
+
+\. ui_get/ui_get_group.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
@@ -173,7 +189,3 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_edit_subsystem_properties.prc
 
 \. ui_update/ui_change_user_roles.prc
-
-\. stub/ui_filter_roles.prc
-
-\. stub/ui_get_user.prc
