@@ -84,7 +84,7 @@ insert into role_actions
       (
          role_role_id, actn_actn_id
       )
-  select  an.role_id, an.actn_id
+  select distinct an.role_id, an.actn_id
     from     (select r.role_id, al.actn_id
                 from roles r,
                      (select a.actn_id, a.ssys_ssys_id
