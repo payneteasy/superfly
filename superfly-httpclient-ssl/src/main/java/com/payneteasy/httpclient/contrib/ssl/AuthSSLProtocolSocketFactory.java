@@ -60,6 +60,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
@@ -236,7 +237,13 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(
             KeyManagerFactory.getDefaultAlgorithm());
         kmfactory.init(keystore, password != null ? password.toCharArray(): null);
-        return kmfactory.getKeyManagers(); 
+        KeyManager[] keymanagers = kmfactory.getKeyManagers();
+        for (int i = 0; i < keymanagers.length; i++) {
+        	if (keymanagers[i] instanceof X509KeyManager) {
+        		keymanagers[i] = new AuthSSLX509KeyManager((X509KeyManager) keymanagers[i]);
+        	}
+        }
+        return keymanagers; 
     }
 
     private static TrustManager[] createTrustManagers(final KeyStore keystore)
