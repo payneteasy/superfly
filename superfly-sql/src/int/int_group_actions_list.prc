@@ -5,7 +5,8 @@ create procedure int_group_actions_list(i_start_from int(10),
                                         i_order_field_number int(10),
                                         i_order_type varchar(4),
                                         i_grop_id int(10),
-                                        i_mapping_status varchar(1)
+                                        i_mapping_status varchar(1),
+                                        i_action_name varchar(100)
 )
  main_sql:
   begin
@@ -19,6 +20,9 @@ create procedure int_group_actions_list(i_start_from int(10),
                  '           join ',
                  '             actions a ',
                  '           on a.ssys_ssys_id = ss.ssys_id',
+                 '              and a.action_name like "%',
+                 coalesce(i_action_name, ''),
+                 '%" ',
                  '         left join ',
                  '           group_actions ga ',
                  '         on ga.grop_grop_id = g.grop_id ',

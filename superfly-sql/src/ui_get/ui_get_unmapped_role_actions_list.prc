@@ -4,7 +4,8 @@ create procedure ui_get_unmapped_role_actions_list(i_start_from int(10),
                                                    i_records_count int(10),
                                                    i_order_field_number int(10),
                                                    i_order_type varchar(4),
-                                                   i_role_id int(10)
+                                                   i_role_id int(10),
+                                                   i_action_name varchar(100)
 )
  main_sql:
   begin
@@ -13,7 +14,8 @@ create procedure ui_get_unmapped_role_actions_list(i_start_from int(10),
                                i_order_field_number,
                                i_order_type,
                                i_role_id,
-                               "U"
+                               "U",
+                               i_action_name
          );
   end
 $$
