@@ -60,6 +60,14 @@ create table mysql_routines_return_arguments (
 
 \. int/int_user_roles_list_count.prc
 
+\. int/int_user_actions_list.prc
+
+\. int/int_user_actions_list_count.prc
+
+\. int/int_link_user_role_actions.prc
+
+\. int/int_unlink_user_role_actions.prc
+
 \. ui_copy/ui_copy_action_properties.prc
 
 \. ui_filter/ui_filter_subsystems.prc
@@ -142,6 +150,18 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_all_user_roles_list_count.prc
 
+\. ui_get/ui_get_mapped_user_actions_list.prc
+
+\. ui_get/ui_get_mapped_user_actions_list_count.prc
+
+\. ui_get/ui_get_unmapped_user_actions_list.prc
+
+\. ui_get/ui_get_unmapped_user_actions_list_count.prc
+
+\. ui_get/ui_get_all_user_actions_list.prc
+
+\. ui_get/ui_get_all_user_actions_list_count.prc
+
 \. ui_get/ui_get_users_list.prc
 
 \. ui_get/ui_get_users_list_count.prc
@@ -189,3 +209,5 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_edit_subsystem_properties.prc
 
 \. ui_update/ui_change_user_roles.prc
+
+\. ui_update/ui_change_user_role_actions.prc
