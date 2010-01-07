@@ -9,6 +9,16 @@
 <wicket:extend>
 <h1>Groups</h1>
 <p><span wicket:id="confirmPanel"></span></p>
+	
+	<div class="filters">
+	<form wicket:id="filters-form"><span>Subsystem: <select
+		wicket:id="subsystem-filter">
+		<option>Subsystem 1</option>
+		<option>Subsystem 2</option>
+		<option>Subsystem 3</option>
+	</select> </span> <input type="submit" value="Filter" /></form>
+	</div>
+	
 	<form wicket:id="form">
 	<p>
 	<input type="submit" wicket:id="add-group" value="Add">&nbsp;&nbsp;&nbsp;
@@ -17,17 +27,20 @@
 		<thead>
 			<tr>
 				<th><input type="checkbox" wicket:id="groupselector">Select</input></th>
-				<th>Name</th>
+				<th><a wicket:id="order-by-groupName">Name</a></th>
+				<th><a wicket:id="order-by-subsystemName">Subsystem</a></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="list-group">
 				<td><input type="checkbox" wicket:id="selected" /></td>
 				<td><span wicket:id="name-group">[Name]</span></td>
+				<td><span wicket:id="ssys-group">[Subsystem]</span></td>
 			</tr>
 		</tbody>
 	</table>
 
+<div wicket:id="paging-navigator"></div>
 	</form>
 </wicket:extend>
 </body>

@@ -10,6 +10,7 @@ import com.payneteasy.superfly.dao.GroupDao;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.service.*;
+import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class GroupServiceImpl implements GroupService {
@@ -24,15 +25,33 @@ public class GroupServiceImpl implements GroupService {
 		return this.groupDao.getGroups(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
 				DaoConstants.ASC, null, null);
 	}
+	
+	
 
 	public void createGroup(UIGroup group) {
 		groupDao.createGroup(group);
 		
 	}
 
-	public void deleteGorup(long id) {
+	public void deleteGroup(long id) {
 		groupDao.deleteGorup(id);
 		
+	}
+
+	public List<UIGroupForList> getGroupsForSubsystems(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean orderType,
+			String groupNamePrefix, List<Long> subsystemIds) {
+		return this.groupDao.getGroups(
+				startFrom, 
+				recordsCount, 
+				orderFieldNumber,
+				orderType ? DaoConstants.ASC: DaoConstants.DESC, 
+				groupNamePrefix, 
+				StringUtils.collectionToCommaDelimitedString(subsystemIds));
+	}
+
+	public int getGroupsCount(String groupName, List<Long> subsystemIds) {
+		return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
 }

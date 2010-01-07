@@ -40,5 +40,9 @@
 	<bean id="roleDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
 		<property name="interface" value="com.payneteasy.superfly.dao.RoleDao"/>
 	</bean>
+	
+	<bean id="groupDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.GroupDao"/>
+	</bean>
 
 </beans>
