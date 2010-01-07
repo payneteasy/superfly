@@ -17,6 +17,7 @@
         <sec:logout />
         <sec:form-login default-target-url="/"/>
         <sec:anonymous/>
+        <sec:x509 user-service-ref="preauthUserDetailsService"/>
 
     </sec:http>
     
@@ -25,10 +26,36 @@
             <sec:user name="admin"    password="admin"  authorities="ROLE_ADMIN"/>
             <sec:user name="user"   password="user"    authorities="ROLE_USER"/>            
         </sec:user-service>
-    </sec:authentication-provider><!--
+    </sec:authentication-provider>
     
+<!--
     <bean id="userDetailsService" class="com.payneteasy.alerting.web.security.UserDetailsServiceImpl">
     	<property name="userService" ref="userService"/>
     </bean>
+-->
+	<bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
+		<property name="userMap">
+			<bean class="org.springframework.security.userdetails.memory.UserMap">
+				<property name="users">
+					<map>
+						<entry key="superfly-client">
+							<bean class="org.springframework.security.userdetails.User">
+								<constructor-arg value="superfly-client"/>
+								<constructor-arg value="not-used"/>
+								<constructor-arg value="true"/>
+								<constructor-arg>
+									<list>
+										<bean class="org.springframework.security.GrantedAuthorityImpl">
+											<constructor-arg value="REMOTE_CLIENT"/>
+										</bean>
+									</list>
+								</constructor-arg>
+							</bean>
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
 
---></beans>
+</beans>
