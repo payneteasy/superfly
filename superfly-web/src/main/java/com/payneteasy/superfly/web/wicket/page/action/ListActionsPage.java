@@ -2,9 +2,11 @@ package com.payneteasy.superfly.web.wicket.page.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -12,14 +14,16 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.Strings;
 
+import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.ActionService;
@@ -40,6 +44,8 @@ public class ListActionsPage extends BasePage {
 		final ActionFilter actionFilter = new ActionFilter();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);
+		
+		//Filter for subsystems
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
 						actionFilter, "subsystem"), subsystemService
@@ -47,7 +53,47 @@ public class ListActionsPage extends BasePage {
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
+       //Filter for actionName
+		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",new Model("")){
 
+			@Override
+			protected Iterator getChoices(String input) {
+				if (Strings.isEmpty(input))
+                {
+                    return Collections.EMPTY_LIST.iterator();
+                }
+				List choices = new ArrayList(10);
+				List<UIActionForFilter> action = actionService.getActionForFilter();
+				for(UIActionForFilter uia: action){
+					final String name = uia.getActionName();
+					if(name.toUpperCase().startsWith(input.toUpperCase())){
+						choices.add(name);
+						if(choices.size()==10){
+							break;
+						}
+					}
+				}
+				return choices.iterator();
+			}
+			
+		};
+		filtersForm.add(autoTextNameAction);
+		/*autoTextNameAction.add(new AjaxFormSubmitBehavior(filtersForm,"onchange"){
+
+			@Override
+			protected void onError(AjaxRequestTarget target) {
+				
+				
+			}
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target) {
+				
+				
+			}
+			
+		});*/
+		
 		final List<Long> subsystemIds = new ArrayList<Long>();
 		if (actionFilter.getSubsystem() != null) {
 
@@ -62,17 +108,18 @@ public class ListActionsPage extends BasePage {
 			public Iterator<? extends UIActionForList> iterator(int first,
 					int count) {
 				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
+				String actionForFilter = autoTextNameAction.getModelObject();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
 					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), null, null,
+							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
 							subsystem == null ? null : null);
 					setDataset(actions);
 					return actions.iterator();
 				} else {
 					subsystemId.add(subsystem.getId());
 					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), null, null,
+							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
 							subsystem == null ? null : subsystemId);
 					setDataset(actions);
 					return actions.iterator();
@@ -155,6 +202,15 @@ public class ListActionsPage extends BasePage {
 	@SuppressWarnings("unused")
 	private class ActionFilter implements Serializable {
 		private UISubsystemForFilter subsystem;
+		private UIActionForFilter actionForFilter;
+
+		public UIActionForFilter getActionForFilter() {
+			return actionForFilter;
+		}
+
+		public void setActionForFilter(UIActionForFilter actionForFilter) {
+			this.actionForFilter = actionForFilter;
+		}
 
 		public UISubsystemForFilter getSubsystem() {
 			return subsystem;

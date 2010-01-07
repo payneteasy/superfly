@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.utils.StringUtils;
@@ -38,5 +39,10 @@ public class ActionServiceImpl implements ActionService {
 				asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
 						.collectionToCommaDelimitedString(subsystemIds));
 	}
+
+	public List<UIActionForFilter> getActionForFilter() {
+		return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
+	}
+	
 
 }

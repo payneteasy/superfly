@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 
 /**
@@ -37,5 +38,10 @@ public interface ActionDao {
 	void changeActionsLogLevel(String actnListLogOn, String actnListLogOff);
 
 	@AStoredProcedure(name = "ui_get_actions_list_count")
-	int getActionCount(String actionName, String description, String subsystemIds);
+	int getActionCount(String actionName, String description,
+			String subsystemIds);
+
+	@AStoredProcedure(name = "ui_filter_dyn_actions")
+	List<UIActionForFilter> getActionsForFilter(String subsystemIds,
+			String actionNamePrefix, int startFrom, int recordsCount);
 }
