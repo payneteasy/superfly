@@ -35,12 +35,16 @@ public class SubsystemServiceImpl implements SubsystemService {
 	}
 
 	public void updateSubsystem(UISubsystem subsystem) {
-		// TODO Auto-generated method stub
+		 subsystemDao.updateSubsystem(subsystem);
 
 	}
 
 	public List<UISubsystemForFilter> getSubsystemsForFilter() {
 		return subsystemDao.getSubsystemsForFilter();
+	}
+
+	public UISubsystem getSubsystem(long subsystemId) {
+		return subsystemDao.getSubsystem(subsystemId);
 	}
 
 }

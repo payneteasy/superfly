@@ -14,7 +14,7 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
  * @author Roman Puchkovskiy
  */
 public interface SubsystemDao {
-	
+
 	/**
 	 * Returns a list of registered subsystems.
 	 * 
@@ -22,25 +22,33 @@ public interface SubsystemDao {
 	 */
 	@AStoredProcedure(name = "ui_get_subsystems_list")
 	List<UISubsystemForList> getSubsystems();
-	
+
 	/**
 	 * Creates a subsystem.
 	 * 
-	 * @param subsystem	subsystem to create
+	 * @param subsystem
+	 *            subsystem to create
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_create_subsystem")
 	RoutineResult createSubsystem(UISubsystem subsystem);
-	
+
+	@AStoredProcedure(name = "ui_edit_subsystem_properties")
+	RoutineResult updateSubsystem(UISubsystem subsystem);
+
+	@AStoredProcedure(name = "ui_get_subsystem")
+	UISubsystem getSubsystem(long subsystemId);
+
 	/**
 	 * Deletes a subsystem.
 	 * 
-	 * @param subsystemId	ID of a subsystem to delete
+	 * @param subsystemId
+	 *            ID of a subsystem to delete
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_delete_subsystem")
 	RoutineResult deleteSubsystem(long subsystemId);
-	
+
 	/**
 	 * Returns a list of all subsystems for a subsystem-based filter.
 	 * 

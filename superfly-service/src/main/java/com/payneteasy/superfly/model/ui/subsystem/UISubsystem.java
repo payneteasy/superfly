@@ -19,14 +19,6 @@ public class UISubsystem implements Serializable {
 		this.id = id;
 	}
 
-	public String getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-
 	@Column(name = "subsystem_name")
 	public String getName() {
 		return name;
