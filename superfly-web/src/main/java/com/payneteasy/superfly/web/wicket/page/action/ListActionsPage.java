@@ -8,8 +8,11 @@ import java.util.List;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
@@ -61,14 +64,18 @@ public class ListActionsPage extends BasePage {
 				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
-					return actionService.getActions(first, count,
+					List<UIActionForList> actions = actionService.getActions(first, count,
 							getSortFieldIndex(), isAscending(), null, null,
-							subsystem == null ? null : null).iterator();
+							subsystem == null ? null : null);
+					setDataset(actions);
+					return actions.iterator();
 				} else {
 					subsystemId.add(subsystem.getId());
-					return actionService.getActions(first, count,
+					List<UIActionForList> actions = actionService.getActions(first, count,
 							getSortFieldIndex(), isAscending(), null, null,
-							subsystem == null ? null : subsystemId).iterator();
+							subsystem == null ? null : subsystemId);
+					setDataset(actions);
+					return actions.iterator();
 				}
 			}
 
@@ -84,7 +91,7 @@ public class ListActionsPage extends BasePage {
 			}
 
 		};
-		DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
+		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
 
 			@Override
 			protected void populateItem(Item<UIActionForList> item) {
@@ -112,15 +119,36 @@ public class ListActionsPage extends BasePage {
 				switchLogLevel.add(new Label("log-action", action
 						.isLogAction() ? "yes" : "NO"));
 				item.add(switchLogLevel);
+				item.add(new CheckBox("selected", new PropertyModel<Boolean>(action, "selected")));
 			}
 			
 		};
-		add(actionDataView);
-		add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-		add(new OrderByLink("order-by-actionDescription", "actionDescription",
+		filtersForm.add(actionDataView);
+	    filtersForm.add(new Button("log-action"){
+
+			@Override
+			public void onSubmit() {
+				List<Long> logOn = new ArrayList<Long>();
+				List<Long> logOff = new ArrayList<Long>();
+				for(UIActionForList uia: ((IndexedSortableDataProvider<UIActionForList>)actionDataView.getDataProvider()).getDataset()){
+					if(uia.isSelected()){
+						if(uia.isLogAction()){
+							logOff.add(uia.getId());
+						}
+						logOn.add(uia.getId());
+					}
+				}
+				actionService.changeActionsLogLevel(logOn, logOff);
+				setResponsePage(ListActionsPage.class);
+			}
+	    	
+	    });
+                
+	    filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
+	    filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription",
 				actionDataProvider));
-		add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
-		add(new PagingNavigator("paging-navigator", actionDataView));
+	    filtersForm.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
+	    filtersForm.add(new PagingNavigator("paging-navigator", actionDataView));
 
 	}
 
@@ -137,5 +165,4 @@ public class ListActionsPage extends BasePage {
 		}
 
 	}
-
 }

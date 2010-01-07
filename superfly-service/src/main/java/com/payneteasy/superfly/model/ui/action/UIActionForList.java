@@ -10,6 +10,7 @@ public class UIActionForList implements Serializable {
 	private String descroption;
 	private boolean logAction;
 	private String subsystemName;
+	private boolean selected;
 	
 	@Column(name = "actn_id")
 	public long getId() {
@@ -55,5 +56,14 @@ public class UIActionForList implements Serializable {
 	public void setSubsystemName(String subsystemName) {
 		this.subsystemName = subsystemName;
 	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+	
 
 }

@@ -13,8 +13,8 @@
 		<option>Subsystem 1</option>
 		<option>Subsystem 2</option>
 		<option>Subsystem 3</option>
-	</select> </span> <input type="submit" value="Filter" /></form>
-	</div>
+	</select> </span> <input type="submit" value="Filter" />&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Log On/Off" wicket:id="log-action" />
 	<table class="data">
 		<thead>
 			<tr>
@@ -22,6 +22,7 @@
 				<th><a wicket:id="order-by-actionDescription">Desciption</a></th>
 				<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
 				<th>Log Level</th>
+				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -30,10 +31,13 @@
 				<td><span wicket:id="action-description">bond</span></td>
 				<td><span wicket:id="subsystem-name">bond</span></td>
 				<td><a href="#" wicket:id="switch-loglevel"><span wicket:id="log-action">Yes</span></a></td>
+				<td><input type="checkbox" wicket:id="selected" /></td>
 			</tr>
 		</tbody>
 	</table>
 	<div wicket:id="paging-navigator"></div>
+	</form>
+	</div>
 </wicket:extend>
 </body>
 </html>
