@@ -20,7 +20,8 @@ public class RoleDaoTest extends AbstractDaoTest {
 	}
 
 	public void testGetRolesForFilter() {
-		List<UIRoleForFilter> roles = roleDao.getRolesForFilter();
+		List<UIRoleForFilter> roles = roleDao.getRolesForFilter(null, null, 0,
+				Integer.MAX_VALUE);
 		assertNotNull("List of roles must not be null", roles);
 		assertTrue("List of roles cannot be empty", roles.size() > 0);
 	}

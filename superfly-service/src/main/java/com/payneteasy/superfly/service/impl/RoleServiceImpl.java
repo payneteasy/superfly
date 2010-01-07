@@ -24,7 +24,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public List<UIRoleForFilter> getRolesForFilter() {
-		return roleDao.getRolesForFilter();
+		return roleDao.getRolesForFilter(null, null, 0, Integer.MAX_VALUE);
 	}
 
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId) {

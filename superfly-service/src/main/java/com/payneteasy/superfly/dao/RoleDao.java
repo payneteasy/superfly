@@ -17,10 +17,17 @@ public interface RoleDao {
 	/**
 	 * Returns list of roles for UI filter.
 	 * 
+	 * @param subsystemIds	comma-separated list of IDs of subsystems
+	 * 						to consider (ignored if null)
+	 * @param rolePrefix	prefix from which role name must start (ignored
+	 * 						if null)
+	 * @param startFrom		role offset
+	 * @param recordsCount	limit
 	 * @return roles
 	 */
-	@AStoredProcedure(name = "ui_filter_roles")
-	List<UIRoleForFilter> getRolesForFilter();
+	@AStoredProcedure(name = "ui_filter_dyn_roles")
+	List<UIRoleForFilter> getRolesForFilter(String subsystemIds,
+			String rolePrefix, int startFrom, int recordsCount);
 
 	/**
 	 * Returns a list of roles for the given user. Both assigned and
