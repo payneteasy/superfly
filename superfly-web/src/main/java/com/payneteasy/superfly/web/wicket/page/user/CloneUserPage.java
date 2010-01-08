@@ -57,5 +57,10 @@ public class CloneUserPage extends BasePage {
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "Clone user";
+	}
 
 }

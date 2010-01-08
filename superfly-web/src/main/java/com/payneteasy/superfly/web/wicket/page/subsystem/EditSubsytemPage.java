@@ -25,7 +25,7 @@ public class EditSubsytemPage extends BasePage {
 		@Override
 		protected void onSubmit() {
 			subsystemService.updateSubsystem(subsystem);
-			setResponsePage(ListSubsystemPage.class);
+			setResponsePage(ListSubsystemsPage.class);
 		}
     	   
        };
@@ -37,12 +37,15 @@ public class EditSubsytemPage extends BasePage {
 
 		@Override
 		public void onSubmit() {
-			setResponsePage(ListSubsystemPage.class);
+			setResponsePage(ListSubsystemsPage.class);
 		}
     	   
        });
 	}
 
-	
+	@Override
+	protected String getTitle() {
+		return "Edit subsystem";
+	}	
 	
 }

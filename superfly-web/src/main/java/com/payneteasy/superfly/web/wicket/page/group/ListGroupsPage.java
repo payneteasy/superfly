@@ -182,19 +182,23 @@ public class ListGroupsPage extends BasePage {
 		add(form);
 	}
 
-
-@SuppressWarnings("unused")
-private class GroupFilter implements Serializable {
-	private UISubsystemForFilter subsystem;
-
-	public UISubsystemForFilter getSubsystem() {
-		return subsystem;
+	@Override
+	protected String getTitle() {
+		return "Groups";
 	}
 
-	public void setSubsystem(UISubsystemForFilter subsystem) {
-		this.subsystem = subsystem;
+	@SuppressWarnings("unused")
+	private class GroupFilter implements Serializable {
+		private UISubsystemForFilter subsystem;
+	
+		public UISubsystemForFilter getSubsystem() {
+			return subsystem;
+		}
+	
+		public void setSubsystem(UISubsystemForFilter subsystem) {
+			this.subsystem = subsystem;
+		}
+	
 	}
-
-}
 
 }

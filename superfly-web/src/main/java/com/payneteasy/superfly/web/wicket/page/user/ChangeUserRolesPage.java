@@ -74,5 +74,10 @@ public class ChangeUserRolesPage extends BasePage {
 		getRequestCycle().setResponsePage(ListUsersPage.class);
 		getRequestCycle().setRedirect(true);
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "User roles";
+	}
 
 }

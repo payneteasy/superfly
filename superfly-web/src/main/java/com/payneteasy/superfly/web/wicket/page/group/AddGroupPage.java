@@ -53,4 +53,9 @@ public class AddGroupPage extends BasePage {
 
 		}.setDefaultFormProcessing(false));
 	}
+
+	@Override
+	protected String getTitle() {
+		return "Add group";
+	}
 }

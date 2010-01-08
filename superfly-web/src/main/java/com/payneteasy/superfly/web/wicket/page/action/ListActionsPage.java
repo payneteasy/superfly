@@ -221,4 +221,9 @@ public class ListActionsPage extends BasePage {
 		}
 
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "Actions";
+	}
 }

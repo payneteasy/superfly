@@ -7,7 +7,7 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
-import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemPage;
+import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.AddUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
@@ -24,7 +24,7 @@ public class WicketApplication extends WebApplication{
         
         mountBookmarkablePage("/actions", ListActionsPage.class);
         mountBookmarkablePage("/groups", ListGroupsPage.class);
-        mountBookmarkablePage("/subsystems", ListSubsystemPage.class);
+        mountBookmarkablePage("/subsystems", ListSubsystemsPage.class);
         
         mountBookmarkablePage("/users", ListUsersPage.class);
         mountBookmarkablePage("/users/create", AddUserPage.class);

@@ -2,7 +2,7 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Superfly service web</title>
+<title wicket:id="page-head-title">Superfly service web</title>
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body>
@@ -27,7 +27,10 @@
 		<li><a href="#" wicket:id="role">Roles</a></li>
 		</ul>
 		</td>
-		<td class="p-content p-unit"><wicket:child /></td>
+		<td class="p-content p-unit">
+			<h1 wicket:id="page-title">Hello there!</h1>
+			<wicket:child />
+		</td>
 	</tr>
 
 </table>

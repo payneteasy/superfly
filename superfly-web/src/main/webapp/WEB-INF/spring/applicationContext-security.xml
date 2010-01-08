@@ -46,7 +46,7 @@
 								<constructor-arg>
 									<list>
 										<bean class="org.springframework.security.GrantedAuthorityImpl">
-											<constructor-arg value="REMOTE_CLIENT"/>
+											<constructor-arg value="ROLE_SUBSYSTEM"/>
 										</bean>
 									</list>
 								</constructor-arg>

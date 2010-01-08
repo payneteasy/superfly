@@ -104,6 +104,11 @@ public class ListRolePage extends BasePage {
 				rolesDataProvider));
 		add(new PagingNavigator("paging-navigator", rolesDateView));
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "Roles";
+	}
 
 	@SuppressWarnings("unused")
 	private class RoleFilter implements Serializable {

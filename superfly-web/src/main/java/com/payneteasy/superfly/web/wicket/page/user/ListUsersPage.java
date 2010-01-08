@@ -136,6 +136,11 @@ public class ListUsersPage extends BasePage {
 		
 		add(new BookmarkablePageLink<AddUserPage>("add-user", AddUserPage.class));
 	}
+	
+	@Override
+	protected String getTitle() {
+		return "Users";
+	}
 
 	@SuppressWarnings("unused")
 	private class UserFilters implements Serializable {
