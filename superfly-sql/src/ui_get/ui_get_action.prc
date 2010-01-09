@@ -19,8 +19,8 @@ call save_routine_information('ui_get_action',
                                         'actn_id int',
                                         'action_name varchar',
                                         'action_description varchar',
-																				'log_action varchar',
-																				'subsystem_ssys_id int',
-																				'subsystem_name varchar'
+                                        'log_action varchar',
+                                        'subsystem_ssys_id int',
+                                        'subsystem_name varchar'
                               )
      );
