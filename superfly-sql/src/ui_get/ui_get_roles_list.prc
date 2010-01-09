@@ -15,7 +15,7 @@ create procedure ui_get_roles_list(i_start_from int(10),
     call int_roles_list(i_role_name, i_ssys_list, v_search_conditions);
 
     set v_sql_core   =
-          concat('   select r.role_id, r.role_name, ss.ssys_id, ss.subsystem_name ',
+          concat('   select r.role_id, r.role_name, r.principal_name, ss.ssys_id, ss.subsystem_name ',
                  '      from subsystems ss, roles r ',
                  '     where r.ssys_ssys_id = ss.ssys_id',
                  coalesce(v_search_conditions, '')
@@ -44,6 +44,7 @@ call save_routine_information('ui_get_roles_list',
                               concat_ws(',',
                                         'role_id int',
                                         'role_name varchar',
+                                        'principal_name varchar',
                                         'ssys_id int',
                                         'subsystem_name varchar'
                               )
