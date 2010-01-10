@@ -8,6 +8,16 @@ public class UIRoleForList implements Serializable {
 	private long id;
 	private String name;
 	private String subsystem;
+    private String principalName;
+    
+    @Column(name="principal_name")
+	public String getPrincipalName() {
+		return principalName;
+	}
+
+	public void setPrincipalName(String principalName) {
+		this.principalName = principalName;
+	}
 
 	@Column(name = "role_id")
 	public long getId() {

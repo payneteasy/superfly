@@ -10,6 +10,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
@@ -24,6 +25,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
 public class ListRolePage extends BasePage {
@@ -34,6 +36,8 @@ public class ListRolePage extends BasePage {
 
 	public ListRolePage() {
 		super();
+		add(new EmptyPanel("confirmPanel"));
+		
 		final RoleFilter roleFilter = new RoleFilter();
 		Form<RoleFilter> filtersForm = new Form("filters-form");
 		add(filtersForm);
@@ -44,7 +48,7 @@ public class ListRolePage extends BasePage {
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
-		String[] fieldNames = { "roleId", "roleName", "subsystemName" };
+		String[] fieldNames = { "roleId", "roleName", "principalName","subsystemName" };
 		SortableDataProvider<UIRoleForList> rolesDataProvider = new IndexedSortableDataProvider<UIRoleForList>(
 				fieldNames) {
 
@@ -85,21 +89,39 @@ public class ListRolePage extends BasePage {
 			protected void populateItem(Item<UIRoleForList> item) {
 				final UIRoleForList role = item.getModelObject();
 				item.add(new Label("role-name", role.getName()));
+				item.add(new Label("principal-name",role.getPrincipalName()));
 				item.add(new Label("subsystem-name", role.getSubsystem()));
 				item.add(new Link("delete-role"){
 
 					@Override
 					public void onClick() {
 						roleService.deleteRole(role.getId());
-						
+						/*this.getParent().get("confirmPanel").replaceWith(
+								new ConfirmPanel("confirmPanel",
+										"You are about to delete "
+												+ " role permanently?") {
+									public void onConfirm() {
+										roleService.deleteRole(role.getId());
+										this.getParent().setResponsePage(
+												ListRolePage.class);
+									}
+
+									public void onCancel() {
+										this.getPage().get("confirmPanel").replaceWith(
+												new EmptyPanel("confirmPanel"));
+									}
+								});*/
 					}
 					
 				});
+				item.add(new BookmarkablePageLink("role-edit",
+						EditRolePage.class).setParameter("id", role.getId()));
 			}
 
 		};
 		add(rolesDateView);
 		add(new OrderByLink("order-by-roleName", "roleName", rolesDataProvider));
+		add(new OrderByLink("order-by-principalName", "principalName", rolesDataProvider));
 		add(new OrderByLink("order-by-subsystemName", "subsystemName",
 				rolesDataProvider));
 		add(new PagingNavigator("paging-navigator", rolesDateView));

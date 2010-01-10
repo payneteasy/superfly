@@ -3,6 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -17,6 +18,19 @@ public class RoleDaoTest extends AbstractDaoTest {
 
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
+	}
+
+	public void testUpdateRole() {
+		UIRole role = getAnyRole();
+		role.setPrincipalName("principalNameTest");
+		RoutineResult result=roleDao.updateRole(role);
+		assertRoutineResult(result);
+	}
+
+	private UIRole getAnyRole() {
+		long roleId = getAnyRoleId();
+		UIRole role = roleDao.getRole(roleId);
+		return role;
 	}
 
 	public void testGetRolesForFilter() {
@@ -57,13 +71,16 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
 	}
-	private long getAnyRoleId(){
-		List<UIRoleForList> roles = roleDao.getRoles(0, 1, 1, "asc", null, null);
+
+	private long getAnyRoleId() {
+		List<UIRoleForList> roles = roleDao
+				.getRoles(0, 1, 1, "asc", null, null);
 		UIRoleForList roleForList = roles.get(0);
 		long roleId = roleForList.getId();
-		return roleId;	
+		return roleId;
 	}
-	public void testDeleteRole(){
+
+	public void testDeleteRole() {
 		long roleId = getAnyRoleId();
 		RoutineResult result = roleDao.deleteRole(roleId);
 		assertRoutineResult(result);

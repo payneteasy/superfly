@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.RoleDao;
+import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
@@ -48,6 +49,16 @@ public class RoleServiceImpl implements RoleService {
 
 	public void deleteRole(long roleId) {
 		roleDao.deleteRole(roleId);
+	}
+
+	public UIRole getRole(long roleId) {
+		
+		return roleDao.getRole(roleId);
+	}
+
+	public void updateRole(UIRole role) {
+		roleDao.updateRole(role);
+		
 	}
 	
 
