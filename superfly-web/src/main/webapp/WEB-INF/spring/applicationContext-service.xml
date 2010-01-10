@@ -21,6 +21,11 @@
 			</property>
 		-->
 	</bean>
+	
+	<bean id="localSecurityService"
+		class="com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl">
+		<property name="userDao" ref="userDao"/>
+	</bean>
 
 	<bean id="subsystemService"
 		class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">

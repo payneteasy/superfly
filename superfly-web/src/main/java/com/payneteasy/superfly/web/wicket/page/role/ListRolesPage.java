@@ -17,24 +17,26 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
-public class ListRolePage extends BasePage {
+@Secured("ROLE_ADMIN")
+public class ListRolesPage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
 
-	public ListRolePage() {
+	public ListRolesPage() {
 		super();
 		add(new EmptyPanel("confirmPanel"));
 		

@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.wicket.page;
+package com.payneteasy.superfly.web.wicket.component;
 
 import org.apache.wicket.markup.html.panel.Panel;
 

@@ -5,11 +5,13 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
+@Secured("ROLE_ADMIN")
 public class AddSubsystemPage extends BasePage {
 	@SpringBean
 	private SubsystemService subsystemService;

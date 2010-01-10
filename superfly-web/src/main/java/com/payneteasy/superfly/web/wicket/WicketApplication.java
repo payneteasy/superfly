@@ -4,6 +4,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
+import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
@@ -20,6 +21,7 @@ public class WicketApplication extends WebApplication{
 	protected void init() {
 		getResourceSettings().addResourceFolder("src/main/java");
         addComponentInstantiationListener(new SpringComponentInjector(this));
+        getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
         mountBookmarkablePage("/actions", ListActionsPage.class);

@@ -9,6 +9,7 @@ public class UISubsystemForList implements Serializable {
 	private String identifier;
 	private String name;
 	private String callbackInformation;
+	private boolean fixed;
 
 	@Column(name = "ssys_id")
 	public long getId() {
@@ -43,5 +44,14 @@ public class UISubsystemForList implements Serializable {
 
 	public void setCallbackInformation(String callbackInformation) {
 		this.callbackInformation = callbackInformation;
+	}
+
+	@Column(name = "fixed")
+	public boolean isFixed() {
+		return fixed;
+	}
+
+	public void setFixed(boolean fixed) {
+		this.fixed = fixed;
 	}
 }

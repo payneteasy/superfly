@@ -6,11 +6,13 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
+@Secured("ROLE_ADMIN")
 public class EditRolePage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
@@ -25,7 +27,7 @@ public class EditRolePage extends BasePage {
 			@Override
 			protected void onSubmit() {
 			roleService.updateRole(role);
-			setResponsePage(ListRolePage.class);
+			setResponsePage(ListRolesPage.class);
 			}
 			 
 		 };
@@ -36,7 +38,7 @@ public class EditRolePage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				setResponsePage(ListRolePage.class);
+				setResponsePage(ListRolesPage.class);
 			}
 	    	   
 	       });

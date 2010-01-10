@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -15,6 +16,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
+@Secured("ROLE_ADMIN")
 public class AddGroupPage extends BasePage {
 	@SpringBean
 	private GroupService groupService;

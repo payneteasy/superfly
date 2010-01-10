@@ -19,6 +19,7 @@ create table subsystems(
   ssys_id              int(10) auto_increment,
   subsystem_name       varchar(32),
   callback_information varchar(64),
+  fixed                varchar(1),
 	unique unq_subsystems_subsystem_name (subsystem_name),
   primary key pk_subsystems(ssys_id)
 );

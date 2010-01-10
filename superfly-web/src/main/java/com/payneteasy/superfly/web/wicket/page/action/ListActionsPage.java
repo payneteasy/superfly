@@ -22,6 +22,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
@@ -33,6 +34,7 @@ import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
+@Secured("ROLE_ADMIN")
 public class ListActionsPage extends BasePage {
 	@SpringBean
 	private ActionService actionService;

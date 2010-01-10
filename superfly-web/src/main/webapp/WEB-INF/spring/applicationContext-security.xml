@@ -12,7 +12,7 @@
 
 		<sec:intercept-url pattern="/remoting/sso.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>        
         
-        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_USER"/>
+        <sec:intercept-url pattern="/**" access="ROLE_ADMIN"/>
         
         <sec:logout />
         <sec:form-login default-target-url="/"/>
@@ -21,18 +21,11 @@
 
     </sec:http>
     
-    <sec:authentication-provider>
-        <sec:user-service>
-            <sec:user name="admin"    password="admin"  authorities="ROLE_ADMIN"/>
-            <sec:user name="user"   password="user"    authorities="ROLE_USER"/>            
-        </sec:user-service>
-    </sec:authentication-provider>
-    
-<!--
-    <bean id="userDetailsService" class="com.payneteasy.alerting.web.security.UserDetailsServiceImpl">
-    	<property name="userService" ref="userService"/>
-    </bean>
--->
+	<bean id="superflyLocalAuthenticationProvider" class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
+		<sec:custom-authentication-provider/>
+		<property name="localSecurityService" ref="localSecurityService"/>
+	</bean>
+   
 	<bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
 		<property name="userMap">
 			<bean class="org.springframework.security.userdetails.memory.UserMap">

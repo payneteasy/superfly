@@ -3,7 +3,7 @@ delimiter $$
 create procedure ui_get_subsystems_list()
  main_sql:
   begin
-    select ssys_id, subsystem_name, callback_information
+    select ssys_id, subsystem_name, callback_information, fixed
       from subsystems;
   end
 $$
@@ -12,6 +12,7 @@ call save_routine_information('ui_get_subsystems_list',
                               concat_ws(',',
                                         'ssys_id int',
                                         'subsystem_name varchar',
-                                        'callback_information varchar'
+                                        'callback_information varchar',
+                                        'fixed varchar'
                               )
      );

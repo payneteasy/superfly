@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -19,6 +20,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
  * 
  * @author Roman Puchkovskiy
  */
+@Secured("ROLE_ADMIN")
 public class AddUserPage extends BasePage {
 	
 	@SpringBean

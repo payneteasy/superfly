@@ -8,9 +8,9 @@ create procedure ui_create_subsystem(i_subsystem_name varchar(32),
   begin
     insert into subsystems
           (
-             subsystem_name, callback_information
+             subsystem_name, callback_information, fixed
           )
-    values (i_subsystem_name, i_callback_information);
+    values (i_subsystem_name, i_callback_information, 'N');
 
     set o_ssys_id   = last_insert_id();
 

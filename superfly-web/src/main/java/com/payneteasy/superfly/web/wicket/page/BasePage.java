@@ -8,7 +8,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
-import com.payneteasy.superfly.web.wicket.page.role.ListRolePage;
+import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 
@@ -27,7 +27,7 @@ public abstract class BasePage extends WebPage{
         add(new BookmarkablePageLink<ListActionsPage>("actions", ListActionsPage.class));
         add(new BookmarkablePageLink<ListGroupsPage>("groups", ListGroupsPage.class));
         add(new BookmarkablePageLink<ListUsersPage>("users", ListUsersPage.class));
-        add(new BookmarkablePageLink<ListRolePage>("role", ListRolePage.class));
+        add(new BookmarkablePageLink<ListRolesPage>("role", ListRolesPage.class));
 	}
 	
 	protected abstract String getTitle();

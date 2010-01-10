@@ -4,6 +4,7 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
  main_sql:
   begin
     declare v_subsystem_name        varchar(128);
+    declare v_fixed        			varchar(1);
     declare v_grop_id               int(10);
     declare v_role_id               int(10);
     declare ex_no_records_found     int(10) default 0;
@@ -22,10 +23,15 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
 
     declare continue handler for not found set ex_no_records_found   = 1;
 
-    select subsystem_name
-      into v_subsystem_name
+    select subsystem_name, fixed
+      into v_subsystem_name, v_fixed
       from subsystems
      where ssys_id = i_ssys_id;
+     
+	if v_fixed = 'Y' then
+		select 'OK' status, null error_message;
+		leave main_sql;
+	end if;
 
     -- remove actions
     truncate table temp_actions;
