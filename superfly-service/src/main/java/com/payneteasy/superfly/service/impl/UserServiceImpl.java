@@ -8,6 +8,8 @@ import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -70,12 +72,36 @@ public class UserServiceImpl implements UserService {
 		userDao.cloneUser(request);
 		return request.getId();
 	}
+	
+	public List<UIRoleForCheckbox> getAllUserRoles(long userId) {
+		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(0,
+				Integer.MAX_VALUE, 4 /* role_id */, DaoConstants.ASC, userId);
+		return allRoles;
+	}
 
 	public void changeUserRoles(long userId, List<Long> rolesToAddIds,
 			List<Long> rolesToRemoveIds) {
 		userDao.changeUserRoles(userId,
 				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
 				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds));
+	}
+
+	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
+			String actionSubstring, int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType) {
+		return userDao.getAllUserActions(startFrom, recordsCount,
+				orderFieldNumber, orderType, userId, actionSubstring);
+	}
+
+	public int getAllUserActionsCount(long userId, String actionSubstring) {
+		return userDao.getAllUserActionsCount(userId, actionSubstring);
+	}
+
+	public void changeUserRoleActions(long userId,
+			List<Long> roleActionToAddIds, List<Long> roleActionToRemoveIds) {
+		userDao.changeUserRoleActions(userId,
+				StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
+				StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
 	}
 
 }

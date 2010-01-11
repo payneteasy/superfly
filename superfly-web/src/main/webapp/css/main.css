@@ -185,3 +185,8 @@ div.release-date {
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
+
+table.data td.checkbox-cell {
+	padding: 0.35em 0.35em 0.25em 0.35em;
+	text-align: center;
+}

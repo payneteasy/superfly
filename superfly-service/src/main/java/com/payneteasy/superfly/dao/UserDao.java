@@ -5,6 +5,8 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -129,6 +131,45 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_clone_user")
 	RoutineResult cloneUser(UICloneUserRequest cloneUserRequest);
+	
+	/**
+	 * Returns a list of roles assigned to the given user.
+	 * 
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @param userId
+	 *            ID of the user whose roles are to be returned
+	 * @return roles
+	 */
+	@AStoredProcedure(name = "ui_get_mapped_user_roles_list")
+	List<UIRoleForCheckbox> getMappedUserRoles(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType, long userId);
+	
+	/**
+	 * Returns a list of roles for the given user. Both assigned and
+	 * not-assigned roles are returned.
+	 * 
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @param userId
+	 *            ID of the user whose roles are to be returned
+	 * @return roles
+	 */
+	@AStoredProcedure(name = "ui_get_all_user_roles_list")
+	List<UIRoleForCheckbox> getAllUserRoles(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType, long userId);
 
 	/**
 	 * Changes a list of roles assigned to a user.
@@ -142,4 +183,52 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_change_user_roles")
 	RoutineResult changeUserRoles(long userId, String rolesToAddIds,
 			String rolesToRemoveIds);
+
+	/**
+	 * Returns a list of actions for the given user.
+	 * 
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @param userId
+	 *            ID of the user whose actions are to be returned
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions
+	 */
+	@AStoredProcedure(name = "ui_get_all_user_actions_list")
+	List<UIActionForCheckboxForUser> getAllUserActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long userId, String actionSubstring);
+	
+	/**
+	 * Returns count of actions for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user whose actions are to be counted
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions count
+	 */
+	@AStoredProcedure(name = "ui_get_all_user_actions_list_count")
+	int getAllUserActionsCount(long userId, String actionSubstring);
+	
+	/**
+	 * Changes a list of actions assigned to a user.
+	 * 
+	 * @param userId			ID of the user to change
+	 * @param roleActionToAddIds	comma-separated list of IDs of action+roles
+	 * 								to be added
+	 * @param roleActionToRemoveIds	comma-separated list of IDs of action+roles
+	 * 								to be removed
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_change_user_role_actions")
+	RoutineResult changeUserRoleActions(long userId, String roleActionToAddIds,
+			String roleActionToRemoveIds);
 }

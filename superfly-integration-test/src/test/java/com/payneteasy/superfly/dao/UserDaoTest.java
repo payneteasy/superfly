@@ -109,10 +109,37 @@ public class UserDaoTest extends AbstractDaoTest {
 		assertNotNull("User must be cloned", newUser);
 	}
 	
+	public void testGetMappedUserRoles() {
+		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId());
+	}
+	
+	public void testGetAllUserRoles() {
+		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId());
+	}
+	
 	public void testChangeUserRoles() {
 		long userId = getAnyUserId();
 		userDao.changeUserRoles(userId, "1,2,3", "4,5,6");
 		userDao.changeUserRoles(userId, null, "");
 		userDao.changeUserRoles(userId, "", null);
+	}
+	
+	public void testGetAllUserActions() {
+		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null);
+		// the following looks for 'admin'
+		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), "dmi");
+	}
+	
+	public void testGetAllUserActionsCount() {
+		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null);
+		// the following looks for 'admin'
+		userDao.getAllUserActionsCount(getAnyUserId(), "dmi");
+	}
+	
+	public void testChangeUserRoleActions() {
+		long userId = getAnyUserId();
+		userDao.changeUserRoleActions(userId, "1,2,3", "4,5,6");
+		userDao.changeUserRoleActions(userId, null, "");
+		userDao.changeUserRoleActions(userId, "", null);
 	}
 }

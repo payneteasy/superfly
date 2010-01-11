@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 
@@ -100,6 +102,16 @@ public interface UserService {
 	long cloneUser(long templateUserId, String newUsername, String newPassword);
 	
 	/**
+	 * Returns a list of roles for the given user. Each role is 'mapped' or
+	 * 'unmapped' depending on whether it's assigned this user or not.
+	 * 
+	 * @param userId
+	 *            ID of the user
+	 * @return list of roles
+	 */
+	List<UIRoleForCheckbox> getAllUserRoles(long userId);
+	
+	/**
 	 * Changes a list of roles assigned to a user.
 	 * 
 	 * @param userId			ID of the user to change
@@ -109,4 +121,46 @@ public interface UserService {
 	 */
 	void changeUserRoles(long userId, List<Long> rolesToAddIds,
 			List<Long> rolesToRemoveIds);
+	
+	/**
+	 * Returns a list of actions for the given user.
+	 *
+	 * @param userId
+	 *            ID of the user whose actions are to be returned
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @return actions
+	 */
+	List<UIActionForCheckboxForUser> getAllUserActions(long userId,
+			String actionSubstring, int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType);
+	
+	/**
+	 * Returns count of actions for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user whose actions are to be counted
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions count
+	 */
+	int getAllUserActionsCount(long userId, String actionSubstring);
+	
+	/**
+	 * Changes a list of actions assigned to a user.
+	 * 
+	 * @param userId			ID of the user to change
+	 * @param roleActionToAddIds	list of IDs of action+roles to be added
+	 * @param roleActionToRemoveIds	list of IDs of action+roles to be removed
+	 */
+	void changeUserRoleActions(long userId, List<Long> roleActionToAddIds,
+			List<Long> roleActionToRemoveIds);
 }

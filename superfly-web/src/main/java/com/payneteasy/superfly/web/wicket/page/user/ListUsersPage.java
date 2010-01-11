@@ -116,6 +116,8 @@ public class ListUsersPage extends BasePage {
 						EditUserPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<ChangeUserRolesPage>("change-user-roles",
 						ChangeUserRolesPage.class, actionsParameters));
+				item.add(new BookmarkablePageLink<ChangeUserActionsPage>("change-user-actions",
+						ChangeUserActionsPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
 //				item.add(new Link<Void>("delete-user") {

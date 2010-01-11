@@ -16,7 +16,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
@@ -30,15 +29,13 @@ public class ChangeUserRolesPage extends BasePage {
 	
 	@SpringBean
 	private UserService userService;
-	@SpringBean
-	private RoleService roleService;
 
 	public ChangeUserRolesPage(PageParameters params) {
 		super(params);
 		
 		final long userId = params.getAsLong("userId", -1);
 		
-		final List<UIRoleForCheckbox> roles = roleService.getAllUserRoles(userId);
+		final List<UIRoleForCheckbox> roles = userService.getAllUserRoles(userId);
 		
 		Form<List<UIRoleForCheckbox>> form = new Form<List<UIRoleForCheckbox>>("form") {
 			public void onSubmit() {

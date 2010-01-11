@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.RoleDao;
 import com.payneteasy.superfly.model.ui.role.UIRole;
-import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.service.RoleService;
@@ -26,12 +25,6 @@ public class RoleServiceImpl implements RoleService {
 
 	public List<UIRoleForFilter> getRolesForFilter() {
 		return roleDao.getRolesForFilter(null, null, 0, Integer.MAX_VALUE);
-	}
-
-	public List<UIRoleForCheckbox> getAllUserRoles(long userId) {
-		List<UIRoleForCheckbox> allRoles = roleDao.getAllUserRoles(0,
-				Integer.MAX_VALUE, 4 /* role_id */, DaoConstants.ASC, userId);
-		return allRoles;
 	}
 
 	public int getRoleCount(String rolesName, List<Long> subsystems) {
