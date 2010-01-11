@@ -3,8 +3,7 @@ delimiter $$
 create procedure ui_edit_role_properties(i_role_id int(10),
                                          i_role_name varchar(32),
                                          i_principal_name varchar(32),
-                                         i_ssys_id int(10), -- java compatibility
-                                         i_subsystem_name varchar(64) -- java compatibility
+                                         i_ssys_id int(10) -- java compatibility
 )
  main_sql:
   begin

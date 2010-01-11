@@ -7,7 +7,7 @@ create procedure ui_create_role(i_role_name varchar(32),
 )
  main_sql:
   begin
-    insert into role
+    insert into roles
           (
              role_name, principal_name, ssys_ssys_id
           )
