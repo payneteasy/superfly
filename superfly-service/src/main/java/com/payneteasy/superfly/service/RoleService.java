@@ -25,4 +25,5 @@ public interface RoleService {
 	UIRole getRole(long roleId);
 
 	void updateRole(UIRole role);
+	void createRole(UIRole role);
 }

@@ -51,4 +51,7 @@ public interface RoleDao {
 	
 	@AStoredProcedure(name = "ui_create_role")
 	RoutineResult createRole(UIRole role);
+	
+	@AStoredProcedure(name = "ui_change_role_groups")
+	RoutineResult changeRoleGroups(long roleId, String groupToAddIds,String groupToRemoveIds);
 }

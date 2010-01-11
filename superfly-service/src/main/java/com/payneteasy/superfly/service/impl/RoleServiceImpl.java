@@ -53,6 +53,10 @@ public class RoleServiceImpl implements RoleService {
 		roleDao.updateRole(role);
 		
 	}
+
+	public void createRole(UIRole role) {
+		roleDao.createRole(role);
+	}
 	
 
 }

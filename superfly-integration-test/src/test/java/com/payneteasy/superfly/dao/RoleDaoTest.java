@@ -17,8 +17,15 @@ public class RoleDaoTest extends AbstractDaoTest {
 	public void testUpdateRole() {
 		UIRole role = getAnyRole();
 		role.setPrincipalName("principalNameTest");
-		RoutineResult result=roleDao.updateRole(role);
+		RoutineResult result = roleDao.updateRole(role);
 		assertRoutineResult(result);
+	}
+
+	public void testChangeRoleGroups() {
+      long roleId = getAnyRoleId();
+      roleDao.changeRoleGroups(roleId, "1,2,3", "4,5,6");
+      roleDao.changeRoleGroups(roleId, null, "");
+      roleDao.changeRoleGroups(roleId, "", null);
 	}
 
 	private UIRole getAnyRole() {
@@ -63,8 +70,8 @@ public class RoleDaoTest extends AbstractDaoTest {
 		RoutineResult result = roleDao.deleteRole(roleId);
 		assertRoutineResult(result);
 	}
-	
-	public void testCreateDeleteRole(){
+
+	public void testCreateDeleteRole() {
 		UIRole role = new UIRole();
 		role.setRoleName("Test Role Name");
 		role.setPrincipalName("Test Role Principal Name");
@@ -73,6 +80,6 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 		result = roleDao.deleteRole(role.getRoleId());
 		assertRoutineResult(result);
-		
+
 	}
 }
