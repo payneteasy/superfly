@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.payneteasy.superfly.model.ActionToSave;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.utils.StringUtils;
 
@@ -26,6 +28,15 @@ public class GroupDaoTest extends AbstractDaoTest {
 		assertTrue("Must get some action", count > 0);
 	}
 	
+	public void testCreateDeleteGroup(){
+		UIGroup group = new UIGroup();
+		group.setName("test001");
+		group.setSubsystemId(1L);
+		RoutineResult routineResult =  groupDao.createGroup(group);
+		assertRoutineResult(routineResult);
+		routineResult = groupDao.deleteGorup(group.getId());
+		assertRoutineResult(routineResult);
+	}
 	/*public void testSaveActions() {
 		List<ActionToSave> actions = new ArrayList<ActionToSave>();
 		ActionToSave action;

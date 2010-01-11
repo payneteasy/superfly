@@ -88,4 +88,7 @@ public interface RoleDao {
 
 	@AStoredProcedure(name = "ui_edit_role_properties")
 	RoutineResult updateRole(UIRole role);
+	
+	@AStoredProcedure(name = "ui_create_role")
+	RoutineResult createRole(UIRole role);
 }

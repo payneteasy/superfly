@@ -85,4 +85,16 @@ public class RoleDaoTest extends AbstractDaoTest {
 		RoutineResult result = roleDao.deleteRole(roleId);
 		assertRoutineResult(result);
 	}
+	
+	public void testCreateDeleteRole(){
+		UIRole role = new UIRole();
+		role.setRoleName("Test Role Name");
+		role.setPrincipalName("Test Role Principal Name");
+		role.setSubsystemId(1L);
+		RoutineResult result = roleDao.createRole(role);
+		assertRoutineResult(result);
+		result = roleDao.deleteRole(role.getRoleId());
+		assertRoutineResult(result);
+		
+	}
 }

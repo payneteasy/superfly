@@ -33,7 +33,8 @@ public class UIRole implements Serializable {
 	public void setPrincipalName(String principalName) {
 		this.principalName = principalName;
 	}
-
+	
+	@Column(name="ssys_id")
 	public long getSubsystemId() {
 		return subsystemId;
 	}
