@@ -6,7 +6,7 @@ create procedure ui_get_role(i_role_id int(10))
     select r.role_id,
            r.role_name,
            r.principal_name,
-           ss.ssys_id subsystem_ssys_id,
+           ss.ssys_id,
            ss.subsystem_name
       from roles r, subsystems ss
      where r.ssys_ssys_id = ss.ssys_id and r.role_id = i_role_id;
@@ -19,7 +19,7 @@ call save_routine_information('ui_get_role',
                                         'role_name varchar',
                                         'principal_name varchar',
                                         'log_action varchar',
-                                        'subsystem_ssys_id int',
+                                        'ssys_id int',
                                         'subsystem_name varchar'
                               )
      );
