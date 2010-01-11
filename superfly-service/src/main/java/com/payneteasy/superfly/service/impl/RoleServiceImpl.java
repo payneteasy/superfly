@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.RoleDao;
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
@@ -28,7 +29,8 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public int getRoleCount(String rolesName, List<Long> subsystems) {
-		return roleDao.getRoleCount(rolesName, StringUtils.collectionToCommaDelimitedString(subsystems));
+		return roleDao.getRoleCount(rolesName, StringUtils
+				.collectionToCommaDelimitedString(subsystems));
 	}
 
 	public List<UIRoleForList> getRoles(int startFrom, int recordsCount,
@@ -45,18 +47,31 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public UIRole getRole(long roleId) {
-		
+
 		return roleDao.getRole(roleId);
 	}
 
 	public void updateRole(UIRole role) {
 		roleDao.updateRole(role);
-		
+
 	}
 
 	public void createRole(UIRole role) {
 		roleDao.createRole(role);
 	}
-	
+
+	public List<UIGroupForCheckbox> getAllRoleGroups(long roleId) {
+		List<UIGroupForCheckbox> getAllGroups = roleDao.getAllRoleGroups(0,
+				Integer.MAX_VALUE, 4, DaoConstants.ASC, roleId);
+		return getAllGroups;
+	}
+
+	public void changeRoleGroups(long roleId, List<Long> groupToAddIds,
+			List<Long> groupToRemoveIds) {
+		roleDao.changeRoleGroups(roleId, StringUtils
+				.collectionToCommaDelimitedString(groupToAddIds), StringUtils
+				.collectionToCommaDelimitedString(groupToRemoveIds));
+
+	}
 
 }

@@ -14,6 +14,10 @@ public class RoleDaoTest extends AbstractDaoTest {
 		this.roleDao = roleDao;
 	}
 
+	public void testGetAllRoleGroups() {
+       roleDao.getAllRoleGroups(0, 10, 1, "asc", getAnyRoleId());
+	}
+
 	public void testUpdateRole() {
 		UIRole role = getAnyRole();
 		role.setPrincipalName("principalNameTest");
@@ -22,10 +26,10 @@ public class RoleDaoTest extends AbstractDaoTest {
 	}
 
 	public void testChangeRoleGroups() {
-      long roleId = getAnyRoleId();
-      roleDao.changeRoleGroups(roleId, "1,2,3", "4,5,6");
-      roleDao.changeRoleGroups(roleId, null, "");
-      roleDao.changeRoleGroups(roleId, "", null);
+		long roleId = getAnyRoleId();
+		roleDao.changeRoleGroups(roleId, "1,2,3", "4,5,6");
+		roleDao.changeRoleGroups(roleId, null, "");
+		roleDao.changeRoleGroups(roleId, "", null);
 	}
 
 	private UIRole getAnyRole() {

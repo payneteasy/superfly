@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Change role groups</title>
+</head>
+<body>
+<wicket:extend>
+	<form wicket:id="form">
+	    <table class="data">
+	    	<thead>
+	    		<tr>
+		    		<th></th>
+		    		<th>Subsystem</th>
+		    		<th>Groups</th>
+	    		</tr>
+	    	</thead>
+	    	<tbody>
+	    		<tr wicket:id="list-groups">
+	    			<td><input type="checkbox" wicket:id="mapped" /></td>
+	    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
+	    			<td><span wicket:id="group-name">Group 1</span></td>
+	    		</tr>
+			</tbody>
+		</table>
+		<div>
+			<input type="submit" value="Change" />
+			<input type="submit" value="Cancel" wicket:id="cancel" />
+		</div>
+	</form>
+</wicket:extend>
+</body>
+</html>

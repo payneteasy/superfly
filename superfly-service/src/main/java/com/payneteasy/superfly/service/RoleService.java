@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
@@ -25,5 +26,11 @@ public interface RoleService {
 	UIRole getRole(long roleId);
 
 	void updateRole(UIRole role);
+
 	void createRole(UIRole role);
+
+	List<UIGroupForCheckbox> getAllRoleGroups(long roleId);
+
+	void changeRoleGroups(long roleId, List<Long> groupToAddIds,
+			List<Long> groupToRemoveIds);
 }

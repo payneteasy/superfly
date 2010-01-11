@@ -118,6 +118,8 @@ public class ListRolesPage extends BasePage {
 				});
 				item.add(new BookmarkablePageLink("role-edit",
 						EditRolePage.class).setParameter("id", role.getId()));
+				item.add(new BookmarkablePageLink("role-groups",
+						ChangeRoleGroupsPage.class).setParameter("id", role.getId()));
 			}
 
 		};
