@@ -11,8 +11,6 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import com.payneteasy.superfly.model.ui.group.UIGroupForList;
-
 /**
  * Base for a sortable data provider.
  * 
@@ -23,16 +21,16 @@ public abstract class IndexedSortableDataProvider<T extends Serializable> extend
 	private Map<String, Integer> fieldNameToIndex;
 	
 	private List<T> dataset=new ArrayList<T>();
+	 
+	 public List<T> getDataset() {
+	  return dataset;
+	 }
+
+	 public void setDataset(List<T> dataset) {
+	  this.dataset.clear();
+	  this.dataset.addAll(dataset);
+	 }
 	
-	public List<T> getDataset() {
-		return dataset;
-	}
-
-	public void setDataset(List<T> dataset) {
-		this.dataset.clear();
-		this.dataset.addAll(dataset);
-	}
-
 	public IndexedSortableDataProvider(String[] sortFields) {
 		super();
 		fieldNameToIndex = new HashMap<String, Integer>();
