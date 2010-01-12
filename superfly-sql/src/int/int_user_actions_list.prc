@@ -5,6 +5,7 @@ create procedure int_user_actions_list(i_start_from int(10),
                                        i_order_field_number int(10),
                                        i_order_type varchar(4),
                                        i_user_id int(10),
+                                       i_ssys_list text,
                                        i_mapping_status varchar(1),
                                        i_action_name varchar(100)
 )
@@ -34,6 +35,10 @@ create procedure int_user_actions_list(i_start_from int(10),
                  '         join ',
                  '           subsystems ss ',
                  '         on a.ssys_ssys_id = ss.ssys_id ',
+                 if(i_ssys_list is null,
+                    '',
+                    concat(' and ssys_id in (', i_ssys_list, ')')
+                 ),
                  '       left join ',
                  '         user_role_actions ura ',
                  '       on ura.ract_ract_id = ra.ract_id and ura.user_user_id = u.user_id ',
