@@ -7,7 +7,7 @@ import javax.persistence.Column;
 public class UIActionForList implements Serializable {
 	private long id;
 	private String name;
-	private String descroption;
+	private String description;
 	private boolean logAction;
 	private String subsystemName;
 	private boolean selected;
@@ -32,11 +32,11 @@ public class UIActionForList implements Serializable {
 
 	@Column(name = "action_description")
 	public String getDescroption() {
-		return descroption;
+		return description;
 	}
 
 	public void setDescroption(String descroption) {
-		this.descroption = descroption;
+		this.description = descroption;
 	}
 
 	@Column(name = "log_action")

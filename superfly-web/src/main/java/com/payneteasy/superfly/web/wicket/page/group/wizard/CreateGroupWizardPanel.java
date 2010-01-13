@@ -6,6 +6,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.springframework.security.annotation.Secured;
 
+
 @Secured("ROLE_ADMIN")
 public class CreateGroupWizardPanel extends Wizard {
 
@@ -17,8 +18,12 @@ public class CreateGroupWizardPanel extends Wizard {
 		
 		WizardModel model = new WizardModel();
 		model.add(new GroupPropertiesWizardStep(
-				new Model("Select sources"), 
-				new Model("Select sources you would like to subscribe alert from "), 
+				new Model("Set Group properties"), 
+				new Model("Provide Group name and Subsystem."), 
+				groupModel));
+		model.add(new GroupActionsWizardStep(
+				new Model("Select Actions for group"), 
+				new Model("Choose actions from list"), 
 				groupModel));
 		init(model);
 	}

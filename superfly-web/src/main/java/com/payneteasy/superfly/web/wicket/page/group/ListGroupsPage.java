@@ -28,6 +28,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.group.wizard.CreateGroupWizardPage;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
@@ -148,7 +149,7 @@ public class ListGroupsPage extends BasePage {
 		checkGroup.add(new Button("add-group"){
 			@Override
 			public void onSubmit() {
-				setResponsePage(AddGroupPage.class);
+				setResponsePage(CreateGroupWizardPage.class);
 			}
 			
 		}.setDefaultFormProcessing(false));
