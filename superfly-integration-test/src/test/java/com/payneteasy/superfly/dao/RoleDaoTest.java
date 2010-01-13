@@ -14,8 +14,23 @@ public class RoleDaoTest extends AbstractDaoTest {
 		this.roleDao = roleDao;
 	}
 
+	public void testGetAllRoleActions() {
+		roleDao.getAllRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
+	}
+
+	public void testGetAllRoleActionsCount() {
+		roleDao.getAllRoleActionsCount(getAnyRoleId(), null);
+	}
+
+	public void testChangeRoleActions() {
+       long roleId = getAnyRoleId();
+       roleDao.changeRoleActions(roleId, "1,2,3", "4,5,6");
+       roleDao.changeRoleActions(roleId, null, "");
+       roleDao.changeRoleActions(roleId, "", null);
+	}
+
 	public void testGetAllRoleGroups() {
-       roleDao.getAllRoleGroups(0, 10, 1, "asc", getAnyRoleId());
+		roleDao.getAllRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
 
 	public void testUpdateRole() {

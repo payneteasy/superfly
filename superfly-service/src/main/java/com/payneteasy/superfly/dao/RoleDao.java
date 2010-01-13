@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
@@ -60,4 +61,15 @@ public interface RoleDao {
 	@AStoredProcedure(name = "ui_get_all_role_groups_list")
 	List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, long roleId);
+
+	@AStoredProcedure(name = "ui_get_all_role_actions_list")
+	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType, long roleId, String actionName);
+
+	@AStoredProcedure(name = "ui_get_all_role_actions_list_count")
+	int getAllRoleActionsCount(long roleId, String actionName);
+
+	@AStoredProcedure(name = "ui_change_role_actions")
+	RoutineResult changeRoleActions(long roleId, String actionToAddIds,
+			String actionToRemoveIds);
 }
