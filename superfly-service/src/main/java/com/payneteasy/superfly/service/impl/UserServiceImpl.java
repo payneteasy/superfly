@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
@@ -14,10 +12,11 @@ import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class UserServiceImpl implements UserService {
-	
+
 	private UserDao userDao;
 
 	@Required
@@ -50,7 +49,7 @@ public class UserServiceImpl implements UserService {
 	public void updateUser(UIUser user) {
 		userDao.updateUser(user);
 	}
-	
+
 	public void deleteUser(long userId) {
 		userDao.deleteUser(userId);
 	}
@@ -72,7 +71,16 @@ public class UserServiceImpl implements UserService {
 		userDao.cloneUser(request);
 		return request.getId();
 	}
-	
+
+	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
+			List<Long> subsystemIds, String actionSubstring, int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType) {
+		return userDao.getAllUserActions(startFrom, recordsCount,
+				orderFieldNumber, orderType, userId, StringUtils
+						.collectionToCommaDelimitedString(subsystemIds),
+				actionSubstring);
+	}
+
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId) {
 		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(0,
 				Integer.MAX_VALUE, 4 /* role_id */, DaoConstants.ASC, userId);
@@ -81,27 +89,27 @@ public class UserServiceImpl implements UserService {
 
 	public void changeUserRoles(long userId, List<Long> rolesToAddIds,
 			List<Long> rolesToRemoveIds) {
-		userDao.changeUserRoles(userId,
-				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
-				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds));
+		userDao.changeUserRoles(userId, StringUtils
+				.collectionToCommaDelimitedString(rolesToAddIds), StringUtils
+				.collectionToCommaDelimitedString(rolesToRemoveIds));
 	}
 
-	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
-			String actionSubstring, int startFrom, int recordsCount,
-			int orderFieldNumber, String orderType) {
-		return userDao.getAllUserActions(startFrom, recordsCount,
-				orderFieldNumber, orderType, userId, actionSubstring);
-	}
-
-	public int getAllUserActionsCount(long userId, String actionSubstring) {
-		return userDao.getAllUserActionsCount(userId, actionSubstring);
+	public int getAllUserActionsCount(long userId, List<Long> subsystemIds,
+			String actionSubstring) {
+		return userDao.getAllUserActionsCount(userId, StringUtils
+				.collectionToCommaDelimitedString(subsystemIds),
+				actionSubstring);
 	}
 
 	public void changeUserRoleActions(long userId,
 			List<Long> roleActionToAddIds, List<Long> roleActionToRemoveIds) {
-		userDao.changeUserRoleActions(userId,
-				StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
-				StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
+		userDao
+				.changeUserRoleActions(
+						userId,
+						StringUtils
+								.collectionToCommaDelimitedString(roleActionToAddIds),
+						StringUtils
+								.collectionToCommaDelimitedString(roleActionToRemoveIds));
 	}
 
 }

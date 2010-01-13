@@ -204,7 +204,7 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_all_user_actions_list")
 	List<UIActionForCheckboxForUser> getAllUserActions(int startFrom,
 			int recordsCount, int orderFieldNumber, String orderType,
-			long userId, String actionSubstring);
+			long userId, String subsystemIds,String actionSubstring);
 	
 	/**
 	 * Returns count of actions for the given user.
@@ -216,7 +216,7 @@ public interface UserDao {
 	 * @return actions count
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_actions_list_count")
-	int getAllUserActionsCount(long userId, String actionSubstring);
+	int getAllUserActionsCount(long userId, String subsystemIds, String actionSubstring);
 	
 	/**
 	 * Changes a list of actions assigned to a user.

@@ -75,7 +75,7 @@ public class ChangeUserActionsPage extends BasePage {
 
 			public Iterator<? extends UIActionForCheckboxForUser> iterator(
 					int first, int count) {
-				List<UIActionForCheckboxForUser> allUserActions = userService.getAllUserActions(userId,
+				List<UIActionForCheckboxForUser> allUserActions = userService.getAllUserActions(userId,null,
 								filters.getActionNameSubstring(), first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC);
 				actionsHolder.setObject(allUserActions);
@@ -85,7 +85,7 @@ public class ChangeUserActionsPage extends BasePage {
 			}
 
 			public int size() {
-				return userService.getAllUserActionsCount(userId,
+				return userService.getAllUserActionsCount(userId,null,
 						filters.getActionNameSubstring());
 			}
 		};

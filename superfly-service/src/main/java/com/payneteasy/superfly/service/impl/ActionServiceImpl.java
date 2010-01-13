@@ -43,6 +43,4 @@ public class ActionServiceImpl implements ActionService {
 	public List<UIActionForFilter> getActionForFilter() {
 		return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
 	}
-	
-
 }

@@ -140,7 +140,7 @@ public interface UserService {
 	 * @return actions
 	 */
 	List<UIActionForCheckboxForUser> getAllUserActions(long userId,
-			String actionSubstring, int startFrom, int recordsCount,
+			List<Long> subsystemIds, String actionSubstring, int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType);
 	
 	/**
@@ -152,7 +152,7 @@ public interface UserService {
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @return actions count
 	 */
-	int getAllUserActionsCount(long userId, String actionSubstring);
+	int getAllUserActionsCount(long userId, List<Long> subsystemIds, String actionSubstring);
 	
 	/**
 	 * Changes a list of actions assigned to a user.

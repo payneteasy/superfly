@@ -26,6 +26,7 @@ public class ChangeRoleGroupsPage extends BasePage {
          super(parameters);
          final long roleId = parameters.getAsLong("id", -1);
          final List<UIGroupForCheckbox> listGroups = roleService.getAllRoleGroups(roleId);
+         
          Form<UIGroupForCheckbox> form = new Form<UIGroupForCheckbox>("form"){
 
 			@Override
