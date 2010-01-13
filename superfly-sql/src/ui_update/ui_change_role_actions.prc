@@ -6,11 +6,11 @@ create procedure ui_change_role_actions(i_role_id int(10),
 )
  main_sql:
   begin
-    if i_actn_list_link is not null then
+    if i_actn_list_link is not null and i_actn_list_link <> '' then
       call int_link_role_actions(i_role_id, i_actn_list_link);
     end if;
 
-    if i_actn_list_unlink is not null then
+    if i_actn_list_unlink is not null and i_actn_list_unlink <> '' then
       call int_unlink_role_actions(i_role_id, i_actn_list_unlink);
     end if;
 
