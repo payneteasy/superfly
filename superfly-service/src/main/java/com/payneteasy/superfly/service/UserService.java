@@ -107,9 +107,23 @@ public interface UserService {
 	 * 
 	 * @param userId
 	 *            ID of the user
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
 	 * @return list of roles
 	 */
-	List<UIRoleForCheckbox> getAllUserRoles(long userId);
+	List<UIRoleForCheckbox> getAllUserRoles(long userId,
+			int startFrom, int recordsCount);
+	
+	/**
+	 * Returns count of roles for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user
+	 * @return number of roles
+	 */
+	int getAllUserRolesCount(long userId);
 	
 	/**
 	 * Changes a list of roles assigned to a user.
@@ -127,32 +141,34 @@ public interface UserService {
 	 *
 	 * @param userId
 	 *            ID of the user whose actions are to be returned
+	 * @param subsystemId
+	 * 			  ID of subsystems of interest (if null, all subsystems are
+	 * 			  considered)
 	 * @param actionSubstring
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @param startFrom
 	 *            starting index for paging
 	 * @param recordsCount
 	 *            limit for paging
-	 * @param orderFieldNumber
-	 *            number of field to order by
-	 * @param orderType
-	 *            'asc'/'desc'
 	 * @return actions
 	 */
 	List<UIActionForCheckboxForUser> getAllUserActions(long userId,
-			List<Long> subsystemIds, String actionSubstring, int startFrom, int recordsCount,
-			int orderFieldNumber, String orderType);
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount);
 	
 	/**
 	 * Returns count of actions for the given user.
 	 * 
 	 * @param userId
 	 *            ID of the user whose actions are to be counted
+	 * @param subsystemId
+	 * 			  ID of subsystems of interest (if null, all subsystems are
+	 * 			  considered)
 	 * @param actionSubstring
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @return actions count
 	 */
-	int getAllUserActionsCount(long userId, List<Long> subsystemIds, String actionSubstring);
+	int getAllUserActionsCount(long userId, Long subsystemId, String actionSubstring);
 	
 	/**
 	 * Changes a list of actions assigned to a user.

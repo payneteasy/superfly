@@ -170,6 +170,17 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_all_user_roles_list")
 	List<UIRoleForCheckbox> getAllUserRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, long userId);
+	
+	/**
+	 * Returns count of roles for the given user. Both assigned and
+	 * not-assigned roles are considered.
+	 * 
+	 * @param userId
+	 *            ID of the user whose roles are to be returned
+	 * @return roles count
+	 */
+	@AStoredProcedure(name = "ui_get_all_user_roles_list_count")
+	int getAllUserRolesCount(long userId);
 
 	/**
 	 * Changes a list of roles assigned to a user.
@@ -197,6 +208,9 @@ public interface UserDao {
 	 *            'asc'/'desc'
 	 * @param userId
 	 *            ID of the user whose actions are to be returned
+	 * @param subsystemIds
+	 * 			  IDs of subsystems of interest (if null, all subsystems are
+	 * 			  considered)
 	 * @param actionSubstring
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @return actions
@@ -204,19 +218,23 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_all_user_actions_list")
 	List<UIActionForCheckboxForUser> getAllUserActions(int startFrom,
 			int recordsCount, int orderFieldNumber, String orderType,
-			long userId, String subsystemIds,String actionSubstring);
+			long userId, String subsystemIds, String actionSubstring);
 	
 	/**
 	 * Returns count of actions for the given user.
 	 * 
 	 * @param userId
 	 *            ID of the user whose actions are to be counted
+	 * @param subsystemIds
+	 * 			  IDs of subsystems of interest (if null, all subsystems are
+	 * 			  considered)            
 	 * @param actionSubstring
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @return actions count
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_actions_list_count")
-	int getAllUserActionsCount(long userId, String subsystemIds, String actionSubstring);
+	int getAllUserActionsCount(long userId, String subsystemIds,
+			String actionSubstring);
 	
 	/**
 	 * Changes a list of actions assigned to a user.

@@ -8,25 +8,31 @@
 <body>
 <wicket:extend>
 	<form wicket:id="form">
-	    <table class="data">
-	    	<thead>
-	    		<tr>
-		    		<th></th>
-		    		<th>Subsystem</th>
-		    		<th>Roles</th>
-	    		</tr>
-	    	</thead>
-	    	<tbody>
-	    		<tr wicket:id="roles">
-	    			<td><input type="checkbox" wicket:id="mapped" /></td>
-	    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-	    			<td><span wicket:id="role-name">Role 1</span></td>
-	    		</tr>
-			</tbody>
-		</table>
+		<div wicket:id="group">
+		    <table class="data">
+		    	<thead>
+		    		<tr>
+			    		<th><input type="checkbox" wicket:id="master-checkbox" /></th>
+			    		<th>Role</th>
+			    		<th>Subsystem</th>
+		    		</tr>
+		    	</thead>
+		    	<tbody>
+		    		<tr wicket:id="actions">
+		    			<td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
+		    			<td><span wicket:id="role-name">Role 1</span></td>
+		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
+		    		</tr>
+				</tbody>
+			</table>
+		</div>
+		<div wicket:id="paging-navigator">Paging navigation goes here</div>
 		<div>
-			<input type="submit" value="Change" />
-			<input type="submit" value="Cancel" wicket:id="cancel" />
+			<input type="submit" value="Apply" wicket:id="submit-link" />
+		</div>
+		<div>
+			<input type="submit" value="Next" wicket:id="next-link" />
+			<input type="submit" value="Cancel" wicket:id="cancel-link" />
 		</div>
 	</form>
 </wicket:extend>

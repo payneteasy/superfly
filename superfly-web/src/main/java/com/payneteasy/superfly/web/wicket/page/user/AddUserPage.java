@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -33,7 +34,10 @@ public class AddUserPage extends BasePage {
 			@Override
 			protected void onSubmit() {
 				userService.createUser(user);
-				getRequestCycle().setResponsePage(ListUsersPage.class);
+				PageParameters params = new PageParameters();
+				params.add("userId", String.valueOf(user.getId()));
+				params.add("wizard", "true");
+				getRequestCycle().setResponsePage(ChangeUserRolesPage.class, params);
 				getRequestCycle().setRedirect(true);
 				info("User created: " + user.getUsername());
 			}

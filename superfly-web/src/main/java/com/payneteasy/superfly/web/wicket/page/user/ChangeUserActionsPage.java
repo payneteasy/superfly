@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
@@ -26,10 +27,12 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
-import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
@@ -45,16 +48,25 @@ public class ChangeUserActionsPage extends BasePage {
 	
 	@SpringBean
 	private UserService userService;
+	@SpringBean
+	private SubsystemService subsystemService;
 
 	public ChangeUserActionsPage(PageParameters params) {
 		super(params);
 		
-		final long userId = params.getAsLong("userId", -1);
+		final long userId = params.getAsLong("userId");
+		final boolean isWizard = params.getAsBoolean("wizard", false);
+		
 		final Filters filters = new Filters();
 		final Form<Filters> filtersForm = new Form<Filters>("filters-form", new Model<Filters>(filters));
 		add(filtersForm);
 		filtersForm.add(new TextField<String>("action-name-substring",
 				new PropertyModel<String>(filters, "actionNameSubstring")));
+		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
+				new PropertyModel<UISubsystemForFilter>(filters, "subsystem"),
+				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+		subsystemDropdown.setNullValid(true);
+		filtersForm.add(subsystemDropdown);
 		
 		final ObjectHolder<List<UIActionForCheckboxForUser>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForUser>>();
 		
@@ -75,9 +87,10 @@ public class ChangeUserActionsPage extends BasePage {
 
 			public Iterator<? extends UIActionForCheckboxForUser> iterator(
 					int first, int count) {
-				List<UIActionForCheckboxForUser> allUserActions = userService.getAllUserActions(userId,null,
-								filters.getActionNameSubstring(), first, count,
-								DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC);
+				UISubsystemForFilter subsystem = filters.getSubsystem();
+				List<UIActionForCheckboxForUser> allUserActions = userService.getAllUserActions(userId,
+						subsystem == null ? null : subsystem.getId(),
+						filters.getActionNameSubstring(), first, count);
 				actionsHolder.setObject(allUserActions);
 				// causing the action check group model to be reinitialized
 				actionsCheckGroupModel.clearInitialized();
@@ -85,7 +98,9 @@ public class ChangeUserActionsPage extends BasePage {
 			}
 
 			public int size() {
-				return userService.getAllUserActionsCount(userId,null,
+				UISubsystemForFilter subsystem = filters.getSubsystem();
+				return userService.getAllUserActionsCount(userId,
+						subsystem == null ? null : subsystem.getId(),
 						filters.getActionNameSubstring());
 			}
 		};
@@ -113,8 +128,16 @@ public class ChangeUserActionsPage extends BasePage {
 
 		form.add(new PagingNavigator("paging-navigator", actionsDataView));
 		
-		form.add(new SubmitLink("save-actions-link"));
-		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
+		PageParameters pageParams = new PageParameters();
+		pageParams.add("userId", String.valueOf(userId));
+		pageParams.add("wizard", "true");
+		BookmarkablePageLink<ChangeUserRolesPage> backLink = new BookmarkablePageLink<ChangeUserRolesPage>(
+				"back-link", ChangeUserRolesPage.class, pageParams);
+		backLink.setVisible(isWizard);
+		form.add(backLink);
+		
+		form.add(new SubmitLink("save-link"));
+		form.add(new BookmarkablePageLink<Page>("cancel-link", ListUsersPage.class));
 	}
 
 	protected void doSubmit(long userId,
@@ -133,25 +156,32 @@ public class ChangeUserActionsPage extends BasePage {
 		userService.changeUserRoleActions(userId, idsToAdd, idsToRemove);
 		
 		info("Actions changed");
-		getRequestCycle().setResponsePage(ListUsersPage.class);
-		getRequestCycle().setRedirect(true);
 	}
 	
 	@Override
 	protected String getTitle() {
 		return "User actions";
 	}
-	
+
+	@SuppressWarnings("unused")
 	private static class Filters implements Serializable {
 		private String actionNameSubstring;
+		private UISubsystemForFilter subsystem;
 
 		public String getActionNameSubstring() {
 			return actionNameSubstring;
 		}
 
-		@SuppressWarnings("unused")
 		public void setActionNameSubstring(String actionNameSubstring) {
 			this.actionNameSubstring = actionNameSubstring;
+		}
+
+		public UISubsystemForFilter getSubsystem() {
+			return subsystem;
+		}
+
+		public void setSubsystem(UISubsystemForFilter subsystem) {
+			this.subsystem = subsystem;
 		}
 	}
 

@@ -117,6 +117,10 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId());
 	}
 	
+	public void testGetAllUserRolesCount() {
+		userDao.getAllUserRolesCount(getAnyUserId());
+	}
+	
 	public void testChangeUserRoles() {
 		long userId = getAnyUserId();
 		userDao.changeUserRoles(userId, "1,2,3", "4,5,6");
@@ -125,15 +129,15 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 	
 	public void testGetAllUserActions() {
-		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null,null);
+		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null, null);
 		// the following looks for 'admin'
-		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null,"dmi");
+		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), "1,2,3", "dmi");
 	}
 	
 	public void testGetAllUserActionsCount() {
-		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null,null);
+		userDao.getAllUserActionsCount(getAnyUserId(), null, null);
 		// the following looks for 'admin'
-		userDao.getAllUserActionsCount(getAnyUserId(), "1,2", "dmi");
+		userDao.getAllUserActionsCount(getAnyUserId(), "1,2,3", "dmi");
 	}
 	
 	public void testChangeUserRoleActions() {

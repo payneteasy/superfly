@@ -32,7 +32,7 @@ public class EditUserPage extends BasePage {
 	public EditUserPage(PageParameters params) {
 		super(params);
 		
-		long userId = params.getAsLong("userId", -1L);
+		long userId = params.getAsLong("userId");
 		
 		final UIUser initialUser = userService.getUser(userId);
 		final UIUserWithPassword2 user = new UIUserWithPassword2();

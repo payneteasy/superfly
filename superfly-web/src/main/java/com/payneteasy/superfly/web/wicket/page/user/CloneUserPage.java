@@ -32,7 +32,7 @@ public class CloneUserPage extends BasePage {
 	public CloneUserPage(PageParameters params) {
 		super(params);
 		
-		final long userId = params.getAsLong("userId", -1);
+		final long userId = params.getAsLong("userId");
 		final UIUser oldUser = userService.getUser(userId);
 		
 		final UIUserWithPassword2 user = new UIUserWithPassword2();

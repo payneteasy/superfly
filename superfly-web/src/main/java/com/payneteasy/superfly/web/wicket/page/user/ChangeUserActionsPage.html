@@ -10,6 +10,13 @@
 	<div class="filters">
 		<form wicket:id="filters-form">
 			<span>Action name substring: <input wicket:id="action-name-substring"/></span>
+			<span>Subsystem:
+				<select wicket:id="subsystem-filter">
+					<option>Subsystem 1</option>
+					<option>Subsystem 2</option>
+					<option>Subsystem 3</option>
+				</select>
+			</span>
 			<input type="submit" value="Filter"/>
 		</form>
 	</div>
@@ -19,25 +26,28 @@
 		    	<thead>
 		    		<tr>
 			    		<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-			    		<th>Subsystem</th>
-			    		<th>Role</th>
 			    		<th>Action</th>
+			    		<th>Role</th>
+			    		<th>Subsystem</th>
 		    		</tr>
 		    	</thead>
 		    	<tbody>
 		    		<tr wicket:id="actions">
 		    			<td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
-		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-		    			<td><span wicket:id="role-name">Role 1</span></td>
 		    			<td><span wicket:id="action-name">Action 1</span></td>
+		    			<td><span wicket:id="role-name">Role 1</span></td>
+		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
 		    		</tr>
 				</tbody>
 			</table>
 		</div>
 		<div wicket:id="paging-navigator">Paging navigation goes here</div>
 		<div>
-			<input type="submit" value="Change" wicket:id="save-actions-link" />
-			<input type="submit" value="Cancel" wicket:id="cancel" />
+			<input type="submit" value="Apply" wicket:id="save-link" />
+		</div>
+		<div>
+			<input type="submit" value="Back" wicket:id="back-link" />
+			<input type="submit" value="Cancel" wicket:id="cancel-link" />
 		</div>
 	</form>
 </wicket:extend>
