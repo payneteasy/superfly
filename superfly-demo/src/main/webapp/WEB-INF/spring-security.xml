@@ -33,7 +33,13 @@
     	<property name="authenticationManager" ref="authenticationManager"/>
     	<property name="defaultTargetUrl" value="/"/>
     	<property name="authenticationFailureUrl" value="/login.jsp"/>
+    	<!-- Uncomment the following if you are not using SSL client auth for
+    		calls to SSOService and write your own subsystem name here. If you
+    		use SSL client auth, your subsystem name will be extracted from
+    		your client certificate (its CN field by default) -->
+    	<!-- 
     	<property name="subsystemIdentifier" value="test1"/>
+    	 -->
     </bean>
     
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">

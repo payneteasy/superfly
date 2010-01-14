@@ -50,5 +50,19 @@ public interface SubsystemService {
 	 */
 	List<UISubsystemForFilter> getSubsystemsForFilter();
 
+	/**
+	 * Returns a subsystem by its ID.
+	 * 
+	 * @param subsystemId	ID of the subsystem
+	 * @return subsystem or null if no such subsystem
+	 */
 	UISubsystem getSubsystem(long subsystemId);
+
+	/**
+	 * Returns a subsystem by its name.
+	 * 
+	 * @param subsystemName	name of the subsystem
+	 * @return subsystem or null if no such subsystem
+	 */
+	UISubsystem getSubsystemByName(String subsystemName);
 }

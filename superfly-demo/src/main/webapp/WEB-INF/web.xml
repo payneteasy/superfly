@@ -30,7 +30,18 @@
 	</context-param>
 	<context-param>
 		<param-name>superfly-sso-service-url</param-name>
-		<param-value>http://localhost:8080/superfly/sso.service</param-value>
+		<!-- If you're not using SSL client auth for your SSOService calls,
+			you will probably want to set here an absolute URL (beginning with
+			http:// and host name). -->
+		<param-value>/superfly/sso.service</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-sso-service-host</param-name>
+		<param-value>localhost</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-sso-service-secure-port</param-name>
+		<param-value>8443</param-value>
 	</context-param>
 
 	<listener>

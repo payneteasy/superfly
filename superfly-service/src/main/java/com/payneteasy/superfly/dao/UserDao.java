@@ -219,7 +219,7 @@ public interface UserDao {
 	List<UIActionForCheckboxForUser> getAllUserActions(int startFrom,
 			int recordsCount, int orderFieldNumber, String orderType,
 			long userId, String subsystemIds, String actionSubstring);
-	
+		
 	/**
 	 * Returns count of actions for the given user.
 	 * 

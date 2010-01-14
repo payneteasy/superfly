@@ -33,11 +33,32 @@ public interface SubsystemDao {
 	@AStoredProcedure(name = "ui_create_subsystem")
 	RoutineResult createSubsystem(UISubsystem subsystem);
 
+	/**
+	 * Saves a subsystem.
+	 * 
+	 * @param subsystem	subsystem to save
+	 * @return routine result
+	 */
 	@AStoredProcedure(name = "ui_edit_subsystem_properties")
 	RoutineResult updateSubsystem(UISubsystem subsystem);
 
+	/**
+	 * Returns a subsystem by its ID.
+	 * 
+	 * @param subsystemId	ID of the subsystem
+	 * @return subsystem or null if no such subsystem
+	 */
 	@AStoredProcedure(name = "ui_get_subsystem")
 	UISubsystem getSubsystem(long subsystemId);
+	
+	/**
+	 * Returns a subsystem by its name.
+	 * 
+	 * @param subsystemName	name of the subsystem
+	 * @return subsystem or null if no such subsystem
+	 */
+	@AStoredProcedure(name = "ui_get_subsystem_by_name")
+	UISubsystem getSubsystemByName(String subsystemName);
 
 	/**
 	 * Deletes a subsystem.

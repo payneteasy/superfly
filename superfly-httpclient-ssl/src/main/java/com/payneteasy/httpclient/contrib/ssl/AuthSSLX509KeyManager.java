@@ -10,6 +10,11 @@ import javax.net.ssl.X509KeyManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * This is mainly to have ability to add logging.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class AuthSSLX509KeyManager implements X509KeyManager {
 	
     private X509KeyManager defaultKeyManager = null;

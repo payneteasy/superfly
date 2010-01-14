@@ -6,7 +6,6 @@ import javax.persistence.Column;
 
 public class UISubsystem implements Serializable {
 	private Long id;
-	private String identifier;
 	private String name;
 	private String callbackInformation;
 

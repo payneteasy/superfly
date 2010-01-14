@@ -5,6 +5,7 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.ui.preauth.x509.SubjectDnX509PrincipalExtractor;
 import org.springframework.security.ui.preauth.x509.X509PreAuthenticatedProcessingFilter;
 import org.springframework.security.ui.preauth.x509.X509PrincipalExtractor;
+import org.springframework.security.userdetails.UserDetails;
 
 import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
 
@@ -24,7 +25,18 @@ public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
 
 	public String obtainSubsystemIdentifier(String hint) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return (String) authentication.getPrincipal();
+		return getUsername(authentication);
+	}
+
+	private String getUsername(Authentication authentication) {
+		Object principal = authentication.getPrincipal();
+		if (principal instanceof String) {
+			return (String) principal;
+		} else if (principal instanceof UserDetails) {
+			return ((UserDetails) principal).getUsername();
+		} else {
+			return principal.toString();
+		}
 	}
 
 }

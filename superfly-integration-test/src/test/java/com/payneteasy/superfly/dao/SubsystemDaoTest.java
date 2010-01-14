@@ -13,24 +13,35 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 	public void setSubsystemDao(SubsystemDao subsystemDao) {
 		this.subsystemDao = subsystemDao;
 	}
+	
 	public void testUpdateSubsystem(){
 		UISubsystem subsystem = getAnySubsystem();
 		subsystem.setName("testName");
 		subsystem.setCallbackInformation("testCallbackInfo");
 		RoutineResult result = subsystemDao.updateSubsystem(subsystem);
 		assertRoutineResult(result);
-	} 
+	}
+	
 	private UISubsystem getAnySubsystem(){
 		long subsystemId=getAnySubsystemId();
 		UISubsystem subsystem = subsystemDao.getSubsystem(subsystemId);
 		return subsystem;
 	}
+	
 	private long getAnySubsystemId(){
 		List<UISubsystemForList> subsystems = subsystemDao.getSubsystems();
 		UISubsystemForList subsystemForList = subsystems.get(0);
 		long subsystemId=subsystemForList.getId();
 		return subsystemId;	
 	}
+	
+	private String getAnySubsystemName(){
+		List<UISubsystemForList> subsystems = subsystemDao.getSubsystems();
+		UISubsystemForList subsystemForList = subsystems.get(0);
+		String subsystemName = subsystemForList.getName();
+		return subsystemName;	
+	}
+	
 	public void testGetSubsystems() {
 		List<UISubsystemForList> list = subsystemDao.getSubsystems();
 		assertNotNull("Subsystems list should not be null", list);
@@ -49,5 +60,13 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		List<UISubsystemForFilter> list = subsystemDao.getSubsystemsForFilter();
 		assertNotNull("Subsystems list should not be null", list);
 		assertTrue("Subsystems list should not be empty", list.size() > 0);
+	}
+	
+	public void testGetSubsystem() {
+		subsystemDao.getSubsystem(getAnySubsystemId());
+	}
+	
+	public void testGetSubsystemByName() {
+		subsystemDao.getSubsystemByName(getAnySubsystemName());
 	}
 }

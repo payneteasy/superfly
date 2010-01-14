@@ -13,6 +13,7 @@ public class StoresAndSSLConfig {
 	private Resource keyStoreResource = null;
 	private String keyStorePassword;
 	private String secureSchema = "https";
+	private String host;
 	private int securePort = 443;
 
 	public Resource getTrustKeyStoreResource() {
@@ -53,6 +54,14 @@ public class StoresAndSSLConfig {
 
 	public void setSecureSchema(String secureSchema) {
 		this.secureSchema = secureSchema;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
 	}
 
 	public int getSecurePort() {

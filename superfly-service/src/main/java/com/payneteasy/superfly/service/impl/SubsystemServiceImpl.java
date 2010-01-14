@@ -47,4 +47,8 @@ public class SubsystemServiceImpl implements SubsystemService {
 		return subsystemDao.getSubsystem(subsystemId);
 	}
 
+	public UISubsystem getSubsystemByName(String subsystemName) {
+		return subsystemDao.getSubsystemByName(subsystemName);
+	}
+
 }

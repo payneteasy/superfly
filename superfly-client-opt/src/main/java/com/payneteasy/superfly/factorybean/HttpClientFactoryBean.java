@@ -2,8 +2,6 @@ package com.payneteasy.superfly.factorybean;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
@@ -26,8 +24,7 @@ public class HttpClientFactoryBean implements FactoryBean {
 	private String username;
 	private String password;
 	private String authHost;
-	private Map<String, StoresAndSSLConfig> hostToConfig = null;
-	private StoresAndSSLConfig globalConfig = null;
+	private StoresAndSSLConfig hostConfig = null;
 	
 	private HttpClient httpClient = null;
 	
@@ -63,12 +60,8 @@ public class HttpClientFactoryBean implements FactoryBean {
 		this.authHost = authHost;
 	}
 
-	public void setHostToConfig(Map<String, StoresAndSSLConfig> hostToConfig) {
-		this.hostToConfig = hostToConfig;
-	}
-
-	public void setGlobalConfig(StoresAndSSLConfig globalConfig) {
-		this.globalConfig = globalConfig;
+	public void setHostConfig(StoresAndSSLConfig hostConfig) {
+		this.hostConfig = hostConfig;
 	}
 
 	public synchronized Object getObject() throws Exception {
@@ -104,39 +97,21 @@ public class HttpClientFactoryBean implements FactoryBean {
 	}
 	
 	protected void initSocketFactory() throws IOException {
-		if (hostToConfig != null) {
-			for (Entry<String, StoresAndSSLConfig> e : hostToConfig.entrySet()) {
-				String hostName = e.getKey();
-				StoresAndSSLConfig config = e.getValue();
-				URL trustKeyStoreUrl = null;
-				if (config.getTrustKeyStoreResource() != null) {
-					trustKeyStoreUrl = config.getTrustKeyStoreResource().getURL();
-				}
-				URL keyStoreUrl = null;
-				if (config.getKeyStoreResource() != null) {
-					keyStoreUrl = config.getKeyStoreResource().getURL();
-				}
-				ProtocolSocketFactory factory = new AuthSSLProtocolSocketFactory(
-						keyStoreUrl, config.getKeyStorePassword(),
-						trustKeyStoreUrl, config.getTrustKeyStorePassword());
-				Protocol protocol = createProtocol(config, factory);
-				httpClient.getHostConfiguration().setHost(hostName, config.getSecurePort(), protocol);
-			}
-		}
-		if (globalConfig != null) {
+		if (hostConfig != null) {
 			URL trustKeyStoreUrl = null;
-			if (globalConfig.getTrustKeyStoreResource() != null) {
-				trustKeyStoreUrl = globalConfig.getTrustKeyStoreResource().getURL();
+			if (hostConfig.getTrustKeyStoreResource() != null) {
+				trustKeyStoreUrl = hostConfig.getTrustKeyStoreResource().getURL();
 			}
 			URL keyStoreUrl = null;
-			if (globalConfig.getKeyStoreResource() != null) {
-				keyStoreUrl = globalConfig.getKeyStoreResource().getURL();
+			if (hostConfig.getKeyStoreResource() != null) {
+				keyStoreUrl = hostConfig.getKeyStoreResource().getURL();
 			}
 			ProtocolSocketFactory factory = new AuthSSLProtocolSocketFactory(
-					keyStoreUrl, globalConfig.getKeyStorePassword(),
-					trustKeyStoreUrl, globalConfig.getTrustKeyStorePassword());
-			Protocol protocol = createProtocol(globalConfig, factory);
-			Protocol.registerProtocol(globalConfig.getSecureSchema(), protocol);
+					keyStoreUrl, hostConfig.getKeyStorePassword(),
+					trustKeyStoreUrl, hostConfig.getTrustKeyStorePassword());
+			Protocol protocol = createProtocol(hostConfig, factory);
+			httpClient.getHostConfiguration().setHost(hostConfig.getHost(),
+					hostConfig.getSecurePort(), protocol);
 		}
 	}
 

@@ -10,14 +10,20 @@
         <sec:intercept-url pattern="/css*"   filters="none"/>
         <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 
-		<sec:intercept-url pattern="/remoting/sso.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>        
+		<!--
+			If you're not planning to use client SSL auth to protect your subsystem
+			calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
+			You will also have to modify ssoService bean properties (see its
+			comments in applicationContext-service.xml).
+		-->
+		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>        
         
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN"/>
         
         <sec:logout />
         <sec:form-login default-target-url="/"/>
         <sec:anonymous/>
-        <sec:x509 user-service-ref="preauthUserDetailsService"/>
+        <sec:x509 user-service-ref="subsystemUserDetailsService"/>
 
     </sec:http>
     
@@ -25,7 +31,12 @@
 		<sec:custom-authentication-provider/>
 		<property name="localSecurityService" ref="localSecurityService"/>
 	</bean>
+	
+	<bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
+		<property name="subsystemService" ref="subsystemService"/>
+	</bean>
    
+<!-- 
 	<bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
 		<property name="userMap">
 			<bean class="org.springframework.security.userdetails.memory.UserMap">
@@ -50,5 +61,6 @@
 			</bean>
 		</property>
 	</bean>
+ -->
 
 </beans>

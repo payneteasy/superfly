@@ -7,6 +7,49 @@
     <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
 -->
 
+	<bean id="ssoServiceHttpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+		<property name="hostConfig">
+			<bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
+				<property name="keyStoreResource" value="classpath:stores/test1_ks"/>
+				<property name="keyStorePassword" value="changeit"/>
+				<property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
+				<property name="trustKeyStorePassword" value="changeit"/>
+				<property name="host">
+					<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+						<property name="initParamName" value="superfly-sso-service-host"/>
+					</bean>
+				</property>
+				<property name="securePort">
+					<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+						<property name="initParamName" value="superfly-sso-service-secure-port"/>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="ssoServiceHttpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor">
+		<property name="httpClient" ref="ssoServiceHttpClient"/>
+	</bean>
+
+	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+		<property name="serviceUrl">
+			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+				<property name="initParamName" value="superfly-sso-service-url"/>
+			</bean>
+		</property>
+		<property name="httpInvokerRequestExecutor" ref="ssoServiceHttpInvokerRequestExecutor"/>
+	</bean>
+	
+	<!--
+		If not using SSL client auth, comment out ssoService definition above
+		and uncomment its definition below. You will also have to modify
+	 	twoStepAuthenticationProcessingFilter definition in spring-security.xml
+	 	(see its comments).
+	 -->
+
+<!-- 
 	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
 		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
 		<property name="serviceUrl">
@@ -15,6 +58,7 @@
 			</bean>
 		</property>
 	</bean>
+ -->
 	
 	<bean id="xmlActionDescriptionCollector" class="org.payneteasy.superfly.client.XmlActionDescriptionCollector">
 		<property name="resource">
