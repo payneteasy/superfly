@@ -25,12 +25,12 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
+import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.group.wizard.CreateGroupWizardPage;
-import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
-import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
+import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
 @Secured("ROLE_ADMIN")
@@ -149,7 +149,7 @@ public class ListGroupsPage extends BasePage {
 		checkGroup.add(new Button("add-group"){
 			@Override
 			public void onSubmit() {
-				setResponsePage(CreateGroupWizardPage.class);
+				setResponsePage(GroupPropertiesPage.class);
 			}
 			
 		}.setDefaultFormProcessing(false));

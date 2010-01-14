@@ -28,12 +28,13 @@ public class GroupDaoTest extends AbstractDaoTest {
 		assertTrue("Must get some action", count > 0);
 	}
 	
-	public void testCreateDeleteGroup(){
+	public void testCreateGetDeleteGroup(){
 		UIGroup group = new UIGroup();
-		group.setName("test001");
+		group.setName("test");
 		group.setSubsystemId(1L);
 		RoutineResult routineResult =  groupDao.createGroup(group);
 		assertRoutineResult(routineResult);
+		assertEquals(groupDao.getGroupById(group.getId()).getName(),group.getName());
 		routineResult = groupDao.deleteGorup(group.getId());
 		assertRoutineResult(routineResult);
 	}

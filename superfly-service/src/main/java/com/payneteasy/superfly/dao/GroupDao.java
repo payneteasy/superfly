@@ -22,5 +22,8 @@ public interface GroupDao {
 	
 	@AStoredProcedure(name = "ui_get_groups_list_count")
 	int getGroupsCount(String groupName, String subsystemIds);
+	
+	@AStoredProcedure(name = "ui_get_group")
+	UIGroup getGroupById(long id);
 
 }

@@ -54,4 +54,9 @@ public class GroupServiceImpl implements GroupService {
 		return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
+	public UIGroup getGroupById(long id) {
+		return groupDao.getGroupById(id);
+		
+	}
+
 }

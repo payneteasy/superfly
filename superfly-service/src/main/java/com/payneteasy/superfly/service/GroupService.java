@@ -14,6 +14,8 @@ public interface GroupService {
 
 	void deleteGroup(long id);
 	
+	UIGroup getGroupById(long id);
+	
 	int getGroupsCount(String groupName, List<Long> subsystemIds);
 
 }
