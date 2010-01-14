@@ -188,6 +188,10 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_group.prc
 
+\. ui_get/ui_get_user_role_actions.prc
+
+\. ui_get/ui_get_subsystem_by_name.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
@@ -211,5 +215,3 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_change_user_roles.prc
 
 \. ui_update/ui_change_user_role_actions.prc
-
-\. stub/ui_get_subsystem_by_name.prc
