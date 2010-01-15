@@ -11,7 +11,7 @@ create procedure int_actions_list(i_action_name varchar(128),
 
     if i_action_name is not null then
       set v_search_conditions   =
-            concat(" and a.action_name like '", i_action_name, "%' ");
+            concat(" and a.action_name like '%", i_action_name, "%' ");
     end if;
 
     if i_action_description is not null then
