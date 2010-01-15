@@ -1,24 +1,23 @@
-package com.payneteasy.superfly;
+package com.payneteasy.superfly.demo;
 
 import javax.naming.NamingException;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Start {
-	 private static final Logger LOG = LoggerFactory.getLogger(Start.class);
+public class Demo {
+	 private static final Logger LOG = LoggerFactory.getLogger(Demo.class);
 
 	    /**
 	     * -Dwicket.configuration=development or deployment
 	     * -Djetty.port=8085
 	     */
 	    public static void main(String[] args) throws Exception {
-	        new Start().startServer();
+	        new Demo().startServer();
 	    }
 	    
 	    public void startServer() throws NamingException {
@@ -29,32 +28,22 @@ public class Start {
 	        // Set some timeout options to make debugging easier.
 	        connector.setMaxIdleTime(1000 * 60 * 60);
 	        connector.setSoLingerTime(-1);
-	        connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8085")));
+	        connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8086")));
 	        
-	        SslSocketConnector secureConnector = new SslSocketConnector();
-	        // Set some timeout options to make debugging easier.
-	        secureConnector.setMaxIdleTime(1000 * 60 * 60);
-	        secureConnector.setSoLingerTime(-1);
-	        secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
-	        secureConnector.setKeystore("src/test/resources/server_ks");
-	        secureConnector.setKeyPassword("changeit");
-	        secureConnector.setTruststore("src/test/resources/ca_ts");
-	        secureConnector.setTrustPassword("changeit");
-	        
-	        server.setConnectors(new Connector[]{connector, secureConnector});
+	        server.setConnectors(new Connector[]{connector});
 
-	        WebAppContext superfly = new WebAppContext();
-	        superfly.setServer(server);
-	        superfly.setContextPath("/superfly");
-	        superfly.setWar("src/main/webapp");
-	        superfly.setConfigurationClasses(new String[] {
+	        WebAppContext demo = new WebAppContext();
+	        demo.setServer(server);
+	        demo.setContextPath("/superfly-demo");
+	        demo.setWar("src/main/webapp");
+	        demo.setConfigurationClasses(new String[] {
 	                "org.mortbay.jetty.webapp.WebInfConfiguration",
 	                "org.mortbay.jetty.plus.webapp.EnvConfiguration",
 	                "org.mortbay.jetty.plus.webapp.Configuration",
 	                "org.mortbay.jetty.webapp.JettyWebXmlConfiguration"
 	        });
 	        
-	        server.addHandler(superfly);
+	        server.addHandler(demo);
 
 	        try {
 	            System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
