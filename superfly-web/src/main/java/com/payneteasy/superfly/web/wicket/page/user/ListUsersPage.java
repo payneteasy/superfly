@@ -92,7 +92,12 @@ public class ListUsersPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIUserForList> item) {
 				final UIUserForList user = item.getModelObject();
-				item.add(new Label("user-name", user.getUsername()));
+				PageParameters actionsParameters = new PageParameters();
+				actionsParameters.add("userId", String.valueOf(user.getId()));
+				BookmarkablePageLink<ViewUserPage> viewUserLink = new BookmarkablePageLink<ViewUserPage>("view-user",
+						ViewUserPage.class, actionsParameters);
+				item.add(viewUserLink);
+				viewUserLink.add(new Label("user-name", user.getUsername()));
 				Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
 					@Override
 					public void onClick() {
@@ -110,8 +115,6 @@ public class ListUsersPage extends BasePage {
 				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
 				
-				PageParameters actionsParameters = new PageParameters();
-				actionsParameters.add("userId", String.valueOf(user.getId()));
 				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
 						EditUserPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<ChangeUserRolesPage>("change-user-roles",
@@ -127,8 +130,6 @@ public class ListUsersPage extends BasePage {
 //						info("User deleted: " + user.getUsername());
 //					}
 //				});
-				item.add(new BookmarkablePageLink<ViewUserPage>("view-user",
-						ViewUserPage.class, actionsParameters));
 			}
 		};
 		add(usersDataView);
