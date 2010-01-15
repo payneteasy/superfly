@@ -15,6 +15,7 @@ import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
+import com.payneteasy.superfly.web.wicket.page.user.ViewUserPage;
 
 public class WicketApplication extends WebApplication{
 
@@ -35,6 +36,7 @@ public class WicketApplication extends WebApplication{
         mountBookmarkablePage("/users/clone", CloneUserPage.class);
         mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
         mountBookmarkablePage("/users/changeActions", ChangeUserActionsPage.class);
+        mountBookmarkablePage("/users/view", ViewUserPage.class);
 	}
 
 	@Override

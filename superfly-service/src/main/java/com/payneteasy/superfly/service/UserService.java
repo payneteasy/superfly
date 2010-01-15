@@ -6,6 +6,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 
 /**
  * Service to work with users.
@@ -179,4 +180,20 @@ public interface UserService {
 	 */
 	void changeUserRoleActions(long userId, List<Long> roleActionToAddIds,
 			List<Long> roleActionToRemoveIds);
+	
+	/**
+	 * Returns a user with roles assigned to him and actions assigned through
+	 * them.
+	 * 
+	 * @param userId				ID of the user to get
+	 * @param subsystemIds			IDs of subsystems to which roles and
+	 * 								actions must be restricted (ignored if null)
+	 * @param actionNameSubstring	substring which must be contained in the
+	 * 								action name to allow action in the list 
+	 * @param roleNameSubstring		substring which must be contained in the
+	 * 								role name to allow role in the list
+	 * @return user with roles and actions
+	 */
+	UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds,
+			String actionNameSubstring, String roleNameSubstring);
 }

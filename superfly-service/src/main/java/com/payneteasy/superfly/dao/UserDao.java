@@ -10,6 +10,7 @@ import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 
 /**
  * DAO used to work with users.
@@ -249,4 +250,21 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_change_user_role_actions")
 	RoutineResult changeUserRoleActions(long userId, String roleActionToAddIds,
 			String roleActionToRemoveIds);
+	
+	/**
+	 * Returns a user with roles assigned to him and actions assigned through
+	 * them.
+	 * 
+	 * @param userId				ID of the user to get
+	 * @param subsystemIds			IDs of subsystems to which roles and
+	 * 								actions must be restricted (ignored if null)
+	 * @param actionNameSubstring	substring which must be contained in the
+	 * 								action name to allow action in the list 
+	 * @param roleNameSubstring		substring which must be contained in the
+	 * 								role name to allow role in the list
+	 * @return user with roles and actions
+	 */
+	@AStoredProcedure(name = "ui_get_user_role_actions")
+	UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds,
+			String actionNameSubstring, String roleNameSubstring);
 }

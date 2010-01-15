@@ -146,4 +146,11 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.changeUserRoleActions(userId, null, "");
 		userDao.changeUserRoleActions(userId, "", null);
 	}
+	
+	public void testGetUserRoleActions() {
+		long userId = getAnyUserId();
+		userDao.getUserRoleActions(userId, null, null, null);
+		userDao.getUserRoleActions(userId, "1,2,3", "dmi", "dmi");
+		userDao.getUserRoleActions(userId, "1,2,3", "this substring is expected to not exist", "this substring is expected to not exist");
+	}
 }

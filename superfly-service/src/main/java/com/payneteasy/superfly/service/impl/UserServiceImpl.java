@@ -13,6 +13,7 @@ import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.service.UserService;
 
 @Transactional
@@ -111,6 +112,12 @@ public class UserServiceImpl implements UserService {
 		userDao.changeUserRoleActions(userId,
 				StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
 				StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
+	}
+
+	public UIUserWithRolesAndActions getUserRoleActions(long userId,
+			String subsystemIds, String actionNameSubstring,
+			String roleNameSubstring) {
+		return userDao.getUserRoleActions(userId, subsystemIds, actionNameSubstring, roleNameSubstring);
 	}
 
 }

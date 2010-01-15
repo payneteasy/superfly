@@ -127,6 +127,8 @@ public class ListUsersPage extends BasePage {
 //						info("User deleted: " + user.getUsername());
 //					}
 //				});
+				item.add(new BookmarkablePageLink<ViewUserPage>("view-user",
+						ViewUserPage.class, actionsParameters));
 			}
 		};
 		add(usersDataView);
