@@ -30,7 +30,8 @@ public interface RoleService {
 
 	void createRole(UIRole role);
 
-	List<UIGroupForCheckbox> getAllRoleGroups(long roleId);
+	List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType, long roleId);
 
 	void changeRoleGroups(long roleId, List<Long> groupToAddIds,
 			List<Long> groupToRemoveIds);
@@ -40,6 +41,8 @@ public interface RoleService {
 			long roleId, String actionName);
 
 	int getAllRoleActionsCount(long roleId, String actionName);
+
+	int getAllRoleGroupsCount(long roleId);
 
 	void changeRoleActions(long roleId, List<Long> actionToAddIds,
 			List<Long> actionToRemoveIds);

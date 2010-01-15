@@ -75,7 +75,9 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
 	}
-
+    public void testGetAllRoleGroupsCount(){
+    	int count = roleDao.getAllRoleGroupsCount(1);
+    }
 	private long getAnyRoleId() {
 		List<UIRoleForList> roles = roleDao
 				.getRoles(0, 1, 1, "asc", null, null);

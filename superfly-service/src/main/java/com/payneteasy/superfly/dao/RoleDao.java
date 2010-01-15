@@ -62,9 +62,13 @@ public interface RoleDao {
 	List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, long roleId);
 
+	@AStoredProcedure(name = "ui_get_all_role_groups_list_count")
+	int getAllRoleGroupsCount(long roleId);
+
 	@AStoredProcedure(name = "ui_get_all_role_actions_list")
-	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom, int recordsCount,
-			int orderFieldNumber, String orderType, long roleId, String actionName);
+	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId, String actionName);
 
 	@AStoredProcedure(name = "ui_get_all_role_actions_list_count")
 	int getAllRoleActionsCount(long roleId, String actionName);

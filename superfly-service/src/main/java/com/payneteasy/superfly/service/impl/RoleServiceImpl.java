@@ -61,12 +61,7 @@ public class RoleServiceImpl implements RoleService {
 		roleDao.createRole(role);
 	}
 
-	public List<UIGroupForCheckbox> getAllRoleGroups(long roleId) {
-		List<UIGroupForCheckbox> getAllGroups = roleDao.getAllRoleGroups(0,
-				Integer.MAX_VALUE, 4, DaoConstants.ASC, roleId);
-		return getAllGroups;
-	}
-
+	
 	public void changeRoleGroups(long roleId, List<Long> groupToAddIds,
 			List<Long> groupToRemoveIds) {
 		roleDao.changeRoleGroups(roleId, StringUtils
@@ -92,6 +87,17 @@ public class RoleServiceImpl implements RoleService {
 	public int getAllRoleActionsCount(long roleId, String actionName) {
 		
 		return roleDao.getAllRoleActionsCount(roleId, actionName);
+	}
+
+	public int getAllRoleGroupsCount(long roleId) {
+		
+		return roleDao.getAllRoleGroupsCount(roleId);
+	}
+
+	public List<UIGroupForCheckbox> getAllRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId) {
+		return roleDao.getAllRoleGroups(startFrom, recordsCount, orderFieldNumber, orderType, roleId);
 	}
 
 }
