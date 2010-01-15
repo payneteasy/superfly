@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
@@ -42,5 +43,14 @@ public class ActionServiceImpl implements ActionService {
 
 	public List<UIActionForFilter> getActionForFilter() {
 		return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
+	}
+
+	public void copyActionProperties(long actionId, long actionIdCopy,
+			boolean userPrivileges) {
+		actionDao.copyActionProperties(actionId, actionIdCopy, userPrivileges);
+	}
+
+	public UIAction getAction(long actionId) {
+		return actionDao.getAction(actionId);
 	}
 }

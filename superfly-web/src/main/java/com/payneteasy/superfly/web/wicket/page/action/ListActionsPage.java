@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -14,6 +15,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
@@ -169,6 +171,8 @@ public class ListActionsPage extends BasePage {
 						.isLogAction() ? "yes" : "NO"));
 				item.add(switchLogLevel);
 				item.add(new CheckBox("selected", new PropertyModel<Boolean>(action, "selected")));
+				item.add(new BookmarkablePageLink("copy-action",
+						CopyActionPropertiesPage.class ).setParameter("id", action.getId()));
 			}
 			
 		};

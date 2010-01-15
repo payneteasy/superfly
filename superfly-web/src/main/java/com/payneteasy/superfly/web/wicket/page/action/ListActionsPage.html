@@ -30,11 +30,14 @@
 		<option>Subsystem 1</option>
 		<option>Subsystem 2</option>
 		<option>Subsystem 3</option>
-	</select> </span>&nbsp;&nbsp;&nbsp;<span>Action Name: <input type="text" wicket:id="auto" size="20"/></span> <input type="submit" value="Filter" />&nbsp;&nbsp;&nbsp;
+	</select> </span>&nbsp;&nbsp;&nbsp;<span>Action Name: <input type="text" wicket:id="auto" size="20"/></span> <input type="submit" value="Filter" />
+	<div>
 	<input type="submit" value="Log On/Off" wicket:id="log-action" />
+	</div>
 	<table class="data">
 		<thead>
 			<tr>
+			    <th></th>
 				<th><a wicket:id="order-by-actionName">Action Name</a></th>
 				<th><a wicket:id="order-by-actionDescription">Desciption</a></th>
 				<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
@@ -44,11 +47,13 @@
 		</thead>
 		<tbody>
 			<tr wicket:id="actionList">
+			<td><input type="checkbox" wicket:id="selected" /></td>
 				<td><span wicket:id="action-name">bond</span></td>
 				<td><span wicket:id="action-description">bond</span></td>
 				<td><span wicket:id="subsystem-name">bond</span></td>
 				<td><a href="#" wicket:id="switch-loglevel"><span wicket:id="log-action">Yes</span></a></td>
-				<td><input type="checkbox" wicket:id="selected" /></td>
+				<td><a href="#" wicket:id="copy-action">Copy</a></td>
+				
 			</tr>
 		</tbody>
 	</table>

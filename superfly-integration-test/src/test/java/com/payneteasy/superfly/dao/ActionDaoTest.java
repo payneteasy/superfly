@@ -14,7 +14,12 @@ public class ActionDaoTest extends AbstractDaoTest {
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
-
+    public void testCopyActionProperties(){
+    	actionDao.copyActionProperties(1, 2, true);
+    }
+    public void testGetAction(){
+    	actionDao.getAction(1);
+    }
 	public void testGetActionsForfilter() {
         List<UIActionForFilter> actions = actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
         assertNotNull("List of actions must not be null", actions);
