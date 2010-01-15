@@ -25,5 +25,11 @@ public interface GroupDao {
 	
 	@AStoredProcedure(name = "ui_get_group")
 	UIGroup getGroupById(long id);
+	
+	@AStoredProcedure(name = "ui_edit_group_properties")
+	RoutineResult updateGroup(long id, String groupName);
+
+	@AStoredProcedure(name = "ui_change_group_actions")
+	RoutineResult changeGroupActions(long groupId, String actionsToLink, String actionsToUnlink);
 
 }

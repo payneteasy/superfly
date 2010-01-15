@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.group.wizard;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
@@ -11,6 +12,10 @@ public class GroupWizardModel implements Serializable {
 	private String groupName;
 	private UISubsystemForFilter groupSubsystem;
 	private List<UIActionForList> actions;
+	
+	public GroupWizardModel() {
+		this.actions = new ArrayList<UIActionForList>();
+	}
 	
 	public String getGroupName() {
 		return groupName;

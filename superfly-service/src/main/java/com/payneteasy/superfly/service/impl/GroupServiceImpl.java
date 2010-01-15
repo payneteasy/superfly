@@ -59,4 +59,18 @@ public class GroupServiceImpl implements GroupService {
 		
 	}
 
+	public void updateGroup(UIGroup group) {
+		groupDao.updateGroup(group.getId(), group.getName());
+		
+	}
+
+	public void changeGroupActions(long groupId, List<Long> ActionsToLink,
+			List<Long> ActionsToUnlink) {
+			groupDao.changeGroupActions(
+					groupId,
+					StringUtils.collectionToCommaDelimitedString(ActionsToLink),
+					StringUtils.collectionToCommaDelimitedString(ActionsToUnlink));
+		
+	}
+
 }

@@ -98,13 +98,13 @@ public class ListGroupsPage extends BasePage {
 		
 		
 //		DATAVIEW
-		final CheckGroup checkGroup = new CheckGroup("group", new ArrayList());
+		final CheckGroup<UIGroupForList> checkGroup = new CheckGroup<UIGroupForList>("group", new ArrayList());
 		
 		final DataView<UIGroupForList> groupDataView = new PagingDataView<UIGroupForList>("list-group",groupDataProvider){
 			@Override
 			protected void populateItem(Item<UIGroupForList> item) {
 				final UIGroupForList group = item.getModelObject();
-				item.add(new Check("selected", new PropertyModel(item.getModel(), "selected")));
+				item.add(new Check<UIGroupForList>("selected", item.getModel(), checkGroup));
 				item.add(new Label("name-group",group.getName()));
 				item.add(new Label("ssys-group",group.getSubsystemName()));
 			}

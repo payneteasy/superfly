@@ -7,9 +7,12 @@
 <body>
 <wicket:extend>
 
-<form wicket:id="form">
-<span wicket:id="msg"></span>
-<span wicket:id="group">
+	<div>
+	<form wicket:id="filters-form"><span>Action name
+	contains: <input wicket:id="action-name-substr" /></span> &nbsp;<input
+		type="submit" value="Filter" /></form>
+	</div>
+	<form wicket:id="form"><span wicket:id="group">
 	<table class="data">
 		<thead>
 			<tr>
@@ -27,12 +30,9 @@
 		</tbody>
 	</table>
 	<div wicket:id="paging-navigator"></div>
-</span>
-
-<input type=submit wicket:id="btn-back" value="&lt; Back"/>
-	<input type=submit wicket:id="btn-cancel" value="Cancel"/>
-	<input type=submit value="Finish"/>
-</form>
+	</span> <input type=submit wicket:id="btn-back" value="&lt; Back" />&nbsp;&nbsp;
+	<input type=submit wicket:id="btn-cancel" value="Cancel" />&nbsp;&nbsp;
+	<input type=submit value="Apply" /></form>
 
 </wicket:extend>
 </body>

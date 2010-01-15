@@ -11,11 +11,15 @@ public interface GroupService {
 			int orderFieldNumber, boolean orderType, String groupNamePrefix,
 			List<Long> subsystemIds);
 	void createGroup(UIGroup group);
-
+	
+	void updateGroup(UIGroup group);
+	
 	void deleteGroup(long id);
 	
 	UIGroup getGroupById(long id);
 	
 	int getGroupsCount(String groupName, List<Long> subsystemIds);
+	
+	void changeGroupActions(long groupId, List<Long> ActionsToLink, List<Long> ActionsToUnlink);
 
 }

@@ -23,7 +23,6 @@ import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 
 @Secured("ROLE_ADMIN")
 public class GroupPropertiesPage extends BasePage {
-
 	@SpringBean
 	SubsystemService ssysService;
 
@@ -43,7 +42,7 @@ public class GroupPropertiesPage extends BasePage {
 		this(param.getAsLong("gid"));		
 	}
 
-	public GroupPropertiesPage(Long groupId) {		
+	public GroupPropertiesPage(final Long groupId) {		
 		String msg_text="Please, provide new Group name and Subsystem";
 		GroupWizardModel groupModel = new GroupWizardModel();
 		
@@ -67,9 +66,13 @@ public class GroupPropertiesPage extends BasePage {
 				UIGroup group = new UIGroup();
 				group.setName(grModel.getGroupName());
 				group.setSubsystemId(grModel.getGroupSubsystem().getId());
-				groupService.createGroup(group);
+				if(groupId == null){
+				 groupService.createGroup(group);
+				}else{
+				 groupService.updateGroup(group);	
+				}
 				PageParameters params = new PageParameters();
-				params.add("gid", String.valueOf(group.getId()));
+				params.add("gid", String.valueOf(groupId==null ? group.getId(): groupId));
 				setResponsePage(GroupActionsPage.class,params);
 			}
 		};
@@ -91,6 +94,7 @@ public class GroupPropertiesPage extends BasePage {
 				new SubsystemChoiceRenderer());
 		
 		subsystemsList.setNullValid(false);
+		if(groupId!=null)subsystemsList.setEnabled(false);
 		form.add(subsystemsList);
 		add(form);
 

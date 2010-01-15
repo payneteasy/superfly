@@ -20,62 +20,34 @@ public class GroupDaoTest extends AbstractDaoTest {
 	
 	public void testGetGroupsForSubsystems(){
 		List<UIGroupForList> groupList = groupDao.getGroups(0, 10, 1, "asc", null, "1,2");
-		assertTrue("Action list should not be empty", groupList.size() > 0);
+		assertTrue("Group list should not be empty", groupList.size() > 0);
 	}
 	
 	public void testGetGroupCount(){		
 		int count = groupDao.getGroupsCount(null, null);
-		assertTrue("Must get some action", count > 0);
+		assertTrue("Must get some group", count > 0);
 	}
 	
-	public void testCreateGetDeleteGroup(){
+	public void testCreateGetDeleteUpdateGroup(){
 		UIGroup group = new UIGroup();
 		group.setName("test");
 		group.setSubsystemId(1L);
 		RoutineResult routineResult =  groupDao.createGroup(group);
 		assertRoutineResult(routineResult);
-		assertEquals(groupDao.getGroupById(group.getId()).getName(),group.getName());
+        groupDao.updateGroup(group.getId(), "test_updated");
+        assertEquals(groupDao.getGroupById(group.getId()).getName(),"test_updated");
 		routineResult = groupDao.deleteGorup(group.getId());
 		assertRoutineResult(routineResult);
 	}
-	/*public void testSaveActions() {
-		List<ActionToSave> actions = new ArrayList<ActionToSave>();
-		ActionToSave action;
-		action = new ActionToSave();
-		action.setName("action1");
-		action.setDescription("description1");
-		actions.add(action);
-		action = new ActionToSave();
-		action.setName("action2");
-		action.setDescription("description2");
-		actions.add(action);
-		groupDao.saveActions("test1", actions);
+	
+	private long getAnyGroupId(){
+		List<UIGroupForList> list = groupDao.getGroups(0, 1, 1, "asc", null, null);
+		return list.get(0).getId();
 	}
-
-	public void testGetActionForList() {
-		List<UIActionForList> actionList = groupDao.getActions(0, 10, 1,
-				"asc", null, null, "1,2");
-		assertTrue("Action list should not be empty", actionList.size() > 0);
+	
+	public void testChangeGroupActions() {
+		long groupId = getAnyGroupId();
+		assertRoutineResult(groupDao.changeGroupActions(groupId, "1,2,3", "4,5,6"));
 	}
-	public void testGetActionCount(){
-		int count = groupDao.getActionCount(null, null, null);
-		assertTrue("Must get some action", count > 0);
-		groupDao.getActionCount("someActionName", "someActionDescription", "1,2");
-	}
-
-	public void testchangeActionsLogLevel() {
-		List<Long> logLevelsOn = new ArrayList<Long>();
-		Long logLevelOn;
-		logLevelOn = new Long(1);
-		logLevelsOn.add(logLevelOn);
-		logLevelOn = new Long(2);
-		logLevelsOn.add(logLevelOn);
-		List<Long> logLevelsOff = new ArrayList<Long>();
-		Long logLevelOff;
-		logLevelOff =new Long(3);
-		logLevelsOff.add(logLevelOff);
-		groupDao.changeActionsLogLevel(StringUtils
-				.collectionToCommaDelimitedString(logLevelsOn), StringUtils
-				.collectionToCommaDelimitedString(logLevelsOff));
-	}*/
+	
 }
