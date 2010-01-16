@@ -6,20 +6,21 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
 import org.springframework.security.annotation.Secured;
@@ -40,7 +41,34 @@ public class CopyActionPropertiesPage extends BasePage {
 	public CopyActionPropertiesPage(final PageParameters parameters) {
 		super(parameters);
 		final long actionId = parameters.getAsLong("id", -1);
-
+		
+		//modalWindow
+		final ModalWindow modalWindow;
+		add(modalWindow = new ModalWindow("modalWindow"));
+		modalWindow.setPageMapName("modal-name");
+		modalWindow.setCookieName("modal-cookie");
+		modalWindow.setPageCreator(new ModalWindow.PageCreator()
+		{
+			public Page createPage()
+			{
+				return new CopyActionWindow(CopyActionPropertiesPage.this,modalWindow,parameters);
+			}
+		});
+		modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+		{
+			public void onClose(AjaxRequestTarget target)
+			{
+				
+			}
+		});
+		modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback()
+		{
+			public boolean onCloseButtonClicked(AjaxRequestTarget target)
+			{
+				return true;
+			}
+		});
+		
 		final ActionFilter actionFilter = new ActionFilter();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);
@@ -78,8 +106,6 @@ public class CopyActionPropertiesPage extends BasePage {
 				: action.getActionDescription()));
 		filtersForm.add(new Label("subname-action", action == null ? null
 				: action.getSubsystemName()));
-		filtersForm.add(new CheckBox("selected", new PropertyModel<Boolean>(
-				actionFilter, "selected")));
 
 		String[] fieldName = { "actionId", "actionName", "actionDescription",
 				"subsystemName" };
@@ -112,7 +138,17 @@ public class CopyActionPropertiesPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIActionForList> item) {
 				final UIActionForList action = item.getModelObject();
-				Link<Void> selectActionForCopy = new Link<Void>("select-action") {
+				AjaxLink selectActionForCopy = new AjaxLink("select-action"){
+
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						parameters.put("copyId", action.getId());
+						modalWindow.show(target);
+					}
+					
+				};
+				
+				/*Link<Void> selectActionForCopy = new Link<Void>("select-action") {
 
 					@Override
 					public void onClick() {
@@ -121,7 +157,7 @@ public class CopyActionPropertiesPage extends BasePage {
 
 					}
 
-				};
+				};*/
 				selectActionForCopy.add(new Label("action-name", action
 						.getName()));
 				item.add(selectActionForCopy);
@@ -150,16 +186,6 @@ public class CopyActionPropertiesPage extends BasePage {
 			}
 
 		});
-		filtersForm.add(new Button("copy") {
-
-			@Override
-			public void onSubmit() {
-				actionService.copyActionProperties(actionFilter.getActionId(),
-						actionId, actionFilter.isSelected());
-				setResponsePage(ListActionsPage.class);
-			}
-
-		});
 
 	}
 
@@ -167,16 +193,7 @@ public class CopyActionPropertiesPage extends BasePage {
 	private class ActionFilter implements Serializable {
 		private UIActionForFilter actionForFilter;
 		private long actionId;
-		private boolean selected;
-
-		public boolean isSelected() {
-			return selected;
-		}
-
-		public void setSelected(boolean selected) {
-			this.selected = selected;
-		}
-
+		
 		public long getActionId() {
 			return actionId;
 		}

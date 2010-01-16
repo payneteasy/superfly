@@ -47,11 +47,7 @@ div.wicket-aa ul li.selected {
 		<tr>
 			<td>Subsystem Name: <span wicket:id="subname-action"></span></td>
 		</tr>
-		<tr>
-		   <td>
-		       Grant user privileges: <input type="checkbox" wicket:id="selected" />
-		   </td>
-		</tr>
+		
 	</table>
 	<span>Action Name: <input type="text" wicket:id="auto" size="20" /></span>
 	<input type="submit" value="Filter" />
@@ -72,10 +68,10 @@ div.wicket-aa ul li.selected {
 		</tbody>
 	</table>
 	<div wicket:id="paging-navigator"></div>
-	<input type="submit" value="Copy" wicket:id="copy" />
 	<input type="submit" value="Cancel" wicket:id="cancel" />
 	</form>
 	</div>
+	<div wicket:id="modalWindow"></div>
 </wicket:extend>
 </body>
 </html>
