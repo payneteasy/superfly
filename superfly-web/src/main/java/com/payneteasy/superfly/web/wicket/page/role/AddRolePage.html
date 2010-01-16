@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Add role</title>
+</head>
+<body>
+<wicket:extend>
+	<form wicket:id="form">
+	<table class="form">
+		<tr>
+			<td>Role Name:</td>
+			<td><input type="text" wicket:id="roleName" /></td>
+		</tr>
+		<tr>
+			<td>Principal Name:</td>
+			<td><input type="text" wicket:id="principalName" /></td>
+		</tr>
+		<tr>
+			<span>Subsystem: <select wicket:id="subsystem-filter">
+				<option>Subsystem 1</option>
+				<option>Subsystem 2</option>
+				<option>Subsystem 3</option>
+			</select> </span>
+		</tr>
+	</table>
+	<div><input type="submit" wicket:id="add-role"value="Add" /> <input type="submit"
+		value="Cancel" wicket:id="cancel" /></div>
+	</form>
+</wicket:extend>
+</body>
+</html>

@@ -32,16 +32,20 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
+
 @Secured("ROLE_ADMIN")
 public class ChangeRoleActionsPage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
 
-	public ChangeRoleActionsPage(PageParameters parameters) {
-		super(parameters);
-		final long roleId = parameters.getAsLong("id", -1);
+	public ChangeRoleActionsPage(PageParameters params) {
+		super(params);
+		final long roleId = params.getAsLong("id", -1);
+		final boolean isWizard = params.getAsBoolean("wizard", false);
+		
 		final Filters filters = new Filters();
 		final Form<Filters> filtersForm = new Form<Filters>("filters-form",
 				new Model<Filters>(filters));
@@ -79,25 +83,32 @@ public class ChangeRoleActionsPage extends BasePage {
 			}
 
 			public int size() {
-				return roleService.getAllRoleActionsCount(roleId, filters.getActionNameSubstring());
+				return roleService.getAllRoleActionsCount(roleId, filters
+						.getActionNameSubstring());
 			}
 
 		};
 		final Form<Void> form = new Form<Void>("form") {
 			public void onSubmit() {
-				doSubmit(roleId, actionsHolder.getObject(), actionsCheckGroupModel.getObject());
+				doSubmit(roleId, actionsHolder.getObject(),
+						actionsCheckGroupModel.getObject());
 			}
 		};
 		add(form);
-		final CheckGroup<UIActionForCheckboxForRole> group = new CheckGroup<UIActionForCheckboxForRole>("group", actionsCheckGroupModel);
+		final CheckGroup<UIActionForCheckboxForRole> group = new CheckGroup<UIActionForCheckboxForRole>(
+				"group", actionsCheckGroupModel);
 		form.add(group);
 		group.add(new CheckGroupSelector("master-checkbox", group));
-		DataView<UIActionForCheckboxForRole> actionsDataView = new PagingDataView<UIActionForCheckboxForRole>("actions", actionsProvider) {
+		DataView<UIActionForCheckboxForRole> actionsDataView = new PagingDataView<UIActionForCheckboxForRole>(
+				"actions", actionsProvider) {
 			@Override
 			protected void populateItem(Item<UIActionForCheckboxForRole> item) {
 				UIActionForCheckboxForRole action = item.getModelObject();
-				item.add(new Check<UIActionForCheckboxForRole>("mapped", item.getModel(), group));
-				item.add(new Label("subsystem-name", action.getSubsystemName()));
+				item.add(new Check<UIActionForCheckboxForRole>("mapped", item
+						.getModel(), group));
+				item
+						.add(new Label("subsystem-name", action
+								.getSubsystemName()));
 				item.add(new Label("role-name", action.getRoleName()));
 				item.add(new Label("action-name", action.getActionName()));
 			}
@@ -105,11 +116,20 @@ public class ChangeRoleActionsPage extends BasePage {
 		group.add(actionsDataView);
 
 		form.add(new PagingNavigator("paging-navigator", actionsDataView));
-		
+
 		form.add(new SubmitLink("save-actions-link"));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
 		
+		PageParameters pageParams = new PageParameters();
+		pageParams.add("id", String.valueOf(roleId));
+		pageParams.add("wizard", "true");
+		BookmarkablePageLink<ChangeRoleGroupsPage> backLink = new BookmarkablePageLink<ChangeRoleGroupsPage>(
+				"back-link", ChangeRoleGroupsPage.class, pageParams);
+		backLink.setVisible(isWizard);
+		form.add(backLink);
+
 	}
+
 	protected void doSubmit(long roleId,
 			List<UIActionForCheckboxForRole> allActions,
 			Collection<UIActionForCheckboxForRole> checkedActions) {
@@ -122,13 +142,12 @@ public class ChangeRoleActionsPage extends BasePage {
 				idsToRemove.add(action.getActionId());
 			}
 		}
-		
+
 		roleService.changeRoleActions(roleId, idsToAdd, idsToRemove);
-		
-		info("Role changed");
-		getRequestCycle().setResponsePage(ListRolesPage.class);
-		getRequestCycle().setRedirect(true);
+
+		info("Actions changed");
 	}
+
 	@Override
 	protected String getTitle() {
 		return "Role actions";

@@ -131,6 +131,7 @@ public class ListRolesPage extends BasePage {
 		add(new OrderByLink("order-by-subsystemName", "subsystemName",
 				rolesDataProvider));
 		add(new PagingNavigator("paging-navigator", rolesDateView));
+		add(new BookmarkablePageLink<AddRolePage>("add-role", AddRolePage.class));
 	}
 	
 	@Override
