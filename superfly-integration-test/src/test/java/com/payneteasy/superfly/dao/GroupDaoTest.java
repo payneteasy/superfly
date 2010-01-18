@@ -50,4 +50,14 @@ public class GroupDaoTest extends AbstractDaoTest {
 		assertRoutineResult(groupDao.changeGroupActions(groupId, "1,2,3", "4,5,6"));
 	}
 	
+	public void testGetAllGroupActions() {
+		groupDao.getAllGroupActions(0, 10, 1, "asc", getAnyGroupId(), null);
+		groupDao.getAllGroupActions(0, 10, 1, "asc", getAnyGroupId(), "dmi");
+	}
+	
+	public void testGetAllGroupActionsCount() {
+		groupDao.getAllGroupActionsCount(getAnyGroupId(), null);
+		groupDao.getAllGroupActionsCount(getAnyGroupId(), "dmi");
+	}
+	
 }

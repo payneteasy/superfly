@@ -18,7 +18,6 @@ public interface ActionService {
 			List<Long> subsystemIds);
 	
 	List<UIActionForFilter> getActionForFilter();
-	
 	void copyActionProperties(long actionId, long actionIdCopy,
 			boolean userPrivileges);
 	UIAction getAction(long actionId);

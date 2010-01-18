@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.GroupDao;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.utils.StringUtils;
@@ -71,6 +73,20 @@ public class GroupServiceImpl implements GroupService {
 					StringUtils.collectionToCommaDelimitedString(ActionsToLink),
 					StringUtils.collectionToCommaDelimitedString(ActionsToUnlink));
 		
+	}
+
+	public List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean orderType,
+			long groupId, String actionSubstring) {
+		
+		return groupDao.getAllGroupActions(startFrom, recordsCount, 
+				orderFieldNumber, 
+				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
+				groupId, actionSubstring);
+	}
+	
+	public int getAllGroupActionsCount(long groupId, String actionSubstring) {
+		return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
 	}
 
 }

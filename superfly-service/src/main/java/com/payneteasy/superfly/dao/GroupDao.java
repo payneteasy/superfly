@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 
@@ -31,5 +32,13 @@ public interface GroupDao {
 
 	@AStoredProcedure(name = "ui_change_group_actions")
 	RoutineResult changeGroupActions(long groupId, String actionsToLink, String actionsToUnlink);
-
+	
+	@AStoredProcedure(name = "ui_get_all_group_actions_list")
+	List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType,
+			long groupId, String actionNameSubstring);
+	
+	@AStoredProcedure(name = "ui_get_all_group_actions_list_count")
+	int getAllGroupActionsCount(long groupId, String actionNameSubstring);
+	
 }

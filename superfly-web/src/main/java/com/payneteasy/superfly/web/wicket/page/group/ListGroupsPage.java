@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -107,6 +108,10 @@ public class ListGroupsPage extends BasePage {
 				item.add(new Check<UIGroupForList>("selected", item.getModel(), checkGroup));
 				item.add(new Label("name-group",group.getName()));
 				item.add(new Label("ssys-group",group.getSubsystemName()));
+				item.add(new BookmarkablePageLink("group-view",
+						ViewGroupPage.class).setParameter("gid",group.getId()));
+				item.add(new BookmarkablePageLink("group-edit",
+						GroupPropertiesPage.class).setParameter("gid",group.getId()));
 			}
 			
 		};
