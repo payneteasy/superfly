@@ -1,11 +1,11 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
@@ -82,6 +82,13 @@ public class ChangeUserRolesPage extends BasePage {
 			}
 		};
 		
+		final InitializingModel<Collection<UIRoleForCheckbox>> rolesToGrantCheckGroupModel = new InitializingModel<Collection<UIRoleForCheckbox>>() {
+			@Override
+			protected Collection<UIRoleForCheckbox> getInitialValue() {
+				return new HashSet<UIRoleForCheckbox>();
+			}
+		};
+		
 		final IDataProvider<UIRoleForCheckbox> rolesProvider = new BaseDataProvider<UIRoleForCheckbox>() {
 			public Iterator<? extends UIRoleForCheckbox> iterator(
 					int first, int count) {
@@ -92,6 +99,7 @@ public class ChangeUserRolesPage extends BasePage {
 				rolesHolder.setObject(allUserRoles);
 				// causing the role check group model to be reinitialized
 				rolesCheckGroupModel.clearInitialized();
+				rolesToGrantCheckGroupModel.clearInitialized();
 				return allUserRoles.iterator();
 			}
 
@@ -104,23 +112,28 @@ public class ChangeUserRolesPage extends BasePage {
 		
 		final Form<Void> form = new Form<Void>("form") {
 			public void onSubmit() {
-				doSubmit(userId, rolesHolder.getObject(), rolesCheckGroupModel.getObject());
+				doSubmit(userId, rolesHolder.getObject(), rolesCheckGroupModel.getObject(),
+						rolesToGrantCheckGroupModel.getObject());
 			}
 		};
 		add(form);
 		final CheckGroup<UIRoleForCheckbox> group = new CheckGroup<UIRoleForCheckbox>("group", rolesCheckGroupModel);
 		form.add(group);
-		group.add(new CheckGroupSelector("master-checkbox", group));
+		final CheckGroup<UIRoleForCheckbox> grantGroup = new CheckGroup<UIRoleForCheckbox>("grant-group", rolesToGrantCheckGroupModel);
+		group.add(grantGroup);
+		grantGroup.add(new CheckGroupSelector("master-checkbox", group));
+		grantGroup.add(new CheckGroupSelector("grant-master-checkbox", grantGroup));
 		DataView<UIRoleForCheckbox> rolesDataView = new PagingDataView<UIRoleForCheckbox>("actions", rolesProvider) {
 			@Override
 			protected void populateItem(Item<UIRoleForCheckbox> item) {
 				UIRoleForCheckbox role = item.getModelObject();
 				item.add(new Check<UIRoleForCheckbox>("mapped", item.getModel(), group));
+				item.add(new Check<UIRoleForCheckbox>("grant", item.getModel(), grantGroup));
 				item.add(new Label("subsystem-name", role.getSubsystemName()));
 				item.add(new Label("role-name", role.getRoleName()));
 			}
 		};
-		group.add(rolesDataView);
+		grantGroup.add(rolesDataView);
 
 		form.add(new PagingNavigator("paging-navigator", rolesDataView));
 		
@@ -138,19 +151,29 @@ public class ChangeUserRolesPage extends BasePage {
 	}
 
 	protected void doSubmit(long userId, List<UIRoleForCheckbox> allRoles,
-			Collection<UIRoleForCheckbox> checkedRoles) {
-		List<Long> idsToAdd = new ArrayList<Long>();
-		List<Long> idsToRemove = new ArrayList<Long>();
+			Collection<UIRoleForCheckbox> checkedRoles,
+			Collection<UIRoleForCheckbox> rolesToGrant) {
+		Set<Long> oldCheckedIds = new HashSet<Long>();
 		for (UIRoleForCheckbox role : allRoles) {
-			if (checkedRoles.contains(role)) {
-				idsToAdd.add(role.getId());
-			} else {
-				idsToRemove.add(role.getId());
+			if (role.isMapped()) {
+				oldCheckedIds.add(role.getId());
 			}
 		}
+		Set<Long> newCheckedIds = new HashSet<Long>();
+		for (UIRoleForCheckbox role : checkedRoles) {
+			newCheckedIds.add(role.getId());
+		}
+		Set<Long> idsToAdd = new HashSet<Long>(newCheckedIds);
+		idsToAdd.removeAll(oldCheckedIds);
+		Set<Long> idsToRemove = new HashSet<Long>(oldCheckedIds);
+		idsToRemove.removeAll(newCheckedIds);
+		Set<Long> idsToGrant = new HashSet<Long>(rolesToGrant.size());
+		for (UIRoleForCheckbox role : rolesToGrant) {
+			idsToGrant.add(role.getId());
+		}
 		
-		userService.changeUserRoles(userId, idsToAdd, idsToRemove);
-				
+		userService.changeUserRoles(userId, idsToAdd, idsToRemove, idsToGrant);
+		
 		info("Roles changed");
 	}
 	

@@ -1,11 +1,11 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
@@ -158,15 +158,20 @@ public class ChangeUserActionsPage extends BasePage {
 	protected void doSubmit(long userId,
 			List<UIActionForCheckboxForUser> allActions,
 			Collection<UIActionForCheckboxForUser> checkedActions) {
-		List<Long> idsToAdd = new ArrayList<Long>();
-		List<Long> idsToRemove = new ArrayList<Long>();
+		Set<Long> oldCheckedIds = new HashSet<Long>();
 		for (UIActionForCheckboxForUser action : allActions) {
-			if (checkedActions.contains(action)) {
-				idsToAdd.add(action.getRoleActionId());
-			} else {
-				idsToRemove.add(action.getRoleActionId());
+			if (action.isMapped()) {
+				oldCheckedIds.add(action.getRoleActionId());
 			}
 		}
+		Set<Long> newCheckedIds = new HashSet<Long>();
+		for (UIActionForCheckboxForUser action : checkedActions) {
+			newCheckedIds.add(action.getRoleActionId());
+		}
+		Set<Long> idsToAdd = new HashSet<Long>(newCheckedIds);
+		idsToAdd.removeAll(oldCheckedIds);
+		Set<Long> idsToRemove = new HashSet<Long>(oldCheckedIds);
+		idsToRemove.removeAll(newCheckedIds);
 		
 		userService.changeUserRoleActions(userId, idsToAdd, idsToRemove);
 		

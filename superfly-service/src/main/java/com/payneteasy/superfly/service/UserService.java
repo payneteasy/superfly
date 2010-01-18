@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
@@ -167,10 +168,14 @@ public interface UserService {
 	 * @param userId			ID of the user to change
 	 * @param rolesToAddIds		list of IDs of roles to be added
 	 * @param rolesToRemoveIds	list of IDs of roles to be removed
+	 * @param rolesToGrantActionsIds list of IDs of roles
+	 * 							from which all roles will be assigned to user
+	 * 							(it must be a subset of rolesToAddIds)
 	 * @return routine result
 	 */
-	void changeUserRoles(long userId, List<Long> rolesToAddIds,
-			List<Long> rolesToRemoveIds);
+	void changeUserRoles(long userId, Collection<Long> rolesToAddIds,
+			Collection<Long> rolesToRemoveIds,
+			Collection<Long> rolesToGrantActionsIds);
 	
 	/**
 	 * Returns a list of actions for the given user.
@@ -247,8 +252,8 @@ public interface UserService {
 	 * @param roleActionToAddIds	list of IDs of action+roles to be added
 	 * @param roleActionToRemoveIds	list of IDs of action+roles to be removed
 	 */
-	void changeUserRoleActions(long userId, List<Long> roleActionToAddIds,
-			List<Long> roleActionToRemoveIds);
+	void changeUserRoleActions(long userId, Collection<Long> roleActionToAddIds,
+			Collection<Long> roleActionToRemoveIds);
 	
 	/**
 	 * Returns a user with roles assigned to him and actions assigned through

@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.service.impl;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -100,12 +102,15 @@ public class UserServiceImpl implements UserService {
 				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
 
-	public void changeUserRoles(long userId, List<Long> rolesToAddIds,
-			List<Long> rolesToRemoveIds) {
+	public void changeUserRoles(long userId, Collection<Long> rolesToAddIds,
+			Collection<Long> rolesToRemoveIds,
+			Collection<Long> rolesToGrantActionsIds) {
+		rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
+		rolesToGrantActionsIds.retainAll(rolesToAddIds);
 		userDao.changeUserRoles(userId,
 				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
 				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
-				null);
+				StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
 	}
 
 	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
@@ -139,7 +144,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public void changeUserRoleActions(long userId,
-			List<Long> roleActionToAddIds, List<Long> roleActionToRemoveIds) {
+			Collection<Long> roleActionToAddIds,
+			Collection<Long> roleActionToRemoveIds) {
 		userDao.changeUserRoleActions(userId,
 				StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
 				StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
