@@ -5,22 +5,32 @@
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Actions</title>
 <wicket:head>
-			<style>
-				div.wicket-aa {
-					font-family: "Lucida Grande","Lucida Sans Unicode",Tahoma,Verdana;
-					font-size: 12px;
-					background-color: white;
-					border-width: 1px;
-					border-color: #cccccc;
-					border-style: solid;
-					padding: 2px;
-					margin: 1px 0 0 0;
-					text-align:left;
-				}
-				div.wicket-aa ul { list-style:none; padding: 2px; margin:0; }
-				div.wicket-aa ul li.selected { background-color: #FFFF00; padding: 2px; margin:0; }
-			</style>
-		</wicket:head>
+	<style>
+div.wicket-aa {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
+	font-size: 12px;
+	background-color: white;
+	border-width: 1px;
+	border-color: #cccccc;
+	border-style: solid;
+	padding: 2px;
+	margin: 1px 0 0 0;
+	text-align: left;
+}
+
+div.wicket-aa ul {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+}
+
+div.wicket-aa ul li.selected {
+	background-color: #FFFF00;
+	padding: 2px;
+	margin: 0;
+}
+</style>
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -30,36 +40,41 @@
 		<option>Subsystem 1</option>
 		<option>Subsystem 2</option>
 		<option>Subsystem 3</option>
-	</select> </span>&nbsp;&nbsp;&nbsp;<span>Action Name: <input type="text" wicket:id="auto" size="20"/></span> <input type="submit" value="Filter" />
-	<div>
-	<input type="submit" value="Log On/Off" wicket:id="log-action" />
+	</select> </span>&nbsp;&nbsp;&nbsp;<span>Action Name: <input type="text"
+		wicket:id="auto" size="20" /></span> <input type="submit" value="Filter" />
+	</form>
 	</div>
+	<form wicket:id="form">
+	<div><input type="submit" value="Log On/Off"
+		wicket:id="log-action" /></div>
+		<div wicket:id="group">
 	<table class="data">
 		<thead>
 			<tr>
-			    <th></th>
+				<th><input type="checkbox" wicket:id="master-checkbox" /></th>
 				<th><a wicket:id="order-by-actionName">Action Name</a></th>
 				<th><a wicket:id="order-by-actionDescription">Description</a></th>
 				<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
-				<th>Log Level</th>
+				<th><a wicket:id="order-by-actionLog">Log Level</a></th>
 				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="actionList">
-			<td><input type="checkbox" wicket:id="selected" /></td>
+				<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 				<td><span wicket:id="action-name">bond</span></td>
 				<td><span wicket:id="action-description">bond</span></td>
 				<td><span wicket:id="subsystem-name">bond</span></td>
-				<td><a href="#" wicket:id="switch-loglevel"><span wicket:id="log-action">Yes</span></a></td>
+				<td><a href="#" wicket:id="switch-loglevel"><span
+					wicket:id="log-action">Yes</span></a></td>
 				<td><a href="#" wicket:id="copy-action">Copy</a></td>
-				
+
 			</tr>
 		</tbody>
 	</table>
+	</div>
 	<div wicket:id="paging-navigator"></div>
 	</form>
-	</div>
 </wicket:extend>
 </body>
 </html>

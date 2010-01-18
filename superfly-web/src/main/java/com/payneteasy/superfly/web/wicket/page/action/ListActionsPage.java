@@ -2,7 +2,9 @@ package com.payneteasy.superfly.web.wicket.page.action;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,7 +13,9 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckGroup;
+import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -25,6 +29,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -32,8 +37,10 @@ import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 
 @Secured("ROLE_ADMIN")
 public class ListActionsPage extends BasePage {
@@ -102,9 +109,25 @@ public class ListActionsPage extends BasePage {
 
 			subsystemIds.add(actionFilter.getSubsystem().getId());
 		}
+		final ObjectHolder<List<UIActionForList>> actionsHolder = new ObjectHolder<List<UIActionForList>>();
+		final InitializingModel<Collection<UIActionForList>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForList>>() {
 
-		String[] fieldName = { "actionId", "actionName", "actionDescription",
-				"subsystemName" };
+			@Override
+			protected Collection<UIActionForList> getInitialValue() {
+				final Collection<UIActionForList> checkedActions = new HashSet<UIActionForList>();
+				for (UIActionForList action : actionsHolder
+						.getObject()) {
+					if (action.isSelected()) {
+						checkedActions.add(action);
+					}
+				}
+				return checkedActions;
+			}
+
+		};
+		
+		String[] fieldName = { "actionName", "actionDescription",
+				"subsystemName","actionLog" };
 		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
 				fieldName) {
 
@@ -117,14 +140,16 @@ public class ListActionsPage extends BasePage {
 					List<UIActionForList> actions = actionService.getActions(first, count,
 							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
 							subsystem == null ? null : null);
-					setDataset(actions);
+					actionsHolder.setObject(actions);
+					actionsCheckGroupModel.clearInitialized();
 					return actions.iterator();
 				} else {
 					subsystemId.add(subsystem.getId());
 					List<UIActionForList> actions = actionService.getActions(first, count,
 							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
 							subsystem == null ? null : subsystemId);
-					setDataset(actions);
+					actionsHolder.setObject(actions);
+					actionsCheckGroupModel.clearInitialized();
 					return actions.iterator();
 				}
 			}
@@ -141,7 +166,15 @@ public class ListActionsPage extends BasePage {
 			}
 
 		};
-		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
+		final Form<Void> form = new Form<Void>("form") {
+		};
+		add(form);
+		final CheckGroup<UIActionForList> group = new CheckGroup<UIActionForList>(
+				"group", actionsCheckGroupModel);
+		form.add(group);
+		group.add(new CheckGroupSelector("master-checkbox", group));
+		
+		final DataView<UIActionForList> actionsDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
 
 			@Override
 			protected void populateItem(Item<UIActionForList> item) {
@@ -169,21 +202,22 @@ public class ListActionsPage extends BasePage {
 				switchLogLevel.add(new Label("log-action", action
 						.isLogAction() ? "yes" : "NO"));
 				item.add(switchLogLevel);
-				item.add(new CheckBox("selected", new PropertyModel<Boolean>(action, "selected")));
+				item.add(new Check<UIActionForList>("selected", item.getModel(),group));
 				item.add(new BookmarkablePageLink("copy-action",
 						CopyActionPropertiesPage.class ).setParameter("id", action.getId()));
 			}
 			
 		};
-		filtersForm.add(actionDataView);
-	    filtersForm.add(new Button("log-action"){
+		group.add(actionsDataView);
+		form.add(new Button("log-action"){
 
 			@Override
 			public void onSubmit() {
 				List<Long> logOn = new ArrayList<Long>();
 				List<Long> logOff = new ArrayList<Long>();
-				for(UIActionForList uia: ((IndexedSortableDataProvider<UIActionForList>)actionDataView.getDataProvider()).getDataset()){
-					if(uia.isSelected()){
+				Collection<UIActionForList> checkedActions=actionsCheckGroupModel.getObject();
+				for(UIActionForList uia: actionsHolder.getObject()){
+					if(checkedActions.contains(uia)){
 						if(uia.isLogAction()){
 							logOff.add(uia.getId());
 						}
@@ -196,11 +230,12 @@ public class ListActionsPage extends BasePage {
 	    	
 	    });
                 
-	    filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-	    filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription",
+		group.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
+		group.add(new OrderByLink("order-by-actionDescription", "actionDescription",
 				actionDataProvider));
-	    filtersForm.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
-	    filtersForm.add(new PagingNavigator("paging-navigator", actionDataView));
+		group.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
+		group.add(new OrderByLink("order-by-actionLog","actionLog",actionDataProvider));
+		form.add(new PagingNavigator("paging-navigator", actionsDataView));
 
 	}
 
