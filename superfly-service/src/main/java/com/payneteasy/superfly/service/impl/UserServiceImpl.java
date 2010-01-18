@@ -104,7 +104,8 @@ public class UserServiceImpl implements UserService {
 			List<Long> rolesToRemoveIds) {
 		userDao.changeUserRoles(userId,
 				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
-				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds));
+				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
+				null);
 	}
 
 	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,

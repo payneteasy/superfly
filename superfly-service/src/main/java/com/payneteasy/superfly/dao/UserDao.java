@@ -237,11 +237,14 @@ public interface UserDao {
 	 * @param rolesToAddIds		comma-separated list of IDs of roles to be added
 	 * @param rolesToRemoveIds	comma-separated list of IDs of roles to be
 	 * 							removed
+	 * @param rolesToGrantActionsIds comma-separated list of IDs of roles
+	 * 							from which all roles will be assigned to user
+	 * 							(it must be a subset of rolesToAddIds)
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_change_user_roles")
 	RoutineResult changeUserRoles(long userId, String rolesToAddIds,
-			String rolesToRemoveIds);
+			String rolesToRemoveIds, String rolesToGrantActionsIds);
 
 	/**
 	 * Returns a list of actions for the given user.
