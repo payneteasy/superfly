@@ -50,6 +50,7 @@ public class CopyActionWindow extends WebPage {
 				
 				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected()?true:false);
 				modalWindow.close(target);
+				info("properties are copied");
 			}
 			
 		});
