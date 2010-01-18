@@ -31,6 +31,7 @@ import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
@@ -46,7 +47,7 @@ public class ListGroupsPage extends BasePage {
 		// CONFIRM PANEL
 		add(new EmptyPanel("confirmPanel"));
 		
-		// FILTER PANEL
+		// FILTER
 		final GroupFilter groupFilter = new GroupFilter();
 		Form<GroupFilter> filtersForm = new Form<GroupFilter>("filters-form");
 		add(filtersForm);
@@ -112,6 +113,8 @@ public class ListGroupsPage extends BasePage {
 						ViewGroupPage.class).setParameter("gid",group.getId()));
 				item.add(new BookmarkablePageLink("group-edit",
 						GroupPropertiesPage.class).setParameter("gid",group.getId()));
+				item.add(new BookmarkablePageLink("group-actions",
+						GroupActionsPage.class).setParameter("gid",group.getId()));
 			}
 			
 		};
