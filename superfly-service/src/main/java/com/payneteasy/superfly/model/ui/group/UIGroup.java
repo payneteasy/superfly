@@ -34,4 +34,8 @@ public class UIGroup implements Serializable {
 		this.subsystemId = subsystemId;
 	}
 	
+	public String getLabel(){
+		return name + " ["+id+"]";
+	}
+	
 }

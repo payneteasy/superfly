@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
@@ -18,6 +19,8 @@ public interface GroupService {
 	void updateGroup(UIGroup group);
 	
 	void deleteGroup(long id);
+	
+	void cloneGroup(UICloneGroupRequest request);
 	
 	UIGroup getGroupById(long id);
 	
@@ -34,6 +37,8 @@ public interface GroupService {
 			int recordsCount, int orderFieldNumber, boolean orderType, long groupId, String actionSubstring);
 	
 	int getAllGroupActionsCount(long groupId, String actionSubstring);
+	
+	
 
 
 }

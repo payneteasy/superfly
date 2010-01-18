@@ -31,7 +31,7 @@ create procedure ui_clone_group(i_new_group_name varchar(32),
           (
              grop_grop_id, actn_actn_id
           )
-      select v_grop_id, actn_acnt_id
+      select v_grop_id, actn_actn_id
         from group_actions
        where grop_grop_id = i_templete_grop_id;
 

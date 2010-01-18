@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
+import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 
@@ -49,5 +50,9 @@ public interface GroupDao {
 	
 	@AStoredProcedure(name = "ui_get_all_group_actions_list_count")
 	int getAllGroupActionsCount(long groupId, String actionNameSubstring);
+	
+	@AStoredProcedure(name = "ui_clone_group")
+	RoutineResult cloneGroup(UICloneGroupRequest request);
+	
 	
 }

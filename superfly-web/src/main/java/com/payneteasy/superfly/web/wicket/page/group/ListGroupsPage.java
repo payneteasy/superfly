@@ -115,6 +115,8 @@ public class ListGroupsPage extends BasePage {
 						GroupPropertiesPage.class).setParameter("gid",group.getId()));
 				item.add(new BookmarkablePageLink("group-actions",
 						GroupActionsPage.class).setParameter("gid",group.getId()));
+				item.add(new BookmarkablePageLink("group-clone",
+						CloneGroupPage.class).setParameter("sid",group.getId()));
 			}
 			
 		};

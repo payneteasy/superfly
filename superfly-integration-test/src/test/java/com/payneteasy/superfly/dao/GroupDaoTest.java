@@ -8,6 +8,8 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
+import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.utils.StringUtils;
 
 public class GroupDaoTest extends AbstractDaoTest {
@@ -58,6 +60,19 @@ public class GroupDaoTest extends AbstractDaoTest {
 	public void testGetAllGroupActionsCount() {
 		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), null);
 		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), "dmi");
+	}
+	
+	public void testCloneGroup() {
+//		long groupId = getAnyGroupId();
+//		UICloneUserRequest request = new UICloneUserRequest();
+//		request.setUsername("newuser");
+//		request.setPassword("newpassword");
+//		request.setTemplateUserId(userId);
+//		RoutineResult result = userDao.cloneUser(request);
+//		assertRoutineResult(result);
+//		
+//		UIUser newUser = userDao.getUser(request.getId());
+//		assertNotNull("User must be cloned", newUser);
 	}
 	
 }
