@@ -1,9 +1,9 @@
 drop procedure if exists ui_get_all_user_roles_list_count;
 delimiter $$
-create procedure ui_get_all_user_roles_list_count(i_user_id int(10))
+create procedure ui_get_all_user_roles_list_count(i_user_id int(10), i_ssys_list text)
  main_sql:
   begin
-    call int_user_roles_list_count(i_user_id, "A");
+    call int_user_roles_list_count(i_user_id, i_ssys_list, "A");
   end
 $$
 delimiter ;

@@ -12,7 +12,10 @@ import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 
-public abstract class BasePage extends WebPage{
+/**
+ * Base page which defines a common page template and some common page elements.
+ */
+public abstract class BasePage extends WebPage {
 	public BasePage(PageParameters params) {
 		this();
 	}

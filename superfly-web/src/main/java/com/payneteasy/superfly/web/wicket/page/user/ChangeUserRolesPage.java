@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -19,12 +21,17 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
@@ -40,6 +47,8 @@ public class ChangeUserRolesPage extends BasePage {
 	
 	@SpringBean
 	private UserService userService;
+	@SpringBean
+	private SubsystemService subsystemService;
 	
 	private boolean isWizard;
 
@@ -48,6 +57,15 @@ public class ChangeUserRolesPage extends BasePage {
 		
 		final long userId = params.getAsLong("userId");
 		isWizard = params.getAsBoolean("wizard", false);
+		
+		final Filters filters = new Filters();
+		final Form<Filters> filtersForm = new Form<Filters>("filters-form", new Model<Filters>(filters));
+		add(filtersForm);
+		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
+				new PropertyModel<UISubsystemForFilter>(filters, "subsystem"),
+				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+		subsystemDropdown.setNullValid(true);
+		filtersForm.add(subsystemDropdown);
 				
 		final ObjectHolder<List<UIRoleForCheckbox>> rolesHolder = new ObjectHolder<List<UIRoleForCheckbox>>();
 		
@@ -67,7 +85,9 @@ public class ChangeUserRolesPage extends BasePage {
 		final IDataProvider<UIRoleForCheckbox> rolesProvider = new BaseDataProvider<UIRoleForCheckbox>() {
 			public Iterator<? extends UIRoleForCheckbox> iterator(
 					int first, int count) {
+				UISubsystemForFilter subsystem = filters.getSubsystem();
 				List<UIRoleForCheckbox> allUserRoles = userService.getAllUserRoles(userId,
+						subsystem == null ? null : subsystem.getId(),
 						first, count);
 				rolesHolder.setObject(allUserRoles);
 				// causing the role check group model to be reinitialized
@@ -76,7 +96,9 @@ public class ChangeUserRolesPage extends BasePage {
 			}
 
 			public int size() {
-				return userService.getAllUserRolesCount(userId);
+				UISubsystemForFilter subsystem = filters.getSubsystem();
+				return userService.getAllUserRolesCount(userId,
+						subsystem == null ? null : subsystem.getId());
 			}
 		};
 		
@@ -135,6 +157,19 @@ public class ChangeUserRolesPage extends BasePage {
 	@Override
 	protected String getTitle() {
 		return "User roles";
+	}
+	
+	@SuppressWarnings("unused")
+	private static class Filters implements Serializable {
+		private UISubsystemForFilter subsystem;
+
+		public UISubsystemForFilter getSubsystem() {
+			return subsystem;
+		}
+
+		public void setSubsystem(UISubsystemForFilter subsystem) {
+			this.subsystem = subsystem;
+		}
 	}
 
 }

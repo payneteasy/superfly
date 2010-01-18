@@ -108,13 +108,16 @@ public interface UserService {
 	 * 
 	 * @param userId
 	 *            ID of the user
+	 * @param subsystemId
+	 * 			  ID of subsystem of interest (if null, all subsystems are
+	 * 			  considered)
 	 * @param startFrom
 	 *            starting index for paging
 	 * @param recordsCount
 	 *            limit for paging
 	 * @return list of roles
 	 */
-	List<UIRoleForCheckbox> getAllUserRoles(long userId,
+	List<UIRoleForCheckbox> getAllUserRoles(long userId, Long subsystemId,
 			int startFrom, int recordsCount);
 	
 	/**
@@ -122,9 +125,12 @@ public interface UserService {
 	 * 
 	 * @param userId
 	 *            ID of the user
+	 * @param subsystemId
+	 * 			  ID of subsystem of interest (if null, all subsystems are
+	 * 			  considered)
 	 * @return number of roles
 	 */
-	int getAllUserRolesCount(long userId);
+	int getAllUserRolesCount(long userId, Long subsystemId);
 	
 	/**
 	 * Changes a list of roles assigned to a user.
@@ -143,7 +149,7 @@ public interface UserService {
 	 * @param userId
 	 *            ID of the user whose actions are to be returned
 	 * @param subsystemId
-	 * 			  ID of subsystems of interest (if null, all subsystems are
+	 * 			  ID of subsystem of interest (if null, all subsystems are
 	 * 			  considered)
 	 * @param actionSubstring
 	 * 			  substring which must be inside action name (ignored if null)

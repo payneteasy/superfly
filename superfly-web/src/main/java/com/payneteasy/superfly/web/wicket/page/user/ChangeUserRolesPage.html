@@ -7,6 +7,18 @@
 </head>
 <body>
 <wicket:extend>
+	<div class="filters">
+		<form wicket:id="filters-form">
+			<span>Subsystem:
+				<select wicket:id="subsystem-filter">
+					<option>Subsystem 1</option>
+					<option>Subsystem 2</option>
+					<option>Subsystem 3</option>
+				</select>
+			</span>
+			<input type="submit" value="Filter"/>
+		</form>
+	</div>
 	<form wicket:id="form">
 		<div wicket:id="group">
 		    <table class="data">

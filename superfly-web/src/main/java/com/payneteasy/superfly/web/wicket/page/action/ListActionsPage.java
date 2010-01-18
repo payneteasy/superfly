@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;

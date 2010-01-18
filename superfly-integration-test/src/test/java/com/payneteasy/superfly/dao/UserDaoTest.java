@@ -110,15 +110,21 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 	
 	public void testGetMappedUserRoles() {
-		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId());
+		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
+		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
+		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
 	}
 	
 	public void testGetAllUserRoles() {
-		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId());
+		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
+		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
+		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
 	}
 	
 	public void testGetAllUserRolesCount() {
-		userDao.getAllUserRolesCount(getAnyUserId());
+		userDao.getAllUserRolesCount(getAnyUserId(), null);
+		userDao.getAllUserRolesCount(getAnyUserId(), "");
+		userDao.getAllUserRolesCount(getAnyUserId(), "1,2,3");
 	}
 	
 	public void testChangeUserRoles() {

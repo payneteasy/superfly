@@ -4,7 +4,8 @@ create procedure ui_get_unmapped_user_roles_list(i_start_from int(10),
                                                  i_records_count int(10),
                                                  i_order_field_number int(10),
                                                  i_order_type varchar(4),
-                                                 i_user_id int(10)
+                                                 i_user_id int(10),
+                                                 i_ssys_list text
 )
  main_sql:
   begin
@@ -13,6 +14,7 @@ create procedure ui_get_unmapped_user_roles_list(i_start_from int(10),
                              i_order_field_number,
                              i_order_type,
                              i_user_id,
+                             i_ssys_list,
                              "U"
          );
   end

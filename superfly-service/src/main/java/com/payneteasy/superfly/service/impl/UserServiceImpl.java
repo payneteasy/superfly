@@ -75,14 +75,16 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId,
-			int startFrom, int recordsCount) {
+			Long subsystemId, int startFrom, int recordsCount) {
 		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(startFrom,
-				recordsCount, 4 /* role_id */, DaoConstants.ASC, userId);
+				recordsCount, 4 /* role_id */, DaoConstants.ASC, userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
 		return allRoles;
 	}
 	
-	public int getAllUserRolesCount(long userId) {
-		return userDao.getAllUserRolesCount(userId);
+	public int getAllUserRolesCount(long userId, Long subsystemId) {
+		return userDao.getAllUserRolesCount(userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
 
 	public void changeUserRoles(long userId, List<Long> rolesToAddIds,

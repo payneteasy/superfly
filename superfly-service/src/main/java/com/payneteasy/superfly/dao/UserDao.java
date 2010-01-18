@@ -146,11 +146,15 @@ public interface UserDao {
 	 *            'asc'/'desc'
 	 * @param userId
 	 *            ID of the user whose roles are to be returned
+	 * @param subsystemIds
+	 * 			  comma-separated list of IDs of subsystems which roles
+	 * 		      are to be returned (ignored if null)
 	 * @return roles
 	 */
 	@AStoredProcedure(name = "ui_get_mapped_user_roles_list")
 	List<UIRoleForCheckbox> getMappedUserRoles(int startFrom, int recordsCount,
-			int orderFieldNumber, String orderType, long userId);
+			int orderFieldNumber, String orderType, long userId,
+			String subsystemIds);
 	
 	/**
 	 * Returns a list of roles for the given user. Both assigned and
@@ -166,11 +170,15 @@ public interface UserDao {
 	 *            'asc'/'desc'
 	 * @param userId
 	 *            ID of the user whose roles are to be returned
+	 * @param subsystemIds
+	 * 			  comma-separated list of IDs of subsystems which roles
+	 * 		      are to be returned (ignored if null)
 	 * @return roles
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_roles_list")
 	List<UIRoleForCheckbox> getAllUserRoles(int startFrom, int recordsCount,
-			int orderFieldNumber, String orderType, long userId);
+			int orderFieldNumber, String orderType, long userId,
+			String subsystemIds);
 	
 	/**
 	 * Returns count of roles for the given user. Both assigned and
@@ -178,10 +186,13 @@ public interface UserDao {
 	 * 
 	 * @param userId
 	 *            ID of the user whose roles are to be returned
+	 * @param subsystemIds
+	 * 			  comma-separated list of IDs of subsystems which roles
+	 * 		      are to be returned (ignored if null)
 	 * @return roles count
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_roles_list_count")
-	int getAllUserRolesCount(long userId);
+	int getAllUserRolesCount(long userId, String subsystemIds);
 
 	/**
 	 * Changes a list of roles assigned to a user.

@@ -5,6 +5,7 @@ create procedure int_user_roles_list(i_start_from int(10),
                                      i_order_field_number int(10),
                                      i_order_type varchar(4),
                                      i_user_id int(10),
+                                     i_ssys_list text,
                                      i_mapping_status varchar(1)
 )
  main_sql:
@@ -18,6 +19,10 @@ create procedure int_user_roles_list(i_start_from int(10),
                  '         join ',
                  '           subsystems ss ',
                  '         on ss.ssys_id = r.ssys_ssys_id ',
+                 if(i_ssys_list is null or i_ssys_list = '',
+                    '',
+                    concat(' and ssys_id in (', i_ssys_list, ')')
+                 ),
                  '       left join ',
                  '         user_roles ur ',
                  '       on ur.user_user_id = u.user_id and ur.role_role_id = r.role_id ',
