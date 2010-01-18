@@ -88,13 +88,13 @@ public class ViewGroupPage extends BasePage {
 			public Iterator<? extends UIActionForCheckboxForGroup> iterator(int first,
 					int count) {
 				
-				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupActions(first, count, 
+				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupMappedActions(first, count, 
 						getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
 				return list.iterator(); 
 			}
 
 			public int size() {
-				return groupService.getAllGroupActionsCount(groupId, filter.getActionNameSubstring());
+				return groupService.getAllGroupMappedActionsCount(groupId, filter.getActionNameSubstring());
 			}
 
 		};

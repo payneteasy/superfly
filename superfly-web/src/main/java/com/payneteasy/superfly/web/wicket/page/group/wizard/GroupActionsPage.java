@@ -25,10 +25,10 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.GroupService;
@@ -38,6 +38,7 @@ import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 
 @Secured("ROLE_ADMIN")
 public class GroupActionsPage extends BasePage {
@@ -65,9 +66,13 @@ public class GroupActionsPage extends BasePage {
 
 	public GroupActionsPage(Long groupId) {
 		
+		//current Group
+		final UIGroup curGroup = groupService.getGroupById(groupId);
+		
 		final GroupWizardModel groupModel = new GroupWizardModel();
 
-		final UIGroup curGroup = groupService.getGroupById(groupId);
+		
+		
 		groupModel.setGroupName(curGroup.getName());
 		List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
 		for(UISubsystemForFilter e: list){
@@ -79,6 +84,22 @@ public class GroupActionsPage extends BasePage {
 		final Form<Filter> filtersForm = new Form<Filter>("filters-form", new Model<Filter>(filter));
 		add(filtersForm);
 		filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
+		
+		final ObjectHolder<List<UIActionForCheckboxForUser>> dataset = new ObjectHolder<List<UIActionForCheckboxForUser>>();
+
+		//CHECKGROUP
+		final InitializingModel<Collection<UIActionForCheckboxForUser>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForCheckboxForUser>>() {
+			@Override
+			protected Collection<UIActionForCheckboxForUser> getInitialValue() {
+				final Collection<UIActionForCheckboxForUser> checkedActions = new HashSet<UIActionForCheckboxForUser>();
+				for (UIActionForCheckboxForUser action : dataset.getObject()) {
+					if (action.isMapped()) {
+						checkedActions.add(action);
+					}
+				}
+				return checkedActions;
+			}
+		};
 		
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "actionName" };
@@ -106,21 +127,9 @@ public class GroupActionsPage extends BasePage {
 
 		};
 		
-		//CHECKGROUP
-		final InitializingModel<Collection<UIActionForList>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForList>>() {
-			@Override
-			protected Collection<UIActionForList> getInitialValue() {
-				final Collection<UIActionForList> checkedActions = new HashSet<UIActionForList>();
-				for (UIActionForList action : ((IndexedSortableDataProvider<UIActionForList>)actionDataProvider).getDataset()) {
-					if (action.isSelected()) {
-						checkedActions.add(action);
-					}
-				}
-				return checkedActions;
-			}
-		};
+
 				
-		final CheckGroup<UIActionForList> checkGroup = new CheckGroup<UIActionForList>("group", actionsCheckGroupModel);
+		final CheckGroup<UIActionForList> checkGroup = new CheckGroup<UIActionForList>("group" /*,actionsCheckGroupModel*/);
 
 		// DATAVIEW
 		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("dataView",actionDataProvider){
@@ -155,6 +164,7 @@ public class GroupActionsPage extends BasePage {
 					}
 				}
 				groupService.changeGroupActions(curGroup.getId(), actionsToLink, actionsToUnlink);
+				info("Actions successfully changed.");
 			}
 		};
 		form.add(new Button("btn-back"){

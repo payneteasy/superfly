@@ -51,13 +51,13 @@ public class GroupDaoTest extends AbstractDaoTest {
 	}
 	
 	public void testGetAllGroupActions() {
-		groupDao.getAllGroupActions(0, 10, 1, "asc", getAnyGroupId(), null);
-		groupDao.getAllGroupActions(0, 10, 1, "asc", getAnyGroupId(), "dmi");
+		groupDao.getAllGroupMappedActions(0, 10, 1, "asc", getAnyGroupId(), null);
+		groupDao.getAllGroupMappedActions(0, 10, 1, "asc", getAnyGroupId(), "dmi");
 	}
 	
 	public void testGetAllGroupActionsCount() {
-		groupDao.getAllGroupActionsCount(getAnyGroupId(), null);
-		groupDao.getAllGroupActionsCount(getAnyGroupId(), "dmi");
+		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), null);
+		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), "dmi");
 	}
 	
 }

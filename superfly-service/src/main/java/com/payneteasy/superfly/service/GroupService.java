@@ -25,9 +25,9 @@ public interface GroupService {
 	
 	void changeGroupActions(long groupId, List<Long> ActionsToLink, List<Long> ActionsToUnlink);
 	
-	List<UIActionForCheckboxForGroup> getAllGroupActions(int stratFrom,
+	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int stratFrom,
 			int recordsCount, int orderFieldNumber, boolean orderType, long groupId, String actionSubstring);
 	
-	int getAllGroupActionsCount(long groupId, String actionSubstring);
+	int getAllGroupMappedActionsCount(long groupId, String actionSubstring);
 
 }

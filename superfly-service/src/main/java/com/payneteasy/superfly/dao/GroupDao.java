@@ -33,12 +33,12 @@ public interface GroupDao {
 	@AStoredProcedure(name = "ui_change_group_actions")
 	RoutineResult changeGroupActions(long groupId, String actionsToLink, String actionsToUnlink);
 	
-	@AStoredProcedure(name = "ui_get_all_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom, int recordsCount,
+	@AStoredProcedure(name = "ui_get_mapped_group_actions_list")
+	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType,
 			long groupId, String actionNameSubstring);
 	
-	@AStoredProcedure(name = "ui_get_all_group_actions_list_count")
-	int getAllGroupActionsCount(long groupId, String actionNameSubstring);
+	@AStoredProcedure(name = "ui_get_mapped_group_actions_list_count")
+	int getAllGroupMappedActionsCount(long groupId, String actionNameSubstring);
 	
 }
