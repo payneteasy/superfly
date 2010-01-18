@@ -11,6 +11,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -67,6 +68,7 @@ public class ChangeUserActionsPage extends BasePage {
 				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
+		filtersForm.add(new CheckBox("unmapped-only", new PropertyModel<Boolean>(filters, "unmappedOnly")));
 		
 		final ObjectHolder<List<UIActionForCheckboxForUser>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForUser>>();
 		
@@ -88,20 +90,33 @@ public class ChangeUserActionsPage extends BasePage {
 			public Iterator<? extends UIActionForCheckboxForUser> iterator(
 					int first, int count) {
 				UISubsystemForFilter subsystem = filters.getSubsystem();
-				List<UIActionForCheckboxForUser> allUserActions = userService.getAllUserActions(userId,
-						subsystem == null ? null : subsystem.getId(),
-						filters.getActionNameSubstring(), first, count);
-				actionsHolder.setObject(allUserActions);
+				List<UIActionForCheckboxForUser> userActions;
+				if (filters.isUnmappedOnly()) {
+					userActions = userService.getUnmappedUserActions(userId,
+							subsystem == null ? null : subsystem.getId(),
+							filters.getActionNameSubstring(), first, count);
+				} else {
+					userActions = userService.getAllUserActions(userId,
+							subsystem == null ? null : subsystem.getId(),
+							filters.getActionNameSubstring(), first, count);
+				}
+				actionsHolder.setObject(userActions);
 				// causing the action check group model to be reinitialized
 				actionsCheckGroupModel.clearInitialized();
-				return allUserActions.iterator();
+				return userActions.iterator();
 			}
 
 			public int size() {
 				UISubsystemForFilter subsystem = filters.getSubsystem();
-				return userService.getAllUserActionsCount(userId,
-						subsystem == null ? null : subsystem.getId(),
-						filters.getActionNameSubstring());
+				if (filters.isUnmappedOnly()) {
+					return userService.getUnmappedUserActionsCount(userId,
+							subsystem == null ? null : subsystem.getId(),
+							filters.getActionNameSubstring());
+				} else {
+					return userService.getAllUserActionsCount(userId,
+							subsystem == null ? null : subsystem.getId(),
+							filters.getActionNameSubstring());
+				}
 			}
 		};
 		
@@ -167,6 +182,7 @@ public class ChangeUserActionsPage extends BasePage {
 	private static class Filters implements Serializable {
 		private String actionNameSubstring;
 		private UISubsystemForFilter subsystem;
+		private boolean unmappedOnly = false;
 
 		public String getActionNameSubstring() {
 			return actionNameSubstring;
@@ -182,6 +198,14 @@ public class ChangeUserActionsPage extends BasePage {
 
 		public void setSubsystem(UISubsystemForFilter subsystem) {
 			this.subsystem = subsystem;
+		}
+
+		public boolean isUnmappedOnly() {
+			return unmappedOnly;
+		}
+
+		public void setUnmappedOnly(boolean unmappedOnly) {
+			this.unmappedOnly = unmappedOnly;
 		}
 	}
 

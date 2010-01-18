@@ -193,6 +193,42 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_roles_list_count")
 	int getAllUserRolesCount(long userId, String subsystemIds);
+	
+	/**
+	 * Returns a list of non-assigned roles for the given user.
+	 * 
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @param userId
+	 *            ID of the user whose roles are to be returned
+	 * @param subsystemIds
+	 * 			  comma-separated list of IDs of subsystems which roles
+	 * 		      are to be returned (ignored if null)
+	 * @return roles
+	 */
+	@AStoredProcedure(name = "ui_get_unmapped_user_roles_list")
+	List<UIRoleForCheckbox> getUnmappedUserRoles(int startFrom, int recordsCount,
+			int orderFieldNumber, String orderType, long userId,
+			String subsystemIds);
+	
+	/**
+	 * Returns count of non-assigned roles for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user whose roles are to be returned
+	 * @param subsystemIds
+	 * 			  comma-separated list of IDs of subsystems which roles
+	 * 		      are to be returned (ignored if null)
+	 * @return roles count
+	 */
+	@AStoredProcedure(name = "ui_get_unmapped_user_roles_list_count")
+	int getUnmappedUserRolesCount(long userId, String subsystemIds);
 
 	/**
 	 * Changes a list of roles assigned to a user.
@@ -246,6 +282,47 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_get_all_user_actions_list_count")
 	int getAllUserActionsCount(long userId, String subsystemIds,
+			String actionSubstring);
+	
+	/**
+	 * Returns a list of non-assigned actions for the given user.
+	 * 
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @param orderFieldNumber
+	 *            number of field to order by
+	 * @param orderType
+	 *            'asc'/'desc'
+	 * @param userId
+	 *            ID of the user whose actions are to be returned
+	 * @param subsystemIds
+	 * 			  IDs of subsystems of interest (if null, all subsystems are
+	 * 			  considered)
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions
+	 */
+	@AStoredProcedure(name = "ui_get_unmapped_user_actions_list")
+	List<UIActionForCheckboxForUser> getUnmappedUserActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long userId, String subsystemIds, String actionSubstring);
+		
+	/**
+	 * Returns count of non-assigned actions for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user whose actions are to be counted
+	 * @param subsystemIds
+	 * 			  IDs of subsystems of interest (if null, all subsystems are
+	 * 			  considered)            
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions count
+	 */
+	@AStoredProcedure(name = "ui_get_unmapped_user_actions_list_count")
+	int getUnmappedUserActionsCount(long userId, String subsystemIds,
 			String actionSubstring);
 	
 	/**

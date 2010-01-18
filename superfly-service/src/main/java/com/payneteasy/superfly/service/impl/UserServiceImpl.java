@@ -86,6 +86,19 @@ public class UserServiceImpl implements UserService {
 		return userDao.getAllUserRolesCount(userId,
 				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
+	
+	public List<UIRoleForCheckbox> getUnmappedUserRoles(long userId,
+			Long subsystemId, int startFrom, int recordsCount) {
+		List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(startFrom,
+				recordsCount, 4 /* role_id */, DaoConstants.ASC, userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
+		return allRoles;
+	}
+	
+	public int getUnmappedUserRolesCount(long userId, Long subsystemId) {
+		return userDao.getUnmappedUserRolesCount(userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
+	}
 
 	public void changeUserRoles(long userId, List<Long> rolesToAddIds,
 			List<Long> rolesToRemoveIds) {
@@ -107,6 +120,21 @@ public class UserServiceImpl implements UserService {
 			String actionSubstring) {
 		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
 		return userDao.getAllUserActionsCount(userId, subsystemIds, actionSubstring);
+	}
+	
+	public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount) {
+		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
+		return userDao.getUnmappedUserActions(startFrom, recordsCount,
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
+				userId, subsystemIds, actionSubstring);
+	}
+
+	public int getUnmappedUserActionsCount(long userId, Long subsystemId,
+			String actionSubstring) {
+		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
+		return userDao.getUnmappedUserActionsCount(userId, subsystemIds, actionSubstring);
 	}
 
 	public void changeUserRoleActions(long userId,

@@ -133,6 +133,35 @@ public interface UserService {
 	int getAllUserRolesCount(long userId, Long subsystemId);
 	
 	/**
+	 * Returns a list of non-assigned roles for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user
+	 * @param subsystemId
+	 * 			  ID of subsystem of interest (if null, all subsystems are
+	 * 			  considered)
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @return list of roles
+	 */
+	List<UIRoleForCheckbox> getUnmappedUserRoles(long userId, Long subsystemId,
+			int startFrom, int recordsCount);
+	
+	/**
+	 * Returns count of non-assigned roles for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user
+	 * @param subsystemId
+	 * 			  ID of subsystem of interest (if null, all subsystems are
+	 * 			  considered)
+	 * @return number of roles
+	 */
+	int getUnmappedUserRolesCount(long userId, Long subsystemId);
+	
+	/**
 	 * Changes a list of roles assigned to a user.
 	 * 
 	 * @param userId			ID of the user to change
@@ -176,6 +205,40 @@ public interface UserService {
 	 * @return actions count
 	 */
 	int getAllUserActionsCount(long userId, Long subsystemId, String actionSubstring);
+	
+	/**
+	 * Returns a list of non-assigned actions for the given user.
+	 *
+	 * @param userId
+	 *            ID of the user whose actions are to be returned
+	 * @param subsystemId
+	 * 			  ID of subsystem of interest (if null, all subsystems are
+	 * 			  considered)
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @param startFrom
+	 *            starting index for paging
+	 * @param recordsCount
+	 *            limit for paging
+	 * @return actions
+	 */
+	List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount);
+	
+	/**
+	 * Returns count of non-assigned actions for the given user.
+	 * 
+	 * @param userId
+	 *            ID of the user whose actions are to be counted
+	 * @param subsystemId
+	 * 			  ID of subsystems of interest (if null, all subsystems are
+	 * 			  considered)
+	 * @param actionSubstring
+	 * 			  substring which must be inside action name (ignored if null)
+	 * @return actions count
+	 */
+	int getUnmappedUserActionsCount(long userId, Long subsystemId, String actionSubstring);
 	
 	/**
 	 * Changes a list of actions assigned to a user.

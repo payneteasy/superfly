@@ -127,6 +127,18 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.getAllUserRolesCount(getAnyUserId(), "1,2,3");
 	}
 	
+	public void testGetUnmappedUserRoles() {
+		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
+		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
+		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
+	}
+	
+	public void testGetUnmappedUserRolesCount() {
+		userDao.getUnmappedUserRolesCount(getAnyUserId(), null);
+		userDao.getUnmappedUserRolesCount(getAnyUserId(), "");
+		userDao.getUnmappedUserRolesCount(getAnyUserId(), "1,2,3");
+	}
+	
 	public void testChangeUserRoles() {
 		long userId = getAnyUserId();
 		userDao.changeUserRoles(userId, "1,2,3", "4,5,6");
@@ -144,6 +156,18 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.getAllUserActionsCount(getAnyUserId(), null, null);
 		// the following looks for 'admin'
 		userDao.getAllUserActionsCount(getAnyUserId(), "1,2,3", "dmi");
+	}
+	
+	public void testGetUnmappedUserActions() {
+		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(), null, null);
+		// the following looks for 'admin'
+		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(), "1,2,3", "dmi");
+	}
+	
+	public void testGetUnmappedUserActionsCount() {
+		userDao.getUnmappedUserActionsCount(getAnyUserId(), null, null);
+		// the following looks for 'admin'
+		userDao.getUnmappedUserActionsCount(getAnyUserId(), "1,2,3", "dmi");
 	}
 	
 	public void testChangeUserRoleActions() {
