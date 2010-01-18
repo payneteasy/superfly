@@ -9,8 +9,18 @@ public class UIRoleForList implements Serializable {
 	private String name;
 	private String subsystem;
     private String principalName;
+    private boolean selected;
     
-    @Column(name="principal_name")
+    
+    public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
+	@Column(name="principal_name")
 	public String getPrincipalName() {
 		return principalName;
 	}

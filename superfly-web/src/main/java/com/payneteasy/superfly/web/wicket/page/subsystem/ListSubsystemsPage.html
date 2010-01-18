@@ -15,18 +15,16 @@
 	<table class="data">
 		<thead>
 			<tr>
-				<th><input type="checkbox" wicket:id="groupselector">Select</input></th>
+				<th><input type="checkbox" wicket:id="groupselector"/></th>
 				<th>Name</th>
-				<th>Identifier</th>
 				<th>Callback Info</th>
 				<th>Action</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="list-subsystem">
-				<td><input type="checkbox" wicket:id="selected" /></td>
+				<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 				<td><span wicket:id="subsytem-name">[Name]</span></td>
-				<td><span wicket:id="subsystem-identifier">[Identifier]</span></td>
 				<td><span wicket:id="subsystem-callback"></span>[Callback info]</td>
 				<td><a href=# wicket:id="subsystem-edit">[Edit]</a></td>
 			</tr>

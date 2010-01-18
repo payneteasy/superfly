@@ -47,8 +47,6 @@ public class ListSubsystemsPage extends BasePage {
 						.getModelObject();
 				item.add(new Label("subsytem-name", subWrapperItem.getObject()
 						.getName()));
-				item.add(new Label("subsystem-identifier", subWrapperItem
-						.getObject().getIdentifier()));
 				item.add(new BookmarkablePageLink("subsystem-edit",
 						EditSubsytemPage.class).setParameter("id", subWrapperItem.getObject().getId()));
 				item.add(new CheckBox("selected", new PropertyModel<Boolean>(
