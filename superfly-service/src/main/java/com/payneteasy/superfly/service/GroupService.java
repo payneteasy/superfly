@@ -29,5 +29,11 @@ public interface GroupService {
 			int recordsCount, int orderFieldNumber, boolean orderType, long groupId, String actionSubstring);
 	
 	int getAllGroupMappedActionsCount(long groupId, String actionSubstring);
+	
+	List<UIActionForCheckboxForGroup> getAllGroupActions(int stratFrom,
+			int recordsCount, int orderFieldNumber, boolean orderType, long groupId, String actionSubstring);
+	
+	int getAllGroupActionsCount(long groupId, String actionSubstring);
+
 
 }
