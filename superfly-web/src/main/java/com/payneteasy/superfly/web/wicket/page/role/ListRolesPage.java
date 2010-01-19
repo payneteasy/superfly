@@ -178,7 +178,7 @@ public class ListRolesPage extends BasePage {
 			}
 			
 		});
-		add(new BookmarkablePageLink<AddRolePage>("add-role", AddRolePage.class));
+		form.add(new BookmarkablePageLink<AddRolePage>("add-role", AddRolePage.class));
 	}
 	
 	@Override
