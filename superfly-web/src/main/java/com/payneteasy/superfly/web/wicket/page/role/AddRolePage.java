@@ -18,7 +18,6 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 @Secured("ROLE_ADMIN")
 public class AddRolePage extends BasePage {
 	@SpringBean
@@ -51,7 +50,8 @@ public class AddRolePage extends BasePage {
 				role.setSubsystemId(roleFilter.getSubsystem().getId());
 				roleService.createRole(role);
 				PageParameters params = new PageParameters();
-				params.add("id", String.valueOf(roleFilter.getSubsystem().getId()));
+				params.add("id", String.valueOf(role.getRoleId()));
+				params.add("idSubsystem", String.valueOf(role.getSubsystemId()));
 				params.add("wizard", "true");
 				getRequestCycle().setResponsePage(ChangeRoleGroupsPage.class, params);
 				getRequestCycle().setRedirect(true);
