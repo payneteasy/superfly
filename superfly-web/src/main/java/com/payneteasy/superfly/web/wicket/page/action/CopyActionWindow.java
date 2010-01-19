@@ -50,9 +50,7 @@ public class CopyActionWindow extends WebPage {
 				
 				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected()?true:false);
 				info("properties are copied");
-				PageParameters parameters = new PageParameters();
-				parameters.put("id", actionId);
-				//setResponsePage(CopyActionPropertiesPage.class,parameters);
+			     parameters.put("copy", "copy");
 				modalWindow.close(target);
 			}
 			

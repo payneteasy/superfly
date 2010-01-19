@@ -41,34 +41,34 @@ public class CopyActionPropertiesPage extends BasePage {
 	public CopyActionPropertiesPage(final PageParameters parameters) {
 		super(parameters);
 		final long actionId = parameters.getAsLong("id", -1);
-		
-		//modalWindow
+
+		// modalWindow
 		final ModalWindow modalWindow;
 		add(modalWindow = new ModalWindow("modalWindow"));
 		modalWindow.setPageMapName("modal-name");
 		modalWindow.setCookieName("modal-cookie");
-		modalWindow.setPageCreator(new ModalWindow.PageCreator()
-		{
-			public Page createPage()
-			{
-				return new CopyActionWindow(CopyActionPropertiesPage.this,modalWindow,parameters);
+		modalWindow.setPageCreator(new ModalWindow.PageCreator() {
+			public Page createPage() {
+				return new CopyActionWindow(CopyActionPropertiesPage.this,
+						modalWindow, parameters);
 			}
 		});
-		modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
-		{
-			public void onClose(AjaxRequestTarget target)
-			{
-				
-			}
-		});
-		modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback()
-		{
-			public boolean onCloseButtonClicked(AjaxRequestTarget target)
-			{
-				return true;
-			}
-		});
-		
+		modalWindow
+				.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+					public void onClose(AjaxRequestTarget target) {
+						if (parameters.containsKey("copy")) {
+							setResponsePage(ListActionsPage.class);
+						}
+
+					}
+				});
+		modalWindow
+				.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+					public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+						return true;
+					}
+				});
+
 		final ActionFilter actionFilter = new ActionFilter();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);
@@ -138,26 +138,28 @@ public class CopyActionPropertiesPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIActionForList> item) {
 				final UIActionForList action = item.getModelObject();
-				AjaxLink selectActionForCopy = new AjaxLink("select-action"){
+				AjaxLink selectActionForCopy = new AjaxLink("select-action") {
 
 					@Override
 					public void onClick(AjaxRequestTarget target) {
 						parameters.put("copyId", action.getId());
 						modalWindow.show(target);
 					}
-					
+
 				};
-				
-				/*Link<Void> selectActionForCopy = new Link<Void>("select-action") {
 
-					@Override
-					public void onClick() {
-						actionFilter.setActionId(action.getId());
-						info(action.getName()+" selected");
-
-					}
-
-				};*/
+				/*
+				 * Link<Void> selectActionForCopy = new
+				 * Link<Void>("select-action") {
+				 * 
+				 * @Override public void onClick() {
+				 * actionFilter.setActionId(action.getId());
+				 * info(action.getName()+" selected");
+				 * 
+				 * }
+				 * 
+				 * };
+				 */
 				selectActionForCopy.add(new Label("action-name", action
 						.getName()));
 				item.add(selectActionForCopy);
@@ -193,7 +195,7 @@ public class CopyActionPropertiesPage extends BasePage {
 	private class ActionFilter implements Serializable {
 		private UIActionForFilter actionForFilter;
 		private long actionId;
-		
+
 		public long getActionId() {
 			return actionId;
 		}
