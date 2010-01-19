@@ -7,6 +7,7 @@ import java.io.Serializable;
  * It's not a JEE role equivalent.
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public class SSORole implements Serializable {
 	private String name;

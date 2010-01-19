@@ -21,6 +21,8 @@ public abstract class BasePage extends WebPage {
 	}
 	
 	public BasePage(){
+		add(new BookmarkablePageLink<HomePage>("self-link", HomePage.class));
+		
 		add(new Label("page-title", getTitle()));
 		add(new Label("page-head-title", getHeadTitle()));
 		

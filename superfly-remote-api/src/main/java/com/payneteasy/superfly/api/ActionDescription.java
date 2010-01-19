@@ -7,6 +7,7 @@ import java.io.Serializable;
  * Superfly server.
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public class ActionDescription implements Serializable {
 	private String name;

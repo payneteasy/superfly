@@ -42,4 +42,7 @@
 		<property name="actionDao" ref="actionDao" />
 	</bean>
 	
+	<bean id="releaseNotesService"
+		class="com.payneteasy.superfly.service.impl.releasenotes.ReleaseNotesServiceImpl"/>
+	
 </beans>

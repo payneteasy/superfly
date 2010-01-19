@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<news>
+	<release number="1.0" date="2010.01.19">
+        <item type="task">
+            <name>UI</name>
+            <description>
+            	UI for subsystems, users, roles, actions management
+            </description>
+        </item>
+        <item type="task">
+            <name>Remote login</name>
+            <description>
+            	Login from subsystems is implementedS
+            </description>
+        </item>
+        <item type="task">
+            <name>Actions from subsystem</name>
+            <description>
+            	Subsystem is able to send its actions to the Superfly server
+            </description>
+        </item>
+        <item type="task">
+            <name>Spring Security integration</name>
+            <description>
+            	To use Superfly security (authentication/authorization) in your
+            	application you only need to use a Superfly module for Spring
+            	Security
+            </description>
+        </item>
+        <item type="task">
+            <name>SSL integration</name>
+            <description>
+            	Subsystem may be authenticated to the Superfly server using
+            	a client SSL authentication
+            </description>
+        </item>
+        <item type="task">
+            <name>Demo application</name>
+            <description>
+            	All features (including Spring security integration and SSL
+            	integration) are demonstrated by a Demo application
+            </description>
+        </item>
+    </release>
+</news>

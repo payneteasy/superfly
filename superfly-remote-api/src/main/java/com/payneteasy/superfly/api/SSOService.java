@@ -4,6 +4,7 @@ package com.payneteasy.superfly.api;
  * Service for SSO communication.
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public interface SSOService {
 	/**

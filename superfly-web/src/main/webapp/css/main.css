@@ -190,3 +190,32 @@ table.data td.checkbox-cell {
 	padding: 0.35em 0.35em 0.25em 0.35em;
 	text-align: center;
 }
+
+ul.release-notes {
+	list-style-type: none;
+	list-style-position: outside;
+	padding-left: 10px;
+	font-size: 14px;
+	font-size: larger;
+}
+
+ul.release-notes li {
+	font-weight: bold;
+}
+
+ul.release-notes ul {
+	line-height: 20px;
+	height: 20px; list-style-image : url("../img/li.gif");
+	margin-left: 3em;
+	font-size: medium;
+	list-style-image: url("../img/li.gif");
+}
+
+ul.release-notes ul li {
+	font-weight: normal;
+}
+
+.release-date {
+	position: static;
+	color: #3366CC;
+}

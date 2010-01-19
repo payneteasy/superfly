@@ -8,6 +8,7 @@ import java.util.Map;
  * roles, each role has its own action set.
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public class SSOUser implements Serializable {
 	private String name;

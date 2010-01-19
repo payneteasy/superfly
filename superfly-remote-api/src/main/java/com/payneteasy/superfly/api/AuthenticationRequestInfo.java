@@ -6,6 +6,7 @@ import java.io.Serializable;
  * Holds additional information about authentication request.
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public class AuthenticationRequestInfo implements Serializable {
 	private String ipAddress;

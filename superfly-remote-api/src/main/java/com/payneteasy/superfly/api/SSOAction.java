@@ -6,6 +6,7 @@ import java.io.Serializable;
  * SSO action (corresponds to a role in JEE security model).
  * 
  * @author Roman Puchkovskiy
+ * @since 1.0
  */
 public class SSOAction implements Serializable {
 	private String name;
