@@ -59,6 +59,6 @@ call save_routine_information('ui_get_users_list',
                                         'user_password varchar',
                                         'is_account_locked varchar',
                                         'logins_failed int',
-                                        'last_login_date date'
+                                        'last_login_date datetime'
                               )
      );

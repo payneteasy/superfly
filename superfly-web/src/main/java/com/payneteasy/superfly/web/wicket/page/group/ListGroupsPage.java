@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.group;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.PropertyModel;
@@ -27,7 +29,6 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
-import com.payneteasy.superfly.web.wicket.component.EmptyPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -100,7 +101,7 @@ public class ListGroupsPage extends BasePage {
 		
 		
 //		DATAVIEW
-		final CheckGroup<UIGroupForList> checkGroup = new CheckGroup<UIGroupForList>("group", new ArrayList());
+		final CheckGroup<UIGroupForList> checkGroup = new CheckGroup<UIGroupForList>("group", new ArrayList<UIGroupForList>());
 		
 		final DataView<UIGroupForList> groupDataView = new PagingDataView<UIGroupForList>("list-group",groupDataProvider){
 			@Override
@@ -125,7 +126,7 @@ public class ListGroupsPage extends BasePage {
 
 			@Override
 			protected void onSubmit() {
-				final ArrayList<UIGroupForList> list = (ArrayList<UIGroupForList>) checkGroup.getModelObject();
+				final Collection<UIGroupForList> list = checkGroup.getModelObject();
 				
 				if (list.size() == 0)	return;
 				
@@ -167,26 +168,25 @@ public class ListGroupsPage extends BasePage {
 		form.add(checkGroup);
 		add(form);
 	}
-
-@SuppressWarnings("unused")
-private class GroupFilter implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private UISubsystemForFilter subsystem;
-
-	public UISubsystemForFilter getSubsystem() {
-		return subsystem;
+	
+	@Override
+	protected String getTitle() {
+		return "Groups";
 	}
 
-	public void setSubsystem(UISubsystemForFilter subsystem) {
-		this.subsystem = subsystem;
+	@SuppressWarnings("unused")
+	private class GroupFilter implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private UISubsystemForFilter subsystem;
+	
+		public UISubsystemForFilter getSubsystem() {
+			return subsystem;
+		}
+	
+		public void setSubsystem(UISubsystemForFilter subsystem) {
+			this.subsystem = subsystem;
+		}
+	
 	}
-
-}
-
-@Override
-protected String getTitle() {
-	return "Groups";
-}
-
 
 }

@@ -50,6 +50,7 @@ public class ListUsersPage extends BasePage {
 	public ListUsersPage() {
 		super();
 		
+		// filters
 		final UserFilters userFilters = new UserFilters();
 		Form<UserFilters> filtersForm = new Form<UserFilters>("filters-form");
 		add(filtersForm);
@@ -66,6 +67,7 @@ public class ListUsersPage extends BasePage {
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
 		
+		// data provider + sortability
 		String[] fieldNames = {"userId", "username", "password", "locked",
 				"loginsFailed", "lastLoginDate"};
 		SortableDataProvider<UIUserForList> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
@@ -88,6 +90,8 @@ public class ListUsersPage extends BasePage {
 			}
 
 		};
+		
+		// data itself
 		DataView<UIUserForList> usersDataView = new PagingDataView<UIUserForList>("usersList", usersDataProvider) {
 			@Override
 			protected void populateItem(Item<UIUserForList> item) {
@@ -123,17 +127,11 @@ public class ListUsersPage extends BasePage {
 						ChangeUserActionsPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
-//				item.add(new Link<Void>("delete-user") {
-//					@Override
-//					public void onClick() {
-//						userService.deleteUser(user.getId());
-//						info("User deleted: " + user.getUsername());
-//					}
-//				});
 			}
 		};
 		add(usersDataView);
-		
+
+		// ordering, paging...
 		add(new OrderByLink("order-by-username", "username", usersDataProvider));
 		add(new OrderByLink("order-by-locked", "locked", usersDataProvider));
 		add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
