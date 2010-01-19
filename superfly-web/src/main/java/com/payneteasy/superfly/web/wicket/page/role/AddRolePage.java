@@ -18,32 +18,31 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+
 @Secured("ROLE_ADMIN")
 public class AddRolePage extends BasePage {
 	@SpringBean
 	RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
-	
+
 	public AddRolePage() {
-        super();
-        final UIRole role = new UIRole();
-        setDefaultModel(new CompoundPropertyModel<UIRole>(role));
-        final RoleFilter roleFilter = new RoleFilter();
-        Form form = new Form("form"){
-        	
-        };
-        add(form);
-        DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
+		super();
+		final UIRole role = new UIRole();
+		setDefaultModel(new CompoundPropertyModel<UIRole>(role));
+		final RoleFilter roleFilter = new RoleFilter();
+		Form form = new Form("form") {
+
+		};
+		add(form);
+		form.add(new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
 						roleFilter, "subsystem"), subsystemService
 						.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer());
-		subsystemDropdown.setNullValid(true);
-		form.add(subsystemDropdown);
+				new SubsystemChoiceRenderer()).setNullValid(true).setRequired(true));
 		form.add(new RequiredTextField<String>("roleName"));
 		form.add(new RequiredTextField<String>("principalName"));
-		form.add(new Button("add-role"){
+		form.add(new Button("add-role") {
 
 			@Override
 			public void onSubmit() {
@@ -51,27 +50,31 @@ public class AddRolePage extends BasePage {
 				roleService.createRole(role);
 				PageParameters params = new PageParameters();
 				params.add("id", String.valueOf(role.getRoleId()));
-				params.add("idSubsystem", String.valueOf(role.getSubsystemId()));
+				params
+						.add("idSubsystem", String.valueOf(role
+								.getSubsystemId()));
 				params.add("wizard", "true");
-				getRequestCycle().setResponsePage(ChangeRoleGroupsPage.class, params);
+				getRequestCycle().setResponsePage(ChangeRoleGroupsPage.class,
+						params);
 				getRequestCycle().setRedirect(true);
 			}
-			
+
 		});
-		form.add(new Button("cancel"){
+		form.add(new Button("cancel") {
 
 			@Override
 			public void onSubmit() {
 				setResponsePage(ListRolesPage.class);
 			}
-			
-		});
+
+		}.setDefaultFormProcessing(false));
 	}
 
 	@Override
 	protected String getTitle() {
 		return "Create role";
 	}
+
 	@SuppressWarnings("unused")
 	private class RoleFilter implements Serializable {
 		private UISubsystemForFilter subsystem;
