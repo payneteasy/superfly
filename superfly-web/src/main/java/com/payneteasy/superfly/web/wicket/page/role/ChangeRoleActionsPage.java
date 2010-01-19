@@ -74,7 +74,7 @@ public class ChangeRoleActionsPage extends BasePage {
 				List<UIActionForCheckboxForRole> allRoleActions = roleService
 						.getAllRoleActions(first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-								DaoConstants.ASC, roleId, filters
+								true, roleId, filters
 										.getActionNameSubstring());
 				actionsHolder.setObject(allRoleActions);
 				actionsCheckGroupModel.clearInitialized();

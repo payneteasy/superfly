@@ -21,6 +21,16 @@ public class RoleDaoTest extends AbstractDaoTest {
 	public void testGetAllRoleActionsCount() {
 		roleDao.getAllRoleActionsCount(getAnyRoleId(), null);
 	}
+	
+	public void testGetMappedRoleActions() {
+		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
+		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), "dmi");
+	}
+
+	public void testGetMappedRoleActionsCount() {
+		roleDao.getMappedRoleActionsCount(getAnyRoleId(), null);
+		roleDao.getMappedRoleActionsCount(getAnyRoleId(), "dmi");
+	}
 
 	public void testChangeRoleActions() {
        long roleId = getAnyRoleId();
@@ -75,9 +85,11 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
 	}
+	
     public void testGetAllRoleGroupsCount(){
     	int count = roleDao.getAllRoleGroupsCount(1);
     }
+    
 	private long getAnyRoleId() {
 		List<UIRoleForList> roles = roleDao
 				.getRoles(0, 1, 1, "asc", null, null);

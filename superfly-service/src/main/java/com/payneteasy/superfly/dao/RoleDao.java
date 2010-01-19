@@ -72,6 +72,14 @@ public interface RoleDao {
 
 	@AStoredProcedure(name = "ui_get_all_role_actions_list_count")
 	int getAllRoleActionsCount(long roleId, String actionName);
+	
+	@AStoredProcedure(name = "ui_get_mapped_role_actions_list")
+	List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId, String actionName);
+
+	@AStoredProcedure(name = "ui_get_mapped_role_actions_list_count")
+	int getMappedRoleActionsCount(long roleId, String actionName);
 
 	@AStoredProcedure(name = "ui_change_role_actions")
 	RoutineResult changeRoleActions(long roleId, String actionToAddIds,

@@ -37,10 +37,16 @@ public interface RoleService {
 			List<Long> groupToRemoveIds);
 
 	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);
 
 	int getAllRoleActionsCount(long roleId, String actionName);
+	
+	List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId, String actionName);
+
+	int getMappedRoleActionsCount(long roleId, String actionName);
 
 	int getAllRoleGroupsCount(long roleId);
 

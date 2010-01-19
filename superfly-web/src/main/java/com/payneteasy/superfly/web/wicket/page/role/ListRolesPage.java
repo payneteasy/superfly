@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -49,7 +50,7 @@ public class ListRolesPage extends BasePage {
 		add(new EmptyPanel("confirmPanel"));
 		
 		final RoleFilter roleFilter = new RoleFilter();
-		Form<RoleFilter> filtersForm = new Form("filters-form");
+		Form<RoleFilter> filtersForm = new Form<RoleFilter>("filters-form");
 		add(filtersForm);
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
@@ -65,8 +66,7 @@ public class ListRolesPage extends BasePage {
 			@Override
 			protected Collection<UIRoleForList> getInitialValue() {
 				final Collection<UIRoleForList> checkedRoles = new HashSet<UIRoleForList>();
-				for (UIRoleForList role : rolesHolder
-						.getObject()) {
+				for (UIRoleForList role : rolesHolder.getObject()) {
 					if (role.isSelected()) {
 						checkedRoles.add(role);
 					}
@@ -129,7 +129,14 @@ public class ListRolesPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIRoleForList> item) {
 				final UIRoleForList role = item.getModelObject();
-				item.add(new Label("role-name", role.getName()));
+				
+				PageParameters pageParams = new PageParameters();
+				pageParams.add("roleid", String.valueOf(role.getId()));
+				
+				BookmarkablePageLink<ViewRolePage> viewRoleLink = new BookmarkablePageLink<ViewRolePage>(
+						"view-role-link", ViewRolePage.class, pageParams);
+				item.add(viewRoleLink);
+				viewRoleLink.add(new Label("role-name", role.getName()));
 				item.add(new Label("principal-name",role.getPrincipalName()));
 				item.add(new Label("subsystem-name", role.getSubsystem()));
 				item.add(new Check<UIRoleForList>("selected", item.getModel(),group));

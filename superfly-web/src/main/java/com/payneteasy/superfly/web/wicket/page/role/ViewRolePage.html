@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Role details</title>
+</head>
+<body>
+<wicket:extend>
+	<form wicket:id="filter-form">
+		&nbsp;&nbsp; Action name contains: <input wicket:id="action-name-substr" /> &nbsp;
+		<input type="submit" value="Filter" />
+	</form>
+	<table>
+		<tr>
+			<td><b>Role name:</b></td>
+			<td><span wicket:id="roleName">some-role</span></td>
+		</tr>
+		<tr>
+			<td><b>Principal name:</b></td>
+			<td><span wicket:id="principalName">some-principal</span></td>
+		</tr>
+		<tr>
+			<td><b>Subsystem:</b></td>
+			<td><span wicket:id="roleSubsystem">some-subsystem</span></td>
+		</tr>
+	</table>
+	<table class="data">
+		<thead>
+			<tr>
+				<th><a wicket:id="order-by-ActionID">ID</a></th>
+				<th><a wicket:id="order-by-ActionName">Name</a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="dataView">
+				<td><span wicket:id="action-id">[Name]</span></td>
+				<td><span wicket:id="action-name">[Subsystem]</span></td>
+			</tr>
+		</tbody>
+	</table>
+<div wicket:id="paging-navigator"></div>
+<form wicket:id="back-form"><input type="submit" wicket:id="btn-back" value="&lt; Back"/></form>
+
+</wicket:extend>
+</body>
+</html>

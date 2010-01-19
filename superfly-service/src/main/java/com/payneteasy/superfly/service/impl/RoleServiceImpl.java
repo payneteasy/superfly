@@ -79,14 +79,26 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName) {
-		return roleDao.getAllRoleActions(startFrom, recordsCount, orderFieldNumber, orderType, roleId, actionName);
+		return roleDao.getAllRoleActions(startFrom, recordsCount, orderFieldNumber,
+				ascending ? DaoConstants.ASC : DaoConstants.DESC, roleId, actionName);
 	}
 
 	public int getAllRoleActionsCount(long roleId, String actionName) {
-		
 		return roleDao.getAllRoleActionsCount(roleId, actionName);
+	}
+	
+	public List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId, String actionName) {
+		return roleDao.getMappedRoleActions(startFrom, recordsCount,
+				orderFieldNumber, ascending ? DaoConstants.ASC : DaoConstants.DESC,
+				roleId, actionName);
+	}
+
+	public int getMappedRoleActionsCount(long roleId, String actionName) {
+		return roleDao.getMappedRoleActionsCount(roleId, actionName);
 	}
 
 	public int getAllRoleGroupsCount(long roleId) {
