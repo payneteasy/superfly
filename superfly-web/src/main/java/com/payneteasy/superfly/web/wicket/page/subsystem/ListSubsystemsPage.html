@@ -9,10 +9,11 @@
 <wicket:extend>
 	<p><span wicket:id="confirmPanel"></span></p>
 	<form wicket:id="form">
+	<div wicket:id="group">
 		<table class="data">
 			<thead>
 				<tr>
-					<th><input type="checkbox" wicket:id="groupselector"/></th>
+					<th><input type="checkbox" wicket:id="master-checkbox" /></th>
 					<th>Name</th>
 					<th>Callback Info</th>
 					<th>Action</th>
@@ -27,8 +28,9 @@
 				</tr>
 			</tbody>
 		</table>
+		</div>
 		<input type="submit" wicket:id="add-subsystem" value="Add">&nbsp;&nbsp;&nbsp;
-		<input type="submit" value="Delete">
+		<input type="submit" wicket:id="delete-sub" value="Delete">
 	</form>
 </wicket:extend>
 </body>

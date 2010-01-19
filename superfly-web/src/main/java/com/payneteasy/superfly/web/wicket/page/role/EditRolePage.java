@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -32,6 +33,7 @@ public class EditRolePage extends BasePage {
 			 
 		 };
 		 add(form);
+		 form.add(new Label("role-name",role.getRoleName()));
 		 form.add(new RequiredTextField<String>("principalName"));
 		 form.add(new Button("form-submit"));
 	       form.add(new Button("form-cancel"){

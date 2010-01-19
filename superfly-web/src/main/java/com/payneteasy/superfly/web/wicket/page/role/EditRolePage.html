@@ -9,12 +9,15 @@
 <wicket:extend>
 	<form wicket:id="form">
 	<table class="form">
+	<tr>
+	Role Name: <span wicket:id="role-name"></span>
+	</tr>
 		<tr>
-			<td>CallbackInfo:</td>
+			<td>Principal Name:</td>
 			<td><input type="text" wicket:id="principalName" /></td>
 		</tr>
 	</table>
-	<p><input type="submit" value="Add" wicket:id="form-submit" /> <input
+	<p><input type="submit" value="Save" wicket:id="form-submit" /> <input
 		type="submit" value="Cancel" wicket:id="form-cancel" /></p>
 	</form>
 

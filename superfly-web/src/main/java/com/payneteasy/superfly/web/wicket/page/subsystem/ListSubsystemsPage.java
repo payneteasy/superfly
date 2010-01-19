@@ -1,24 +1,28 @@
 package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckGroup;
+import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
+import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
@@ -32,11 +36,31 @@ public class ListSubsystemsPage extends BasePage {
 		add(new EmptyPanel("confirmPanel"));
 
 		List<UISubsystemForList> subsystems = subsystemService.getSubsystems();
-		List<SelectObjectWrapper<UISubsystemForList>> subsystemWrapper = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
+		final List<SelectObjectWrapper<UISubsystemForList>> subsystemWrapper = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
 		for (UISubsystemForList ui : subsystems) {
 			subsystemWrapper
 					.add(new SelectObjectWrapper<UISubsystemForList>(ui));
 		}
+		final InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>> subsystemsCheckGroupModel = new InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>>() {
+
+			@Override
+			protected Collection<SelectObjectWrapper<UISubsystemForList>> getInitialValue() {
+				final Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems = new HashSet<SelectObjectWrapper<UISubsystemForList>>();
+				for (SelectObjectWrapper<UISubsystemForList> subsystem : subsystemWrapper) {
+					if (subsystem.isSelected()) {
+						checkedSubsystems.add(subsystem);
+					}
+				}
+				return checkedSubsystems;
+			}
+
+		};
+		Form form = new Form("form") {
+			
+		};
+		final CheckGroup<SelectObjectWrapper<UISubsystemForList>> group = new CheckGroup<SelectObjectWrapper<UISubsystemForList>>(
+				"group", subsystemsCheckGroupModel);
+		form.add(group);
 		final ListView<SelectObjectWrapper<UISubsystemForList>> listView = new ListView<SelectObjectWrapper<UISubsystemForList>>(
 				"list-subsystem", subsystemWrapper) {
 
@@ -49,60 +73,48 @@ public class ListSubsystemsPage extends BasePage {
 						.getName()));
 				item.add(new BookmarkablePageLink("subsystem-edit",
 						EditSubsytemPage.class).setParameter("id", subWrapperItem.getObject().getId()));
-				item.add(new CheckBox("selected", new PropertyModel<Boolean>(
-						subWrapperItem, "selected")));
+				item.add(new Check<SelectObjectWrapper<UISubsystemForList>>("selected", item
+						.getModel()));
 				item.add(new Label("subsystem-callback",subWrapperItem.getObject().getCallbackInformation()));
 			}
 
 		};
-		Form form = new Form("form") {
+		group.add(listView);
+		group.add(new CheckGroupSelector("master-checkbox", group));
+		form.add(new Button("delete-sub"){
 
 			@Override
-			protected void onSubmit() {
+			public void onSubmit() {
 				ArrayList<SelectObjectWrapper<UISubsystemForList>> subsystemsWrap = (ArrayList<SelectObjectWrapper<UISubsystemForList>>) listView
-						.getModelObject();
-				final ArrayList<SelectObjectWrapper<UISubsystemForList>> listWrap = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
-				for (SelectObjectWrapper<UISubsystemForList> ui : subsystemsWrap) {
-					if (ui.isSelected()) {
-						listWrap.add(ui);
+				.getModelObject();
+				Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems=subsystemsCheckGroupModel.getObject();
+		final ArrayList<SelectObjectWrapper<UISubsystemForList>> listWrap = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
+		for (SelectObjectWrapper<UISubsystemForList> ui : subsystemsWrap) {
+			if (checkedSubsystems.contains(ui)) {
+				listWrap.add(ui);
+			}
+		}
+		if (listWrap.size() == 0)
+			return;
+		this.getPage().get("confirmPanel").replaceWith(
+				new ConfirmPanel("confirmPanel",
+						"You are about to delete "
+								+ " subsystem(s) permanently?") {
+					public void onConfirm() {
+						for (SelectObjectWrapper<UISubsystemForList> ui : listWrap)
+							subsystemService.deleteSubsystem(ui
+									.getObject().getId());
+						this.getPage().setResponsePage(
+								ListSubsystemsPage.class);
 					}
-				}
-				if (listWrap.size() == 0)
-					return;
-				this.getParent().get("confirmPanel").replaceWith(
-						new ConfirmPanel("confirmPanel",
-								"You are about to delete "
-										+ " subsystem(s) permanently?") {
-							public void onConfirm() {
-								for (SelectObjectWrapper<UISubsystemForList> ui : listWrap)
-									subsystemService.deleteSubsystem(ui
-											.getObject().getId());
-								this.getParent().setResponsePage(
-										ListSubsystemsPage.class);
-							}
 
-							public void onCancel() {
-								this.getPage().get("confirmPanel").replaceWith(
-										new EmptyPanel("confirmPanel"));
-							}
-						});
+					public void onCancel() {
+						this.getPage().get("confirmPanel").replaceWith(
+								new EmptyPanel("confirmPanel"));
+					}
+				});
 			}
-
-		};
-		form.add(listView);
-		form.add(new CheckBox("groupselector", new Model("empty")) {
-			@Override
-			public void onSelectionChanged(Object newSelection) {
-				boolean flag = ((Boolean) newSelection).booleanValue();
-				for (SelectObjectWrapper<UISubsystemForList> ssw : listView
-						.getModelObject()) {
-					ssw.setSelected(flag);
-				}
-			}
-
-			public boolean wantOnSelectionChangedNotifications() {
-				return true;
-			}
+			
 		});
 		form.add(new Button("add-subsystem"){
 
