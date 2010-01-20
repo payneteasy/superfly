@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.UrlValidator;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -29,7 +30,7 @@ public class AddSubsystemPage extends BasePage {
       };
       add(form);
       form.add(new RequiredTextField<String>("name"));
-      form.add(new RequiredTextField<String>("callbackInformation"));
+      form.add(new RequiredTextField<String>("callbackInformation").add(new UrlValidator(new String[]{"https"})));
       form.add(new Button("cancel"){
 
 		@Override

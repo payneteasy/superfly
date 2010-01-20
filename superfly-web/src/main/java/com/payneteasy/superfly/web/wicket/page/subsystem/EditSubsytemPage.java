@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.UrlValidator;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -33,7 +34,7 @@ public class EditSubsytemPage extends BasePage {
        };
        add(form);
        form.add(new RequiredTextField<String>("name"));
-       form.add(new RequiredTextField<String>("callbackInformation"));
+       form.add(new RequiredTextField<String>("callbackInformation").add(new UrlValidator(new String[]{"https"})));
        form.add(new Button("form-submit"));
        form.add(new Button("form-cancel"){
 
@@ -42,7 +43,7 @@ public class EditSubsytemPage extends BasePage {
 			setResponsePage(ListSubsystemsPage.class);
 		}
     	   
-       });
+       }.setDefaultFormProcessing(false));
 	}
 
 	@Override
