@@ -1,17 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-demo</artifactId>
 	<packaging>war</packaging>
-	<version>1.0-1-SNAPSHOT</version>
+	<version>1.0-1</version>
 	<name>Superfly Demo Application</name>
 	<description>Demo application which demonstrates the use of a Superfly server for authentication and authorization, as well as integration with Spring Security and SSL with mutual authentication</description>
 	
 	<scm>
-		<connection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</connection>
-		<developerConnection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</developerConnection>
-		<url>https://amberlords.com/softmary/common/trunk/superfly</url>
+		<connection>scm:svn:https://amberlords.com/softmary/common/tags/superfly-demo-1.0-1</connection>
+		<developerConnection>scm:svn:https://amberlords.com/softmary/common/tags/superfly-demo-1.0-1</developerConnection>
+		<url>https://amberlords.com/softmary/common/tags/superfly-demo-1.0-1</url>
 	</scm>
 
 	<!--
