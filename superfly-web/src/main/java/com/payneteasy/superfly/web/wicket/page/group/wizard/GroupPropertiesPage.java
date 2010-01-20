@@ -96,7 +96,8 @@ public class GroupPropertiesPage extends BasePage {
 				ssysService.getSubsystemsForFilter(),
 				new SubsystemChoiceRenderer());
 		
-		subsystemsList.setNullValid(false);
+		subsystemsList.setNullValid(false).setRequired(true);
+		
 		if(groupId!=null)subsystemsList.setEnabled(false);
 		form.add(subsystemsList);
 		add(form);
