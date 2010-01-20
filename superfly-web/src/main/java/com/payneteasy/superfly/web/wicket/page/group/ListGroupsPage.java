@@ -63,7 +63,7 @@ public class ListGroupsPage extends BasePage {
 		if (groupFilter.getSubsystem() != null) subsystemIds.add(groupFilter.getSubsystem().getId());
 
 		// SORTABLE DATA PROVIDER
-		String[] fieldName = { "groupName", "groupSubsystem"};
+		String[] fieldName = { "groupId", "groupName", "groupSubsystemId", "groupSubsystem"};
 		final SortableDataProvider<UIGroupForList> groupDataProvider = new IndexedSortableDataProvider<UIGroupForList>(
 				fieldName) {
 						
