@@ -40,11 +40,14 @@ public class ViewGroupPage extends BasePage {
 		this(param.getAsLong("gid"));		
 	}
 
+	
 	public ViewGroupPage(final Long groupId) {
 		
 		//BACK
-		Form formBack = new Form("back-form");
+		Form<Object> formBack = new Form<Object>("back-form");
 		formBack.add(new Button("btn-back"){
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onSubmit() {
 				setResponsePage(ListGroupsPage.class);
@@ -72,6 +75,8 @@ public class ViewGroupPage extends BasePage {
 		final SortableDataProvider<UIActionForCheckboxForGroup> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
 				fieldName) {
 			
+					private static final long serialVersionUID = 1L;
+
 			public Iterator<? extends UIActionForCheckboxForGroup> iterator(int first,
 					int count) {
 				
@@ -89,6 +94,8 @@ public class ViewGroupPage extends BasePage {
 
 		// DATAVIEW
 		final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider){
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
 				final UIActionForCheckboxForGroup action = item.getModelObject();
@@ -108,6 +115,7 @@ public class ViewGroupPage extends BasePage {
 
 	@SuppressWarnings("unused")
 	private static class Filter implements Serializable {
+		private static final long serialVersionUID = 1L;
 		private String actionNameSubstring;
 
 		public String getActionNameSubstring() {

@@ -177,6 +177,8 @@ public class ListGroupsPage extends BasePage {
 			new ConfirmPanel("confirmPanel",
 					"You are about to delete "+ groupIds.size()
 							+ " group(s) permanently?") {
+				private static final long serialVersionUID = 1L;
+
 				public void onConfirm() {
 					for (Long ui : groupIds)
 						groupService.deleteGroup(ui);

@@ -5,10 +5,8 @@ import java.io.Serializable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -16,18 +14,13 @@ import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
-import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
 public class CloneGroupPage extends BasePage {
 	@SpringBean
 	private GroupService groupService;
-	@SpringBean
-	private SubsystemService subsystemService;
 
 	@Override
 	protected String getTitle() {
@@ -39,12 +32,13 @@ public class CloneGroupPage extends BasePage {
 	}
 
 	
+	@SuppressWarnings("serial")
 	public CloneGroupPage(Long sourceId) {
 		
 		final UIGroup sourceGroup = groupService.getGroupById(sourceId);
 		GroupModel groupModel = new GroupModel();
 			
-		Form<GroupModel> form = new Form<GroupModel>("form", new Model(groupModel)) {
+		Form<GroupModel> form = new Form<GroupModel>("form", new Model<GroupModel>(groupModel)) {
 			@Override
 			protected void onSubmit() {
 				UICloneGroupRequest request = new UICloneGroupRequest();
@@ -69,12 +63,14 @@ public class CloneGroupPage extends BasePage {
 	}
 	
 	private class GroupModel implements Serializable{
+		private static final long serialVersionUID = 1L;
 		private String name;
 
 		public String getName() {
 			return name;
 		}
 
+		@SuppressWarnings("unused")
 		public void setName(String name) {
 			this.name = name;
 		}

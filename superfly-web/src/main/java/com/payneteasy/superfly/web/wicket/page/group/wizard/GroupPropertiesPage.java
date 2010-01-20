@@ -81,8 +81,10 @@ public class GroupPropertiesPage extends BasePage {
 		};
 		
 		form.add(new Label("msg",msg_text));
-		form.add(new RequiredTextField("groupName",new PropertyModel(groupModel,"groupName")));
+		form.add(new RequiredTextField<GroupWizardModel>("groupName",new PropertyModel<GroupWizardModel>(groupModel,"groupName")));
 		form.add(new Button("btn-cancel"){
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onSubmit() {
 				setResponsePage(ListGroupsPage.class);

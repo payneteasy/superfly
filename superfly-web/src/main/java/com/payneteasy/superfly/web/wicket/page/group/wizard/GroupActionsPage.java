@@ -26,8 +26,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
-import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
-import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.ActionService;
@@ -64,6 +62,7 @@ public class GroupActionsPage extends BasePage {
 		this(param.getAsLong("gid"));		
 	}
 
+	@SuppressWarnings({ "serial", "unchecked" })
 	public GroupActionsPage(final Long groupId) {
 		
 		
@@ -163,14 +162,6 @@ public class GroupActionsPage extends BasePage {
 				info("Actions successfully changed.");
 			}
 		};
-		/*form.add(new Button("btn-back"){
-			@Override
-			public void onSubmit() {
-				PageParameters params = new PageParameters();
-				params.add("gid", String.valueOf(curGroup.getId()));
-				setResponsePage(GroupPropertiesPage.class,params);
-			}
-		}.setDefaultFormProcessing(false));*/
 		
 		form.add(new Button("btn-cancel"){
 			@Override
@@ -187,6 +178,7 @@ public class GroupActionsPage extends BasePage {
 
 	@SuppressWarnings("unused")
 	private static class Filter implements Serializable {
+		private static final long serialVersionUID = 1L;
 		private String actionNameSubstring;
 
 		public String getActionNameSubstring() {
