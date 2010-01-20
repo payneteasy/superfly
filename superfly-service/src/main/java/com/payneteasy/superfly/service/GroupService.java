@@ -8,12 +8,8 @@ import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 
-/**
- * Service to work with Groups
- * @author Ivan Zinchenko
- *
- */
 public interface GroupService {
+	
 	List<UIGroupForList> getGroups();
 	List<UIGroupForList> getGroupsForSubsystems(int startFrom, int recordsCount,
 			int orderFieldNumber, boolean orderType, String groupNamePrefix,
@@ -42,7 +38,4 @@ public interface GroupService {
 	
 	int getAllGroupActionsCount(long groupId, String actionSubstring);
 	
-	
-
-
 }
