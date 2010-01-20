@@ -54,7 +54,7 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-remote-api</artifactId>
-			<version>1.0-1-SNAPSHOT</version>
+			<version>1.0-1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
