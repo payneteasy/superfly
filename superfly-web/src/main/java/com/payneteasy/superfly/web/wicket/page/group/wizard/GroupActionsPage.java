@@ -163,14 +163,14 @@ public class GroupActionsPage extends BasePage {
 				info("Actions successfully changed.");
 			}
 		};
-		form.add(new Button("btn-back"){
+		/*form.add(new Button("btn-back"){
 			@Override
 			public void onSubmit() {
 				PageParameters params = new PageParameters();
 				params.add("gid", String.valueOf(curGroup.getId()));
 				setResponsePage(GroupPropertiesPage.class,params);
 			}
-		}.setDefaultFormProcessing(false));
+		}.setDefaultFormProcessing(false));*/
 		
 		form.add(new Button("btn-cancel"){
 			@Override

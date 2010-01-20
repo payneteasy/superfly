@@ -67,13 +67,15 @@ public class GroupPropertiesPage extends BasePage {
 				group.setName(grModel.getGroupName());
 				group.setSubsystemId(grModel.getGroupSubsystem().getId());
 				if(groupId == null){
-				 groupService.createGroup(group);
+					groupService.createGroup(group);
+					PageParameters params = new PageParameters();
+					params.add("gid", String.valueOf(groupId==null ? group.getId(): groupId));
+					setResponsePage(GroupActionsPage.class,params);
 				}else{
-				 groupService.updateGroup(group);	
+					groupService.updateGroup(group);
+					setResponsePage(ListGroupsPage.class);
 				}
-				PageParameters params = new PageParameters();
-				params.add("gid", String.valueOf(groupId==null ? group.getId(): groupId));
-				setResponsePage(GroupActionsPage.class,params);
+				
 			}
 		};
 		
