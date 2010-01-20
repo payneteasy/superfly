@@ -114,8 +114,6 @@ public class ListGroupsPage extends BasePage {
 				viewGroupLink.add(new Label("group-name",group.getName()));
 				item.add(viewGroupLink);
 				item.add(new Label("group-ssys",group.getSubsystemName()));
-				
-				//TODO Implement single group delete
 				item.add(new Link("group-delete"){
 
 					@Override

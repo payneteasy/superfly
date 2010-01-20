@@ -105,7 +105,7 @@ public class GroupActionsPage extends BasePage {
 		};
 		
 		// SORTABLE DATA PROVIDER
-		String[] fieldName = { "actionName" };
+		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
 		final SortableDataProvider<UIActionForCheckboxForGroup> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
 				fieldName) {
 			
