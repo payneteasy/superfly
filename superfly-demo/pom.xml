@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-spring-security</artifactId>
-			<version>1.0-1-SNAPSHOT</version>
+			<version>1.0-1</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -94,7 +94,7 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-client</artifactId>
-			<version>1.0-1-SNAPSHOT</version>
+			<version>1.0-1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -120,7 +120,7 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-client-opt</artifactId>
-			<version>1.0-1-SNAPSHOT</version>
+			<version>1.0-1</version>
 		</dependency>
 		
 		<!--  JETTY DEPENDENCIES FOR TESTING  -->
