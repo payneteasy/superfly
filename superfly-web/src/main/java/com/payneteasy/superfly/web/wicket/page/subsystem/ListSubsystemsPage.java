@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -18,7 +19,6 @@ import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
-import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
@@ -67,7 +67,7 @@ public class ListSubsystemsPage extends BasePage {
 			@Override
 			protected void populateItem(
 					ListItem<SelectObjectWrapper<UISubsystemForList>> item) {
-				SelectObjectWrapper<UISubsystemForList> subWrapperItem = item
+				final SelectObjectWrapper<UISubsystemForList> subWrapperItem = item
 						.getModelObject();
 				item.add(new Label("subsytem-name", subWrapperItem.getObject()
 						.getName()));
@@ -76,6 +76,30 @@ public class ListSubsystemsPage extends BasePage {
 				item.add(new Check<SelectObjectWrapper<UISubsystemForList>>("selected", item
 						.getModel()));
 				item.add(new Label("subsystem-callback",subWrapperItem.getObject().getCallbackInformation()));
+				item.add(new SubmitLink("delete-subsystem"){
+
+					@Override
+					public void onSubmit() {
+						this.getPage().get("confirmPanel").replaceWith(
+								new ConfirmPanel("confirmPanel",
+										"You are about to delete "
+												+ " subsystem - "+ subWrapperItem.getObject().getName()+ " permanently?") {
+									public void onConfirm() {
+										
+											subsystemService.deleteSubsystem(subWrapperItem.getObject().getId());
+													
+										this.getPage().setResponsePage(
+												ListSubsystemsPage.class);
+									}
+
+									public void onCancel() {
+										this.getPage().get("confirmPanel").replaceWith(
+												new EmptyPanel("confirmPanel"));
+									}
+								});
+					}
+					
+				});
 			}
 
 		};

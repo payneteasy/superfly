@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -146,6 +147,27 @@ public class ListRolesPage extends BasePage {
 						ChangeRoleGroupsPage.class).setParameter("id", role.getId()));
 				item.add(new BookmarkablePageLink("role-actions",
 						ChangeRoleActionsPage.class).setParameter("id", role.getId()));
+				item.add(new SubmitLink("delete-role"){
+
+					@Override
+					public void onSubmit() {
+						this.getPage().get("confirmPanel").replaceWith(
+								new ConfirmPanel("confirmPanel",
+										"You are about to delete "
+												+ " role - "+ role.getName()+" permanently?") {
+									public void onConfirm() {
+										roleService.deleteRole(role.getId());
+										this.getPage().setResponsePage(ListRolesPage.class);
+									}
+
+									public void onCancel() {
+										this.getPage().get("confirmPanel").replaceWith(
+												new EmptyPanel("confirmPanel"));
+									}
+								});
+					}
+					
+				});
 			}
 
 		};

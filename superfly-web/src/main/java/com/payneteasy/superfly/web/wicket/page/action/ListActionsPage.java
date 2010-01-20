@@ -203,6 +203,7 @@ public class ListActionsPage extends BasePage {
 				item.add(new Check<UIActionForList>("selected", item.getModel(),group));
 				item.add(new BookmarkablePageLink("copy-action",
 						CopyActionPropertiesPage.class ).setParameter("id", action.getId()));
+				
 			}
 			
 		};
