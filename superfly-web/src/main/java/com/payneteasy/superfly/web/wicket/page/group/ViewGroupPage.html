@@ -8,8 +8,6 @@
 <body>
 <wicket:extend>
 
-	<form wicket:id="back-form"><input type="submit" wicket:id="btn-back" value="&lt; Back"/></form>
-	
 	<form wicket:id="filter-form">
 	&nbsp;&nbsp; Action name contains: <input wicket:id="action-name-substr" /> &nbsp;
 	<input type="submit" value="Filter" />
@@ -36,6 +34,7 @@
 	</table>
 <div wicket:id="paging-navigator"></div>
 
+<form wicket:id="back-form"><input type="submit" wicket:id="btn-back" value="&lt; Back"/></form>
 </wicket:extend>
 </body>
 </html>

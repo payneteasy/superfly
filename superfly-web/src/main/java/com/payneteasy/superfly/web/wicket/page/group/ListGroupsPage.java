@@ -108,10 +108,16 @@ public class ListGroupsPage extends BasePage {
 			protected void populateItem(Item<UIGroupForList> item) {
 				final UIGroupForList group = item.getModelObject();
 				item.add(new Check<UIGroupForList>("selected", item.getModel(), checkGroup));
-				item.add(new Label("name-group",group.getName()));
-				item.add(new Label("ssys-group",group.getSubsystemName()));
-				item.add(new BookmarkablePageLink("group-view",
-						ViewGroupPage.class).setParameter("gid",group.getId()));
+				
+				BookmarkablePageLink<ViewGroupPage> viewGroupLink = 
+					new BookmarkablePageLink<ViewGroupPage>("group-view", ViewGroupPage.class).setParameter("gid", group.getId());
+				viewGroupLink.add(new Label("group-name",group.getName()));
+				item.add(viewGroupLink);
+				item.add(new Label("group-ssys",group.getSubsystemName()));
+				//TODO Implement single group delete
+				item.add(new BookmarkablePageLink("group-delete",
+						ListGroupsPage.class));
+				
 				item.add(new BookmarkablePageLink("group-edit",
 						GroupPropertiesPage.class).setParameter("gid",group.getId()));
 				item.add(new BookmarkablePageLink("group-actions",
