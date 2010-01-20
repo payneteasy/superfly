@@ -125,8 +125,7 @@ public class ListActionsPage extends BasePage {
 
 		};
 		
-		String[] fieldName = { "actionName", "actionDescription",
-				"subsystemName","actionLog" };
+		String[] fieldName = { "actionId","actionName", "actionDescription","actionLog","subsystemId" ,"subsystemName"};
 		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
 				fieldName) {
 
