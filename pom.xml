@@ -6,6 +6,7 @@
 	<packaging>pom</packaging>
 	<name>Superfly parent project</name>
 	<version>1.0-1-SNAPSHOT</version>
+	<description>Parent POM of the Superfly project</description>
 	<modules>
 		<module>superfly-service</module>
 		<module>superfly-web</module>

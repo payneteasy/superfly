@@ -5,6 +5,45 @@
 	<artifactId>superfly-remote-api</artifactId>
 	<name>Superfly Remote API</name>
 	<version>1.0-1-SNAPSHOT</version>
+	<description>API classes for Superfly server which can be used by clients</description>
+	
+	<scm>
+		<connection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</connection>
+		<developerConnection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</developerConnection>
+		<url>https://amberlords.com/softmary/common/trunk/superfly</url>
+	</scm>
+
+	<!--
+    -      Distributions
+    -->
+	<distributionManagement>
+		<repository>
+			<id>common-release</id>
+			<name>Local Maven repository of releases</name>
+			<url>http://amberlords.com:8081/nexus/content/repositories/common-release</url>
+		</repository>
+		<snapshotRepository>
+			<id>common-snapshot</id>
+			<name>Local Maven repository of snapshots</name>
+			<url>http://amberlords.com:8081/nexus/content/repositories/common-snapshot</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>		
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>common-release</id>
+			<name>Our maven releases repository with common user access</name>
+			<url>http://amberlords.com:8081/nexus/content/groups/public</url>
+		</repository>
+        <!-- jdbc proc repository -->
+        <repository>
+            <id>jdbc-proc-release</id>
+            <name>jdbc proc release</name>
+            <url>http://jdbc-proc.googlecode.com/svn/maven2/release</url>
+        </repository>
+	</repositories>
+	
 	<build>
 		<plugins>
 			<plugin>

@@ -10,6 +10,7 @@
 	<artifactId>superfly-web</artifactId>
 	<packaging>war</packaging>
 	<name>Superfly server web-application</name>
+	<description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>

@@ -9,6 +9,7 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-client</artifactId>
 	<name>Superfly Client</name>
+	<description>Contains classes used to </description>
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>

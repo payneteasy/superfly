@@ -9,6 +9,7 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-client-opt</artifactId>
 	<name>Superfly Client optional support</name>
+	<description>Optional Superfly-related client features (like SSL support)</description>
 	<dependencies>
 		<dependency>
 			<groupId>commons-httpclient</groupId>

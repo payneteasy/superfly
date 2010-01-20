@@ -9,6 +9,7 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-httpclient-ssl</artifactId>
 	<name>HttpClient SSL Extensions</name>
+	<description>Extensions to HttpClient which allow to use client SSL authentication as well as server trust check</description>
 	<dependencies>
 	    <dependency>
 	    	<groupId>commons-httpclient</groupId>
