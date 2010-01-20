@@ -34,7 +34,7 @@ public class EditSubsytemPage extends BasePage {
        };
        add(form);
        form.add(new RequiredTextField<String>("name"));
-       form.add(new RequiredTextField<String>("callbackInformation").add(new UrlValidator(new String[]{"https"})));
+       form.add(new RequiredTextField<String>("callbackInformation").add(new UrlValidator(new String[]{"http","https"})));
        form.add(new Button("form-submit"));
        form.add(new Button("form-cancel"){
 
