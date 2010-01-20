@@ -72,6 +72,7 @@ public class GroupPropertiesPage extends BasePage {
 					params.add("gid", String.valueOf(groupId==null ? group.getId(): groupId));
 					setResponsePage(GroupActionsPage.class,params);
 				}else{
+					group.setId(groupId);
 					groupService.updateGroup(group);
 					setResponsePage(ListGroupsPage.class);
 				}
