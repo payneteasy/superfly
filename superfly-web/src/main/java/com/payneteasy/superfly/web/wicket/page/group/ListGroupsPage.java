@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -114,9 +115,18 @@ public class ListGroupsPage extends BasePage {
 				viewGroupLink.add(new Label("group-name",group.getName()));
 				item.add(viewGroupLink);
 				item.add(new Label("group-ssys",group.getSubsystemName()));
+				
 				//TODO Implement single group delete
-				item.add(new BookmarkablePageLink("group-delete",
-						ListGroupsPage.class));
+				item.add(new Link("group-delete"){
+
+					@Override
+					public void onClick() {
+						List<Long> groupToDelete = new ArrayList<Long>();
+						groupToDelete.add(group.getId());
+						doDelete(groupToDelete);
+						
+					}					
+				});
 				
 				item.add(new BookmarkablePageLink("group-edit",
 						GroupPropertiesPage.class).setParameter("gid",group.getId()));
@@ -132,27 +142,9 @@ public class ListGroupsPage extends BasePage {
 
 			@Override
 			protected void onSubmit() {
-				final Collection<UIGroupForList> list = checkGroup.getModelObject();
-				
-				if (list.size() == 0)	return;
-				
-				this.getParent().get("confirmPanel").replaceWith(
-					new ConfirmPanel("confirmPanel",
-							"You are about to delete "+ list.size()
-									+ " group(s) permanently?") {
-						public void onConfirm() {
-							for (UIGroupForList ui : list)
-								groupService.deleteGroup(ui.getId());
-							this.getParent().setResponsePage(
-									ListGroupsPage.class);
-						}
-
-						public void onCancel() {
-							this.getPage().get("confirmPanel").replaceWith(
-									new EmptyPanel("confirmPanel"));
-						}
-					});
-				
+				List<Long> gIds = new ArrayList<Long>();
+				for(UIGroupForList e : checkGroup.getModelObject())gIds.add(e.getId());
+				doDelete(gIds);
 			}
 
 		};
@@ -173,6 +165,32 @@ public class ListGroupsPage extends BasePage {
 		
 		form.add(checkGroup);
 		add(form);
+	}
+	
+	
+	/**
+	 * Deletes listed groups from DB
+	 * @param groupIds - ID's list of groups to delete
+	 */
+	private void doDelete(final List<Long> groupIds){
+			
+		if (groupIds.size() == 0)	return;
+		
+		getPage().get("confirmPanel").replaceWith(
+			new ConfirmPanel("confirmPanel",
+					"You are about to delete "+ groupIds.size()
+							+ " group(s) permanently?") {
+				public void onConfirm() {
+					for (Long ui : groupIds)
+						groupService.deleteGroup(ui);
+					setResponsePage(ListGroupsPage.class);
+				}
+
+				public void onCancel() {
+					getPage().get("confirmPanel").replaceWith(
+							new EmptyPanel("confirmPanel"));
+				}
+			});
 	}
 	
 	@Override
