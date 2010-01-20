@@ -3,13 +3,13 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-remote-api</artifactId>
 	<name>Superfly Remote API</name>
-	<version>1.0-1</version>
+	<version>1.0-2-SNAPSHOT</version>
 	<description>API classes for Superfly server which can be used by clients</description>
 	
 	<scm>
-		<connection>scm:svn:https://amberlords.com/softmary/common/tags/superfly-remote-api-1.0-1</connection>
-		<developerConnection>scm:svn:https://amberlords.com/softmary/common/tags/superfly-remote-api-1.0-1</developerConnection>
-		<url>https://amberlords.com/softmary/common/tags/superfly-remote-api-1.0-1</url>
+		<connection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</connection>
+		<developerConnection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</developerConnection>
+		<url>https://amberlords.com/softmary/common/trunk/superfly</url>
 	</scm>
 
 	<!--
