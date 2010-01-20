@@ -8,6 +8,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
+import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 
 public interface GroupDao {
 
@@ -26,7 +27,7 @@ public interface GroupDao {
 	int getGroupsCount(String groupName, String subsystemIds);
 	
 	@AStoredProcedure(name = "ui_get_group")
-	UIGroup getGroupById(long id);
+	UIGroupForView getGroupById(long id);
 	
 	@AStoredProcedure(name = "ui_edit_group_properties")
 	RoutineResult updateGroup(long id, String groupName);

@@ -9,6 +9,7 @@ public class UIRole implements Serializable {
 	private String roleName;
 	private String principalName;
 	private long subsystemId;
+	
 	@Column(name = "role_id")
 	public long getRoleId() {
 		return roleId;

@@ -3,11 +3,10 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
-import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
+import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 
 public interface GroupService {
 	List<UIGroupForList> getGroups();
@@ -22,7 +21,7 @@ public interface GroupService {
 	
 	void cloneGroup(UICloneGroupRequest request);
 	
-	UIGroup getGroupById(long id);
+	UIGroupForView getGroupById(long id);
 	
 	int getGroupsCount(String groupName, List<Long> subsystemIds);
 	

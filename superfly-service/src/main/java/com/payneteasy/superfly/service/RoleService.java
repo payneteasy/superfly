@@ -7,6 +7,7 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 
 public interface RoleService {
 	/**
@@ -24,7 +25,7 @@ public interface RoleService {
 
 	void deleteRole(long roleId);
 
-	UIRole getRole(long roleId);
+	UIRoleForView getRole(long roleId);
 
 	void updateRole(UIRole role);
 

@@ -10,9 +10,9 @@ import com.payneteasy.superfly.dao.GroupDao;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
-import com.payneteasy.superfly.service.*;
+import com.payneteasy.superfly.model.ui.group.UIGroupForView;
+import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
@@ -57,9 +57,8 @@ public class GroupServiceImpl implements GroupService {
 		return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
-	public UIGroup getGroupById(long id) {
+	public UIGroupForView getGroupById(long id) {
 		return groupDao.getGroupById(id);
-		
 	}
 
 	public void updateGroup(UIGroup group) {

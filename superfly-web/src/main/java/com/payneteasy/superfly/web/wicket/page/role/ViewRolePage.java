@@ -20,11 +20,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
-import com.payneteasy.superfly.model.ui.role.UIRole;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
-import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 import com.payneteasy.superfly.service.RoleService;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
@@ -32,13 +29,7 @@ import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 @Secured("ROLE_ADMIN")
 public class ViewRolePage extends BasePage {
 	@SpringBean
-	ActionService actionService;
-	
-	@SpringBean
-	SubsystemService ssysService;
-	
-	@SpringBean
-	RoleService roleService;
+	private RoleService roleService;
 	
 	@Override
 	protected String getTitle() {
@@ -68,19 +59,11 @@ public class ViewRolePage extends BasePage {
 		filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
 		
 		//ROLE PROPERTIES
-		final UIRole curRole = roleService.getRole(roleId);
+		final UIRoleForView curRole = roleService.getRole(roleId);
 		
 		add(new Label("roleName", curRole.getRoleName()));
 		add(new Label("principalName", curRole.getPrincipalName()));
-		String ssysName = "";
-		List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
-		for (UISubsystemForFilter e : list) {
-			if (e.getId() == curRole.getSubsystemId()) {
-				ssysName = e.getName();
-			}
-		}
-		add(new Label("roleSubsystem", ssysName));
-		
+		add(new Label("roleSubsystem", curRole.getRoleName()));
 		
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "roleId", "roleName", "subsystemName", "actionId", "actionName" };
@@ -100,7 +83,6 @@ public class ViewRolePage extends BasePage {
 			}
 
 		};
-		
 
 		// DATAVIEW
 		final DataView<UIActionForCheckboxForRole> actionDataView = new PagingDataView<UIActionForCheckboxForRole>("dataView", actionDataProvider){

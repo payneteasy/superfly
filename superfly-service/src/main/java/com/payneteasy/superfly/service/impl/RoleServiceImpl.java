@@ -12,6 +12,7 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.utils.StringUtils;
 
@@ -47,8 +48,7 @@ public class RoleServiceImpl implements RoleService {
 		roleDao.deleteRole(roleId);
 	}
 
-	public UIRole getRole(long roleId) {
-
+	public UIRoleForView getRole(long roleId) {
 		return roleDao.getRole(roleId);
 	}
 

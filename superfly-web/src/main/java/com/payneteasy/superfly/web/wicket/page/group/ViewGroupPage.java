@@ -20,11 +20,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
-import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
-import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 import com.payneteasy.superfly.service.GroupService;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
@@ -32,13 +29,7 @@ import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 @Secured("ROLE_ADMIN")
 public class ViewGroupPage extends BasePage {
 	@SpringBean
-	ActionService actionService;
-	
-	@SpringBean
-	SubsystemService ssysService;
-	
-	@SpringBean
-	GroupService groupService;
+	private GroupService groupService;
 	
 	@Override
 	protected String getTitle() {
@@ -69,15 +60,10 @@ public class ViewGroupPage extends BasePage {
 		filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
 		
 		//GROUP PROPERTIES
-		final UIGroup curGroup = groupService.getGroupById(groupId);
+		final UIGroupForView curGroup = groupService.getGroupById(groupId);
 		
-		add(new Label("groupName",curGroup.getName()));
-		String ssysName = "";
-		List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
-		for(UISubsystemForFilter e: list){
-			if(e.getId() == curGroup.getSubsystemId())ssysName=e.getName();
-		}
-		add(new Label("groupSubsystem",ssysName));
+		add(new Label("groupName", curGroup.getName()));
+		add(new Label("groupSubsystem", curGroup.getSubsystemName()));
 		
 		
 		// SORTABLE DATA PROVIDER

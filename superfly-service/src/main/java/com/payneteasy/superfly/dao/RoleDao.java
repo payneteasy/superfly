@@ -9,6 +9,7 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 
 /**
  * DAO to work with roles.
@@ -43,7 +44,7 @@ public interface RoleDao {
 	int getRoleCount(String rolesName, String subsystemsName);
 
 	@AStoredProcedure(name = "ui_get_role")
-	UIRole getRole(long roleId);
+	UIRoleForView getRole(long roleId);
 
 	@AStoredProcedure(name = "ui_delete_role")
 	RoutineResult deleteRole(long roleId);
