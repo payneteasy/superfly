@@ -55,7 +55,7 @@ public class ListSubsystemsPage extends BasePage {
 			}
 
 		};
-		Form form = new Form("form") {
+		Form<Void> form = new Form<Void>("form") {
 			
 		};
 		final CheckGroup<SelectObjectWrapper<UISubsystemForList>> group = new CheckGroup<SelectObjectWrapper<UISubsystemForList>>(

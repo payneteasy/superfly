@@ -19,7 +19,7 @@ public class AddSubsystemPage extends BasePage {
 	public AddSubsystemPage() {
       final UISubsystem subsystem = new UISubsystem();
       setDefaultModel(new CompoundPropertyModel<UISubsystem>(subsystem));
-      Form form = new Form("form"){
+      Form<UISubsystem> form = new Form<UISubsystem>("form"){
 
 		@Override
 		protected void onSubmit() {

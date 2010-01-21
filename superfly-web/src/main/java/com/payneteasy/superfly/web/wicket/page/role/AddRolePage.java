@@ -31,7 +31,7 @@ public class AddRolePage extends BasePage {
 		final UIRole role = new UIRole();
 		setDefaultModel(new CompoundPropertyModel<UIRole>(role));
 		final RoleFilter roleFilter = new RoleFilter();
-		Form form = new Form("form") {
+		Form<Void> form = new Form<Void>("form") {
 
 		};
 		add(form);

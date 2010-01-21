@@ -147,19 +147,6 @@ public class CopyActionPropertiesPage extends BasePage {
 					}
 
 				};
-
-				/*
-				 * Link<Void> selectActionForCopy = new
-				 * Link<Void>("select-action") {
-				 * 
-				 * @Override public void onClick() {
-				 * actionFilter.setActionId(action.getId());
-				 * info(action.getName()+" selected");
-				 * 
-				 * }
-				 * 
-				 * };
-				 */
 				selectActionForCopy.add(new Label("action-name", action
 						.getName()));
 				item.add(selectActionForCopy);

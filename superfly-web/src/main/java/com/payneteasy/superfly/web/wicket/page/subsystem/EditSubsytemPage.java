@@ -23,7 +23,7 @@ public class EditSubsytemPage extends BasePage {
        long subsystemId = parameters.getAsLong("id", -1L);
        final UISubsystem subsystem = subsystemService.getSubsystem(subsystemId);
        setDefaultModel(new CompoundPropertyModel<UISubsystem>(subsystem));
-       Form form = new Form("form"){
+       Form<UISubsystem> form = new Form<UISubsystem>("form"){
 
 		@Override
 		protected void onSubmit() {

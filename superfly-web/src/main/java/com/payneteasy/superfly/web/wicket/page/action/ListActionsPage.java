@@ -52,9 +52,8 @@ public class ListActionsPage extends BasePage {
 		super();
 		final ActionFilter actionFilter = new ActionFilter();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
-		add(filtersForm);
+		add(filtersForm);	
 		
-		//Filter for subsystems
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
 						actionFilter, "subsystem"), subsystemService
@@ -62,16 +61,16 @@ public class ListActionsPage extends BasePage {
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
-       //Filter for actionName
+      
 		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",new Model("")){
 
 			@Override
-			protected Iterator getChoices(String input) {
+			protected Iterator<String> getChoices(String input) {
 				if (Strings.isEmpty(input))
                 {
                     return Collections.EMPTY_LIST.iterator();
                 }
-				List choices = new ArrayList(10);
+				List<String> choices = new ArrayList<String>(10);
 				List<UIActionForFilter> action = actionService.getActionForFilter();
 				for(UIActionForFilter uia: action){
 					final String name = uia.getActionName();
@@ -87,22 +86,6 @@ public class ListActionsPage extends BasePage {
 			
 		};
 		filtersForm.add(autoTextNameAction);
-		/*autoTextNameAction.add(new AjaxFormSubmitBehavior(filtersForm,"onchange"){
-
-			@Override
-			protected void onError(AjaxRequestTarget target) {
-				
-				
-			}
-
-			@Override
-			protected void onSubmit(AjaxRequestTarget target) {
-				
-				
-			}
-			
-		});*/
-		
 		final List<Long> subsystemIds = new ArrayList<Long>();
 		if (actionFilter.getSubsystem() != null) {
 
