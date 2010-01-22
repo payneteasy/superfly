@@ -3,7 +3,11 @@ delimiter $$
 create procedure ui_get_subsystems_list()
  main_sql:
   begin
-    select ssys_id, subsystem_name, callback_information, fixed
+    select ssys_id,
+           subsystem_name,
+           callback_information,
+           fixed,
+           allow_list_users
       from subsystems;
   end
 $$
@@ -13,6 +17,7 @@ call save_routine_information('ui_get_subsystems_list',
                                         'ssys_id int',
                                         'subsystem_name varchar',
                                         'callback_information varchar',
-                                        'fixed varchar'
+                                        'fixed varchar',
+                                        'allow_list_users varchar'
                               )
      );
