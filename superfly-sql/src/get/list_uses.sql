@@ -4,16 +4,26 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
 )
  main_sql:
   begin
-    select r.role_name,
+    select u.user_id,
+           u.user_name,
+           r.role_name,
            r.principal_name,
            ss.callback_information,
            a.action_name role_action_name,
            a.log_action role_log_action
-      from             user_roles ur
+      from               users u
+                       join
+                         user_roles ur
+                       on u.user_id = ur.user_user_id
                      join
                        roles r
                      on r.role_id = ur.role_role_id
-                        and instr(concat(',', i_principal_list, ','),
+                        and instr(concat(',',
+                                         coalesce(i_principal_list,
+                                                  r.principal_name
+                                         ),
+                                         ','
+                                  ),
                                   concat(',', r.principal_name, ',')
                            )
                    join
@@ -33,16 +43,26 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
            on a.ssys_ssys_id = ss.ssys_id and ga.actn_actn_id = a.actn_id
      where ss.subsystem_name = i_subsystem_name
     union
-    select r.role_name,
+    select u.user_id,
+           u.user_name,
+           r.role_name,
            r.principal_name,
            ss.callback_information,
            a.action_name role_action_name,
            a.log_action role_log_action
-      from           user_roles ur
+      from             users u
+                     join
+                       user_roles ur
+                     on u.user_id = ur.user_user_id
                    join
                      roles r
                    on r.role_id = ur.role_role_id
-                      and instr(concat(',', i_principal_list, ','),
+                      and instr(concat(',',
+                                       coalesce(i_principal_list,
+                                                r.principal_name
+                                       ),
+                                       ','
+                                ),
                                 concat(',', r.principal_name, ',')
                          )
                  join
@@ -57,13 +77,16 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
            join
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
-     where ss.subsystem_name = i_subsystem_name;
+     where ss.subsystem_name = i_subsystem_name
+    order by user_id, role_name, principal_name, role_action_name;
   end
 ;
 $$
 delimiter ;
 call save_routine_information('list_users',
                               concat_ws(',',
+                                        'user_id int',
+                                        'user_name varchar',
                                         'role_name varchar',
                                         'principal_name varchar',
                                         'callback_information varchar',
