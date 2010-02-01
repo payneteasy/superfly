@@ -40,6 +40,8 @@ create procedure ui_change_user_roles(i_user_id int(10),
 
     commit;
 
+    call ui_check_expired_sessions(null, null, i_user_id, null);
+
     select 'OK' status, null error_message;
   end
 $$

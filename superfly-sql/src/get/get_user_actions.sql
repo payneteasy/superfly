@@ -49,6 +49,66 @@ create procedure get_user_actions(i_user_name varchar(32),
      where u.user_name = i_user_name
            and coalesce(u.is_account_locked, 'N') = 'N';
 
+    insert into sessions
+          (
+             start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list
+          )
+      select now(),
+             v_user_id,
+             ssys_id,
+             callback_information,
+             (select group_concat(concat(r.role_id, ':', ra.ract_id)
+                                    order by r.role_id, ra.ract_id
+                     )
+                from           user_roles ur
+                             join
+                               roles r
+                             on r.role_id = ur.role_role_id
+                           join
+                             subsystems ss
+                           on r.ssys_ssys_id = ss.ssys_id
+                         join
+                           user_role_actions ura
+                         on ura.user_user_id = ur.user_user_id
+                       join
+                         role_actions ra
+                       on ura.ract_ract_id = ra.ract_id
+                          and ra.role_role_id = r.role_id
+                     join
+                       actions a
+                     on ra.actn_actn_id = a.actn_id
+                        and a.ssys_ssys_id = ss.ssys_id
+               where ur.user_user_id = v_user_id
+                     and ss.subsystem_name = i_subsystem_name),
+             (select group_concat(concat(r.role_id, ':', a.actn_id)
+                                    order by r.role_id, a.actn_id
+                     )
+                from             user_roles ur
+                               join
+                                 roles r
+                               on r.role_id = ur.role_role_id
+                             join
+                               subsystems ss
+                             on r.ssys_ssys_id = ss.ssys_id
+                           join
+                             role_groups rg
+                           on rg.role_role_id = r.role_id
+                         join
+                           groups g
+                         on rg.grop_grop_id = g.grop_id
+                       join
+                         group_actions ga
+                       on ga.grop_grop_id = g.grop_id
+                          and g.ssys_ssys_id = ss.ssys_id
+                     join
+                       actions a
+                     on a.ssys_ssys_id = ss.ssys_id
+                        and ga.actn_actn_id = a.actn_id
+               where ur.user_user_id = v_user_id
+                     and ss.subsystem_name = i_subsystem_name)
+        from subsystems
+       where subsystem_name = i_subsystem_name;
+
     select r.role_name,
            r.principal_name,
            ss.callback_information,

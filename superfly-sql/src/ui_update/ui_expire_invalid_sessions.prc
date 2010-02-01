@@ -1,21 +1,16 @@
-drop procedure if exists ui_delete_user;
+drop procedure if exists ui_expire_invalid_sessions;
 delimiter $$
-create procedure ui_delete_user(i_user_id int(10))
- main_sql:
+create procedure ui_expire_invalid_sessions()
   begin
-    update users
-       set is_account_locked    = "Y"
-     where user_id = i_user_id;
-
     update sessions
        set session_expired    = 'Y'
-     where user_user_id = i_user_id;
+     where session_expired = 'N' and actions_expired = 'Y';
 
     select 'OK' status, null error_message;
   end
 $$
 delimiter ;
-call save_routine_information('ui_delete_user',
+call save_routine_information('ui_expire_invalid_sessions',
                               concat_ws(',',
                                         'status varchar',
                                         'error_message varchar'

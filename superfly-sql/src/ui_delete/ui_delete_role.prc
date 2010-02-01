@@ -3,6 +3,8 @@ delimiter $$
 create procedure ui_delete_role(i_role_id int(10))
  main_sql:
   begin
+    declare v_ssys_id   int(10);
+
     delete from role_groups
      where role_role_id = i_role_id;
 
@@ -19,8 +21,15 @@ create procedure ui_delete_role(i_role_id int(10))
     delete from role_actions
      where role_role_id = i_role_id;
 
+    select ssys_ssys_id
+      into v_ssys_id
+      from roles
+     where role_id = i_role_id;
+
     delete from roles
      where role_id = i_role_id;
+
+    call ui_check_expired_sessions(v_ssys_id, null, null, null);
 
     select 'OK' status, null error_message;
   end

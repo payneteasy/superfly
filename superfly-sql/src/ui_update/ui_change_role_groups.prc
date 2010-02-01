@@ -16,6 +16,8 @@ create procedure ui_change_role_groups(i_role_id int(10),
 
     commit;
 
+    call ui_check_expired_sessions(null, i_role_id, null, null);
+
     select 'OK' status, null error_message;
   end
 $$

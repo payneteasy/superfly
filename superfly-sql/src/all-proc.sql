@@ -100,6 +100,10 @@ create table mysql_routines_return_arguments (
 
 \. ui_delete/ui_delete_user.prc
 
+\. ui_delete/ui_delete_session.prc
+
+\. ui_delete/ui_delete_expired_sessions.prc
+
 \. save/save_actions.prc
 
 \. ui_get/ui_get_groups_list.prc
@@ -194,6 +198,10 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_subsystem_by_name.prc
 
+\. ui_get/ui_get_invalid_sessions.prc
+
+\. ui_get/ui_get_expired_sessions.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
@@ -217,3 +225,7 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_change_user_roles.prc
 
 \. ui_update/ui_change_user_role_actions.prc
+
+\. ui_update/ui_check_expired_sessions.prc
+
+\. ui_update/ui_expire_invalid_sessions.prc

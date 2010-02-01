@@ -4,7 +4,7 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
  main_sql:
   begin
     declare v_subsystem_name        varchar(128);
-    declare v_fixed        			varchar(1);
+    declare v_fixed                 varchar(1);
     declare v_grop_id               int(10);
     declare v_role_id               int(10);
     declare ex_no_records_found     int(10) default 0;
@@ -27,11 +27,12 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
       into v_subsystem_name, v_fixed
       from subsystems
      where ssys_id = i_ssys_id;
-     
-	if v_fixed = 'Y' then
-		select 'OK' status, null error_message;
-		leave main_sql;
-	end if;
+
+    if v_fixed = 'Y' then
+      select 'OK' status, null error_message;
+
+      leave main_sql;
+    end if;
 
     -- remove actions
     truncate table temp_actions;
@@ -74,6 +75,10 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
      where ssys_id = i_ssys_id;
 
     commit;
+
+    update sessions
+       set session_expired    = 'Y'
+     where ssys_ssys_id = i_ssys_id;
 
     select 'OK' status, null error_message;
   end
