@@ -368,6 +368,10 @@
 						<groupId>jndi</groupId>
 						<artifactId>jndi</artifactId>
 			        </exclusion>
+	      	    	<exclusion>
+						<groupId>ehcache</groupId>
+						<artifactId>ehcache</artifactId>
+			        </exclusion>
 	      	    </exclusions>
 	    	</dependency>
 		</dependencies>
