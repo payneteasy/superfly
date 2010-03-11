@@ -1,4 +1,4 @@
-package org.payneteasy.superfly.client.session;
+package com.payneteasy.superfly.client.session;
 
 import java.io.IOException;
 

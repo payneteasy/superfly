@@ -1,4 +1,4 @@
-package org.payneteasy.superfly.client.test.sub;
+package com.payneteasy.superfly.client.test.sub;
 
 import org.springframework.security.annotation.Secured;
 

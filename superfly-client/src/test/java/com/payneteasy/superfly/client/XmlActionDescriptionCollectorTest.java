@@ -1,4 +1,4 @@
-package org.payneteasy.superfly.client;
+package com.payneteasy.superfly.client;
 
 import java.util.List;
 
