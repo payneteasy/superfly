@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
@@ -23,18 +24,18 @@ public interface RoleService {
 
 	int getRoleCount(String rolesName, List<Long> subsystems);
 
-	void deleteRole(long roleId);
+	RoutineResult deleteRole(long roleId);
 
 	UIRoleForView getRole(long roleId);
 
-	void updateRole(UIRole role);
+	RoutineResult updateRole(UIRole role);
 
-	void createRole(UIRole role);
+	RoutineResult createRole(UIRole role);
 
 	List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, long roleId);
 
-	void changeRoleGroups(long roleId, List<Long> groupToAddIds,
+	RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds,
 			List<Long> groupToRemoveIds);
 
 	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
@@ -51,6 +52,6 @@ public interface RoleService {
 
 	int getAllRoleGroupsCount(long roleId);
 
-	void changeRoleActions(long roleId, List<Long> actionToAddIds,
+	RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
 			List<Long> actionToRemoveIds);
 }

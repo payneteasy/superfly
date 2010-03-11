@@ -27,6 +27,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
@@ -156,7 +157,10 @@ public class ListRolesPage extends BasePage {
 										"You are about to delete "
 												+ " role - "+ role.getName()+" permanently?") {
 									public void onConfirm() {
-										roleService.deleteRole(role.getId());
+										RoutineResult result = roleService.deleteRole(role.getId());
+										if (result.isOk()) {
+											info("Deleted role; please be aware that some sessions could be invalidated");
+										}
 										this.getPage().setResponsePage(ListRolesPage.class);
 									}
 
@@ -190,11 +194,17 @@ public class ListRolesPage extends BasePage {
 								"You are about to delete "+checkedRoles.size()
 										+ " role(s) permanently?") {
 							public void onConfirm() {
-								for(UIRoleForList uir: roles){
-									if(checkedRoles.contains(uir)){
-										
-										roleService.deleteRole(uir.getId());
+								boolean someSuccess = false;
+								for(UIRoleForList uir: roles) {
+									if (checkedRoles.contains(uir)) {
+										RoutineResult result = roleService.deleteRole(uir.getId());
+										if (result.isOk()) {
+											someSuccess = true;
+										}
 									}
+								}
+								if (someSuccess) {
+									info("Deleted roles; please be aware that some sessions could be invalidated");
 								}
 								this.getPage().setResponsePage(ListRolesPage.class);
 							}

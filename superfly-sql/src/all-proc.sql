@@ -16,7 +16,7 @@ create table mysql_routines_return_arguments (
 
 \. get/get_user_actions.sql
 
-\. get/list_uses.sql
+\. get/list_users.sql
 
 \. get/get_procedures_resultset.prc
 
@@ -229,3 +229,5 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_check_expired_sessions.prc
 
 \. ui_update/ui_expire_invalid_sessions.prc
+
+\. stub/get_subsystems_allowing_to_list_users.prc

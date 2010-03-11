@@ -1,11 +1,14 @@
 package com.payneteasy.superfly.service.impl.remote;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
 
 /**
@@ -46,6 +49,15 @@ public class SSOServiceImpl implements SSOService {
 			ActionDescription[] actionDescriptions) {
 		internalSSOService.saveSystemData(obtainSubsystemIdentifier(systemIdentifier),
 				actionDescriptions);
+	}
+	
+	/**
+	 * @see SSOService#getUsersWithActions(String, String)
+	 */
+	public List<SSOUserWithActions> getUsersWithActions(
+			String subsystemIdentifier, String principalName) {
+		return internalSSOService.getUsersWithActions(
+				obtainSubsystemIdentifier(subsystemIdentifier), principalName);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {

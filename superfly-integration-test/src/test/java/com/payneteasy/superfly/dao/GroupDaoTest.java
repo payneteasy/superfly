@@ -1,16 +1,11 @@
 package com.payneteasy.superfly.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
-import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.utils.StringUtils;
 
 public class GroupDaoTest extends AbstractDaoTest {
 	private GroupDao groupDao;
@@ -63,16 +58,15 @@ public class GroupDaoTest extends AbstractDaoTest {
 	}
 	
 	public void testCloneGroup() {
-//		long groupId = getAnyGroupId();
-//		UICloneUserRequest request = new UICloneUserRequest();
-//		request.setUsername("newuser");
-//		request.setPassword("newpassword");
-//		request.setTemplateUserId(userId);
-//		RoutineResult result = userDao.cloneUser(request);
-//		assertRoutineResult(result);
-//		
-//		UIUser newUser = userDao.getUser(request.getId());
-//		assertNotNull("User must be cloned", newUser);
+		long groupId = getAnyGroupId();
+		UICloneGroupRequest request = new UICloneGroupRequest();
+		request.setNewGroupName("newgroup");
+		request.setSourceGroupId(groupId);
+		RoutineResult result = groupDao.cloneGroup(request);
+		assertRoutineResult(result);
+		
+		UIGroup newGroup = groupDao.getGroupById(request.getId());
+		assertNotNull("Group must be cloned", newGroup);
 	}
 	
 }

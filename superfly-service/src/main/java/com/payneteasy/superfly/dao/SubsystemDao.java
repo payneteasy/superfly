@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SubsystemToNotify;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -77,4 +78,12 @@ public interface SubsystemDao {
 	 */
 	@AStoredProcedure(name = "ui_filter_subsystems")
 	List<UISubsystemForFilter> getSubsystemsForFilter();
+	
+	/**
+	 * Returns a list of subsystems which allow to list users.
+	 * 
+	 * @return subsystems
+	 */
+	@AStoredProcedure(name = "get_subsystems_allowing_to_list_users")
+	List<SubsystemToNotify> getSubsystemsAllowingToListUsers();
 }

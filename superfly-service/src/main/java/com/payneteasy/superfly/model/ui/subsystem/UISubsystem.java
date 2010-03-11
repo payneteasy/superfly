@@ -8,6 +8,7 @@ public class UISubsystem implements Serializable {
 	private Long id;
 	private String name;
 	private String callbackInformation;
+	private boolean allowListUsers;
 
 	@Column(name = "ssys_id")
 	public Long getId() {
@@ -34,5 +35,14 @@ public class UISubsystem implements Serializable {
 
 	public void setCallbackInformation(String callbackInformation) {
 		this.callbackInformation = callbackInformation;
+	}
+
+	@Column(name = "allow_list_users")
+	public boolean isAllowListUsers() {
+		return allowListUsers;
+	}
+
+	public void setAllowListUsers(boolean allowListUsers) {
+		this.allowListUsers = allowListUsers;
 	}
 }

@@ -1,0 +1,30 @@
+!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Edit Subsystem</title>
+</head>
+<body>
+<wicket:extend>
+	<form wicket:id="form">
+	<table class="form">
+		<tr>
+			<td>Name Action:</td>
+			<td><input type="text" wicket:id="name" /></td>
+		</tr>
+		<tr>
+			<td>CallbackInfo:</td>
+			<td><input type="text" wicket:id="callbackInformation" /></td>
+		</tr>
+		<tr>
+			<td>Allow list users:</td>
+			<td><input type="checkbox" wicket:id="allowListUsers" /></td>
+		</tr>
+	</table>
+	<p><input type="submit" value="Save" wicket:id="form-submit" /> <input
+		type="submit" value="Cancel" wicket:id="form-cancel" /></p>
+	</form>
+</wicket:extend>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="expireSessionsJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sessionService"/>
+		<property name="targetMethod" value="deleteExpiredAndOldSessionsAndNotify"/>
+		<property name="arguments">
+			<list>
+				<value type="int">86400</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail" ref="expireSessionsJobDetail"/>
+		<property name="repeatInterval" value="60000"/>
+	</bean>
+
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="expireSessionsTrigger"/>
+			</list>
+		</property>
+	</bean>		
+
+</beans>

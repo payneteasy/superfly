@@ -8,6 +8,7 @@ import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
+import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.AddUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserActionsPage;
@@ -37,6 +38,8 @@ public class WicketApplication extends WebApplication{
         mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
         mountBookmarkablePage("/users/changeActions", ChangeUserActionsPage.class);
         mountBookmarkablePage("/users/view", ViewUserPage.class);
+        
+        mountBookmarkablePage("/sessions", ListSessionsPage.class);
 	}
 
 	@Override

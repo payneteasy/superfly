@@ -27,6 +27,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
@@ -142,9 +143,12 @@ public class ChangeRoleActionsPage extends BasePage {
 			}
 		}
 
-		roleService.changeRoleActions(roleId, idsToAdd, idsToRemove);
-
-		info("Actions changed");
+		RoutineResult result = roleService.changeRoleActions(roleId, idsToAdd, idsToRemove);
+		if (result.isOk()) {
+			info("Actions changed; please be aware that some sessions could be invalidated");
+		} else {
+			error("Error while changing role actions: " + result.getErrorMessage());
+		}
 	}
 
 	@Override

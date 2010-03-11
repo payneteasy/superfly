@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions>
+	<action name="jira-users"/>
+	<action name="jira-developers"/>
+	<action name="jira-administrators"/>
+</actions>

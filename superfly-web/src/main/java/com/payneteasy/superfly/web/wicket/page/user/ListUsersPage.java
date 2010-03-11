@@ -19,6 +19,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -109,8 +110,12 @@ public class ListUsersPage extends BasePage {
 							userService.unlockUser(user.getId());
 							info("User unlocked: " + user.getUsername());
 						} else {
-							userService.lockUser(user.getId());
-							info("User locked: " + user.getUsername());
+							RoutineResult result = userService.lockUser(user.getId());
+							if (result.isOk()) {
+								info("User locked: " + user.getUsername() + "; please be aware that some sessions could be expired");
+							} else {
+								error("Error while trying to lock a user: " + result.getErrorMessage());
+							}
 						}
 					}
 				};

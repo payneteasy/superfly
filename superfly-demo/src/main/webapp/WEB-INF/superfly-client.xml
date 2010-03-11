@@ -60,7 +60,7 @@
 	</bean>
  -->
 	
-	<bean id="xmlActionDescriptionCollector" class="org.payneteasy.superfly.client.XmlActionDescriptionCollector">
+	<bean id="xmlActionDescriptionCollector" class="com.payneteasy.superfly.client.XmlActionDescriptionCollector">
 		<property name="resource">
 			<bean class="org.springframework.core.io.ClassPathResource">
 				<constructor-arg value="actions.xml"/>
@@ -68,7 +68,7 @@
 		</property>
 	</bean>
 	
-	<bean id="scanningActionDescriptionCollector" class="org.payneteasy.superfly.client.ScanningActionDescriptionCollector">
+	<bean id="scanningActionDescriptionCollector" class="com.payneteasy.superfly.client.ScanningActionDescriptionCollector">
 		<property name="basePackages">
 			<list>
 				<value>com.payneteasy.superfly.demo.web.wicket</value>
@@ -76,7 +76,7 @@
 		</property>
 	</bean>
 	
-	<bean id="mergingActionDescriptionCollector" class="org.payneteasy.superfly.client.MergingActionDescriptionCollector">
+	<bean id="mergingActionDescriptionCollector" class="com.payneteasy.superfly.client.MergingActionDescriptionCollector">
 		<property name="collectors">
 			<list>
 				<ref bean="xmlActionDescriptionCollector"/>
@@ -85,24 +85,24 @@
 		</property>
 	</bean>
 
-	<bean id="superflyDataSender" class="org.payneteasy.superfly.client.SuperflyDataSender">
+	<bean id="superflyDataSender" class="com.payneteasy.superfly.client.SuperflyDataSender">
 		<property name="ssoService" ref="ssoService"/>
 		<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
 		<property name="subsystemIdentifier" value="test1"/>
 		<!-- Delay is to allow superfly server to launch before this triggers,
 			it's only relevant for configuration when both superfly server and
 			its client application live in the same container -->
-		<property name="delay" value="20000"/>
+		<property name="delay" value="30000"/>
 		<property name="transformers">
 			<list>
-				<bean class="org.payneteasy.superfly.client.PrefixRemovingTransformer">
+				<bean class="com.payneteasy.superfly.client.PrefixRemovingTransformer">
 					<property name="prefixes">
 						<list>
 							<value>ROLE_</value>
 						</list>
 					</property>
 				</bean>
-				<bean class="org.payneteasy.superfly.client.LowercaseTransformer"/>
+				<bean class="com.payneteasy.superfly.client.LowercaseTransformer"/>
 			</list>
 		</property>
 	</bean>

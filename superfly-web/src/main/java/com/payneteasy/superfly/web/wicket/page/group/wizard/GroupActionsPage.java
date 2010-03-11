@@ -25,6 +25,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -158,8 +159,12 @@ public class GroupActionsPage extends BasePage {
 						actionsToUnlink.add(e.getActionId());
 					}
 				}
-				groupService.changeGroupActions(curGroup.getId(), actionsToLink, actionsToUnlink);
-				info("Actions successfully changed.");
+				RoutineResult result = groupService.changeGroupActions(curGroup.getId(), actionsToLink, actionsToUnlink);
+				if (result.isOk()) {
+					info("Actions successfully changed. Please be aware that some sessions could be invalidated.");
+				} else {
+					error("Error while changing group actions: " + result.getErrorMessage());
+				}
 			}
 		};
 		

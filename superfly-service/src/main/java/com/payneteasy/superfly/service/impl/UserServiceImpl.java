@@ -10,22 +10,30 @@ import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
 @Transactional
 public class UserServiceImpl implements UserService {
 	
 	private UserDao userDao;
+	private NotificationService notificationService;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
+	}
+
+	@Required
+	public void setNotificationService(NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
@@ -42,28 +50,42 @@ public class UserServiceImpl implements UserService {
 				subsystemId);
 	}
 
-	public void createUser(UIUser user) {
-		userDao.createUser(user);
+	public RoutineResult createUser(UIUser user) {
+		return userDao.createUser(user);
+		// we're not notifying about this as user does not yet have any roles
+		// or actions
 	}
 
 	public UIUser getUser(long userId) {
 		return userDao.getUser(userId);
 	}
 
-	public void updateUser(UIUser user) {
-		userDao.updateUser(user);
+	public RoutineResult updateUser(UIUser user) {
+		return userDao.updateUser(user);
 	}
 	
-	public void deleteUser(long userId) {
-		userDao.deleteUser(userId);
+	public RoutineResult deleteUser(long userId) {
+		RoutineResult result = userDao.deleteUser(userId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
-	public void lockUser(long userId) {
-		userDao.lockUser(userId);
+	public RoutineResult lockUser(long userId) {
+		RoutineResult result = userDao.lockUser(userId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
-	public void unlockUser(long userId) {
-		userDao.unlockUser(userId);
+	public RoutineResult unlockUser(long userId) {
+		RoutineResult result = userDao.unlockUser(userId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
 	public long cloneUser(long templateUserId, String newUsername,
@@ -72,7 +94,10 @@ public class UserServiceImpl implements UserService {
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
 		request.setPassword(newPassword);
-		userDao.cloneUser(request);
+		RoutineResult result = userDao.cloneUser(request);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
 		return request.getId();
 	}
 	
@@ -102,15 +127,19 @@ public class UserServiceImpl implements UserService {
 				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
 
-	public void changeUserRoles(long userId, Collection<Long> rolesToAddIds,
+	public RoutineResult changeUserRoles(long userId, Collection<Long> rolesToAddIds,
 			Collection<Long> rolesToRemoveIds,
 			Collection<Long> rolesToGrantActionsIds) {
 		rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
 		rolesToGrantActionsIds.retainAll(rolesToAddIds);
-		userDao.changeUserRoles(userId,
+		RoutineResult result = userDao.changeUserRoles(userId,
 				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
 				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
 				StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
 	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
@@ -143,12 +172,16 @@ public class UserServiceImpl implements UserService {
 		return userDao.getUnmappedUserActionsCount(userId, subsystemIds, actionSubstring);
 	}
 
-	public void changeUserRoleActions(long userId,
+	public RoutineResult changeUserRoleActions(long userId,
 			Collection<Long> roleActionToAddIds,
 			Collection<Long> roleActionToRemoveIds) {
-		userDao.changeUserRoleActions(userId,
-				StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
-				StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
+		RoutineResult result = userDao.changeUserRoleActions(userId,
+						StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
+						StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
 	public UIUserWithRolesAndActions getUserRoleActions(long userId,

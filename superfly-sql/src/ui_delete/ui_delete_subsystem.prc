@@ -74,8 +74,6 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
     delete from subsystems
      where ssys_id = i_ssys_id;
 
-    commit;
-
     update sessions
        set session_expired    = 'Y'
      where ssys_ssys_id = i_ssys_id;

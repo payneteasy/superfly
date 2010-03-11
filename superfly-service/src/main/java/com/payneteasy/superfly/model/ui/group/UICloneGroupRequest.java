@@ -5,8 +5,6 @@ import java.io.Serializable;
 import javax.persistence.Column;
 
 public class UICloneGroupRequest implements Serializable {
-//	i_new_group_name varchar(32),
-//    i_templete_grop_id int(10),
 	private long id;
 	private String newGroupName; 
 	private long sourceGroupId;

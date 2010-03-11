@@ -9,8 +9,10 @@ create procedure get_user_actions(i_user_name varchar(32),
  main_sql:
   begin
     declare v_user_id   int(10);
+    declare v_sess_id	int(10);
 
-    set v_user_id   = null;
+    set session group_concat_max_len   = 64 * 1028;
+		set v_user_id   = null;
 
     select user_id
       into v_user_id
@@ -108,12 +110,15 @@ create procedure get_user_actions(i_user_name varchar(32),
                      and ss.subsystem_name = i_subsystem_name)
         from subsystems
        where subsystem_name = i_subsystem_name;
+       
+    set v_sess_id = last_insert_id();
 
-    select r.role_name,
+    select v_sess_id session_id,
+    	   r.role_name,
            r.principal_name,
            ss.callback_information,
-           a.action_name role_action_name,
-           a.log_action role_log_action
+           a.action_name action_action_name,
+           a.log_action action_log_action
       from             user_roles ur
                      join
                        roles r
@@ -135,11 +140,12 @@ create procedure get_user_actions(i_user_name varchar(32),
            on a.ssys_ssys_id = ss.ssys_id and ga.actn_actn_id = a.actn_id
      where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name
     union
-    select r.role_name,
+    select v_sess_id session_id,
+    	   r.role_name,
            r.principal_name,
            ss.callback_information,
-           a.action_name role_action_name,
-           a.log_action role_log_action
+           a.action_name action_action_name,
+           a.log_action action_log_action
       from           user_roles ur
                    join
                      roles r
@@ -165,10 +171,11 @@ $$
 delimiter ;
 call save_routine_information('get_user_actions',
                               concat_ws(',',
+                                        'session_id int',
                                         'role_name varchar',
                                         'principal_name varchar',
                                         'callback_information varchar',
-                                        'role_action_name varchar',
-                                        'role_log_action varchar'
+                                        'action_action_name varchar',
+                                        'action_log_action varchar'
                               )
      );

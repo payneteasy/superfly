@@ -3,17 +3,21 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-		<version>1.0-2-SNAPSHOT</version>
+		<version>1.1-1-SNAPSHOT</version>
 	</parent>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-client</artifactId>
 	<name>Superfly Client</name>
-	<description>Contains classes used to </description>
+	<description>Contains classes used to use Superfly facilities by clients</description>
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-remote-api</artifactId>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -32,30 +36,9 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-					<encoding>utf-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<encoding>utf-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<ajdtVersion>none</ajdtVersion>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

@@ -9,8 +9,6 @@ create procedure ui_edit_group_properties(i_grop_id int(10),
        set group_name    = i_group_name
      where grop_id = i_grop_id;
 
-    commit;
-
     select 'OK' status, null error_message;
   end
 $$

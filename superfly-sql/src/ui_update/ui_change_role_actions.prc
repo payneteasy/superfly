@@ -14,8 +14,6 @@ create procedure ui_change_role_actions(i_role_id int(10),
       call int_unlink_role_actions(i_role_id, i_actn_list_unlink);
     end if;
 
-    commit;
-
     call ui_check_expired_sessions(null, i_role_id, null, null);
 
     select 'OK' status, null error_message;

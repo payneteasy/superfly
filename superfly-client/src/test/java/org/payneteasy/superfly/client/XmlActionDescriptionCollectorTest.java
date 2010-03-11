@@ -2,10 +2,11 @@ package org.payneteasy.superfly.client;
 
 import java.util.List;
 
-import org.payneteasy.superfly.client.exception.CollectionException;
 import org.springframework.core.io.ClassPathResource;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.client.XmlActionDescriptionCollector;
+import com.payneteasy.superfly.client.exception.CollectionException;
 
 import junit.framework.TestCase;
 

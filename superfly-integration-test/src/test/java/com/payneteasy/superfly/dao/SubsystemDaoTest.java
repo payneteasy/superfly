@@ -69,4 +69,8 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 	public void testGetSubsystemByName() {
 		subsystemDao.getSubsystemByName(getAnySubsystemName());
 	}
+	
+	public void testGetSubsystemsAllowingToListUsers() {
+		subsystemDao.getSubsystemsAllowingToListUsers();
+	}
 }

@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>Sessions</title>
+</head>
+<body>
+<wicket:extend>
+	<h3>Invalid sessions</h3>
+	<table class="data">
+		<thead>
+			<tr>
+				<th>Session ID</th>
+				<th>User</th>
+				<th>Callback URI</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="invalid-sessions">
+				<td>
+					<span wicket:id="session-id">12345</span>
+				</td>
+				<td>
+					<a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
+				</td>
+				<td>
+					<span wicket:id="callback-information">http://bond.james.bond.uk/</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="buttons">
+		<button wicket:id="expire-invalid-sessions-link">Expire invalid sessions</button>
+	</div>
+	
+	<h3>Expired sessions</h3>
+	<table class="data">
+		<thead>
+			<tr>
+				<th>Session ID</th>
+				<th>User</th>
+				<th>Callback URI</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="expired-sessions">
+				<td>
+					<span wicket:id="session-id">12345</span>
+				</td>
+				<td>
+					<a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
+				</td>
+				<td>
+					<span wicket:id="callback-information">http://bond.james.bond.uk/</span>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="buttons">
+		<button wicket:id="delete-expired-sessions-link">Delete expired sessions</button>
+	</div>
+</wicket:extend>
+</body>
+</html>

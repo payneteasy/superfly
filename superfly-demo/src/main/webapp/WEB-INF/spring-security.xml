@@ -55,4 +55,8 @@
     	</property>
     </bean>
     
+    <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">
+    	<sec:custom-filter after="AUTHENTICATION_PROCESSING_FILTER"/>
+    </bean>
+    
 </beans>

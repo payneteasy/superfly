@@ -14,9 +14,7 @@ create procedure ui_change_group_actions(i_grop_id int(10),
       call int_unlink_group_actions(i_grop_id, i_actn_list_unlink);
     end if;
 
-    commit;
-		
-		call ui_check_expired_sessions(null, null, null, i_grop_id);
+	call ui_check_expired_sessions(null, null, null, i_grop_id);
 
     select 'OK' status, null error_message;
   end

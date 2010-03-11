@@ -20,21 +20,25 @@
 	<bean id="subsystemService"
 		class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
 		<property name="subsystemDao" ref="subsystemDao" />
+		<property name="notificationService" ref="notificationService"/>
 	</bean>
 	
 	<bean id="groupService"
 		class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
 		<property name="groupDao" ref="groupDao" />
+		<property name="notificationService" ref="notificationService"/>
 	</bean>
 	
 	<bean id="userService"
 		class="com.payneteasy.superfly.service.impl.UserServiceImpl">
 		<property name="userDao" ref="userDao" />
+		<property name="notificationService" ref="notificationService" />
 	</bean>
 	
 	<bean id="roleService"
 		class="com.payneteasy.superfly.service.impl.RoleServiceImpl">
 		<property name="roleDao" ref="roleDao" />
+		<property name="notificationService" ref="notificationService"/>
 	</bean>
 	
 	<bean id="actionService"
@@ -44,5 +48,27 @@
 	
 	<bean id="releaseNotesService"
 		class="com.payneteasy.superfly.service.impl.releasenotes.ReleaseNotesServiceImpl"/>
+		
+	<bean id="sessionService"
+		class="com.payneteasy.superfly.service.impl.SessionServiceImpl">
+		<property name="sessionDao" ref="sessionDao" />
+		<property name="notifier" ref="notifier"/>
+	</bean>
+	
+	<bean id="notifier" class="com.payneteasy.superfly.notification.DefaultNotifier">
+		<property name="sendStrategy" ref="simpleSendStrategy"/>
+	</bean>
+	
+	<bean id="simpleSendStrategy" class="com.payneteasy.superfly.notification.strategy.SimpleSendStrategy">
+		<property name="httpClient" ref="notifierHttpClient"/>
+	</bean>
+	
+	<bean id="notifierHttpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+	</bean>
+	
+	<bean id="notificationService" class="com.payneteasy.superfly.service.impl.NotificationServiceImpl">
+		<property name="notifier" ref="notifier"/>
+		<property name="subsystemDao" ref="subsystemDao"/>
+	</bean>
 	
 </beans>

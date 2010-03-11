@@ -10,6 +10,7 @@ public class UISubsystemForList implements Serializable {
 	private String name;
 	private String callbackInformation;
 	private boolean fixed;
+	private boolean allowListUsers;
 
 	@Column(name = "ssys_id")
 	public long getId() {
@@ -53,5 +54,14 @@ public class UISubsystemForList implements Serializable {
 
 	public void setFixed(boolean fixed) {
 		this.fixed = fixed;
+	}
+	
+	@Column(name = "allow_list_users")
+	public boolean isAllowListUsers() {
+		return allowListUsers;
+	}
+
+	public void setAllowListUsers(boolean allowListUsers) {
+		this.allowListUsers = allowListUsers;
 	}
 }

@@ -14,8 +14,6 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
            allow_list_users   = coalesce(i_allow_list_users, allow_list_users)
      where ssys_id = i_ssys_id;
 
-    commit;
-
     select 'OK' status, null error_message;
   end
 $$

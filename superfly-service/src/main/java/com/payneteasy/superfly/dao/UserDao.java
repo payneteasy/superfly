@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -31,6 +32,18 @@ public interface UserDao {
 	@AStoredProcedure(name = "get_user_actions")
 	List<AuthRole> authenticate(String username, String password,
 			String subsystemName, String ipAddress, String sessionInfo);
+	
+	/**
+	 * Returns a list of users with actions given to them through a role with
+	 * a given principal.
+	 * 
+	 * @param subsystemName		name of the subsystem from which to obtain info
+	 * @param principalName		name of the principal of a role through which
+	 * 							actions of interest are given to users
+	 * @return users with actions
+	 */
+	@AStoredProcedure(name = "list_users")
+	List<UserWithActions> getUsersAndActions(String subsystemName, String principalName);
 	
 	/**
 	 * Returns users which satisfy to the given conditions.

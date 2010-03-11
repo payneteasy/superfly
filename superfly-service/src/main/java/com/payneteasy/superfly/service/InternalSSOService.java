@@ -1,7 +1,10 @@
 package com.payneteasy.superfly.service;
 
+import java.util.List;
+
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
 
 /**
  * Internal service used to implement SSOService.
@@ -33,4 +36,16 @@ public interface InternalSSOService {
 	 */
 	void saveSystemData(String subsystemIdentifier,
 			ActionDescription[] actionDescriptions);
+
+	/**
+	 * Returns a list of users with their actions granted through role with
+	 * the given principal.
+	 * 
+	 * @param subsystemIdentifier	identifier of the subsystem from which
+	 * 								users will be obtained
+	 * @param principalName			principal name
+	 * @return users with actions
+	 */
+	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier,
+			String principalName);
 }

@@ -13,6 +13,7 @@ import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
 
 /**
  * Mock SSOService implementation.
@@ -45,6 +46,26 @@ public class SSOServiceMock implements SSOService {
 
 	public void sendSystemData(String systemIdentifier,
 			ActionDescription[] actionDescriptions) {
+	}
+
+	public List<SSOUserWithActions> getUsersWithActions(
+			String subsystemIdentifier, String principalName) {
+		List<SSOUserWithActions> users = new ArrayList<SSOUserWithActions>();
+		List<SSOAction> actions;
+		
+		actions = new ArrayList<SSOAction>();
+		actions.add(new SSOAction("adminpage1", false));
+		actions.add(new SSOAction("adminpage2", false));
+		users.add(new SSOUserWithActions("admin", "example@nohost.df",
+				actions.toArray(new SSOAction[actions.size()])));
+		
+		actions = new ArrayList<SSOAction>();
+		actions.add(new SSOAction("userpage1", false));
+		actions.add(new SSOAction("userpage2", false));
+		users.add(new SSOUserWithActions("user", "example@nohost.df",
+				actions.toArray(new SSOAction[actions.size()])));
+		
+		return users;
 	}
 
 }

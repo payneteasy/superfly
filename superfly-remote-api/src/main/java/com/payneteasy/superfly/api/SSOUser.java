@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public class SSOUser implements Serializable {
 	private String name;
+	private String sessionId;
 	private Map<SSORole, SSOAction[]> actionsMap;
 	private Map<String, String> preferences;
 
@@ -46,6 +47,26 @@ public class SSOUser implements Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Returns a session ID.
+	 * 
+	 * @return session ID
+	 * @since 1.1
+	 */
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	/**
+	 * Sets a session ID.
+	 * 
+	 * @param sessionId	ID to set
+	 * @since 1.1
+	 */
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 
 	/**

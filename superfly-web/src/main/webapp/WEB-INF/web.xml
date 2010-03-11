@@ -14,6 +14,7 @@
         	/WEB-INF/spring/applicationContext-dao.xml
         	/WEB-INF/spring/applicationContext-service.xml
         	/WEB-INF/spring/applicationContext-aop.xml
+        	/WEB-INF/spring/applicationContext-quartz.xml
             /WEB-INF/spring/applicationContext-remote.xml
         </param-value>
     </context-param>

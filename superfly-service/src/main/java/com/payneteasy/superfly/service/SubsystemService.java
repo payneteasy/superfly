@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -25,7 +26,7 @@ public interface SubsystemService {
 	 * @param subsystem
 	 *            subsystem to create
 	 */
-	void createSubsystem(UISubsystem subsystem);
+	RoutineResult createSubsystem(UISubsystem subsystem);
 
 	/**
 	 * Updates a subsystem.
@@ -33,7 +34,7 @@ public interface SubsystemService {
 	 * @param subsystem
 	 *            subsystem to update
 	 */
-	void updateSubsystem(UISubsystem subsystem);
+	RoutineResult updateSubsystem(UISubsystem subsystem);
 
 	/**
 	 * Deletes a subsystem.
@@ -41,7 +42,7 @@ public interface SubsystemService {
 	 * @param subsystemId
 	 *            ID of a subsystem to delete
 	 */
-	void deleteSubsystem(Long subsystemId);
+	RoutineResult deleteSubsystem(Long subsystemId);
 
 	/**
 	 * Returns a list of all subsystems for a subsystem-based filter.

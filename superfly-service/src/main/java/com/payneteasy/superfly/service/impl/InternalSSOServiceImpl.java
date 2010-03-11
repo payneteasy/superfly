@@ -15,11 +15,13 @@ import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
 
 @Transactional
@@ -50,28 +52,35 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
 			for (AuthRole authRole : authRoles) {
 				SSORole ssoRole = new SSORole(authRole.getRoleName());
-				SSOAction[] actions = new SSOAction[authRole.getActions().size()];
-				for (int i = 0; i < authRole.getActions().size(); i++) {
-					AuthAction authAction = authRole.getActions().get(i);
-					SSOAction ssoAction = new SSOAction(authAction.getActionName(),
-							authAction.isLogAction());
-					actions[i] = ssoAction;
-				}
+				SSOAction[] actions = convertToSSOActions(authRole.getActions());
 				actionsMap.put(ssoRole, actions);
 			}
 			Map<String, String> preferences = Collections.emptyMap();
 			ssoUser = new SSOUser(username, actionsMap, preferences);
+			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
 			ssoUser = null;
 		}
 		return ssoUser;
 	}
 
+	protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
+		SSOAction[] actions = new SSOAction[authActions.size()];
+		for (int i = 0; i < authActions.size(); i++) {
+			AuthAction authAction = authActions.get(i);
+			SSOAction ssoAction = new SSOAction(authAction.getActionName(),
+					authAction.isLogAction());
+			actions[i] = ssoAction;
+		}
+		return actions;
+	}
+
 	public void saveSystemData(String subsystemIdentifier,
 			ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
 		actionDao.saveActions(subsystemIdentifier, actions);
-		logger.debug("Saved actions: " + actions.size());
+		logger.debug("Saved actions for subsystem " + subsystemIdentifier
+				+ ": " + actions.size());
 	}
 
 	private List<ActionToSave> convertActionDescriptions(
@@ -84,6 +93,24 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			actions.add(action);
 		}
 		return actions;
+	}
+
+	public List<SSOUserWithActions> getUsersWithActions(
+			String subsystemIdentifier, String principalName) {
+		List<UserWithActions> users = userDao.getUsersAndActions(
+				subsystemIdentifier, principalName);
+		List<SSOUserWithActions> result = new ArrayList<SSOUserWithActions>(users.size());
+		for (UserWithActions user : users) {
+			result.add(convertToSSOUser(user));
+		}
+		return result;
+	}
+
+	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
+		// TODO:
+		return new SSOUserWithActions(user.getUsername(),
+				"example.email@dkfjdkjfdjf.df",
+				convertToSSOActions(user.getActions()));
 	}
 
 }

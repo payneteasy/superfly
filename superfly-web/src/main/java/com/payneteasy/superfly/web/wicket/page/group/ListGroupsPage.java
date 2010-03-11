@@ -24,6 +24,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
@@ -180,8 +181,16 @@ public class ListGroupsPage extends BasePage {
 				private static final long serialVersionUID = 1L;
 
 				public void onConfirm() {
-					for (Long ui : groupIds)
-						groupService.deleteGroup(ui);
+					boolean someSuccess = false;
+					for (Long ui : groupIds) {
+						RoutineResult result = groupService.deleteGroup(ui);
+						if (result.isOk()) {
+							someSuccess = true;
+						}
+					}
+					if (someSuccess) {
+						info("Deleted groups; please be aware that some sessions could be invalidated");
+					}
 					setResponsePage(ListGroupsPage.class);
 				}
 

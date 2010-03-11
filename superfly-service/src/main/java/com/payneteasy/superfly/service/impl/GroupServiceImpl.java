@@ -7,21 +7,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.GroupDao;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 import com.payneteasy.superfly.service.GroupService;
+import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class GroupServiceImpl implements GroupService {
 	private GroupDao groupDao;
+	private NotificationService notificationService;
 
 	@Required
 	public void setGroupDao(GroupDao groupDao) {
 		this.groupDao = groupDao;
+	}
+
+	@Required
+	public void setNotificationService(NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	public List<UIGroupForList> getGroups() {
@@ -29,26 +37,28 @@ public class GroupServiceImpl implements GroupService {
 				DaoConstants.ASC, null, null);
 	}
 	
-	
-
-	public void createGroup(UIGroup group) {
-		groupDao.createGroup(group);
-		
+	public RoutineResult createGroup(UIGroup group) {
+		RoutineResult result = groupDao.createGroup(group);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
-	public void deleteGroup(long id) {
-		groupDao.deleteGorup(id);
-		
+	public RoutineResult deleteGroup(long id) {
+		RoutineResult result = groupDao.deleteGorup(id);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
 	public List<UIGroupForList> getGroupsForSubsystems(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean orderType,
 			String groupNamePrefix, List<Long> subsystemIds) {
-		return this.groupDao.getGroups(
-				startFrom, 
-				recordsCount, 
+		return this.groupDao.getGroups(startFrom, recordsCount,
 				orderFieldNumber,
-				orderType ? DaoConstants.ASC: DaoConstants.DESC, 
+				orderType ? DaoConstants.ASC : DaoConstants.DESC,
 				groupNamePrefix, 
 				StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
@@ -61,24 +71,24 @@ public class GroupServiceImpl implements GroupService {
 		return groupDao.getGroupById(id);
 	}
 
-	public void updateGroup(UIGroup group) {
-		groupDao.updateGroup(group.getId(), group.getName());
-		
+	public RoutineResult updateGroup(UIGroup group) {
+		return groupDao.updateGroup(group.getId(), group.getName());
 	}
 
-	public void changeGroupActions(long groupId, List<Long> ActionsToLink,
+	public RoutineResult changeGroupActions(long groupId, List<Long> ActionsToLink,
 			List<Long> ActionsToUnlink) {
-			groupDao.changeGroupActions(
-					groupId,
-					StringUtils.collectionToCommaDelimitedString(ActionsToLink),
-					StringUtils.collectionToCommaDelimitedString(ActionsToUnlink));
-		
+		RoutineResult result = groupDao.changeGroupActions(groupId,
+						StringUtils.collectionToCommaDelimitedString(ActionsToLink),
+						StringUtils.collectionToCommaDelimitedString(ActionsToUnlink));
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;		
 	}
 
 	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring) {
-		
 		return groupDao.getAllGroupMappedActions(startFrom, recordsCount, 
 				orderFieldNumber, 
 				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
@@ -92,7 +102,6 @@ public class GroupServiceImpl implements GroupService {
 	public List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring) {
-		
 		return groupDao.getAllGroupActions(startFrom, recordsCount, 
 				orderFieldNumber, 
 				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
@@ -103,9 +112,12 @@ public class GroupServiceImpl implements GroupService {
 		return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
 	}
 
-	public void cloneGroup(UICloneGroupRequest request) {
-		groupDao.cloneGroup(request);
-		
+	public RoutineResult cloneGroup(UICloneGroupRequest request) {
+		RoutineResult result = groupDao.cloneGroup(request);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
 	}
 
 }

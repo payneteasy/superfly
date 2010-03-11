@@ -28,6 +28,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -173,9 +174,12 @@ public class ChangeUserActionsPage extends BasePage {
 		Set<Long> idsToRemove = new HashSet<Long>(oldCheckedIds);
 		idsToRemove.removeAll(newCheckedIds);
 		
-		userService.changeUserRoleActions(userId, idsToAdd, idsToRemove);
-		
-		info("Actions changed");
+		RoutineResult result = userService.changeUserRoleActions(userId, idsToAdd, idsToRemove);
+		if (result.isOk()) {
+			info("Actions changed; please be aware that some sessions could be invalidated");
+		} else {
+			error("Error while changing user actions: " + result.getErrorMessage());
+		}
 	}
 	
 	@Override

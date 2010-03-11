@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.api;
 
+import java.util.List;
+
 /**
  * Service for SSO communication.
  * 
@@ -24,10 +26,24 @@ public interface SSOService {
 	/**
 	 * Sends data about this system to SSO server.
 	 * 
-	 * @param systemIdentifier		identifier of this system (it's just a
+	 * @param subsystemIdentifier	identifier of this system (it's just a
 	 * hint for SSO server)
 	 * @param actionDescriptions	descriptions of actions of this system
 	 */
-	void sendSystemData(String systemIdentifier,
+	void sendSystemData(String subsystemIdentifier,
 			ActionDescription[] actionDescriptions);
+
+	/**
+	 * Returns a list of users with their actions granted through role with
+	 * the given principal.
+	 * 
+	 * @param subsystemIdentifier	identifier of the subsystem from which
+	 * 								users will be obtained
+	 * @param principalName			principal name
+	 * @return users with actions
+	 * @since 1.1
+	 */
+	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier,
+			String principalName);
+	
 }

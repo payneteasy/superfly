@@ -4,9 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.payneteasy.superfly.client.exception.CollectionException;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.client.ScanningActionDescriptionCollector;
+import com.payneteasy.superfly.client.exception.CollectionException;
 
 import junit.framework.TestCase;
 

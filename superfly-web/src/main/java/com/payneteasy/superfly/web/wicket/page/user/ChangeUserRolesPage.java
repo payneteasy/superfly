@@ -26,6 +26,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -172,9 +173,12 @@ public class ChangeUserRolesPage extends BasePage {
 			idsToGrant.add(role.getId());
 		}
 		
-		userService.changeUserRoles(userId, idsToAdd, idsToRemove, idsToGrant);
-		
-		info("Roles changed");
+		RoutineResult result = userService.changeUserRoles(userId, idsToAdd, idsToRemove, idsToGrant);
+		if (result.isOk()) {
+			info("Roles changed; please be aware that some sessions could be invalidated");
+		} else {
+			error("Error while changing user roles: " + result.getErrorMessage());
+		}
 	}
 	
 	@Override

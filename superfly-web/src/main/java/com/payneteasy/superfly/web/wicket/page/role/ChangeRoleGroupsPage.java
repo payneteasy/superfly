@@ -23,6 +23,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
@@ -128,8 +129,12 @@ public class ChangeRoleGroupsPage extends BasePage {
 			}
 		}
 
-		roleService.changeRoleGroups(roleId, idsToAdd, idsToRemove);
-		info("Groups changed");
+		RoutineResult result = roleService.changeRoleGroups(roleId, idsToAdd, idsToRemove);
+		if (result.isOk()) {
+			info("Groups changed; please be aware that some sessions could be invalidated");
+		} else {
+			error("Error while changing role groups: " + result.getErrorMessage());
+		}
 	}
 
 	@Override

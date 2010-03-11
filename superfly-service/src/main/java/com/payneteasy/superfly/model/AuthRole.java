@@ -10,6 +10,7 @@ import javax.persistence.OneToMany;
 
 public class AuthRole implements Serializable {
 	private String roleName;
+	private long sessionId;
 	private List<AuthAction> actions = new ArrayList<AuthAction>();
 
 	@Column(name = "role_name")
@@ -21,8 +22,17 @@ public class AuthRole implements Serializable {
 		this.roleName = roleName;
 	}
 
+	@Column(name = "session_id")
+	public long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
+	}
+
 	@OneToMany
-	@JoinColumn(table = "role")
+	@JoinColumn(table = "action")
 	public List<AuthAction> getActions() {
 		return actions;
 	}

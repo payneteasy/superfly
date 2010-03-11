@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -63,35 +64,35 @@ public interface UserService {
 	 * 
 	 * @param user	user to create
 	 */
-	void createUser(UIUser user);
+	RoutineResult createUser(UIUser user);
 
 	/**
 	 * Updates a user.
 	 * 
 	 * @param user	user to update (username is not changed)
 	 */
-	void updateUser(UIUser user);
+	RoutineResult updateUser(UIUser user);
 
 	/**
 	 * Deleletes a user.
 	 * 
 	 * @param userId	ID of the user to delete
 	 */
-	void deleteUser(long userId);
+	RoutineResult deleteUser(long userId);
 
 	/**
 	 * Locks a user.
 	 * 
 	 * @param userId	ID of the user to lock
 	 */
-	void lockUser(long userId);
+	RoutineResult lockUser(long userId);
 	
 	/**
 	 * Unlocks a user.
 	 * 
 	 * @param userId	ID of the user to unlock
 	 */
-	void unlockUser(long userId);
+	RoutineResult unlockUser(long userId);
 
 	/**
 	 * Clones a user.
@@ -173,7 +174,7 @@ public interface UserService {
 	 * 							(it must be a subset of rolesToAddIds)
 	 * @return routine result
 	 */
-	void changeUserRoles(long userId, Collection<Long> rolesToAddIds,
+	RoutineResult changeUserRoles(long userId, Collection<Long> rolesToAddIds,
 			Collection<Long> rolesToRemoveIds,
 			Collection<Long> rolesToGrantActionsIds);
 	
@@ -252,7 +253,7 @@ public interface UserService {
 	 * @param roleActionToAddIds	list of IDs of action+roles to be added
 	 * @param roleActionToRemoveIds	list of IDs of action+roles to be removed
 	 */
-	void changeUserRoleActions(long userId, Collection<Long> roleActionToAddIds,
+	RoutineResult changeUserRoleActions(long userId, Collection<Long> roleActionToAddIds,
 			Collection<Long> roleActionToRemoveIds);
 	
 	/**

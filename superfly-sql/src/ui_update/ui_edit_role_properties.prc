@@ -12,8 +12,6 @@ create procedure ui_edit_role_properties(i_role_id int(10),
            principal_name   = coalesce(i_principal_name, principal_name)
      where role_id = i_role_id;
 
-    commit;
-
     select 'OK' status, null error_message;
   end
 $$

@@ -73,5 +73,9 @@ public class SSOUserAuthenticationToken implements Authentication {
 	public String getName() {
 		return user.getName();
 	}
+	
+	public SSOUser getUser() {
+		return user;
+	}
 
 }

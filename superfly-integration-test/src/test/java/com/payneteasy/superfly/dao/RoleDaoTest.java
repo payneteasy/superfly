@@ -87,7 +87,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 	}
 	
     public void testGetAllRoleGroupsCount(){
-    	int count = roleDao.getAllRoleGroupsCount(1);
+    	roleDao.getAllRoleGroupsCount(1);
     }
     
 	private long getAnyRoleId() {

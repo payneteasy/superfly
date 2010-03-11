@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -19,6 +20,12 @@ public class UserDaoTest extends AbstractDaoTest {
 	public void testAuthenticate() {
 		List<AuthRole> roles = userDao.authenticate("admin", "password", "test1", null, null);
 		assertNotNull("Must authenticate successfully", roles);
+	}
+	
+	public void testGetUsersAndActions() {
+		List<UserWithActions> users = userDao.getUsersAndActions("superfly", "admin");
+		assertNotNull("Must authenticate successfully", users);
+		assertTrue("Must authenticate successfully", users.size() > 0);
 	}
 	
 	public void testGetUsers() {

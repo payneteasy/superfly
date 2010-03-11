@@ -16,16 +16,18 @@
 					<th><input type="checkbox" wicket:id="master-checkbox" /></th>
 					<th>Name</th>
 					<th>Callback Info</th>
-					<th>Action</th>
+					<th>Allow list users</th>
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr wicket:id="list-subsystem">
 					<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 					<td><span wicket:id="subsytem-name">[Name]</span></td>
-					<td><span wicket:id="subsystem-callback"></span>[Callback info]</td>
-					<td><a href=# wicket:id="subsystem-edit">[Edit]</a>
-					<a href="#" wicket:id="delete-subsystem">[Delete]</a>
+					<td><span wicket:id="subsystem-callback">[Callback info]</span></td>
+					<td><span wicket:id="allow-list-users">Yes</span></td>
+					<td><a href=# wicket:id="subsystem-edit">Edit</a>
+					<a href="#" wicket:id="delete-subsystem">Delete</a>
 					</td>
 				</tr>
 			</tbody>

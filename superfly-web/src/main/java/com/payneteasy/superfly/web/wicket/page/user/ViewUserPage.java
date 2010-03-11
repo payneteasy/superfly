@@ -106,7 +106,7 @@ public class ViewUserPage extends BasePage {
 	
 	@Override
 	protected String getTitle() {
-		return "Users";
+		return "User details";
 	}
 
 	@SuppressWarnings("unused")

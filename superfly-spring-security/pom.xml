@@ -3,7 +3,7 @@
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-spring-security</artifactId>
 	<name>Spring Security Extension for Superfly</name>
-	<version>1.0-2-SNAPSHOT</version>
+	<version>1.1-1-SNAPSHOT</version>
 	<description>Module for Spring Security which enables application to use Superfly authentication/authorization declaratively through Spring Security</description>
 	
 	<scm>
@@ -53,7 +53,12 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-remote-api</artifactId>
-			<version>1.0-1</version>
+			<version>1.1-1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-common</artifactId>
+			<version>1.1-1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
