@@ -360,6 +360,14 @@
 						<groupId>jcaptcha</groupId>
 						<artifactId>jcaptcha</artifactId>
 			        </exclusion>
+	      	    	<exclusion>
+						<groupId>jta</groupId>
+						<artifactId>jta</artifactId>
+			        </exclusion>
+	      	    	<exclusion>
+						<groupId>jndi</groupId>
+						<artifactId>jndi</artifactId>
+			        </exclusion>
 	      	    </exclusions>
 	    	</dependency>
 		</dependencies>
