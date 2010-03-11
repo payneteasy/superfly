@@ -7,12 +7,15 @@
 	<version>1.1-1-SNAPSHOT</version>
 	<description>Parent POM of the Superfly project</description>
 	<modules>
+		<module>superfly-remote-api</module>
 		<module>superfly-service</module>
 		<module>superfly-web</module>
         <module>superfly-httpclient-ssl</module>
+        <module>superfly-common</module>
         <module>superfly-client</module>
         <module>superfly-client-opt</module>
         <module>superfly-spring-security</module>
+        <module>superfly-jira-integration</module>
 	</modules>
 
 	<scm>
@@ -62,9 +65,8 @@
             </releases>
         </repository>
         <repository>
-            <id>atlassian-m1-repository</id>
-            <url>https://maven.atlassian.com/maven1</url>
-            <layout>legacy</layout>
+            <id>atlassian-m2-repository</id>
+            <url>https://maven.atlassian.com/content/groups/public/</url>
 	    </repository>
 		<repository>
 		  	<id>maven2-repository.dev.java.net</id>
@@ -337,6 +339,28 @@
 	      	    <groupId>com.atlassian.jira</groupId>
 	      	    <artifactId>atlassian-jira</artifactId>
 	      	    <version>3.12.2</version>
+	      	    <exclusions>
+	      	    	<exclusion>
+						<groupId>atlassian-gzipfilter</groupId>
+						<artifactId>atlassian-gzipfilter</artifactId>
+			        </exclusion>
+	      	    	<exclusion>
+						<groupId>webwork</groupId>
+						<artifactId>webwork</artifactId>
+			        </exclusion>
+	      	    	<exclusion>
+						<groupId>javamail</groupId>
+						<artifactId>javamail</artifactId>
+			        </exclusion>
+	      	    	<exclusion>
+						<groupId>ofbcore</groupId>
+						<artifactId>ofbcore-entity</artifactId>
+			        </exclusion>
+	      	    	<exclusion>
+						<groupId>jcaptcha</groupId>
+						<artifactId>jcaptcha</artifactId>
+			        </exclusion>
+	      	    </exclusions>
 	    	</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -369,6 +393,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.8</version>
 				<configuration>
 					<ajdtVersion>none</ajdtVersion>
 				</configuration>
