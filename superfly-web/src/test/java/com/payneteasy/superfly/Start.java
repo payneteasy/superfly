@@ -21,6 +21,9 @@ public class Start {
 	        new Start().startServer();
 	    }
 	    
+	    /**
+	     * @throws NamingException
+	     */
 	    public void startServer() throws NamingException {
 	        LOG.info("Configuring jetty web server ...");
 
