@@ -19,9 +19,9 @@
 	</modules>
 
 	<scm>
-		<connection>scm:svn:https://code.windfox.org/softmary/common/trunk/superfly/</connection>
-		<developerConnection>scm:svn:https://code.windfox.org/softmary/common/trunk/superfly/</developerConnection>
-		<url>https://code.windfox.org/softmary/common/trunk/superfly/</url>
+		<connection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</connection>
+		<developerConnection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</developerConnection>
+		<url>http://superfly.googlecode.com/</url>
 	</scm>
 
 	<!--
@@ -29,23 +29,26 @@
     -->
 	<distributionManagement>
 		<repository>
-			<id>common-release</id>
+			<id>superfly-release</id>
 			<name>Local Maven repository of releases</name>
-			<url>http://repo.windfox.org/nexus/content/repositories/common-release</url>
+		    <!-- 
+		        Use https://superfly.googlecode.com/svn/maven2/release to include superfly repository
+		    -->
+            <url>file:///${HOME}/svn/superfly-maven2-release</url>
 		</repository>
 		<snapshotRepository>
-			<id>common-snapshot</id>
+			<id>superfly-snapshot</id>
 			<name>Local Maven repository of snapshots</name>
-			<url>http://repo.windfox.org/nexus/content/repositories/common-snapshot</url>
+			<url>file:///${HOME}/svn/superfly-maven2-snapshot</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>		
 	</distributionManagement>
 
 	<repositories>
 		<repository>
-			<id>common-release</id>
+			<id>superfly-release</id>
 			<name>Our maven releases repository with common user access</name>
-			<url>http://repo.windfox.org/nexus/content/groups/public</url>
+			<url>https://superfly.googlecode.com/svn/maven2/release</url>
 		</repository>
         <!-- jdbc proc repository -->
         <repository>
@@ -77,7 +80,6 @@
 		  	<id>ibiblio-mirrors</id>
 		  	<name>ibiblio mirrors</name>
 		  	<url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-		  	<layout>default</layout>
 		</repository>
 	</repositories>
 		
