@@ -1,0 +1,8 @@
+V	200222120001Z		00	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=myCA
+V	200222120530Z		01	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=center
+V	200222121049Z		02	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=balancer1
+V	200222121603Z		03	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=lb-proto-admin
+V	200222123557Z		04	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=lb-proto-admin
+V	200322121513Z		05	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=superfly-server
+V	200322122252Z		06	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=superfly-demo
+V	200322122314Z		07	unknown	/C=RU/ST=Unknown/O=Home/OU=Unknown/CN=paynet-local
