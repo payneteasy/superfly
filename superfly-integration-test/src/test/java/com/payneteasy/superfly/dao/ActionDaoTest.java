@@ -37,7 +37,7 @@ public class ActionDaoTest extends AbstractDaoTest {
 		action.setName("action2");
 		action.setDescription("description2");
 		actions.add(action);
-		actionDao.saveActions("test1", actions);
+		actionDao.saveActions("superfly-demo", actions);
 	}
 
 	public void testGetActionForList() {

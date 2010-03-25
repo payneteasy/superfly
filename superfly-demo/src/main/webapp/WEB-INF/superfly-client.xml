@@ -10,7 +10,7 @@
 	<bean id="ssoServiceHttpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
 		<property name="hostConfig">
 			<bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
-				<property name="keyStoreResource" value="classpath:stores/test1_ks"/>
+				<property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
 				<property name="keyStorePassword" value="changeit"/>
 				<property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
 				<property name="trustKeyStorePassword" value="changeit"/>

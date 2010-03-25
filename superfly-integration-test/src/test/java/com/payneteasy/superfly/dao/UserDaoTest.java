@@ -18,7 +18,7 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 
 	public void testAuthenticate() {
-		List<AuthRole> roles = userDao.authenticate("admin", "password", "test1", null, null);
+		List<AuthRole> roles = userDao.authenticate("admin", "password", "superfly-demo", null, null);
 		assertNotNull("Must authenticate successfully", roles);
 	}
 	
