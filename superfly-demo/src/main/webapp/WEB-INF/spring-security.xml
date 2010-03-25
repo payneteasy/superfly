@@ -2,8 +2,10 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 		
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
@@ -42,17 +44,34 @@
     	 -->
     </bean>
     
+    <util:list id="actionNameToRoleNameTransformers">
+		<bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
+		<bean class="com.payneteasy.superfly.security.PrependingTransformer">
+			<property name="prefix" value="ROLE_"/>
+		</bean>
+    </util:list>
+    
+<!-- 
+    <bean id="superflyMockAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyMockAuthenticationProvider">
+    	<sec:custom-authentication-provider/>
+    	<property name="enabled" value="true"/>
+    	<property name="username" value="su"/>
+    	<property name="password" value="password"/>
+    	<property name="roleNames">
+    		<list>
+    			<value>role1</value>
+    			<value>role2</value>
+    		</list>
+    	</property>
+    	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
+    	<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+    </bean>
+ -->
+    
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
     	<sec:custom-authentication-provider/>
     	<property name="ssoService" ref="ssoService"/>
-    	<property name="transformers">
-    		<list>
-    			<bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
-    			<bean class="com.payneteasy.superfly.security.PrependingTransformer">
-    				<property name="prefix" value="ROLE_"/>
-    			</bean>
-    		</list>
-    	</property>
+    	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
     </bean>
     
     <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">

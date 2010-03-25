@@ -37,22 +37,30 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
-		if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
-			// step 1: auth username/password to temp Authentication
-			UsernamePasswordAuthRequestInfoAuthenticationToken authRequest = (UsernamePasswordAuthRequestInfoAuthenticationToken) authentication;
-			return authenticateUsernamePassword(authRequest);
-		} else if (authentication instanceof SSOUserTransportAuthenticationToken) {
-			// step 1.5: throwing so ExceptionTranslationFilter will catch it and
-			// give entry point a chance to go to step 2
-			throw new StepTwoException("Going to step two");
-		} else if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
-			// step 2: auth user+role to final Authentication
-			SSOUserAndSelectedRoleAuthenticationToken authRequest = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
-			return authenticateUserRole(authRequest);
+		if (isActive()) {
+			if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
+				// step 1: auth username/password to temp Authentication
+				UsernamePasswordAuthRequestInfoAuthenticationToken authRequest = (UsernamePasswordAuthRequestInfoAuthenticationToken) authentication;
+				return authenticateUsernamePassword(authRequest);
+			} else if (authentication instanceof SSOUserTransportAuthenticationToken) {
+				// step 1.5: throwing so ExceptionTranslationFilter will catch it and
+				// give entry point a chance to go to step 2
+				throw new StepTwoException("Going to step two");
+			} else if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
+				// step 2: auth user+role to final Authentication
+				SSOUserAndSelectedRoleAuthenticationToken authRequest = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
+				return authenticateUserRole(authRequest);
+			} else {
+				// this is not our responsibility...
+				return null;
+			}
 		} else {
-			// this is not our responsibility...
 			return null;
 		}
+	}
+	
+	protected boolean isActive() {
+		return true;
 	}
 
 	protected Authentication authenticateUserRole(
@@ -68,8 +76,7 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 		String username = authRequest.getName();
 		String password = (String) authRequest.getCredentials();
 		
-		SSOUser ssoUser = ssoService.authenticate(username, password,
-				authRequest.getAuthRequestInfo());
+		SSOUser ssoUser = doAuthenticate(authRequest, username, password);
 		
 		if (ssoUser == null) {
 			throw new BadCredentialsException("Bad password");
@@ -87,6 +94,14 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 			return createFinalAuthentication(authRequest, ssoUser,
 					ssoUser.getActionsMap().keySet().iterator().next());
 		}
+	}
+
+	protected SSOUser doAuthenticate(
+			UsernamePasswordAuthRequestInfoAuthenticationToken authRequest,
+			String username, String password) {
+		SSOUser ssoUser = ssoService.authenticate(username, password,
+				authRequest.getAuthRequestInfo());
+		return ssoUser;
 	}
 
 	protected SSOUserTransportAuthenticationToken createTempAuthenticationToken(

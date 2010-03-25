@@ -1,95 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>superfly-parent</artifactId>
+		<groupId>com.payneteasy.superfly</groupId>
+		<version>1.1-1-SNAPSHOT</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-spring-security</artifactId>
 	<name>Spring Security Extension for Superfly</name>
-	<version>1.1-1-SNAPSHOT</version>
 	<description>Module for Spring Security which enables application to use Superfly authentication/authorization declaratively through Spring Security</description>
-	
-	<scm>
-		<connection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</connection>
-		<developerConnection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</developerConnection>
-		<url>https://amberlords.com/softmary/common/trunk/superfly</url>
-	</scm>
-
-	<!--
-    -      Distributions
-    -->
-	<distributionManagement>
-		<repository>
-			<id>common-release</id>
-			<name>Local Maven repository of releases</name>
-			<url>http://amberlords.com:8081/nexus/content/repositories/common-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>common-snapshot</id>
-			<name>Local Maven repository of snapshots</name>
-			<url>http://amberlords.com:8081/nexus/content/repositories/common-snapshot</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>		
-	</distributionManagement>
-
-	<repositories>
-		<repository>
-			<id>common-release</id>
-			<name>Our maven releases repository with common user access</name>
-			<url>http://amberlords.com:8081/nexus/content/groups/public</url>
-		</repository>
-        <!-- jdbc proc repository -->
-        <repository>
-            <id>jdbc-proc-release</id>
-            <name>jdbc proc release</name>
-            <url>http://jdbc-proc.googlecode.com/svn/maven2/release</url>
-        </repository>
-	</repositories>
 	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<version>2.0.4</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-remote-api</artifactId>
-			<version>1.1-1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-common</artifactId>
-			<version>1.1-1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.4</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-					<encoding>utf-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<encoding>utf-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<ajdtVersion>none</ajdtVersion>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
