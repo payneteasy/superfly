@@ -27,6 +27,7 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 	private String password;
 	private List<String> roleNames = new ArrayList<String>();
 	private ActionDescriptionCollector actionDescriptionCollector;
+	private Map<SSORole, SSOAction[]> cachedActionsMap = null;
 	
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -81,17 +82,19 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 	}
 
 	protected Map<SSORole, SSOAction[]> buildActionsMap(String username) throws CollectionException {
-		List<ActionDescription> actionDescriptions = actionDescriptionCollector.collect();
-		Map<SSORole, SSOAction[]> map = new HashMap<SSORole, SSOAction[]>();
-		for (String roleName : roleNames) {
-			SSORole role = new SSORole(roleName);
-			SSOAction[] actions = new SSOAction[actionDescriptions.size()];
-			for (int i = 0; i < actionDescriptions.size(); i++) {
-				actions[i] = new SSOAction(actionDescriptions.get(i).getName(), false);
+		if (cachedActionsMap == null) {
+			List<ActionDescription> actionDescriptions = actionDescriptionCollector.collect();
+			cachedActionsMap = new HashMap<SSORole, SSOAction[]>();
+			for (String roleName : roleNames) {
+				SSORole role = new SSORole(roleName);
+				SSOAction[] actions = new SSOAction[actionDescriptions.size()];
+				for (int i = 0; i < actionDescriptions.size(); i++) {
+					actions[i] = new SSOAction(actionDescriptions.get(i).getName(), false);
+				}
+				cachedActionsMap.put(role, actions);
 			}
-			map.put(role, actions);
 		}
-		return map;
+		return cachedActionsMap;
 	}
 	
 	protected Map<String, String> buildPreferences() {
