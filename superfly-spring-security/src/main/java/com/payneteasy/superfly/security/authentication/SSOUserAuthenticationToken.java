@@ -20,6 +20,7 @@ import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
 public class SSOUserAuthenticationToken implements Authentication {
 	
 	private SSOUser user;
+	private SSORole role;
 	private Object credentials;
 	private Object details;
 	private GrantedAuthority[] authorities;
@@ -29,6 +30,7 @@ public class SSOUserAuthenticationToken implements Authentication {
 			Object credentials, Object details,
 			StringTransformer[] transformers, RoleSource roleSource) {
 		this.user = user;
+		this.role = role;
 		this.credentials = credentials;
 		this.details = details;
 
@@ -76,6 +78,10 @@ public class SSOUserAuthenticationToken implements Authentication {
 	
 	public SSOUser getUser() {
 		return user;
+	}
+	
+	public SSORole getRole() {
+		return role;
 	}
 
 }
