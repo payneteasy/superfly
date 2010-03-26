@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class ActionDescription implements Serializable {
+	private static final long serialVersionUID = 677854515776413374L;
+	
 	private String name;
 	private String description;
 	
@@ -41,5 +43,10 @@ public class ActionDescription implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

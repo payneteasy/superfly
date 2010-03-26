@@ -9,6 +9,8 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class SSOAction implements Serializable {
+	private static final long serialVersionUID = 8596869669651056660L;
+	
 	private String name;
 	private boolean loggingNeeded;
 	
@@ -59,6 +61,11 @@ public class SSOAction implements Serializable {
 	 */
 	public void setLoggingNeeded(boolean loggingNeeded) {
 		this.loggingNeeded = loggingNeeded;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

@@ -9,6 +9,8 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class AuthenticationRequestInfo implements Serializable {
+	private static final long serialVersionUID = -4678568813683343136L;
+	
 	private String ipAddress;
 	private String sessionInfo;
 	private String subsystemIdentifier;
@@ -73,5 +75,11 @@ public class AuthenticationRequestInfo implements Serializable {
 	 */
 	public void setSubsystemIdentifier(String subsystemIdentifier) {
 		this.subsystemIdentifier = subsystemIdentifier;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Auth request for subsystem [%s] from IP [%s], session info [%s]",
+				subsystemIdentifier, ipAddress, sessionInfo);
 	}
 }

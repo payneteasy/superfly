@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @since 1.1
  */
 public class SSOUserWithActions implements Serializable {
+	private static final long serialVersionUID = -4340261492793178835L;
+	
 	private String name;
 	private String email;
 	private SSOAction[] actions;
@@ -80,5 +82,10 @@ public class SSOUserWithActions implements Serializable {
 	 */
 	public void setActions(SSOAction[] actions) {
 		this.actions = actions;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

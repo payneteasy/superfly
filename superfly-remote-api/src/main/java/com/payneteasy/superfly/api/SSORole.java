@@ -10,6 +10,8 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class SSORole implements Serializable {
+	private static final long serialVersionUID = 2624582156582074704L;
+	
 	private String name;
 
 	/**
@@ -40,6 +42,7 @@ public class SSORole implements Serializable {
 		this.name = name;
 	}
 
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -47,6 +50,7 @@ public class SSORole implements Serializable {
 		return result;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -61,5 +65,10 @@ public class SSORole implements Serializable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }

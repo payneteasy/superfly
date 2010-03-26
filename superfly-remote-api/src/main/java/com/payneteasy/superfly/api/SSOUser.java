@@ -11,6 +11,8 @@ import java.util.Map;
  * @since 1.0
  */
 public class SSOUser implements Serializable {
+	private static final long serialVersionUID = 2939559042187840631L;
+	
 	private String name;
 	private String sessionId;
 	private Map<SSORole, SSOAction[]> actionsMap;
