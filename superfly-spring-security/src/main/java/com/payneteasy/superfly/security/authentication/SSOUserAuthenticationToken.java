@@ -4,9 +4,9 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 
-import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.security.RoleSource;
 import com.payneteasy.superfly.security.StringTransformer;
 import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
 
@@ -27,15 +27,15 @@ public class SSOUserAuthenticationToken implements Authentication {
 	
 	public SSOUserAuthenticationToken(SSOUser user, SSORole role,
 			Object credentials, Object details,
-			StringTransformer[] transformers) {
+			StringTransformer[] transformers, RoleSource roleSource) {
 		this.user = user;
 		this.credentials = credentials;
 		this.details = details;
 
-		SSOAction[] actions = user.getActionsMap().get(role);
-		this.authorities = new GrantedAuthority[actions.length];
-		for (int i = 0; i < actions.length; i++) {
-			String name = actions[i].getName();
+		String[] roles = roleSource.getRoleNames(user, role);
+		this.authorities = new GrantedAuthority[roles.length];
+		for (int i = 0; i < roles.length; i++) {
+			String name = roles[i];
 			for (StringTransformer transformer : transformers) {
 				name = transformer.transform(name);
 			}

@@ -25,6 +25,7 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 	
 	private SSOService ssoService;
 	private StringTransformer[] transformers = new StringTransformer[0];
+	private RoleSource roleSource = createDefaultRoleSource();
 	
 	@Required
 	public void setSsoService(SSOService ssoService) {
@@ -33,6 +34,10 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 
 	public void setTransformers(StringTransformer[] transformers) {
 		this.transformers = transformers;
+	}
+
+	public void setRoleSource(RoleSource roleSource) {
+		this.roleSource = roleSource;
 	}
 
 	public Authentication authenticate(Authentication authentication)
@@ -113,7 +118,7 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 			Authentication authRequest, SSOUser user, SSORole role) {
 		return new SSOUserAuthenticationToken(user, role,
 				authRequest.getCredentials(), authRequest.getDetails(),
-				transformers);
+				transformers, roleSource);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,5 +126,12 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
 				|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)
 				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
+	}
+	
+	protected RoleSource createDefaultRoleSource() {
+		RoleSource[] sources = new RoleSource[2];
+		sources[0] = new SSOActionRoleSource();
+		sources[1] = new SSORoleRoleSource();
+		return new CompoundRoleSource(sources);
 	}
 }
