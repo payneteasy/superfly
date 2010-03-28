@@ -374,6 +374,14 @@
 						<groupId>ehcache</groupId>
 						<artifactId>ehcache</artifactId>
 			        </exclusion>
+					<exclusion>
+						<groupId>javax.activation</groupId>
+						<artifactId>activation</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.codehaus.xfire</groupId>
+						<artifactId>xfire-all</artifactId>
+					</exclusion>
 	      	    </exclusions>
 	    	</dependency>
 		</dependencies>
