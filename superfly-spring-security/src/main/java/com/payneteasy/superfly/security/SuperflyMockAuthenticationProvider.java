@@ -22,17 +22,12 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
 
 public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationProvider {
 	
-	private boolean enabled = false;
 	private String username;
 	private String password;
 	private List<String> roleNames = new ArrayList<String>();
 	private ActionDescriptionCollector actionDescriptionCollector;
 	private Map<SSORole, SSOAction[]> cachedActionsMap = null;
 	
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	@Required
 	public void setUsername(String username) {
 		this.username = username;
@@ -51,11 +46,6 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 	public void setActionDescriptionCollector(
 			ActionDescriptionCollector actionDescriptionCollector) {
 		this.actionDescriptionCollector = actionDescriptionCollector;
-	}
-
-	@Override
-	protected boolean isActive() {
-		return enabled;
 	}
 	
 	@Override

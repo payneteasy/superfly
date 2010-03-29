@@ -13,7 +13,6 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-remote-api</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
@@ -22,7 +21,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring</artifactId>
-			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>

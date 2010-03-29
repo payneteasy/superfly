@@ -23,10 +23,15 @@ import com.payneteasy.superfly.security.exception.StepTwoException;
  */
 public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 	
+	private boolean enabled = true;
 	private SSOService ssoService;
 	private StringTransformer[] transformers = new StringTransformer[0];
 	private RoleSource roleSource = createDefaultRoleSource();
 	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@Required
 	public void setSsoService(SSOService ssoService) {
 		this.ssoService = ssoService;
@@ -65,7 +70,7 @@ public class SuperflyAuthenticationProvider implements AuthenticationProvider {
 	}
 	
 	protected boolean isActive() {
-		return true;
+		return enabled;
 	}
 
 	protected Authentication authenticateUserRole(

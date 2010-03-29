@@ -2,9 +2,9 @@ package org.springframework.core.type.classreading;
 
 import org.springframework.asm.ClassReader;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.ClassMetadata;
 
-public class MultipleAnnotationValuesMetadataReader extends
-		SimpleMetadataReader {
+public class MultipleAnnotationValuesMetadataReader implements MetadataReader {
 	
 	private final ClassReader classReader;
 
@@ -12,12 +12,16 @@ public class MultipleAnnotationValuesMetadataReader extends
 
 	public MultipleAnnotationValuesMetadataReader(ClassReader classReader,
 			ClassLoader classLoader) {
-		super(classReader, classLoader);
 		this.classReader = classReader;
 		this.classLoader = classLoader;
 	}
 	
-	@Override
+	public ClassMetadata getClassMetadata() {
+		ClassMetadataReadingVisitor visitor = new ClassMetadataReadingVisitor();
+		this.classReader.accept(visitor, true);
+		return visitor;
+	}
+	
 	public AnnotationMetadata getAnnotationMetadata() {
 		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader);
 		this.classReader.accept(visitor, true);

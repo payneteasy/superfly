@@ -17,9 +17,10 @@ import java.util.Map.Entry;
 import org.springframework.asm.AnnotationVisitor;
 import org.springframework.asm.Type;
 import org.springframework.asm.commons.EmptyVisitor;
+import org.springframework.core.type.AnnotationMetadata;
 
-public class MultipleValuesAnnotationMetadataReadingVisitor extends
-		AnnotationMetadataReadingVisitor {
+public class MultipleValuesAnnotationMetadataReadingVisitor
+		extends ClassMetadataReadingVisitor implements AnnotationMetadata {
 	
 	private final Map<String, Map<String, Object>> attributesMap = new LinkedHashMap<String, Map<String, Object>>();
 
@@ -28,7 +29,6 @@ public class MultipleValuesAnnotationMetadataReadingVisitor extends
 	private final ClassLoader classLoader;
 
 	public MultipleValuesAnnotationMetadataReadingVisitor(ClassLoader classLoader) {
-		super(classLoader);
 		this.classLoader = classLoader;
 	}
 	
