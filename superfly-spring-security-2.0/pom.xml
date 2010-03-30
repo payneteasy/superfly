@@ -8,7 +8,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-spring-security-2.0</artifactId>
-	<version>1.1-1-SNAPSHOT</version>
+	<name>Spring Security 2.0.x Extension for Superfly</name>
+	<description>Module for Spring Security 2.0.x which enables application to use Superfly authentication/authorization declaratively through Spring Security 2.0.x</description>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
