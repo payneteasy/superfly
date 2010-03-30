@@ -31,6 +31,10 @@ public class TwoStepAuthenticationProcessingFilter extends UsernamePasswordAuthe
 
     private String roleParameter = SPRING_SECURITY_FORM_ROLE_KEY;
     private String subsystemIdentifier = null;
+    
+    public TwoStepAuthenticationProcessingFilter() {
+    	setFilterProcessesUrl("/j_superfly_security_check");
+    }
 	
 	public void setRoleParameter(String roleParameter) {
 		this.roleParameter = roleParameter;
@@ -68,11 +72,6 @@ public class TwoStepAuthenticationProcessingFilter extends UsernamePasswordAuthe
 	protected boolean isStepTwo(HttpServletRequest request,
 			Authentication authentication) {
 		return obtainRoleKey(request) != null;
-	}
-
-	@Override
-	public String getFilterProcessesUrl() {
-		return "/j_superfly_security_check";
 	}
 
 	protected Authentication doStepOne(HttpServletRequest request,
