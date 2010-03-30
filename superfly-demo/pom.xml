@@ -7,34 +7,11 @@
 	<name>Superfly Demo Application</name>
 	<description>Demo application which demonstrates the use of a Superfly server for authentication and authorization, as well as integration with Spring Security and SSL with mutual authentication</description>
 	
-	<scm>
-		<connection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</connection>
-		<developerConnection>scm:svn:https://amberlords.com/softmary/common/trunk/superfly</developerConnection>
-		<url>https://amberlords.com/softmary/common/trunk/superfly</url>
-	</scm>
-
-	<!--
-    -      Distributions
-    -->
-	<distributionManagement>
-		<repository>
-			<id>common-release</id>
-			<name>Local Maven repository of releases</name>
-			<url>http://amberlords.com:8081/nexus/content/repositories/common-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>common-snapshot</id>
-			<name>Local Maven repository of snapshots</name>
-			<url>http://amberlords.com:8081/nexus/content/repositories/common-snapshot</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>		
-	</distributionManagement>
-
 	<repositories>
 		<repository>
-			<id>common-release</id>
+			<id>superfly-release</id>
 			<name>Our maven releases repository with common user access</name>
-			<url>http://amberlords.com:8081/nexus/content/groups/public</url>
+			<url>https://superfly.googlecode.com/svn/maven2/release</url>
 		</repository>
         <!-- jdbc proc repository -->
         <repository>
@@ -47,9 +24,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-spring-security</artifactId>
+			<artifactId>superfly-spring-security-2.0</artifactId>
 			<version>1.1-1-SNAPSHOT</version>
-			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>

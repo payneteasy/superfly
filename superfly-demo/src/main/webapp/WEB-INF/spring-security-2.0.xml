@@ -4,8 +4,12 @@
 	xmlns="http://www.springframework.org/schema/beans"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+		
+	<!-- This is a configuration for Spring Security 2.0.x. For configuration for
+		a more recent version of Spring Security (now it's 3.0.x), see
+		spring-security.xml -->
 		
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>

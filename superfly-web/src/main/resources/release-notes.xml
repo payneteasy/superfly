@@ -42,4 +42,23 @@
             </description>
         </item>
     </release>
+    <release number="1.1" date="unknown yet">
+    	<item type="task">
+    		<name>Local mode</name>
+    		<description>
+    			 Local mode for Spring Security integration allows to develop
+    			 your application more easily with no requirement to interact
+    			 with a Superfly server
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Spring 3.0 support</name>
+    		<description>
+    			Some internal classes are changed to work with Spring 3.0.
+    			superfly-spring-security artifact now works with Spring Security
+    			3.0, while legacy artifact working with Spring Security 2.0.x
+    			was moved to superfly-spring-security-2.0.
+    		</description>
+    	</item>
+    </release>
 </news>
