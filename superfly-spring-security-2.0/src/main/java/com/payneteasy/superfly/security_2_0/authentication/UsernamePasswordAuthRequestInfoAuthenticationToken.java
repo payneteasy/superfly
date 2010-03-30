@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.security.authentication;
+package com.payneteasy.superfly.security_2_0.authentication;
 
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 

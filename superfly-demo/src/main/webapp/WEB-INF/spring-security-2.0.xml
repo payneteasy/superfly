@@ -29,12 +29,12 @@
     
     <sec:authentication-manager alias="authenticationManager"/>
 
-    <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
+    <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security_2_0.TwoStepAuthenticationProcessingFilterEntryPoint">
     	<property name="loginFormUrl" value="/login.jsp"/>
     	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
     </bean>
     
-    <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
+    <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security_2_0.TwoStepAuthenticationProcessingFilter">
     	<sec:custom-filter position="AUTHENTICATION_PROCESSING_FILTER"/>
     	<property name="authenticationManager" ref="authenticationManager"/>
     	<property name="defaultTargetUrl" value="/"/>
@@ -56,7 +56,7 @@
     </util:list>
     
 <!-- 
-    <bean id="superflyMockAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyMockAuthenticationProvider">
+    <bean id="superflyMockAuthenticationProvider" class="com.payneteasy.superfly.security_2_0.SuperflyMockAuthenticationProvider">
     	<sec:custom-authentication-provider/>
     	<property name="enabled" value="true"/>
     	<property name="username" value="su"/>
@@ -72,13 +72,13 @@
     </bean>
  -->
     
-    <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
+    <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security_2_0.SuperflyAuthenticationProvider">
     	<sec:custom-authentication-provider/>
     	<property name="ssoService" ref="ssoService"/>
     	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
     </bean>
     
-    <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">
+    <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security_2_0.SSOUserSessionBindFilter">
     	<sec:custom-filter after="AUTHENTICATION_PROCESSING_FILTER"/>
     </bean>
     

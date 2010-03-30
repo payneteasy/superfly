@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.security.authentication;
+package com.payneteasy.superfly.security_2_0.authentication;
 
 import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
@@ -8,7 +8,7 @@ import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.RoleSource;
 import com.payneteasy.superfly.security.StringTransformer;
-import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
+import com.payneteasy.superfly.security_2_0.SuperflyAuthenticationProvider;
 
 /**
  * Authentication implementation which represents authentication result

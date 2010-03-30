@@ -1,8 +1,8 @@
-package com.payneteasy.superfly.security.authentication;
+package com.payneteasy.superfly.security_2_0.authentication;
 
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
+import com.payneteasy.superfly.security_2_0.SuperflyAuthenticationProvider;
 
 /**
  * Authentication implementation which is used as an authentication request to

@@ -1,7 +1,7 @@
-package com.payneteasy.superfly.security.authentication;
+package com.payneteasy.superfly.security_2_0.authentication;
 
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter;
+import com.payneteasy.superfly.security_2_0.TwoStepAuthenticationProcessingFilter;
 
 /**
  * Authentication implementation which is actually used to transport SSOUser
