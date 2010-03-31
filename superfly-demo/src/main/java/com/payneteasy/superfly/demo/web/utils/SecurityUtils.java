@@ -6,20 +6,30 @@ import org.springframework.security.annotation.Secured;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.userdetails.UserDetails;
 
+import com.payneteasy.superfly.security_2_0.authentication.FastAuthentication;
+
 public class SecurityUtils {
     public static boolean isUserInRole(String aRole) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication) {
             return false;
         }
+        
         GrantedAuthority[] authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return false;
         }
-
-        for (GrantedAuthority authority : authorities) {
-            if (aRole.equals(authority.getAuthority())) {
-                return true;
+        
+        if (authentication instanceof FastAuthentication) {
+        	FastAuthentication fastAuthentication = (FastAuthentication) authentication;
+        	if (fastAuthentication.hasAuthority(aRole)) {
+        		return true;
+        	}
+        } else {
+            for (GrantedAuthority authority : authorities) {
+                if (aRole.equals(authority.getAuthority())) {
+                    return true;
+                }
             }
         }
 

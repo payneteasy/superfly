@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.security_2_0.authentication;
 
-import org.springframework.security.Authentication;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
 
@@ -17,7 +19,7 @@ import com.payneteasy.superfly.security_2_0.SuperflyAuthenticationProvider;
  * @author Roman Puchkovskiy
  * @see SuperflyAuthenticationProvider
  */
-public class SSOUserAuthenticationToken implements Authentication {
+public class SSOUserAuthenticationToken implements FastAuthentication {
 	private static final long serialVersionUID = -8426277290421059196L;
 	
 	private SSOUser user;
@@ -26,6 +28,7 @@ public class SSOUserAuthenticationToken implements Authentication {
 	private Object details;
 	private GrantedAuthority[] authorities;
 	private boolean authenticated;
+	private Set<String> authorityNames;
 	
 	public SSOUserAuthenticationToken(SSOUser user, SSORole role,
 			Object credentials, Object details,
@@ -37,12 +40,14 @@ public class SSOUserAuthenticationToken implements Authentication {
 
 		String[] roles = roleSource.getRoleNames(user, role);
 		this.authorities = new GrantedAuthority[roles.length];
+		this.authorityNames = new HashSet<String>(roles.length);
 		for (int i = 0; i < roles.length; i++) {
 			String name = roles[i];
 			for (StringTransformer transformer : transformers) {
 				name = transformer.transform(name);
 			}
 			this.authorities[i] = new GrantedAuthorityImpl(name);
+			this.authorityNames.add(name);
 		}
 		
 		this.authenticated = true;
@@ -83,6 +88,10 @@ public class SSOUserAuthenticationToken implements Authentication {
 	
 	public SSORole getRole() {
 		return role;
+	}
+	
+	public boolean hasAuthority(String name) {
+		return authorityNames.contains(name);
 	}
 
 }
