@@ -39,7 +39,7 @@ public class Start {
 	        secureConnector.setMaxIdleTime(1000 * 60 * 60);
 	        secureConnector.setSoLingerTime(-1);
 	        secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
-	        secureConnector.setKeystore("src/test/resources/server_ks");
+	        secureConnector.setKeystore("src/test/resources/superfly_server_ks");
 	        secureConnector.setKeyPassword("changeit");
 	        secureConnector.setTruststore("src/test/resources/ca_ts");
 	        secureConnector.setTrustPassword("changeit");
