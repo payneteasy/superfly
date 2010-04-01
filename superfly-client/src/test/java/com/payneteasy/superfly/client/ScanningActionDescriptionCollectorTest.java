@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.security.annotation.Secured;
+
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.ScanningActionDescriptionCollector;
@@ -15,6 +17,7 @@ public class ScanningActionDescriptionCollectorTest extends TestCase {
 	public void testCollect() throws CollectionException {
 		ScanningActionDescriptionCollector collector = new ScanningActionDescriptionCollector();
 		collector.setBasePackages(new String[]{getClass().getPackage().getName() + ".test"});
+		collector.setAnnotationClass(Secured.class);
 		List<ActionDescription> descriptions = collector.collect();
 		assertNotNull("Null result", descriptions);
 		assertEquals("Wrong number of actions collected", 5, descriptions.size());
