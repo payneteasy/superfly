@@ -15,7 +15,6 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.MultipleAnnotationValuesCachingMetadataReaderFactory;
-import org.springframework.security.annotation.Secured;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
@@ -39,7 +38,7 @@ public class ScanningActionDescriptionCollector implements
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
 	private MetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
-	private Class<? extends Annotation> annotationClass = Secured.class;
+	private Class<? extends Annotation> annotationClass;
 	private ValuesExtractor valuesExtractor = new DefaultValuesExtractor();
 
 	@Required

@@ -26,6 +26,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core-tiger</artifactId>
+			<scope>test</scope>
 		</dependency>
 	    <dependency>
 	    	<groupId>commons-digester</groupId>
