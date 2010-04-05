@@ -79,16 +79,7 @@
 		<property name="annotationClass" value="org.springframework.security.annotation.Secured"/>
 	</bean>
 	
-	<bean id="mergingActionDescriptionCollector" class="com.payneteasy.superfly.client.MergingActionDescriptionCollector">
-		<property name="collectors">
-			<list>
-				<ref bean="xmlActionDescriptionCollector"/>
-				<ref bean="scanningActionDescriptionCollector"/>
-			</list>
-		</property>
-	</bean>
-	
-	<util:list id="collectedActionToRoleNamesTransformers">
+	<util:list id="scannedActionToRoleNamesTransformers">
 		<bean class="com.payneteasy.superfly.client.PrefixRemovingTransformer">
 			<property name="prefixes">
 				<list>
@@ -98,7 +89,21 @@
 		</bean>
 		<bean class="com.payneteasy.superfly.client.LowercaseTransformer"/>
 	</util:list>
-
+	
+	<bean id="transformedScannedActionDescriptionCollector" class="com.payneteasy.superfly.client.TransformingActionDescriptionCollector">
+		<property name="collector" ref="scanningActionDescriptionCollector"/>
+		<property name="transformers" ref="scannedActionToRoleNamesTransformers"/>
+	</bean>
+	
+	<bean id="mergingActionDescriptionCollector" class="com.payneteasy.superfly.client.MergingActionDescriptionCollector">
+		<property name="collectors">
+			<list>
+				<ref bean="xmlActionDescriptionCollector"/>
+				<ref bean="transformedScannedActionDescriptionCollector"/>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="superflyDataSender" class="com.payneteasy.superfly.client.SuperflyDataSender">
 		<property name="ssoService" ref="ssoService"/>
 		<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
@@ -107,7 +112,6 @@
 			it's only relevant for configuration when both superfly server and
 			its client application live in the same container -->
 		<property name="delay" value="30000"/>
-		<property name="transformers" ref="collectedActionToRoleNamesTransformers"/>
 	</bean>
     
 </beans>
