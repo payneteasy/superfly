@@ -1,31 +1,31 @@
 package com.payneteasy.superfly.security_2_0;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.AuthenticationServiceException;
 import org.springframework.security.BadCredentialsException;
 
-import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.client.ActionDescriptionCollector;
-import com.payneteasy.superfly.client.exception.CollectionException;
+import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 import com.payneteasy.superfly.security_2_0.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security_2_0.authentication.SSOUserTransportAuthenticationToken;
 import com.payneteasy.superfly.security_2_0.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
+/**
+ * Authentication provider which does not use Superfly server at all. It may
+ * be useful for fast development.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationProvider {
 	
 	private String username;
 	private String password;
-	private List<String> roleNames = new ArrayList<String>();
-	private ActionDescriptionCollector actionDescriptionCollector;
+	private ActionsMapBuilder actionsMapBuilder;
 	private Map<SSORole, SSOAction[]> cachedActionsMap = null;
 	
 	@Required
@@ -38,14 +38,9 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 		this.password = password;
 	}
 
-	public void setRoleNames(List<String> roleNames) {
-		this.roleNames = roleNames;
-	}
-
 	@Required
-	public void setActionDescriptionCollector(
-			ActionDescriptionCollector actionDescriptionCollector) {
-		this.actionDescriptionCollector = actionDescriptionCollector;
+	public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
+		this.actionsMapBuilder = actionsMapBuilder;
 	}
 	
 	@Override
@@ -57,32 +52,19 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 		if (!ok) {
 			throw new BadCredentialsException("Bad password");
 		}
-		
-		if (roleNames == null || roleNames.isEmpty()) {
-			throw new BadCredentialsException("No roles assigned");
-		}
-		
+
 		SSOUser ssoUser;
 		try {
 			ssoUser = new SSOUser(username, buildActionsMap(username), buildPreferences());
-		} catch (CollectionException e) {
+		} catch (Exception e) {
 			throw new AuthenticationServiceException("Cannot collect action descriptions", e);
 		}
 		return ssoUser;
 	}
 
-	protected Map<SSORole, SSOAction[]> buildActionsMap(String username) throws CollectionException {
+	protected Map<SSORole, SSOAction[]> buildActionsMap(String username) throws Exception {
 		if (cachedActionsMap == null) {
-			List<ActionDescription> actionDescriptions = actionDescriptionCollector.collect();
-			cachedActionsMap = new HashMap<SSORole, SSOAction[]>();
-			for (String roleName : roleNames) {
-				SSORole role = new SSORole(roleName);
-				SSOAction[] actions = new SSOAction[actionDescriptions.size()];
-				for (int i = 0; i < actionDescriptions.size(); i++) {
-					actions[i] = new SSOAction(actionDescriptions.get(i).getName(), false);
-				}
-				cachedActionsMap.put(role, actions);
-			}
+			cachedActionsMap = actionsMapBuilder.build();
 		}
 		return cachedActionsMap;
 	}
@@ -94,8 +76,8 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class authentication) {
 		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
-		|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)
-		|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
+				|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)
+				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 
 }

@@ -7,6 +7,12 @@ import org.springframework.beans.factory.annotation.Required;
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
 
+/**
+ * This implementation decorates another {@link ActionDescriptionCollector}
+ * implementation and transforms action names using transformers given to it.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class TransformingActionDescriptionCollector implements
 		ActionDescriptionCollector {
 	

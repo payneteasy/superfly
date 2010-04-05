@@ -61,14 +61,22 @@
     	<property name="enabled" value="true"/>
     	<property name="username" value="su"/>
     	<property name="password" value="password"/>
-    	<property name="roleNames">
-    		<list>
-    			<value>role1</value>
-    			<value>role2</value>
-    		</list>
-    	</property>
     	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
-    	<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+    	<property name="actionsMapBuilder">
+    		<bean class="com.payneteasy.superfly.security.mapbuilder.AllForAllActionsMapBuilder">
+    			<property name="roleNames">
+		    		<list>
+		    			<value>role1</value>
+		    			<value>role2</value>
+		    		</list>
+    			</property>
+    			<property name="actionsSource">
+    				<bean class="com.payneteasy.superfly.security.mapbuilder.CollectingActionsSource">
+    					<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+    				</bean>
+    			</property>
+    		</bean>
+    	</property>
     </bean>
  -->
     
