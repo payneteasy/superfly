@@ -9,6 +9,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
+import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
@@ -28,6 +29,14 @@ public class SuperflyMockAuthenticationProvider extends SuperflyAuthenticationPr
 	private ActionsMapBuilder actionsMapBuilder;
 	
 	private Map<SSORole, SSOAction[]> cachedActionsMap;
+
+	/**
+	 * Overridden to remove @Required annotation.
+	 */
+	@Override
+	public void setSsoService(SSOService ssoService) {
+		super.setSsoService(ssoService);
+	}
 	
 	@Required
 	public void setUsername(String username) {
