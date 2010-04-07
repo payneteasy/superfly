@@ -31,6 +31,7 @@
 		<thead>
 			<tr>
 				<th><a wicket:id="order-by-username">Username</a></th>
+				<th>Email</th>
 				<th><a wicket:id="order-by-locked">Locked</a></th>
 				<th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
 				<th><a wicket:id="order-by-last-login-date">Last login date</a></th>
@@ -41,6 +42,9 @@
 			<tr wicket:id="usersList">
 				<td>
 					<a href="#" wicket:id="view-user"><span wicket:id="user-name">bond</span></a>
+				</td>
+				<td>
+				    <span wicket:id="email">email</span>
 				</td>
 				<td>
 					<a href="#" wicket:id="switch-locked-status"><span wicket:id="locked-status">Yes</span></a>

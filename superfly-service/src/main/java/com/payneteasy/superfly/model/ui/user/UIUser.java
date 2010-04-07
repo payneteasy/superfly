@@ -13,6 +13,7 @@ public class UIUser implements Serializable {
 	private Long id;
 	private String username;
 	private String password;
+	private String email;
 	
 	@Column(name = "user_id")
 	public Long getId() {
@@ -40,4 +41,13 @@ public class UIUser implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	@Column(name = "user_email")
+	public final String getEmail() {
+		return email;
+	}
+
+	public final void setEmail(String email) {
+		this.email = email;
+	}
+	
 }

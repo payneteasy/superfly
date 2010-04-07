@@ -6,11 +6,13 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.service.UserService;
@@ -45,6 +47,9 @@ public class AddUserPage extends BasePage {
 		add(form);
 		form.add(new RequiredTextField<String>("username",
 				new PropertyModel<String>(user, "username")));
+		TextField<String> email = new TextField<String>("email",new PropertyModel<String>(user,"email"));
+		email.add(EmailAddressValidator.getInstance());
+		form.add(email.setRequired(true));
 		FormComponent<String> password1Field = new PasswordTextField("password",
 				new PropertyModel<String>(user, "password")).setRequired(true);
 		form.add(password1Field);

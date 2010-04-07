@@ -51,8 +51,9 @@ public class UserDaoTest extends AbstractDaoTest {
 	
 	public void testCreateUser() {
 		UIUser user = new UIUser();
-		user.setUsername("newuser");
+		user.setUsername("testusercreate");
 		user.setPassword("secret");
+		user.setEmail("email");
 		RoutineResult result = userDao.createUser(user);
 		assertRoutineResult(result);
 		assertNotNull("User ID must be generated", user.getId());
@@ -64,6 +65,7 @@ public class UserDaoTest extends AbstractDaoTest {
 	public void testUpdateUser() {
 		UIUser user = getAnyUser();
 		user.setPassword("password");
+		user.setEmail("email");
 		RoutineResult result = userDao.updateUser(user);
 		assertRoutineResult(result);
 	}
@@ -106,8 +108,9 @@ public class UserDaoTest extends AbstractDaoTest {
 	public void testCloneUser() {
 		long userId = getAnyUserId();
 		UICloneUserRequest request = new UICloneUserRequest();
-		request.setUsername("newuser");
+		request.setUsername("testuserclone");
 		request.setPassword("newpassword");
+		request.setEmail("newemail");
 		request.setTemplateUserId(userId);
 		RoutineResult result = userDao.cloneUser(request);
 		assertRoutineResult(result);

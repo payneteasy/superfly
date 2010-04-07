@@ -17,6 +17,7 @@ public class UIUserForList implements Serializable {
 	private boolean accountLocked;
 	private int loginsFailed;
 	private Date lastLoginDate;
+	private String email;
 
 	@Column(name = "user_id")
 	public long getId() {
@@ -71,4 +72,13 @@ public class UIUserForList implements Serializable {
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
 	}
+	@Column(name = "email")
+	public final String getEmail() {
+		return email;
+	}
+
+	public final void setEmail(String email) {
+		this.email = email;
+	}
+	
 }

@@ -2,6 +2,7 @@ drop procedure if exists ui_clone_user;
 delimiter $$
 create procedure ui_clone_user(i_new_user_name varchar(32),
                                i_new_user_password varchar(32),
+                               i_new_user_email varchar(255),
                                i_templete_user_id int(10),
                                out o_user_id int(10)
 )
@@ -11,9 +12,9 @@ create procedure ui_clone_user(i_new_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password
+             user_name, user_password, email
           )
-    values (i_new_user_name, i_new_user_password);
+    values (i_new_user_name, i_new_user_password, i_new_user_email);
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;

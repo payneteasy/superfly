@@ -27,7 +27,8 @@ create procedure ui_get_users_list(i_start_from int(10),
                  '       u.user_password, ',
                  '       u.is_account_locked, ',
                  '       u.logins_failed, ',
-                 '       u.last_login_date ',
+                 '       u.last_login_date, ',
+                 '       u.email ',
                  '  from users u ',
                  ' where true ',
                  coalesce(v_search_conditions, '')
@@ -59,6 +60,7 @@ call save_routine_information('ui_get_users_list',
                                         'user_password varchar',
                                         'is_account_locked varchar',
                                         'logins_failed int',
-                                        'last_login_date datetime'
+                                        'last_login_date datetime',
+                                        'email varchar'
                               )
      );
