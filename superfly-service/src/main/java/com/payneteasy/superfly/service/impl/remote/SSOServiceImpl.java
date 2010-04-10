@@ -64,4 +64,10 @@ public class SSOServiceImpl implements SSOService {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
+	public void registerUser(String username, String password, String email,
+			long subsystemId, String principalName) {
+		
+		
+	}
+
 }

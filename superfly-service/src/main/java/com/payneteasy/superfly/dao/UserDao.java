@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.RegisterUser;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
@@ -19,6 +20,13 @@ import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
  * @author Roman Puchkovskiy
  */
 public interface UserDao {
+	/**
+	 * 
+	 * @param registerUser 
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "register_user")
+	RoutineResult registerUser(RegisterUser registerUser);
 	/**
 	 * Authenticates a user and, if ok, returns his roles with actions.
 	 * 
