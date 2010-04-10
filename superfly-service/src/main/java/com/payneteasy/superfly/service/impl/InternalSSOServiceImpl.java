@@ -107,9 +107,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
-		// TODO:
 		return new SSOUserWithActions(user.getUsername(),
-				"example.email@dkfjdkjfdjf.df",
+				user.getEmail(),
 				convertToSSOActions(user.getActions()));
 	}
 

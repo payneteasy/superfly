@@ -9,7 +9,17 @@ import javax.persistence.OneToMany;
 
 public class UserWithActions implements Serializable {
 	private String username;
+	private String email;
 	private List<AuthAction> actions;
+
+	@Column(name = "user_email")
+	public final String getEmail() {
+		return email;
+	}
+
+	public final void setEmail(String email) {
+		this.email = email;
+	}
 
 	@Column(name = "user_name")
 	public String getUsername() {
