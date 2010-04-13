@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -50,7 +51,7 @@ public class CreateUserPage extends BasePage {
 	public CreateUserPage() {
 		super();
 		final UIUserCheckPassword user = new UIUserCheckPassword();
-		
+
 		List<UISubsystemForList> listSub = subsystemService.getSubsystems();
 		for (UISubsystemForList sub : listSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
@@ -58,7 +59,7 @@ public class CreateUserPage extends BasePage {
 			List<UIRoleForList> listRole = roleService.getRoles(0,
 					Integer.MAX_VALUE, 1, true, null, listIdsub);
 			List<String> listRoleName = new ArrayList<String>();
-			for(UIRoleForList role: listRole){
+			for (UIRoleForList role : listRole) {
 				listRoleName.add(role.getName());
 			}
 			modelsMap.put(sub.getName(), listRoleName);
@@ -87,21 +88,8 @@ public class CreateUserPage extends BasePage {
 
 		};
 
-		final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>("form",
-				new Model<UIUserCheckPassword>(user)) {
-
-			@Override
-			protected void onSubmit() {
-		        List<String> listRoleName = (List<String>) modelChoices.getObject();
-		        UIRole role = roleService.getRoleByName(listRoleName.get(0));
-		        user.setRoleId(role.getRoleId());
-		        userService.createUser(user);
-				getRequestCycle().setResponsePage(ListUsersPage.class);
-				getRequestCycle().setRedirect(true);
-				info("User created: " + user.getUsername());
-			}
-
-		};
+		final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>(
+				"form", new Model<UIUserCheckPassword>(user));
 
 		add(form);
 		form.add(new RequiredTextField<String>("username",
@@ -132,14 +120,26 @@ public class CreateUserPage extends BasePage {
 
 		form.add(makes);
 		form.add(models);
-		
-		makes.add(new AjaxFormComponentUpdatingBehavior("onchange")
-		{
+
+		makes.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 			@Override
-			protected void onUpdate(AjaxRequestTarget target)
-			{
+			protected void onUpdate(AjaxRequestTarget target) {
 				target.addComponent(models);
 			}
+		});
+		form.add(new Button("add") {
+
+			@Override
+			public void onSubmit() {
+				String listRoleName = models.getDefaultModelObjectAsString();
+				UIRole role = roleService.getRoleByName(listRoleName);
+				user.setRoleId(role.getRoleId());
+				userService.createUser(user);
+				getRequestCycle().setResponsePage(ListUsersPage.class);
+				getRequestCycle().setRedirect(true);
+				info("User created: " + user.getUsername());
+			}
+
 		});
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
 	}
