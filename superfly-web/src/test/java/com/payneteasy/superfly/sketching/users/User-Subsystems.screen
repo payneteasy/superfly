@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:VLine" x="152" y="101" height="252" measuredWidth="6" measuredHeight="252"/>
+  <widgets xsi:type="model:Link" x="75" y="124" text="Subsystem" measuredWidth="55" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="152" text="Actions" measuredWidth="38" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="184" text="Groups" measuredWidth="37" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="208" text="Roles" measuredWidth="29" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="240" text="Users" measuredWidth="30" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="272" text="Sessions" measuredWidth="44" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HLine" x="47" y="91" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:HLine" x="47" y="58" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:Link" x="64" y="63" text="Superfly service" measuredWidth="105" measuredHeight="26">
+    <font size="11"/>
+  </widgets>
+  <widgets xsi:type="model:LinkBar" x="583" y="32" text="admin,Sign out" measuredWidth="90" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Tree" x="226" y="144" width="375" height="161" text="[-] paynet-ip&#xA;-[-] [admin]&#xA;-[-]  [merchant]&#xA;[-] paynet-other&#xA;-[-]  [reseller]&#xA;-[-] [admin]" measuredWidth="375" measuredHeight="161"/>
+  <widgets xsi:type="model:Note" x="256" y="383" width="284" height="42" text=" роли, принадлежащие данной подсистеме " measuredWidth="284" measuredHeight="42">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Arrow" x="304" y="256" width="145" height="128" measuredWidth="145" measuredHeight="128"/>
+  <widgets xsi:type="model:Text" x="168" y="112" text="The subsystems that belong to the user-name user" measuredWidth="414" measuredHeight="19">
+    <font size="12" bold="true"/>
+  </widgets>
+  <widgets xsi:type="model:HLine" x="226" y="208" width="375" measuredWidth="375" measuredHeight="6"/>
+  <widgets xsi:type="model:Arrow" x="343" y="232" width="222" height="208" measuredWidth="222" measuredHeight="208"/>
+  <widgets xsi:type="model:Note" x="464" y="439" width="161" height="34" text="кнопка добавление роли " measuredWidth="161" measuredHeight="34">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Button" x="226" y="328" text="Cancel" measuredWidth="52" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" x="125" y="460" text="возвращает на список юзеров" measuredWidth="165" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Arrow" x="157" y="350" width="89" height="107" measuredWidth="89" measuredHeight="107" left="false" right="true" direction="bottom"/>
+  <widgets xsi:type="model:Icon" x="328" y="237" measuredWidth="16" measuredHeight="16" icon="delete (small)"/>
+  <widgets xsi:type="model:Icon" x="328" y="256" measuredWidth="16" measuredHeight="16" icon="delete (small)"/>
+  <widgets xsi:type="model:Icon" x="328" y="174" measuredWidth="16" measuredHeight="16" icon="delete (small)"/>
+  <widgets xsi:type="model:Icon" x="328" y="193" measuredWidth="16" measuredHeight="16" icon="delete (small)"/>
+  <widgets xsi:type="model:Icon" x="328" y="152" measuredWidth="16" measuredHeight="16" icon="add (small)"/>
+  <widgets xsi:type="model:Icon" x="328" y="217" measuredWidth="16" measuredHeight="16" icon="add (small)"/>
+  <widgets xsi:type="model:Button" x="176" y="328" text="Add" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font/>
+</model:Screen>

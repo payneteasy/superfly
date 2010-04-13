@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:VLine" x="152" y="101" height="252" measuredWidth="6" measuredHeight="252"/>
+  <widgets xsi:type="model:Link" x="75" y="124" text="Subsystem" measuredWidth="55" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="152" text="Actions" measuredWidth="38" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="184" text="Groups" measuredWidth="37" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="208" text="Roles" measuredWidth="29" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="240" text="Users" measuredWidth="30" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="272" text="Sessions" measuredWidth="44" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HLine" x="47" y="91" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:HLine" x="47" y="58" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:Link" x="64" y="63" text="Superfly service" measuredWidth="105" measuredHeight="26">
+    <font size="11"/>
+  </widgets>
+  <widgets xsi:type="model:LinkBar" x="583" y="32" text="admin,Sign out" measuredWidth="90" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Table" x="176" y="208" width="473" height="277" text="Username,Email, Locked,Logins failed,Last login date,Actions&#xA;[user-admin],admin@gmail.com,[NO],o,2010.04.12 20:05:03,[Edit] [Clone]&#xA;[user-vasja],merc@gmail.com,[YES],1,2010.04.12 20:05:03,[Edit] [Clone]&#xA;[user-petja],res@gmail.com,[NO],2,2010.04.12 20:05:03,[Edit] [Clone]&#xA;" measuredWidth="473" measuredHeight="277"/>
+  <widgets xsi:type="model:Button" x="176" y="492" text="Add" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HSplitter" x="549" y="498" measuredWidth="100" measuredHeight="11"/>
+  <widgets xsi:type="model:Button" x="176" y="180" text="Add" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HSplitter" x="549" y="186" measuredWidth="100" measuredHeight="11"/>
+  <widgets xsi:type="model:Text" x="176" y="152" width="89" text="Username prefix:" measuredWidth="89" measuredHeight="13">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:TextField" x="264" y="148" width="70" measuredWidth="70" measuredHeight="21"/>
+  <widgets xsi:type="model:Text" x="344" y="152" width="89" text="Role:" measuredWidth="89" measuredHeight="13">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Combo" x="376" y="148" text="Please select" measuredWidth="86" measuredHeight="21"/>
+  <widgets xsi:type="model:Text" x="472" y="152" width="89" text="Subsytem:" measuredWidth="89" measuredHeight="13">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Combo" x="528" y="148" text="Please select" measuredWidth="86" measuredHeight="21"/>
+  <widgets xsi:type="model:Button" x="624" y="147" text="Filter" measuredWidth="44" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Text" x="176" y="112" width="89" text="Actions" measuredWidth="89" measuredHeight="19">
+    <font size="12" bold="true"/>
+  </widgets>
+  <hRuler/>
+  <vRuler/>
+  <font/>
+</model:Screen>

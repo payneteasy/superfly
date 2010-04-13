@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model:Screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:model="http://wireframesketcher.com/1.0/model.ecore">
+  <widgets xsi:type="model:VLine" x="152" y="101" height="252" measuredWidth="6" measuredHeight="252"/>
+  <widgets xsi:type="model:Link" x="75" y="124" text="Subsystem" measuredWidth="55" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="152" text="Actions" measuredWidth="38" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="184" text="Groups" measuredWidth="37" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="208" text="Roles" measuredWidth="29" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="240" text="Users" measuredWidth="30" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Link" x="75" y="272" text="Sessions" measuredWidth="44" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:HLine" x="47" y="91" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:HLine" x="47" y="58" width="626" measuredWidth="626" measuredHeight="6"/>
+  <widgets xsi:type="model:Link" x="64" y="63" text="Superfly service" measuredWidth="105" measuredHeight="26">
+    <font size="11"/>
+  </widgets>
+  <widgets xsi:type="model:LinkBar" x="583" y="32" text="admin,Sign out" measuredWidth="90" measuredHeight="21">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Text" x="168" y="112" text="Add role " measuredWidth="74" measuredHeight="19">
+    <font size="12" bold="true"/>
+  </widgets>
+  <widgets xsi:type="model:Text" x="184" y="144" text="Username: this user " measuredWidth="99" measuredHeight="13">
+    <font size="8" bold="false"/>
+  </widgets>
+  <widgets xsi:type="model:Text" x="184" y="160" text="Subsystem: this subsystem " measuredWidth="133" measuredHeight="13">
+    <font size="8" bold="false"/>
+  </widgets>
+  <widgets xsi:type="model:Text" x="184" y="188" width="89" text="Role:" measuredWidth="89" measuredHeight="13">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Combo" x="216" y="184" text="Please select" measuredWidth="86" measuredHeight="21"/>
+  <widgets xsi:type="model:Button" x="184" y="250" text="Add" measuredWidth="39" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Button" x="249" y="250" text="Cancel" measuredWidth="52" measuredHeight="23">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Note" x="232" y="335" width="281" height="50" text="возвращает на список подсистем, принадлежащие данному юзеру" measuredWidth="281" measuredHeight="50">
+    <font/>
+  </widgets>
+  <widgets xsi:type="model:Arrow" x="300" y="272" width="77" height="64" measuredWidth="77" measuredHeight="64"/>
+  <hRuler/>
+  <vRuler/>
+  <font/>
+</model:Screen>
