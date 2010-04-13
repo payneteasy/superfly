@@ -127,10 +127,10 @@ public class ListUsersPage extends BasePage {
 				
 				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
 						EditUserPage.class, actionsParameters));
-				item.add(new BookmarkablePageLink<ChangeUserRolesPage>("change-user-roles",
+				/*item.add(new BookmarkablePageLink<ChangeUserRolesPage>("change-user-roles",
 						ChangeUserRolesPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<ChangeUserActionsPage>("change-user-actions",
-						ChangeUserActionsPage.class, actionsParameters));
+						ChangeUserActionsPage.class, actionsParameters));*/
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
 			}
@@ -145,7 +145,7 @@ public class ListUsersPage extends BasePage {
 		
 		add(new PagingNavigator("paging-navigator", usersDataView));
 		
-		add(new BookmarkablePageLink<AddUserPage>("add-user", AddUserPage.class));
+		add(new BookmarkablePageLink<AddUserPage>("add-user", CreateUserPage.class));
 	}
 	
 	@Override

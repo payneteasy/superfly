@@ -7,6 +7,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 
@@ -64,7 +65,7 @@ public interface UserService {
 	 * 
 	 * @param user	user to create
 	 */
-	RoutineResult createUser(UIUser user);
+	RoutineResult createUser(UIUserForCreate user);
 
 	/**
 	 * Updates a user.

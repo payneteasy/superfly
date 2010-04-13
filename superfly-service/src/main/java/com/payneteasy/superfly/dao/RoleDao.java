@@ -35,6 +35,9 @@ public interface RoleDao {
 	List<UIRoleForFilter> getRolesForFilter(String subsystemIds,
 			String rolePrefix, int startFrom, int recordsCount);
 
+	@AStoredProcedure(name = "ui_get_role_by_name")
+	UIRole getRoleByName(String roleName);
+
 	@AStoredProcedure(name = "ui_get_roles_list")
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, String rolesName,
@@ -73,7 +76,7 @@ public interface RoleDao {
 
 	@AStoredProcedure(name = "ui_get_all_role_actions_list_count")
 	int getAllRoleActionsCount(long roleId, String actionName);
-	
+
 	@AStoredProcedure(name = "ui_get_mapped_role_actions_list")
 	List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
 			int recordsCount, int orderFieldNumber, String orderType,

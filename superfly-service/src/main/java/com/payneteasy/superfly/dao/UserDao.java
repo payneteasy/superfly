@@ -11,6 +11,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 
@@ -107,7 +108,7 @@ public interface UserDao {
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_create_user")
-	RoutineResult createUser(UIUser user);
+	RoutineResult createUser(UIUserForCreate user);
 
 	/**
 	 * Updates a user.

@@ -16,12 +16,14 @@ public interface RoleService {
 	 * 
 	 * @return roles
 	 */
+	List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId);
+
 	List<UIRoleForFilter> getRolesForFilter();
 
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc, String rolesName,
 			List<Long> subsystems);
-
+    UIRole getRoleByName(String roleName);
 	int getRoleCount(String rolesName, List<Long> subsystems);
 
 	RoutineResult deleteRole(long roleId);
@@ -43,7 +45,7 @@ public interface RoleService {
 			long roleId, String actionName);
 
 	int getAllRoleActionsCount(long roleId, String actionName);
-	
+
 	List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);

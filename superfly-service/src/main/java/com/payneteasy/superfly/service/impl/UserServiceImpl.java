@@ -15,6 +15,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.service.NotificationService;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
 				subsystemId);
 	}
 
-	public RoutineResult createUser(UIUser user) {
+	public RoutineResult createUser(UIUserForCreate user) {
 		return userDao.createUser(user);
 		// we're not notifying about this as user does not yet have any roles
 		// or actions

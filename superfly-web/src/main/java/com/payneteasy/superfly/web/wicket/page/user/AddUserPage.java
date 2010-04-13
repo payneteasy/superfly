@@ -35,7 +35,7 @@ public class AddUserPage extends BasePage {
 		Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
 			@Override
 			protected void onSubmit() {
-				userService.createUser(user);
+				//userService.createUser(user);
 				PageParameters params = new PageParameters();
 				params.add("userId", String.valueOf(user.getId()));
 				params.add("wizard", "true");

@@ -39,8 +39,8 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public int getRoleCount(String rolesName, List<Long> subsystems) {
-		return roleDao.getRoleCount(rolesName,
-				StringUtils.collectionToCommaDelimitedString(subsystems));
+		return roleDao.getRoleCount(rolesName, StringUtils
+				.collectionToCommaDelimitedString(subsystems));
 	}
 
 	public List<UIRoleForList> getRoles(int startFrom, int recordsCount,
@@ -80,12 +80,12 @@ public class RoleServiceImpl implements RoleService {
 		}
 		return result;
 	}
-	
-	public RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds,
-			List<Long> groupToRemoveIds) {
-		RoutineResult result = roleDao.changeRoleGroups(roleId,
-						StringUtils.collectionToCommaDelimitedString(groupToAddIds),
-						StringUtils.collectionToCommaDelimitedString(groupToRemoveIds));
+
+	public RoutineResult changeRoleGroups(long roleId,
+			List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
+		RoutineResult result = roleDao.changeRoleGroups(roleId, StringUtils
+				.collectionToCommaDelimitedString(groupToAddIds), StringUtils
+				.collectionToCommaDelimitedString(groupToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
@@ -93,11 +93,11 @@ public class RoleServiceImpl implements RoleService {
 
 	}
 
-	public RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
-			List<Long> actionToRemoveIds) {
-		RoutineResult result = roleDao.changeRoleActions(roleId,
-						StringUtils.collectionToCommaDelimitedString(actionToAddIds),
-						StringUtils.collectionToCommaDelimitedString(actionToRemoveIds));
+	public RoutineResult changeRoleActions(long roleId,
+			List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
+		RoutineResult result = roleDao.changeRoleActions(roleId, StringUtils
+				.collectionToCommaDelimitedString(actionToAddIds), StringUtils
+				.collectionToCommaDelimitedString(actionToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
@@ -107,20 +107,21 @@ public class RoleServiceImpl implements RoleService {
 	public List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName) {
-		return roleDao.getAllRoleActions(startFrom, recordsCount, orderFieldNumber,
-				ascending ? DaoConstants.ASC : DaoConstants.DESC, roleId, actionName);
+		return roleDao.getAllRoleActions(startFrom, recordsCount,
+				orderFieldNumber, ascending ? DaoConstants.ASC
+						: DaoConstants.DESC, roleId, actionName);
 	}
 
 	public int getAllRoleActionsCount(long roleId, String actionName) {
 		return roleDao.getAllRoleActionsCount(roleId, actionName);
 	}
-	
+
 	public List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
 			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName) {
 		return roleDao.getMappedRoleActions(startFrom, recordsCount,
-				orderFieldNumber, ascending ? DaoConstants.ASC : DaoConstants.DESC,
-				roleId, actionName);
+				orderFieldNumber, ascending ? DaoConstants.ASC
+						: DaoConstants.DESC, roleId, actionName);
 	}
 
 	public int getMappedRoleActionsCount(long roleId, String actionName) {
@@ -134,7 +135,20 @@ public class RoleServiceImpl implements RoleService {
 	public List<UIGroupForCheckbox> getAllRoleGroups(int startFrom,
 			int recordsCount, int orderFieldNumber, String orderType,
 			long roleId) {
-		return roleDao.getAllRoleGroups(startFrom, recordsCount, orderFieldNumber, orderType, roleId);
+		return roleDao.getAllRoleGroups(startFrom, recordsCount,
+				orderFieldNumber, orderType, roleId);
+	}
+
+	public List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId) {
+
+		return roleDao.getRolesForFilter(StringUtils
+				.collectionToCommaDelimitedString(subId), null, 0,
+				Integer.MAX_VALUE);
+	}
+
+	public UIRole getRoleByName(String roleName) {
+
+		return roleDao.getRoleByName(roleName);
 	}
 
 }

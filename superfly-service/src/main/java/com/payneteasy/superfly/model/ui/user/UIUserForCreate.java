@@ -4,13 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
-/**
- * User object to be used in the UI (create/update).
- * 
- * @author Roman Puchkovskiy
- */
-public class UIUser implements Serializable {
+public class UIUserForCreate implements Serializable {
 	private Long id;
+	private Long roleId;
 	private String username;
 	private String password;
 	private String email;
@@ -49,6 +45,15 @@ public class UIUser implements Serializable {
 
 	public final void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Column(name = "role_id")
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
 	}
 
 }
