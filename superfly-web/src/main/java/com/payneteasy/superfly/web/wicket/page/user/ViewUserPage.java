@@ -32,6 +32,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
  * @author Roman Puchkovskiy
  */
 @Secured("ROLE_ADMIN")
+@Deprecated
 public class ViewUserPage extends BasePage {
 	
 	@SpringBean

@@ -45,31 +45,31 @@ import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
  */
 @Secured("ROLE_ADMIN")
 public class ChangeUserRolesPage extends BasePage {
-	
+
 	@SpringBean
 	private UserService userService;
 	@SpringBean
 	private SubsystemService subsystemService;
-	
-	private boolean isWizard;
 
 	public ChangeUserRolesPage(PageParameters params) {
 		super(params);
-		
+
 		final long userId = params.getAsLong("userId");
-		isWizard = params.getAsBoolean("wizard", false);
-		
-		final Filters filters = new Filters();
-		final Form<Filters> filtersForm = new Form<Filters>("filters-form", new Model<Filters>(filters));
-		add(filtersForm);
-		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
-				new PropertyModel<UISubsystemForFilter>(filters, "subsystem"),
-				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
-		subsystemDropdown.setNullValid(true);
-		filtersForm.add(subsystemDropdown);
-				
+		final long subId = params.getAsLong("subId");
+		/*
+		 * final Filters filters = new Filters(); final Form<Filters>
+		 * filtersForm = new Form<Filters>("filters-form", new
+		 * Model<Filters>(filters)); add(filtersForm);
+		 * DropDownChoice<UISubsystemForFilter> subsystemDropdown = new
+		 * DropDownChoice<UISubsystemForFilter>("subsystem-filter", new
+		 * PropertyModel<UISubsystemForFilter>(filters, "subsystem"),
+		 * subsystemService.getSubsystemsForFilter(), new
+		 * SubsystemChoiceRenderer()); subsystemDropdown.setNullValid(true);
+		 * filtersForm.add(subsystemDropdown);
+		 */
+
 		final ObjectHolder<List<UIRoleForCheckbox>> rolesHolder = new ObjectHolder<List<UIRoleForCheckbox>>();
-		
+
 		final InitializingModel<Collection<UIRoleForCheckbox>> rolesCheckGroupModel = new InitializingModel<Collection<UIRoleForCheckbox>>() {
 			@Override
 			protected Collection<UIRoleForCheckbox> getInitialValue() {
@@ -82,21 +82,20 @@ public class ChangeUserRolesPage extends BasePage {
 				return checkedRoles;
 			}
 		};
-		
+
 		final InitializingModel<Collection<UIRoleForCheckbox>> rolesToGrantCheckGroupModel = new InitializingModel<Collection<UIRoleForCheckbox>>() {
 			@Override
 			protected Collection<UIRoleForCheckbox> getInitialValue() {
 				return new HashSet<UIRoleForCheckbox>();
 			}
 		};
-		
+
 		final IDataProvider<UIRoleForCheckbox> rolesProvider = new BaseDataProvider<UIRoleForCheckbox>() {
-			public Iterator<? extends UIRoleForCheckbox> iterator(
-					int first, int count) {
-				UISubsystemForFilter subsystem = filters.getSubsystem();
-				List<UIRoleForCheckbox> allUserRoles = userService.getAllUserRoles(userId,
-						subsystem == null ? null : subsystem.getId(),
-						first, count);
+			public Iterator<? extends UIRoleForCheckbox> iterator(int first,
+					int count) {
+				// UISubsystemForFilter subsystem = filters.getSubsystem();
+				List<UIRoleForCheckbox> allUserRoles = userService
+						.getAllUserRoles(userId, subId, first, count);
 				rolesHolder.setObject(allUserRoles);
 				// causing the role check group model to be reinitialized
 				rolesCheckGroupModel.clearInitialized();
@@ -105,50 +104,50 @@ public class ChangeUserRolesPage extends BasePage {
 			}
 
 			public int size() {
-				UISubsystemForFilter subsystem = filters.getSubsystem();
+				//UISubsystemForFilter subsystem = filters.getSubsystem();
 				return userService.getAllUserRolesCount(userId,
-						subsystem == null ? null : subsystem.getId());
+						subId);
 			}
 		};
-		
+
 		final Form<Void> form = new Form<Void>("form") {
 			public void onSubmit() {
-				doSubmit(userId, rolesHolder.getObject(), rolesCheckGroupModel.getObject(),
-						rolesToGrantCheckGroupModel.getObject());
+				doSubmit(userId, rolesHolder.getObject(), rolesCheckGroupModel
+						.getObject(), rolesToGrantCheckGroupModel.getObject());
 			}
 		};
 		add(form);
-		final CheckGroup<UIRoleForCheckbox> group = new CheckGroup<UIRoleForCheckbox>("group", rolesCheckGroupModel);
+		final CheckGroup<UIRoleForCheckbox> group = new CheckGroup<UIRoleForCheckbox>(
+				"group", rolesCheckGroupModel);
 		form.add(group);
-		final CheckGroup<UIRoleForCheckbox> grantGroup = new CheckGroup<UIRoleForCheckbox>("grant-group", rolesToGrantCheckGroupModel);
-		group.add(grantGroup);
-		grantGroup.add(new CheckGroupSelector("master-checkbox", group));
-		grantGroup.add(new CheckGroupSelector("grant-master-checkbox", grantGroup));
-		DataView<UIRoleForCheckbox> rolesDataView = new PagingDataView<UIRoleForCheckbox>("actions", rolesProvider) {
+		/*final CheckGroup<UIRoleForCheckbox> grantGroup = new CheckGroup<UIRoleForCheckbox>(
+				"grant-group", rolesToGrantCheckGroupModel);*/
+		group.add(new CheckGroupSelector("master-checkbox", group));
+		//grantGroup.add(new CheckGroupSelector("master-checkbox", group));
+		/*grantGroup.add(new CheckGroupSelector("grant-master-checkbox",
+				grantGroup));*/
+		DataView<UIRoleForCheckbox> rolesDataView = new PagingDataView<UIRoleForCheckbox>(
+				"actions", rolesProvider) {
 			@Override
 			protected void populateItem(Item<UIRoleForCheckbox> item) {
 				UIRoleForCheckbox role = item.getModelObject();
-				item.add(new Check<UIRoleForCheckbox>("mapped", item.getModel(), group));
-				item.add(new Check<UIRoleForCheckbox>("grant", item.getModel(), grantGroup));
+				item.add(new Check<UIRoleForCheckbox>("mapped",
+						item.getModel(), group));
+				/*item.add(new Check<UIRoleForCheckbox>("grant", item.getModel(),
+						grantGroup));*/
 				item.add(new Label("subsystem-name", role.getSubsystemName()));
 				item.add(new Label("role-name", role.getRoleName()));
 			}
 		};
-		grantGroup.add(rolesDataView);
+		group.add(rolesDataView);
 
 		form.add(new PagingNavigator("paging-navigator", rolesDataView));
-		
-		PageParameters pageParams = new PageParameters();
-		pageParams.add("userId", String.valueOf(userId));
-		pageParams.add("wizard", "true");
-		BookmarkablePageLink<ChangeUserActionsPage> nextLink = new BookmarkablePageLink<ChangeUserActionsPage>(
-				"next-link", ChangeUserActionsPage.class, pageParams);
-		nextLink.setVisible(isWizard);
-		form.add(nextLink);
-		
 		SubmitLink submitLink = new SubmitLink("submit-link");
 		form.add(submitLink);
-		form.add(new BookmarkablePageLink<Page>("cancel-link", ListUsersPage.class));
+		PageParameters actionsParameters = new PageParameters();
+		actionsParameters.add("userId", String.valueOf(userId));
+		form.add(new BookmarkablePageLink<Page>("cancel-link",
+				UserDetailsPage.class,actionsParameters));
 	}
 
 	protected void doSubmit(long userId, List<UIRoleForCheckbox> allRoles,
@@ -172,20 +171,22 @@ public class ChangeUserRolesPage extends BasePage {
 		for (UIRoleForCheckbox role : rolesToGrant) {
 			idsToGrant.add(role.getId());
 		}
-		
-		RoutineResult result = userService.changeUserRoles(userId, idsToAdd, idsToRemove, idsToGrant);
+
+		RoutineResult result = userService.changeUserRoles(userId, idsToAdd,
+				idsToRemove, idsToGrant);
 		if (result.isOk()) {
 			info("Roles changed; please be aware that some sessions could be invalidated");
 		} else {
-			error("Error while changing user roles: " + result.getErrorMessage());
+			error("Error while changing user roles: "
+					+ result.getErrorMessage());
 		}
 	}
-	
+
 	@Override
 	protected String getTitle() {
 		return "User roles";
 	}
-	
+
 	@SuppressWarnings("unused")
 	private static class Filters implements Serializable {
 		private UISubsystemForFilter subsystem;

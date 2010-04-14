@@ -99,8 +99,8 @@ public class ListUsersPage extends BasePage {
 				final UIUserForList user = item.getModelObject();
 				PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(user.getId()));
-				BookmarkablePageLink<ViewUserPage> viewUserLink = new BookmarkablePageLink<ViewUserPage>("view-user",
-						ViewUserPage.class, actionsParameters);
+				BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("view-user",
+						UserDetailsPage.class, actionsParameters);
 				item.add(viewUserLink);
 				viewUserLink.add(new Label("user-name", user.getUsername()));
 				Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {

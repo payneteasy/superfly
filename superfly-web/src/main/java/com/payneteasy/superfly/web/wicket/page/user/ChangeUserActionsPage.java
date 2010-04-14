@@ -46,6 +46,7 @@ import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
  * @author Roman Puchkovskiy
  */
 @Secured("ROLE_ADMIN")
+@Deprecated
 public class ChangeUserActionsPage extends BasePage {
 	
 	@SpringBean
