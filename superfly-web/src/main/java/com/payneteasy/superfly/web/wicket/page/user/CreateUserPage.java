@@ -37,6 +37,8 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
+import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
@@ -58,28 +60,24 @@ public class CreateUserPage extends BasePage {
 			listIdsub.add(sub.getId());
 			List<UIRoleForList> listRole = roleService.getRoles(0,
 					Integer.MAX_VALUE, 1, true, null, listIdsub);
-			List<String> listRoleName = new ArrayList<String>();
-			for (UIRoleForList role : listRole) {
-				listRoleName.add(role.getName());
-			}
-			modelsMap.put(sub.getName(), listRoleName);
+			modelsMap.put(sub, listRole);
 		}
 
 		// models for DropDrownChoice
-		IModel<List<? extends String>> makeChoices = new AbstractReadOnlyModel<List<? extends String>>() {
+		IModel<List<? extends UISubsystemForList>> makeChoices = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
 			@Override
-			public List<String> getObject() {
-				Set<String> keys = modelsMap.keySet();
-				List<String> list = new ArrayList<String>(keys);
+			public List<UISubsystemForList> getObject() {
+				Set<UISubsystemForList> keys = modelsMap.keySet();
+				List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(
+						keys);
 				return list;
 			}
 
 		};
-
-		final IModel<List<? extends String>> modelChoices = new AbstractReadOnlyModel<List<? extends String>>() {
+		final IModel<List<? extends UIRoleForList>> modelChoices = new AbstractReadOnlyModel<List<? extends UIRoleForList>>() {
 			@Override
-			public List<String> getObject() {
-				List<String> models = modelsMap.get(selectedMake);
+			public List<UIRoleForList> getObject() {
+				List<UIRoleForList> models = modelsMap.get(subsystem);
 				if (models == null) {
 					models = Collections.emptyList();
 				}
@@ -110,12 +108,12 @@ public class CreateUserPage extends BasePage {
 				.add(new EqualPasswordInputValidator(password1Field,
 						password2Field));
 		// DropDownChoice
-		final DropDownChoice<String> makes = new DropDownChoice<String>(
-				"makes", new PropertyModel<String>(this, "selectedMake"),
-				makeChoices);
+		final DropDownChoice<UISubsystemForList> makes = new DropDownChoice<UISubsystemForList>(
+				"makes", new PropertyModel<UISubsystemForList>(this,
+						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender());
 
-		final DropDownChoice<String> models = new DropDownChoice<String>(
-				"models", new Model<String>(), modelChoices);
+		final DropDownChoice<UIRoleForList> models = new DropDownChoice<UIRoleForList>(
+				"models", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender());
 		models.setOutputMarkupId(true);
 
 		form.add(makes);
@@ -131,9 +129,8 @@ public class CreateUserPage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				String listRoleName = models.getDefaultModelObjectAsString();
-				UIRole role = roleService.getRoleByName(listRoleName);
-				user.setRoleId(role.getRoleId());
+				UIRoleForList role = models.getModelObject();
+				user.setRoleId(role.getId());
 				userService.createUser(user);
 				getRequestCycle().setResponsePage(ListUsersPage.class);
 				getRequestCycle().setRedirect(true);
@@ -150,23 +147,24 @@ public class CreateUserPage extends BasePage {
 	}
 
 	// DropDrownChoice
-	private String selectedMake;
+	private final Map<UISubsystemForList, List<UIRoleForList>> modelsMap = new HashMap<UISubsystemForList, List<UIRoleForList>>(); // map:company->model
+	private UIRoleForList role;
+	private UISubsystemForList subsystem;
 
-	private final Map<String, List<String>> modelsMap = new HashMap<String, List<String>>(); // map:company->model
-
-	/**
-	 * @return Currently selected make
-	 */
-	public String getSelectedMake() {
-		return selectedMake;
+	public UIRoleForList getRole() {
+		return role;
 	}
 
-	/**
-	 * @param selectedMake
-	 *            The make that is currently selected
-	 */
-	public void setSelectedMake(String selectedMake) {
-		this.selectedMake = selectedMake;
+	public void setRole(UIRoleForList role) {
+		this.role = role;
+	}
+
+	public UISubsystemForList getSubsystem() {
+		return subsystem;
+	}
+
+	public void setSubsystem(UISubsystemForList subsystem) {
+		this.subsystem = subsystem;
 	}
 
 }

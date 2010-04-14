@@ -35,9 +35,7 @@ public interface RoleDao {
 	List<UIRoleForFilter> getRolesForFilter(String subsystemIds,
 			String rolePrefix, int startFrom, int recordsCount);
 
-	@AStoredProcedure(name = "ui_get_role_by_name")
-	UIRole getRoleByName(String roleName);
-
+	
 	@AStoredProcedure(name = "ui_get_roles_list")
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, String rolesName,

@@ -146,9 +146,4 @@ public class RoleServiceImpl implements RoleService {
 				Integer.MAX_VALUE);
 	}
 
-	public UIRole getRoleByName(String roleName) {
-
-		return roleDao.getRoleByName(roleName);
-	}
-
 }

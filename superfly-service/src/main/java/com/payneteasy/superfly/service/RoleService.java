@@ -23,7 +23,7 @@ public interface RoleService {
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc, String rolesName,
 			List<Long> subsystems);
-    UIRole getRoleByName(String roleName);
+    
 	int getRoleCount(String rolesName, List<Long> subsystems);
 
 	RoutineResult deleteRole(long roleId);

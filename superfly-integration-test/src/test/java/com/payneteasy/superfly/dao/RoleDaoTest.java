@@ -13,11 +13,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 	public void setRoleDao(RoleDao roleDao) {
 		this.roleDao = roleDao;
 	}
-    public void testGetRoleByName(){
-    	UIRole role = getAnyRole();
-    	UIRole rolebyName = roleDao.getRoleByName(role.getRoleName());
-    	assertNotNull(" role must not be null", rolebyName);
-    }
+    
 	public void testGetAllRoleActions() {
 		roleDao.getAllRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
 	}
