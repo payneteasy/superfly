@@ -34,7 +34,7 @@ public class UserDetailsPage extends BasePage {
 		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId,
 				null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();
-		final SortRolesOfSubsystem sort = new SortRolesOfSubsystem();
+		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
 		sort.setRoleWithAction(roleWithAction);
 		
 		ListView<String> subRolesList = new ListView<String>("sub-list",

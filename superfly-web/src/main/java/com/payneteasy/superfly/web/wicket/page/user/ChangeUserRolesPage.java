@@ -52,17 +52,7 @@ public class ChangeUserRolesPage extends BasePage {
 
 		final long userId = params.getAsLong("userId");
 		final long subId = params.getAsLong("subId");
-		/*
-		 * final Filters filters = new Filters(); final Form<Filters>
-		 * filtersForm = new Form<Filters>("filters-form", new
-		 * Model<Filters>(filters)); add(filtersForm);
-		 * DropDownChoice<UISubsystemForFilter> subsystemDropdown = new
-		 * DropDownChoice<UISubsystemForFilter>("subsystem-filter", new
-		 * PropertyModel<UISubsystemForFilter>(filters, "subsystem"),
-		 * subsystemService.getSubsystemsForFilter(), new
-		 * SubsystemChoiceRenderer()); subsystemDropdown.setNullValid(true);
-		 * filtersForm.add(subsystemDropdown);
-		 */
+		
 
 		final ObjectHolder<List<UIRoleForCheckbox>> rolesHolder = new ObjectHolder<List<UIRoleForCheckbox>>();
 

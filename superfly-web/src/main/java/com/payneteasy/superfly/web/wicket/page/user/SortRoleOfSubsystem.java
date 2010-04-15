@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 
-public class SortRolesOfSubsystem {
+public class SortRoleOfSubsystem {
 	private List<UIRoleWithActions> roleWithAction;
 
 	public List<UIRoleWithActions> getRoleWithAction() {
