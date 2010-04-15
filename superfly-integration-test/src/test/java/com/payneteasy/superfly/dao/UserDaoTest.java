@@ -19,6 +19,11 @@ public class UserDaoTest extends AbstractDaoTest {
 		this.userDao = userDao;
 	}
 
+	public void testAddSubsystemWithRole() {
+        RoutineResult result = userDao.addSubsystemWithRole(1L, 1L);
+        assertRoutineResult(result);
+	}
+
 	public void testAuthenticate() {
 		List<AuthRole> roles = userDao.authenticate("admin", "password",
 				"superfly-demo", null, null);
@@ -74,8 +79,10 @@ public class UserDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 		assertNotNull("User ID must be generated", user.getId());
 
-		/*user = userDao.getUser(user.getId());
-		assertNotNull("Must find a user we have just created", user);*/
+		/*
+		 * user = userDao.getUser(user.getId());
+		 * assertNotNull("Must find a user we have just created", user);
+		 */
 	}
 
 	public void testUpdateUser() {

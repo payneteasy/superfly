@@ -380,4 +380,12 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_user_role_actions")
 	UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds,
 			String actionNameSubstring, String roleNameSubstring);
+	/**
+	 * 
+	 * @param userId
+	 * @param roleId
+	 * @return
+	 */
+	@AStoredProcedure(name = "ui_add_subsystem_with_role")
+	RoutineResult addSubsystemWithRole(long userId, long roleId);
 }

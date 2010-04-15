@@ -191,4 +191,12 @@ public class UserServiceImpl implements UserService {
 		return userDao.getUserRoleActions(userId, subsystemIds, actionNameSubstring, roleNameSubstring);
 	}
 
+	public RoutineResult addSubsystemWithRole(long userId, long roleId) {
+		RoutineResult result =userDao.addSubsystemWithRole(userId, roleId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		return result;
+	}
+
 }

@@ -34,7 +34,7 @@ public class UserDetailsPage extends BasePage {
 		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId,
 				null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();
-		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+		final SortRolesOfSubsystem sort = new SortRolesOfSubsystem();
 		sort.setRoleWithAction(roleWithAction);
 		
 		ListView<String> subRolesList = new ListView<String>("sub-list",
@@ -75,6 +75,10 @@ public class UserDetailsPage extends BasePage {
 		add(subRolesList);
 		add(new BookmarkablePageLink<ListUsersPage>("cancel-link",
 				ListUsersPage.class));
+		PageParameters param = new PageParameters();
+		param.add("userId",String.valueOf(userId));
+		add(new BookmarkablePageLink<AddSubsystemWithRole>("add-sub",
+				AddSubsystemWithRole.class,param));
 	}
 
 	@Override

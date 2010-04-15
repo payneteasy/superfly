@@ -272,4 +272,11 @@ public interface UserService {
 	 */
 	UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds,
 			String actionNameSubstring, String roleNameSubstring);
+	/**
+	 * 
+	 * @param userId
+	 * @param roleId
+	 * @return
+	 */
+	RoutineResult addSubsystemWithRole(long userId, long roleId);
 }
