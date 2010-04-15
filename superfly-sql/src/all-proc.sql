@@ -235,3 +235,4 @@ create table mysql_routines_return_arguments (
 \. stub/register_user.prc
 
 \. ui_get/ui_get_role_by_name.prc
+\. ui_create/ui_add_subsystem_with_role.prc
