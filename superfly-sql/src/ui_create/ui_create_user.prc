@@ -12,9 +12,9 @@ create procedure ui_create_user(i_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password, email
+             user_name, user_password, email, is_account_locked
           )
-    values (i_user_name, i_user_password, i_user_email);
+    values (i_user_name, i_user_password, i_user_email,'N');
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;
