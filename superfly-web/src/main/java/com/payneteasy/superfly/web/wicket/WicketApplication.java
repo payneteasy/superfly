@@ -10,13 +10,13 @@ import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
-import com.payneteasy.superfly.web.wicket.page.user.AddUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserActionsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
-import com.payneteasy.superfly.web.wicket.page.user.ViewUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 
 public class WicketApplication extends WebApplication{
 
@@ -32,12 +32,12 @@ public class WicketApplication extends WebApplication{
         mountBookmarkablePage("/subsystems", ListSubsystemsPage.class);
         
         mountBookmarkablePage("/users", ListUsersPage.class);
-        mountBookmarkablePage("/users/create", AddUserPage.class);
+        mountBookmarkablePage("/users/create", CreateUserPage.class);
         mountBookmarkablePage("/users/update", EditUserPage.class);
         mountBookmarkablePage("/users/clone", CloneUserPage.class);
         mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
         mountBookmarkablePage("/users/changeActions", ChangeUserActionsPage.class);
-        mountBookmarkablePage("/users/view", ViewUserPage.class);
+        mountBookmarkablePage("/users/view", UserDetailsPage.class);
         
         mountBookmarkablePage("/sessions", ListSessionsPage.class);
 	}

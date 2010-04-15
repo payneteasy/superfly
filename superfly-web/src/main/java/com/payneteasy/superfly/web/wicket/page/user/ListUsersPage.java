@@ -145,7 +145,7 @@ public class ListUsersPage extends BasePage {
 		
 		add(new PagingNavigator("paging-navigator", usersDataView));
 		
-		add(new BookmarkablePageLink<AddUserPage>("add-user", CreateUserPage.class));
+		add(new BookmarkablePageLink<CreateUserPage>("add-user", CreateUserPage.class));
 	}
 	
 	@Override

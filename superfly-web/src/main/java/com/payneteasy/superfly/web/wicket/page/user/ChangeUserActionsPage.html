@@ -10,13 +10,6 @@
 	<div class="filters">
 		<form wicket:id="filters-form">
 			<span>Action name substring: <input wicket:id="action-name-substring"/></span>
-			<span>Subsystem:
-				<select wicket:id="subsystem-filter">
-					<option>Subsystem 1</option>
-					<option>Subsystem 2</option>
-					<option>Subsystem 3</option>
-				</select>
-			</span>
 			<span>Unmapped only: <input type="checkbox" wicket:id="unmapped-only"/></span>
 			<input type="submit" value="Filter"/>
 		</form>
@@ -47,7 +40,6 @@
 			<input type="submit" value="Apply" wicket:id="save-link" />
 		</div>
 		<div>
-			<input type="submit" value="Back" wicket:id="back-link" />
 			<input type="submit" value="Cancel" wicket:id="cancel-link" />
 		</div>
 	</form>

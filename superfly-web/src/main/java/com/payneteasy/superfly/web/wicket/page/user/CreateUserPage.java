@@ -108,12 +108,12 @@ public class CreateUserPage extends BasePage {
 				.add(new EqualPasswordInputValidator(password1Field,
 						password2Field));
 		// DropDownChoice
-		final DropDownChoice<UISubsystemForList> makes = new DropDownChoice<UISubsystemForList>(
+		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
 				"makes", new PropertyModel<UISubsystemForList>(this,
-						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender());
+						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setNullValid(true);
 
-		final DropDownChoice<UIRoleForList> models = new DropDownChoice<UIRoleForList>(
-				"models", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender());
+		final DropDownChoice<UIRoleForList> models = (DropDownChoice<UIRoleForList>) new DropDownChoice<UIRoleForList>(
+				"models", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setNullValid(true);
 		models.setOutputMarkupId(true);
 
 		form.add(makes);

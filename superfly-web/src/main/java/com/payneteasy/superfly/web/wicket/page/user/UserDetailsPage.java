@@ -34,36 +34,37 @@ public class UserDetailsPage extends BasePage {
 		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId,
 				null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();
-		List<String> subsystemsName = new ArrayList<String>();
-		for (UIRoleWithActions rwa : roleWithAction) {
-			if (!subsystemsName.contains(rwa.getSubsystemName())) {
-				subsystemsName.add(rwa.getSubsystemName());
-			}
-		}
-		ListView<String> subRolesList = new ListView<String>(
-				"sub-list", subsystemsName) {
+		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+		sort.setRoleWithAction(roleWithAction);
+		
+		ListView<String> subRolesList = new ListView<String>("sub-list",
+				sort.getSubsystemsName()) {
 
 			@Override
 			protected void populateItem(ListItem<String> item) {
 				final String rfc = item.getModelObject();
 				item.add(new Label("sub-name", rfc.toString()));
-				PageParameters actionsParameters = new PageParameters();
+				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(userId));
-				UISubsystem subsystem = subsystemService.getSubsystemByName(rfc);
-				actionsParameters.add("subId", String.valueOf(subsystem.getId()));
-				item.add(new BookmarkablePageLink("add-role",ChangeUserRolesPage.class,actionsParameters));
+				UISubsystem subsystem = subsystemService
+						.getSubsystemByName(rfc);
+				actionsParameters.add("subId", String
+						.valueOf(subsystem.getId()));
+				item.add(new BookmarkablePageLink("add-role",
+						ChangeUserRolesPage.class, actionsParameters));
+				
+				List<UIRoleWithActions> roles = sort.getRoles(rfc);
 				item.add(new ListView<UIRoleWithActions>("role-list",
-						roleWithAction) {
+						roles) {
 
 					@Override
 					protected void populateItem(ListItem<UIRoleWithActions> it) {
-						UIRoleWithActions roles = it.getModelObject();
-						String roleName = "";
-						if (rfc.toString().equals(
-								roles.getSubsystemName())) {
-							roleName = roles.getName();
-						}
-						it.add(new Label("role-name", roleName));
+						UIRoleWithActions role = it.getModelObject();
+						actionsParameters.add("roleId", String.valueOf(role.getId()));
+						BookmarkablePageLink<ChangeUserActionsPage> userAction = new BookmarkablePageLink<ChangeUserActionsPage>(
+								"user-action", ChangeUserActionsPage.class,actionsParameters);
+						it.add(userAction);
+						userAction.add(new Label("role-name", role.getName()));
 					}
 
 				});
