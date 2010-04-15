@@ -11,35 +11,22 @@
 		User name is: <span wicket:id="user-name">bond</span>
 	</div>
 	<div>
-	   <a href="#" wicket:id="add-sub">add subsystem with role</a>
+	   <a href="#" wicket:id="add-sub">add subsystem with role</a>&nbsp|
+	   <a href="#" wicket:id="cancel-link">cancel</a>
 	</div>
-	<table >
-		<thead>
-			<tr>
-				<th>Subsystem</th>
-				<th>Role</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="sub-list">
-				<td>
-					<span wicket:id="sub-name">subsystem</span>&nbsp;
-					<a href="#" wicket:id="add-role">add</a>
-				</td>
-				<td>
-					<table>
-						<tr wicket:id="role-list">
-							<td>
-								<a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-	
-	<input type="submit" value="Cancel" wicket:id="cancel-link" />
+<div class="p-unit">
+     <ul class="sub-role">
+			<li wicket:id="sub-list">
+				<span wicket:id="sub-name">subsystem</span>&nbsp;
+					<a href="#" wicket:id="add-role">add/remove</a>
+				<ul>
+					<li class="item" wicket:id="role-list">
+						<a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+</div>
 </wicket:extend>
 </body>
 </html>

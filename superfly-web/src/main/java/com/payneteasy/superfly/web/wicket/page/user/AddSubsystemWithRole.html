@@ -7,15 +7,18 @@
 </head>
 <body>
 <wicket:extend>
+    <div>
+		User name is: <span wicket:id="user-name">bond</span>
+	</div>
 	<form wicket:id="form">
 	<table class="form">
 		<tr>
 			<td>Subsystem:</td>
-			<td><select wicket:id="makes"></select></td>
+			<td><select wicket:id="subsystem"></select></td>
 		</tr>
 		<tr>
 			<td>Roles:</td>
-			<td><select wicket:id="models"></select></td>
+			<td><select wicket:id="role"></select></td>
 		</tr>
 		<tr>
 			<td><input wicket:id="add-sub" type="submit" value="Add" /></td>

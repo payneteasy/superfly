@@ -17,7 +17,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.session.UISession;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.user.ViewUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 
 /**
  * Lists invalid and expired sessions. Also allows to expire invalid sessions
@@ -90,8 +90,8 @@ public class ListSessionsPage extends BasePage {
 		item.add(new Label("session-id", String.valueOf(session.getId())));
 		PageParameters params = new PageParameters();
 		params.add("userId", String.valueOf(session.getUserId()));
-		BookmarkablePageLink<ViewUserPage> userLink = new BookmarkablePageLink<ViewUserPage>(
-				"user-link", ViewUserPage.class, params);
+		BookmarkablePageLink<UserDetailsPage> userLink = new BookmarkablePageLink<UserDetailsPage>(
+				"user-link", UserDetailsPage.class, params);
 		item.add(userLink);
 		userLink.add(new Label("username", session.getUsername()));
 		item.add(new Label("callback-information", session.getCallbackInformation()));

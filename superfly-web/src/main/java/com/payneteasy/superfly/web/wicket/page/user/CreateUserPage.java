@@ -109,11 +109,11 @@ public class CreateUserPage extends BasePage {
 						password2Field));
 		// DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
-				"makes", new PropertyModel<UISubsystemForList>(this,
-						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setNullValid(true);
+				"subsystem", new PropertyModel<UISubsystemForList>(this,
+						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setRequired(true);
 
 		final DropDownChoice<UIRoleForList> models = (DropDownChoice<UIRoleForList>) new DropDownChoice<UIRoleForList>(
-				"models", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setNullValid(true);
+				"role", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setRequired(true);
 		models.setOutputMarkupId(true);
 
 		form.add(makes);

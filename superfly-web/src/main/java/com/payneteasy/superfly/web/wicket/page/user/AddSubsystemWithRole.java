@@ -11,6 +11,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -24,6 +25,7 @@ import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserAddSubsystemWithRole;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -43,6 +45,8 @@ public class AddSubsystemWithRole extends BasePage {
 	public AddSubsystemWithRole(PageParameters params) {
 		super(params);
 		final long userId = params.getAsLong("userId");
+		UIUser user = userService.getUser(userId);
+		add(new Label("user-name",user.getUsername()));
 		List<UISubsystemForList> listSub = subsystemService.getSubsystems();
 		for (UISubsystemForList sub : listSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
@@ -77,11 +81,11 @@ public class AddSubsystemWithRole extends BasePage {
        add(form);
     // DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
-				"makes", new PropertyModel<UISubsystemForList>(this,
-						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setNullValid(true);
+				"subsystem", new PropertyModel<UISubsystemForList>(this,
+						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setRequired(true);
 
 		final DropDownChoice<UIRoleForList> models = (DropDownChoice<UIRoleForList>) new DropDownChoice<UIRoleForList>(
-				"models", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setNullValid(true);
+				"role", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setRequired(true);
 		models.setOutputMarkupId(true);
 
 		form.add(makes);
