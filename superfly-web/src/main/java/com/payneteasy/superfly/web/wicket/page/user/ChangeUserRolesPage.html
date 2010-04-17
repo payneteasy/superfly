@@ -7,39 +7,18 @@
 </head>
 <body>
 <wicket:extend>
-
-	<form wicket:id="form">
-	<div wicket:id="group">
-	<!--<div wicket:id="grant-group">
-	--><table class="data">
-		<thead>
-			<tr>
-				<th>Map <br />
-				<input type="checkbox" wicket:id="master-checkbox" /></th>
-				<!--<th>Grant actions <br />
-				<input type="checkbox" wicket:id="grant-master-checkbox" /></th>
-				--><th>Role</th>
-				<th>Subsystem</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="actions">
-				<td class="checkbox-cell"><input type="checkbox"
-					wicket:id="mapped" /></td>
-				<!--<td class="checkbox-cell"><input type="checkbox"
-					wicket:id="grant" /></td>
-				--><td><span wicket:id="role-name">Role 1</span></td>
-				<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-			</tr>
-		</tbody>
-	</table>
-	</div>
-	<!--</div>
-	--><div wicket:id="paging-navigator">Paging navigation goes here</div>
-	<div><input type="submit" value="Apply" wicket:id="submit-link" />
-	</div>
-	<div><input type="submit" value="Cancel" wicket:id="cancel-link" />
-	</div>
+Username:<span wicket:id="user-name">Vasja</span>
+Subsystem:<span wicket:id="sub-name">superlfy</span>
+<form wicket:id="form">
+	<span>Role:
+	        <select wicket:id="role-filter">
+					<option>Role 1</option>
+					<option>Role 2</option>
+					<option>Role 3</option>
+				</select>
+			</span>
+		<input type="submit" wicket:id="add-role" value="Add">
+		<input type="submit" wicket:id="cancel" value="Cancel">
 	</form>
 </wicket:extend>
 </body>

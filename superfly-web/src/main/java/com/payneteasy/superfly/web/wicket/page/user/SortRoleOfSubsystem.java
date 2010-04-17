@@ -1,11 +1,12 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 
-public class SortRoleOfSubsystem {
+public class SortRoleOfSubsystem implements Serializable{
 	private List<UIRoleWithActions> roleWithAction;
 
 	public List<UIRoleWithActions> getRoleWithAction() {

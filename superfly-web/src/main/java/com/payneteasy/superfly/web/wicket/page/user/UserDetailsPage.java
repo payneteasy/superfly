@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -46,7 +47,7 @@ public class UserDetailsPage extends BasePage {
 				item.add(new Label("sub-name", rfc.toString()));
 				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(userId));
-				UISubsystem subsystem = subsystemService
+				final UISubsystem subsystem = subsystemService
 						.getSubsystemByName(rfc);
 				actionsParameters.add("subId", String
 						.valueOf(subsystem.getId()));
@@ -59,12 +60,28 @@ public class UserDetailsPage extends BasePage {
 
 					@Override
 					protected void populateItem(ListItem<UIRoleWithActions> it) {
-						UIRoleWithActions role = it.getModelObject();
-						actionsParameters.add("roleId", String.valueOf(role.getId()));
+						final UIRoleWithActions role = it.getModelObject();
+						PageParameters params = new PageParameters();
+						params.add("userId", String.valueOf(userId));
+						params.add("subId", String.valueOf(subsystem.getId()));
+						params.add("roleId", String.valueOf(role.getId()));
 						BookmarkablePageLink<ChangeUserActionsPage> userAction = new BookmarkablePageLink<ChangeUserActionsPage>(
-								"user-action", ChangeUserActionsPage.class,actionsParameters);
+								"user-action", ChangeUserActionsPage.class,params);
 						it.add(userAction);
 						userAction.add(new Label("role-name", role.getName()));
+						it.add(new Link("delete-role"){
+
+							@Override
+							public void onClick() {
+								List<Long> rolesId = new ArrayList<Long>();
+								rolesId.add(role.getId());
+								userService.changeUserRoles(userId, null, rolesId, null);
+								PageParameters parameters =new PageParameters();
+								parameters.add("userId", String.valueOf(userId));
+								setResponsePage(UserDetailsPage.class, parameters);
+							}
+							
+						});
 					}
 
 				});
@@ -73,8 +90,7 @@ public class UserDetailsPage extends BasePage {
 
 		};
 		add(subRolesList);
-		add(new BookmarkablePageLink<ListUsersPage>("cancel-link",
-				ListUsersPage.class));
+		
 		PageParameters param = new PageParameters();
 		param.add("userId",String.valueOf(userId));
 		add(new BookmarkablePageLink<AddSubsystemWithRole>("add-sub",

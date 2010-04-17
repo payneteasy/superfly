@@ -8,17 +8,19 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
 .cp-bar {
 	text-align: left;
 	background-color: #E5ECF9;
 	border-top: 1px solid #3366CC;
 	margin: 0em;
 	padding: 0.5em;
-	
 }
+
 div.line {
- display: inline;
+	display: inline;
 }
+
 #userinfo ul li {
 	display: inline;
 }
@@ -47,20 +49,24 @@ div.line {
 	width: 120px;
 }
 
-.p-nav ul li {
+.p-nav ul li{
 	list-style-type: none;
 	line-height: 2em;
 }
-.p-nav ul li a:hover{
-	
+
+.p-nav ul li a{
+padding-left: 1em;
+}
+
+.p-nav ul li a:hover {
 	background: #E5ECF9;
-   color:#000000;
-   text-decoration: none;
-   display: block;
+	color: #000000;
+	text-decoration: none;
+	display: block;
 	font-weight: bold;
 	display: block;
-	
 }
+
 .p-nav li a:link,.p-nav li a:visited {
 	color: #3366CC;
 	text-decoration: none;
@@ -118,7 +124,6 @@ table.data {
 	empty-cells: show;
 	margin-bottom: 0.5em;
 	width: 98.5%
-	
 }
 
 table.data thead th {
@@ -134,6 +139,7 @@ table.data td {
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
 }
+
 table.data td a {
 	margin-left: 0.5em;
 	margin-right: 0.5em;
@@ -181,7 +187,7 @@ ul.release-notes li {
 
 ul.release-notes ul {
 	line-height: 20px;
-	list-style-image : url("../img/li.gif");
+	list-style-image: url("../img/li.gif");
 	margin-left: 3em;
 	font-size: medium;
 	list-style-image: url("../img/li.gif");
@@ -218,16 +224,13 @@ ul.sub-role li {
 	font-weight: bold;
 	list-style: none;
 }
-	
+
 ul.sub-role ul {
 	line-height: 25px;
 	margin-left: 3em;
 	font-size: medium;
-	
 }
 
 ul.sub-role ul li {
 	font-weight: normal;
 }
-
-

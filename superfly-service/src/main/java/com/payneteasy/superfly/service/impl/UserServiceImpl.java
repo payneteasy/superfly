@@ -23,7 +23,7 @@ import com.payneteasy.superfly.service.UserService;
 
 @Transactional
 public class UserServiceImpl implements UserService {
-	
+
 	private UserDao userDao;
 	private NotificationService notificationService;
 
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 	public RoutineResult updateUser(UIUser user) {
 		return userDao.updateUser(user);
 	}
-	
+
 	public RoutineResult deleteUser(long userId) {
 		RoutineResult result = userDao.deleteUser(userId);
 		if (result.isOk()) {
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 		}
 		return request.getId();
 	}
-	
+
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId,
 			Long subsystemId, int startFrom, int recordsCount) {
 		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(startFrom,
@@ -109,34 +109,44 @@ public class UserServiceImpl implements UserService {
 				subsystemId == null ? null : String.valueOf(subsystemId));
 		return allRoles;
 	}
-	
+
 	public int getAllUserRolesCount(long userId, Long subsystemId) {
-		return userDao.getAllUserRolesCount(userId,
-				subsystemId == null ? null : String.valueOf(subsystemId));
+		return userDao.getAllUserRolesCount(userId, subsystemId == null ? null
+				: String.valueOf(subsystemId));
 	}
-	
+
 	public List<UIRoleForCheckbox> getUnmappedUserRoles(long userId,
 			Long subsystemId, int startFrom, int recordsCount) {
-		List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(startFrom,
-				recordsCount, 4 /* role_id */, DaoConstants.ASC, userId,
-				subsystemId == null ? null : String.valueOf(subsystemId));
+		List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(
+				startFrom, recordsCount, 4 /* role_id */, DaoConstants.ASC,
+				userId, subsystemId == null ? null : String
+						.valueOf(subsystemId));
 		return allRoles;
 	}
-	
+
 	public int getUnmappedUserRolesCount(long userId, Long subsystemId) {
 		return userDao.getUnmappedUserRolesCount(userId,
 				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
 
-	public RoutineResult changeUserRoles(long userId, Collection<Long> rolesToAddIds,
-			Collection<Long> rolesToRemoveIds,
+	public RoutineResult changeUserRoles(long userId,
+			Collection<Long> rolesToAddIds, Collection<Long> rolesToRemoveIds,
 			Collection<Long> rolesToGrantActionsIds) {
-		rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
-		rolesToGrantActionsIds.retainAll(rolesToAddIds);
-		RoutineResult result = userDao.changeUserRoles(userId,
-				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
-				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
-				StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
+		if (rolesToGrantActionsIds == null) {
+
+		} else {
+			rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
+			rolesToGrantActionsIds.retainAll(rolesToAddIds);
+		}
+		RoutineResult result = userDao
+				.changeUserRoles(
+						userId,
+						StringUtils
+								.collectionToCommaDelimitedString(rolesToAddIds),
+						StringUtils
+								.collectionToCommaDelimitedString(rolesToRemoveIds),
+						StringUtils
+								.collectionToCommaDelimitedString(rolesToGrantActionsIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
@@ -146,7 +156,8 @@ public class UserServiceImpl implements UserService {
 	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
 			Long subsystemId, String actionSubstring, int startFrom,
 			int recordsCount) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
 		return userDao.getAllUserActions(startFrom, recordsCount,
 				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
 				userId, subsystemIds, actionSubstring);
@@ -154,14 +165,17 @@ public class UserServiceImpl implements UserService {
 
 	public int getAllUserActionsCount(long userId, Long subsystemId,
 			String actionSubstring) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getAllUserActionsCount(userId, subsystemIds, actionSubstring);
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getAllUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
-	
+
 	public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
 			Long subsystemId, String actionSubstring, int startFrom,
 			int recordsCount) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
 		return userDao.getUnmappedUserActions(startFrom, recordsCount,
 				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
 				userId, subsystemIds, actionSubstring);
@@ -169,16 +183,22 @@ public class UserServiceImpl implements UserService {
 
 	public int getUnmappedUserActionsCount(long userId, Long subsystemId,
 			String actionSubstring) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getUnmappedUserActionsCount(userId, subsystemIds, actionSubstring);
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getUnmappedUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
 
 	public RoutineResult changeUserRoleActions(long userId,
 			Collection<Long> roleActionToAddIds,
 			Collection<Long> roleActionToRemoveIds) {
-		RoutineResult result = userDao.changeUserRoleActions(userId,
-						StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
-						StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
+		RoutineResult result = userDao
+				.changeUserRoleActions(
+						userId,
+						com.payneteasy.superfly.utils.StringUtils
+								.collectionToCommaDelimitedString(roleActionToAddIds),
+						com.payneteasy.superfly.utils.StringUtils
+								.collectionToCommaDelimitedString(roleActionToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
@@ -188,15 +208,34 @@ public class UserServiceImpl implements UserService {
 	public UIUserWithRolesAndActions getUserRoleActions(long userId,
 			String subsystemIds, String actionNameSubstring,
 			String roleNameSubstring) {
-		return userDao.getUserRoleActions(userId, subsystemIds, actionNameSubstring, roleNameSubstring);
+		return userDao.getUserRoleActions(userId, subsystemIds,
+				actionNameSubstring, roleNameSubstring);
 	}
 
 	public RoutineResult addSubsystemWithRole(long userId, long roleId) {
-		RoutineResult result =userDao.addSubsystemWithRole(userId, roleId);
+		RoutineResult result = userDao.addSubsystemWithRole(userId, roleId);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
 		return result;
+	}
+
+	public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getMappedUserActions(startFrom, recordsCount,
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
+				userId, subsystemIds, actionSubstring);
+	}
+
+	public int getMappedUserActionsCount(long userId, Long subsystemId,
+			String actionSubstring) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getMappedUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
 
 }

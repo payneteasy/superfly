@@ -349,7 +349,31 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_unmapped_user_actions_list_count")
 	int getUnmappedUserActionsCount(long userId, String subsystemIds,
 			String actionSubstring);
-	
+	/**
+	 * 
+	 * @param startFrom
+	 * @param recordsCount
+	 * @param orderFieldNumber
+	 * @param orderType
+	 * @param userId
+	 * @param subsystemIds
+	 * @param actionSubstring
+	 * @return
+	 */
+	@AStoredProcedure(name = "ui_get_mapped_user_actions_list")
+	List<UIActionForCheckboxForUser> getMappedUserActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long userId, String subsystemIds, String actionSubstring);
+	/**
+	 * 
+	 * @param userId
+	 * @param subsystemIds
+	 * @param actionSubstring
+	 * @return
+	 */
+	@AStoredProcedure(name = "ui_get_mapped_user_actions_list_count")
+	int getMappedUserActionsCount(long userId, String subsystemIds,
+			String actionSubstring);
 	/**
 	 * Changes a list of actions assigned to a user.
 	 * 

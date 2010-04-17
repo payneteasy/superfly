@@ -7,42 +7,64 @@
 </head>
 <body>
 <wicket:extend>
-	<div class="filters">
-		<form wicket:id="filters-form">
-			<span>Action name substring: <input wicket:id="action-name-substring"/></span>
-			<span>Unmapped only: <input type="checkbox" wicket:id="unmapped-only"/></span>
-			<input type="submit" value="Filter"/>
-		</form>
-	</div>
-	<form wicket:id="form">
-		<div wicket:id="group">
-		    <table class="data">
-		    	<thead>
-		    		<tr>
-			    		<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-			    		<th>Action</th>
-			    		<th>Role</th>
-			    		<th>Subsystem</th>
-		    		</tr>
-		    	</thead>
-		    	<tbody>
-		    		<tr wicket:id="actions">
-		    			<td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
-		    			<td><span wicket:id="action-name">Action 1</span></td>
-		    			<td><span wicket:id="role-name">Role 1</span></td>
-		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-		    		</tr>
-				</tbody>
-			</table>
-		</div>
-		<div wicket:id="paging-navigator">Paging navigation goes here</div>
-		<div>
-			<input type="submit" value="Apply" wicket:id="save-link" />
-		</div>
-		<div>
-			<input type="submit" value="Cancel" wicket:id="cancel-link" />
-		</div>
-	</form>
+Username:<span wicket:id="user-name">Vasja</span>
+Subsystem:<span wicket:id="sub-name">superlfy</span>
+	
+	<form wicket:id="form-map">
+                <div wicket:id="group-map">
+                    <table class="data">
+                        <thead>
+                                <tr>
+                                        <th><input type="checkbox" wicket:id="master-checkbox-map" /></th>
+                                        <th>Action</th>
+                                        <th>Role</th>
+                                        <th>Subsystem</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr wicket:id="actions-map">
+                                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
+                                        <td><span wicket:id="action-name">Action 1</span></td>
+                                        <td><span wicket:id="role-name">Role 1</span></td>
+                                        <td><span wicket:id="subsystem-name">Subsystem 1</span></td>
+                                </tr>
+                                </tbody>
+                        </table>
+                </div>
+                <div>
+                        <input type="submit" value="UnGrant Actions" wicket:id="save-link-map" />
+                        <input type="submit" value="Cancel" wicket:id="cancel-link-map" />
+                </div>
+        </form>
+	
+
+        <form wicket:id="form">
+                <div wicket:id="group">
+                    <table class="data">
+                        <thead>
+                                <tr>
+                                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                                        <th>Action</th>
+                                        <th>Role</th>
+                                        <th>Subsystem</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr wicket:id="actions">
+                                        <td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
+                                        <td><span wicket:id="action-name">Action 1</span></td>
+                                        <td><span wicket:id="role-name">Role 1</span></td>
+                                        <td><span wicket:id="subsystem-name">Subsystem 1</span></td>
+                                </tr>
+                                </tbody>
+                        </table>
+                </div>
+                <div wicket:id="paging-navigator">Paging navigation goes here</div>
+                <div>
+                        <input type="submit" value="Grant Actions" wicket:id="save-link" />
+                        <input type="submit" value="Cancel" wicket:id="cancel-link" />
+                </div>
+        </form>
 </wicket:extend>
 </body>
 </html>

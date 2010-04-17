@@ -17,6 +17,7 @@ public class UIActionForCheckboxForUser implements Serializable {
 	private long roleActionId;
 	private long roleId;
 	private String roleName;
+	
 
 	@Column(name = "subsystem_name")
 	public String getSubsystemName() {

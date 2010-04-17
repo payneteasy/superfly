@@ -11,30 +11,33 @@ import java.util.Set;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 
@@ -58,15 +61,88 @@ public class ChangeUserActionsPage extends BasePage {
 		final long subId = params.getAsLong("subId");
 		final long roleId = params.getAsLong("roleId");
 
-		final Filters filters = new Filters();
-		final Form<Filters> filtersForm = new Form<Filters>("filters-form",
-				new Model<Filters>(filters));
-		add(filtersForm);
-		filtersForm.add(new TextField<String>("action-name-substring",
-				new PropertyModel<String>(filters, "actionNameSubstring")));
-		filtersForm.add(new CheckBox("unmapped-only",
-				new PropertyModel<Boolean>(filters, "unmappedOnly")));
+		UIUser user = userService.getUser(userId);
+		UISubsystem subsystem = subsystemService.getSubsystem(subId);
+		add(new Label("user-name", user.getUsername()));
+		add(new Label("sub-name", subsystem.getName()));
+		final Filters filters = new Filters(); 
+		// LIst mapp action
+		final List<SelectObjectWrapper<UIActionForCheckboxForUser>> actionsWrap = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForUser>>();
+		List<UIActionForCheckboxForUser> actionsForChek= userService
+		.getMappedUserActions(userId, subId, null, 0, Integer.MAX_VALUE);
+		for(UIActionForCheckboxForUser uia: actionsForChek){
+			actionsWrap.add(new SelectObjectWrapper<UIActionForCheckboxForUser>(uia));
+		}
+		final InitializingModel<Collection<SelectObjectWrapper<UIActionForCheckboxForUser>>> actionsCheckGroupModelMap = new InitializingModel<Collection<SelectObjectWrapper<UIActionForCheckboxForUser>>>() {
 
+			@Override
+			protected Collection<SelectObjectWrapper<UIActionForCheckboxForUser>> getInitialValue() {
+				final Collection<SelectObjectWrapper<UIActionForCheckboxForUser>> checkedSubsystems = new HashSet<SelectObjectWrapper<UIActionForCheckboxForUser>>();
+				for (SelectObjectWrapper<UIActionForCheckboxForUser> subsystem : actionsWrap) {
+					if (subsystem.isSelected()) {
+						checkedSubsystems.add(subsystem);
+					}
+				}
+				return checkedSubsystems;
+			}
+
+		};
+		final Form<Void> formMap = new Form<Void>("form-map") {
+			public void onSubmit() {
+				Collection<SelectObjectWrapper<UIActionForCheckboxForUser>> checkedActions = actionsCheckGroupModelMap.getObject();
+				Set<Long> delIds = new HashSet<Long>();
+				Set<Long> addIds = new HashSet<Long>();
+				for (SelectObjectWrapper<UIActionForCheckboxForUser> action : checkedActions) {
+					if (action.isSelected()) {
+						delIds.add(action.getObject().getRoleActionId());
+					}else{addIds.add(action.getObject().getRoleActionId());}
+				}
+				RoutineResult result = userService.changeUserRoleActions(userId,
+						delIds, addIds);
+				if (result.isOk()) {
+					info("Actions changed; please be aware that some sessions could be invalidated");
+				} else {
+					error("Error while changing user actions: "
+							+ result.getErrorMessage());
+				}
+				PageParameters parameters = new PageParameters();
+				parameters.add("userId", String.valueOf(userId));
+				parameters.add("subId", String.valueOf(subId));
+				parameters.add("roleId", String.valueOf(roleId));
+				setResponsePage(ChangeUserActionsPage.class, parameters);
+			}
+		};
+		add(formMap);
+		final CheckGroup<SelectObjectWrapper<UIActionForCheckboxForUser>> groupMap = new CheckGroup<SelectObjectWrapper<UIActionForCheckboxForUser>>(
+				"group-map", actionsCheckGroupModelMap);
+		formMap.add(groupMap);
+		groupMap.add(new CheckGroupSelector("master-checkbox-map", groupMap));
+		ListView<SelectObjectWrapper<UIActionForCheckboxForUser>> actionsDataViewMap = new ListView<SelectObjectWrapper<UIActionForCheckboxForUser>>(
+				"actions-map", actionsWrap) {
+			@Override
+			protected void populateItem(
+					ListItem<SelectObjectWrapper<UIActionForCheckboxForUser>> item) {
+				SelectObjectWrapper<UIActionForCheckboxForUser> action = item.getModelObject();
+				item.add(new Check<SelectObjectWrapper<UIActionForCheckboxForUser>>("selected",
+						item.getModel()));
+				item
+						.add(new Label("subsystem-name", action.getObject()
+								.getSubsystemName()));
+				item.add(new Label("role-name", action.getObject().getRoleName()));
+				item.add(new Label("action-name", action.getObject().getActionName()));
+				
+			}
+		};
+		groupMap.add(actionsDataViewMap);
+
+		PageParameters pageParams = new PageParameters();
+		pageParams.add("userId", String.valueOf(userId));
+		formMap.add(new SubmitLink("save-link-map"));
+		formMap.add(new BookmarkablePageLink<Page>("cancel-link-map",
+				UserDetailsPage.class, pageParams));
+
+	
+		// list unmap action
 		final ObjectHolder<List<UIActionForCheckboxForUser>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForUser>>();
 
 		final InitializingModel<Collection<UIActionForCheckboxForUser>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForCheckboxForUser>>() {
@@ -92,10 +168,10 @@ public class ChangeUserActionsPage extends BasePage {
 				if (filters.isUnmappedOnly()) {
 					List<UIActionForCheckboxForUser> choiceByRoleActions = new ArrayList<UIActionForCheckboxForUser>();
 					List<UIActionForCheckboxForUser> roleUser = userService
-							.getUnmappedUserActions(userId, subId, filters
-									.getActionNameSubstring(), first, count);
-					for(UIActionForCheckboxForUser acu: roleUser){
-						if(roleId==acu.getRoleId()){
+							.getUnmappedUserActions(userId, subId, null
+									, first, count);
+					for (UIActionForCheckboxForUser acu : roleUser) {
+						if (roleId == acu.getRoleId()) {
 							choiceByRoleActions.add(acu);
 						}
 					}
@@ -103,8 +179,7 @@ public class ChangeUserActionsPage extends BasePage {
 				} else {
 					List<UIActionForCheckboxForUser> choiceByRoleActions = new ArrayList<UIActionForCheckboxForUser>();
 					List<UIActionForCheckboxForUser> roleUser = userService
-							.getAllUserActions(userId, subId, filters
-									.getActionNameSubstring(), first, count);
+							.getAllUserActions(userId, subId, null, first, count);
 					for (UIActionForCheckboxForUser acu : roleUser) {
 						if (roleId == acu.getRoleId()) {
 							choiceByRoleActions.add(acu);
@@ -122,17 +197,17 @@ public class ChangeUserActionsPage extends BasePage {
 
 				if (filters.isUnmappedOnly()) {
 					return userService.getUnmappedUserActionsCount(userId,
-							subId, filters.getActionNameSubstring());
+							subId, null);
 				} else {
 					return userService.getAllUserActionsCount(userId, subId,
-							filters.getActionNameSubstring());
+							null);
 				}
 			}
 		};
 
 		final Form<Void> form = new Form<Void>("form") {
 			public void onSubmit() {
-				doSubmit(userId, actionsHolder.getObject(),
+				doSubmit(userId, roleId,subId,actionsHolder.getObject(),
 						actionsCheckGroupModel.getObject());
 			}
 		};
@@ -146,8 +221,8 @@ public class ChangeUserActionsPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIActionForCheckboxForUser> item) {
 				UIActionForCheckboxForUser action = item.getModelObject();
-				item.add(new Check<UIActionForCheckboxForUser>("mapped", item
-						.getModel(), group));
+				item.add(new Check<UIActionForCheckboxForUser>("mapped",
+						item.getModel()));
 				item
 						.add(new Label("subsystem-name", action
 								.getSubsystemName()));
@@ -159,17 +234,16 @@ public class ChangeUserActionsPage extends BasePage {
 
 		form.add(new PagingNavigator("paging-navigator", actionsDataView));
 
-		PageParameters pageParams = new PageParameters();
-		pageParams.add("userId", String.valueOf(userId));
-		BookmarkablePageLink<ChangeUserRolesPage> backLink = new BookmarkablePageLink<ChangeUserRolesPage>(
-				"back-link", ChangeUserRolesPage.class, pageParams);
+		PageParameters pageParams1 = new PageParameters();
+		pageParams1.add("userId", String.valueOf(userId));
+		
 
 		form.add(new SubmitLink("save-link"));
 		form.add(new BookmarkablePageLink<Page>("cancel-link",
-				UserDetailsPage.class, pageParams));
+				UserDetailsPage.class, pageParams1));
 	}
 
-	protected void doSubmit(long userId,
+	protected void doSubmit(long userId,long roleId,long subId,
 			List<UIActionForCheckboxForUser> allActions,
 			Collection<UIActionForCheckboxForUser> checkedActions) {
 		Set<Long> oldCheckedIds = new HashSet<Long>();
@@ -195,6 +269,11 @@ public class ChangeUserActionsPage extends BasePage {
 			error("Error while changing user actions: "
 					+ result.getErrorMessage());
 		}
+		PageParameters parameters = new PageParameters();
+		parameters.add("userId", String.valueOf(userId));
+		parameters.add("subId", String.valueOf(subId));
+		parameters.add("roleId", String.valueOf(roleId));
+		setResponsePage(ChangeUserActionsPage.class, parameters);
 	}
 
 	@Override
@@ -204,16 +283,18 @@ public class ChangeUserActionsPage extends BasePage {
 
 	@SuppressWarnings("unused")
 	private static class Filters implements Serializable {
-		private String actionNameSubstring;
+		
 
-		private boolean unmappedOnly = false;
+		private boolean unmappedOnly = true;
+		private boolean mappedOnly=true;
 
-		public String getActionNameSubstring() {
-			return actionNameSubstring;
+		
+		public boolean isMappedOnly() {
+			return mappedOnly;
 		}
 
-		public void setActionNameSubstring(String actionNameSubstring) {
-			this.actionNameSubstring = actionNameSubstring;
+		public void setMappedOnly(boolean mappedOnly) {
+			this.mappedOnly = mappedOnly;
 		}
 
 		public boolean isUnmappedOnly() {
@@ -224,5 +305,4 @@ public class ChangeUserActionsPage extends BasePage {
 			this.unmappedOnly = unmappedOnly;
 		}
 	}
-
 }
