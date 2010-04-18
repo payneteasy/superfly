@@ -15,8 +15,10 @@ import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
+import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -40,18 +42,40 @@ public class ChangeUserRolesPage extends BasePage {
 		final long userId = params.getAsLong("userId");
 		final long subId = params.getAsLong("subId");
 
-		List<UIRoleForCheckbox> roles = userService.getUnmappedUserRoles(
-				userId, subId, 0, Integer.MAX_VALUE);
 		UIUser user = userService.getUser(userId);
 		UISubsystem subsystem = subsystemService.getSubsystem(subId);
 		add(new Label("user-name",user.getUsername()));
 		add(new Label("sub-name",subsystem.getName()));
+		
+		UIUserWithRolesAndActions user1 = userService.getUserRoleActions(
+				userId, null, null, null);
+		final List<UIRoleWithActions> roleWithAction = user1.getRoles();
+		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+		sort.setRoleWithAction(roleWithAction);
+		List<UIRoleForCheckbox> rolesAll = userService.getUnmappedUserRoles(userId, subId, 0, Integer.MAX_VALUE);
+		
+		List<UIRoleWithActions> rolesChecked = sort.getRoles(subsystem.getName());
+		List<UIRoleForCheckbox> selectedRole = new ArrayList<UIRoleForCheckbox>();
+		List<UIRoleForCheckbox> notSelectedRole = new ArrayList<UIRoleForCheckbox>(); 
+		for(UIRoleForCheckbox uic: rolesAll){
+			for(UIRoleWithActions uirwa: rolesChecked){
+				if(uic.getId()==uirwa.getId()){
+					selectedRole.add(uic);
+				}
+			}
+		}
+		for(UIRoleForCheckbox uir:rolesAll){
+			if(!selectedRole.contains(uir)){
+				notSelectedRole.add(uir);
+			}
+		}
+		
 		Form<Void> form = new Form<Void>("form");
 		add(form);
 		final ListRole listRole = new ListRole();
-		DropDownChoice<UIRoleForCheckbox> roleDropdown = new DropDownChoice<UIRoleForCheckbox>("role-filter",
+		DropDownChoice<UIRoleForCheckbox> roleDropdown = (DropDownChoice<UIRoleForCheckbox>) new DropDownChoice<UIRoleForCheckbox>("role-filter",
 				new PropertyModel<UIRoleForCheckbox>(listRole, "role"),
-				roles,new com.payneteasy.superfly.web.wicket.page.user.RoleChoiceRenderer());
+				notSelectedRole,new com.payneteasy.superfly.web.wicket.page.user.RoleChoiceRenderer()).setRequired(true);
 		form.add(roleDropdown);
 		form.add(new Button("add-role"){
 
@@ -79,7 +103,7 @@ public class ChangeUserRolesPage extends BasePage {
 				setResponsePage(UserDetailsPage.class, parameters);
 			}
 			
-		});
+		}.setDefaultFormProcessing(false));
 	}
 
 	@Override

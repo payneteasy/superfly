@@ -7,7 +7,7 @@
 </head>
 <body>
 <wicket:extend>
-    <div>
+    <div class="name">
 		User name is: <span wicket:id="user-name">bond</span>
 	</div>
 	<form wicket:id="form">
@@ -20,11 +20,11 @@
 			<td>Roles:</td>
 			<td><select wicket:id="role"></select></td>
 		</tr>
-		<tr>
-			<td><input wicket:id="add-sub" type="submit" value="Add" /></td>
-			<td><input type="submit" value="Cancel" wicket:id="cancel" /></td>
-		</tr>
 	</table>
+	<div class="button">
+	  <input wicket:id="add-sub" type="submit" value="Add" />
+			<input type="submit" value="Cancel" wicket:id="cancel" />
+	</div>
 	</form>
 </wicket:extend>
 </body>

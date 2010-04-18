@@ -49,13 +49,13 @@ div.line {
 	width: 120px;
 }
 
-.p-nav ul li{
+.p-nav ul li {
 	list-style-type: none;
 	line-height: 2em;
 }
 
-.p-nav ul li a{
-padding-left: 1em;
+.p-nav ul li a {
+	padding-left: 1em;
 }
 
 .p-nav ul li a:hover {
@@ -224,13 +224,38 @@ ul.sub-role li {
 	font-weight: bold;
 	list-style: none;
 }
-
 ul.sub-role ul {
 	line-height: 25px;
-	margin-left: 3em;
+	margin-left: 5em;
 	font-size: medium;
 }
 
 ul.sub-role ul li {
 	font-weight: normal;
+}
+
+.button {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.name {
+	font-weight: 600;
+	font-size: 1em;
+	padding-bottom: 1em;
+	padding-top: 1em;
+}
+
+INPUT {
+	background-color: #DCDCDC;
+	order-bottom-left-radius: 2px 2px;
+	border-bottom-right-radius: 2px 2px;
+	border-top-left-radius: 2px 2px;
+	border-top-right-radius: 2px 2px;
+	font-size: 15px;
+	height: 1.85em !important;
+	margin: 0.2em;
+	padding: 0px 8px;
+	font-family: inherit;
+	
 }

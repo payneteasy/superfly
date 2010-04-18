@@ -7,8 +7,10 @@
 </head>
 <body>
 <wicket:extend>
+<div class="name">
 Username:<span wicket:id="user-name">Vasja</span>
 Subsystem:<span wicket:id="sub-name">superlfy</span>
+</div>
 	
 	<form wicket:id="form-map">
                 <div wicket:id="group-map">
@@ -31,7 +33,7 @@ Subsystem:<span wicket:id="sub-name">superlfy</span>
                                 </tbody>
                         </table>
                 </div>
-                <div>
+                <div class="button">
                         <input type="submit" value="UnGrant Actions" wicket:id="save-link-map" />
                         <input type="submit" value="Cancel" wicket:id="cancel-link-map" />
                 </div>
@@ -60,7 +62,7 @@ Subsystem:<span wicket:id="sub-name">superlfy</span>
                         </table>
                 </div>
                 <div wicket:id="paging-navigator">Paging navigation goes here</div>
-                <div>
+                <div class="button">
                         <input type="submit" value="Grant Actions" wicket:id="save-link" />
                         <input type="submit" value="Cancel" wicket:id="cancel-link" />
                 </div>

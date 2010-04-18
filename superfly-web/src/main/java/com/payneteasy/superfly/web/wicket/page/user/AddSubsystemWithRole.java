@@ -24,15 +24,18 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserAddSubsystemWithRole;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+
 @Secured("ROLE_ADMIN")
 public class AddSubsystemWithRole extends BasePage {
 	@SpringBean
@@ -46,15 +49,36 @@ public class AddSubsystemWithRole extends BasePage {
 		super(params);
 		final long userId = params.getAsLong("userId");
 		UIUser user = userService.getUser(userId);
-		add(new Label("user-name",user.getUsername()));
+		add(new Label("user-name", user.getUsername()));
 		List<UISubsystemForList> listSub = subsystemService.getSubsystems();
-		for (UISubsystemForList sub : listSub) {
+		UIUserWithRolesAndActions user1 = userService.getUserRoleActions(
+				userId, null, null, null);
+		final List<UIRoleWithActions> roleWithAction = user1.getRoles();
+		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+		sort.setRoleWithAction(roleWithAction);
+		List<String> oldSubName = sort.getSubsystemsName();
+		List<UISubsystemForList> oldSub = new ArrayList<UISubsystemForList>();
+		List<UISubsystemForList> newSub = new ArrayList<UISubsystemForList>();
+		for (UISubsystemForList ui : listSub) {
+			for (String sub : oldSubName) {
+				if(sub.equals(ui.getName())){
+						oldSub.add(ui);
+				}
+			}
+		}
+		for(UISubsystemForList old: listSub){
+			if(!oldSub.contains(old)){
+				newSub.add(old);
+			}
+		}
+		for (UISubsystemForList sub : newSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
 			listIdsub.add(sub.getId());
 			List<UIRoleForList> listRole = roleService.getRoles(0,
 					Integer.MAX_VALUE, 1, true, null, listIdsub);
 			modelsMap.put(sub, listRole);
 		}
+
 		// models for DropDrownChoice
 		IModel<List<? extends UISubsystemForList>> makeChoices = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
 			@Override
@@ -77,15 +101,18 @@ public class AddSubsystemWithRole extends BasePage {
 			}
 
 		};
-       Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>("form");
-       add(form);
-    // DropDownChoice
+		Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>(
+				"form");
+		add(form);
+		// DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
 				"subsystem", new PropertyModel<UISubsystemForList>(this,
-						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setRequired(true);
+						"subsystem"), makeChoices,
+				new SubsystemInCreateUserChoiceRender()).setRequired(true);
 
 		final DropDownChoice<UIRoleForList> models = (DropDownChoice<UIRoleForList>) new DropDownChoice<UIRoleForList>(
-				"role", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setRequired(true);
+				"role", new Model<UIRoleForList>(), modelChoices,
+				new RoleInCreateUserChoiceRender()).setRequired(true);
 		models.setOutputMarkupId(true);
 
 		form.add(makes);
@@ -97,7 +124,7 @@ public class AddSubsystemWithRole extends BasePage {
 				target.addComponent(models);
 			}
 		});
-		form.add(new Button("add-sub"){
+		form.add(new Button("add-sub") {
 
 			@Override
 			public void onSubmit() {
@@ -105,15 +132,16 @@ public class AddSubsystemWithRole extends BasePage {
 				userService.addSubsystemWithRole(userId, role.getId());
 				PageParameters param = new PageParameters();
 				param.add("userId", String.valueOf(userId));
-				getRequestCycle().setResponsePage(UserDetailsPage.class,param);
+				getRequestCycle().setResponsePage(UserDetailsPage.class, param);
 				getRequestCycle().setRedirect(true);
-				
+
 			}
-			
+
 		});
 		PageParameters param = new PageParameters();
 		param.add("userId", String.valueOf(userId));
-		form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class,param));
+		form.add(new BookmarkablePageLink<Page>("cancel",
+				UserDetailsPage.class, param));
 	}
 
 	@Override
