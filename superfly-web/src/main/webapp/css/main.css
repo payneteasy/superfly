@@ -134,7 +134,7 @@ table.data thead th {
 }
 
 table.data td {
-	background-color: #FFFFFF;
+	
 	margin: 0;
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
@@ -212,28 +212,6 @@ table.data td.checkbox-cell {
 	text-align: center;
 }
 
-ul.sub-role {
-	list-style-type: none;
-	list-style-position: outside;
-	padding-left: 10px;
-	font-size: 14px;
-	font-size: larger;
-}
-
-ul.sub-role li {
-	font-weight: bold;
-	list-style: none;
-}
-ul.sub-role ul {
-	line-height: 25px;
-	margin-left: 5em;
-	font-size: medium;
-}
-
-ul.sub-role ul li {
-	font-weight: normal;
-}
-
 .button {
 	padding-top: 1em;
 	padding-bottom: 1em;
@@ -245,7 +223,12 @@ ul.sub-role ul li {
 	padding-bottom: 1em;
 	padding-top: 1em;
 }
-
+.namecopy {
+	font-weight: 600;
+	font-size: 0.9em;
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
 INPUT {
 	background-color: #DCDCDC;
 	order-bottom-left-radius: 2px 2px;
@@ -259,3 +242,28 @@ INPUT {
 	font-family: inherit;
 	
 }
+table.dataSubRoles {
+	border: 1px solid #C5D7EF;
+	empty-cells: show;
+	margin-bottom: 0.5em;
+	width: 50%
+}
+
+table.dataSubRoles thead th {
+	background: #C5D7EF none repeat scroll 0 0;
+	font-weight: bold;
+	vertical-align: bottom;
+	text-align: center;
+}
+
+table.dataSubRoles td {
+	margin: 0;
+	border: 1px solid #C5D7EF;
+	padding: 0.35em 1em 0.25em 0.35em;
+}
+
+table.dataSubRoles td a {
+	margin-left: 2em;
+	margin-right: 2em;
+}
+.highlight { background-color: rgb(238,249, 249); }

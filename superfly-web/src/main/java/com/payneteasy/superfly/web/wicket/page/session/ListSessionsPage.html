@@ -4,6 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Sessions</title>
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -17,7 +28,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="invalid-sessions">
+			<tr wicket:id="invalid-sessions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td>
 					<span wicket:id="session-id">12345</span>
 				</td>
@@ -44,7 +55,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="expired-sessions">
+			<tr wicket:id="expired-sessions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td>
 					<span wicket:id="session-id">12345</span>
 				</td>

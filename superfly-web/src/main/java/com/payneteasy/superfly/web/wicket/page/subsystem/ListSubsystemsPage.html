@@ -4,6 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Superfly Substems</title>
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -21,7 +32,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr wicket:id="list-subsystem">
+				<tr wicket:id="list-subsystem" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 					<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 					<td><span wicket:id="subsytem-name">[Name]</span></td>
 					<td><span wicket:id="subsystem-callback">[Callback info]</span></td>

@@ -71,6 +71,7 @@ public class AddSubsystemWithRole extends BasePage {
 				newSub.add(old);
 			}
 		}
+		
 		for (UISubsystemForList sub : newSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
 			listIdsub.add(sub.getId());

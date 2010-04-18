@@ -4,6 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Users</title>
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -39,7 +50,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="usersList">
+			<tr wicket:id="usersList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td>
 					<a href="#" wicket:id="view-user"><span wicket:id="user-name">bond</span></a>
 				</td>

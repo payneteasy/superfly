@@ -4,6 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Change role actions</title>
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -24,7 +35,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="actions">
+			<tr wicket:id="actions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td class="checkbox-cell"><input type="checkbox"
 					wicket:id="mapped" /></td>
 				<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
@@ -35,8 +46,8 @@
 	</table>
 	</div>
 	<div wicket:id="paging-navigator">Paging navigation goes here</div>
-	<div><input type="submit" value="Apply" wicket:id="save-actions-link" /></div>
-	<div><input type="submit" value="Back" wicket:id="back-link" />
+	<div><input type="submit" value="Apply" wicket:id="save-actions-link" />
+	<input type="submit" value="Back" wicket:id="back-link" />
 	<input type="submit" value="Cancel" wicket:id="cancel" /></div>
 	</form>
 </wicket:extend>

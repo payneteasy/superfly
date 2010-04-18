@@ -31,24 +31,33 @@ div.wicket-aa ul li.selected {
 	margin: 0;
 }
 </style>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
 </wicket:head>
 </head>
 <body>
 <wicket:extend>
 	<div class="filters">
 	<form wicket:id="filters-form">
-	<table class="data">
-		<tr>
-			<td>Action Name: <span wicket:id="name-action"></span></td>
-		</tr>
-		<tr>
-			<td>Description: <span wicket:id="name-description"></span></td>
-		</tr>
-		<tr>
-			<td>Subsystem Name: <span wicket:id="subname-action"></span></td>
-		</tr>
+	<div class="namecopy">
+			Action Name: <span wicket:id="name-action"></span>
+	</div>
+		<div class="namecopy">
+			Description: <span wicket:id="name-description"></span>
 		
-	</table>
+		</div>
+		<div class="namecopy">
+			Subsystem Name: <span wicket:id="subname-action"></span>
+		</div>
+		
+	
 	<span>Action Name: <input type="text" wicket:id="auto" size="20" /></span>
 	<input type="submit" value="Filter" />
 	<table class="data">
@@ -60,7 +69,7 @@ div.wicket-aa ul li.selected {
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="actionList">
+			<tr wicket:id="actionList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td><a href="#" wicket:id="select-action"><span wicket:id="action-name">Yes</span></a></td>
 				<td><span wicket:id="action-description">bond</span></td>
 				<td><span wicket:id="subsystem-name">bond</span></td>

@@ -3,6 +3,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Group</title>
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -22,7 +33,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="dataView">
+			<tr wicket:id="dataView" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td class="checkbox-cell"><input type="checkbox" wicket:id="selected"></td>
 				<td><span wicket:id="name"></span></td>
 				<td><span wicket:id="ssys-name"></span></td>

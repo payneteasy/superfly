@@ -4,6 +4,18 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Roles</title>
+
+<wicket:head>
+<script type="text/javascript">
+   function highlight(obj) {
+      obj.prevClassName = obj.className;
+      obj.className = 'highlight';
+   }
+   function rollback(obj) {
+      obj.className = obj.prevClassName;
+   }
+</script> 
+</wicket:head>
 </head>
 <body>
 <wicket:extend>
@@ -33,7 +45,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr wicket:id="roleList">
+					<tr wicket:id="roleList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 						<td>
 							<a href="#" wicket:id="view-role-link"><span wicket:id="role-name">bond</span></a>
