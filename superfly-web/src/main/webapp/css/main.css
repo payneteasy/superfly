@@ -266,7 +266,7 @@ table.dataAction {
 	border: 1px solid #C5D7EF;
 	empty-cells: show;
 	margin-bottom: 0.5em;
-	width: 100%
+	width: 30em;
 }
 
 table.dataAction thead th {
@@ -280,7 +280,19 @@ table.dataAction td {
 	margin: 0;
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
+	
 }
 .hide{
 display: none;
+}
+table.dataAction td.checkbox-cell, table.dataAction th.checkbox-cell{
+	padding: 0.35em 0.35em 0.25em 0.35em;
+	text-align: center;
+}
+.buttonAction{
+  width: 6em;
+  padding-bottom: 1em;
+}
+h4.tableHeading{
+	padding-bottom: 1em;
 }

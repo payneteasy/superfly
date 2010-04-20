@@ -7,70 +7,70 @@
 </head>
 <body>
 <wicket:extend>
-<div class="name">
-Username:<span wicket:id="user-name">Vasja</span>
-Subsystem:<span wicket:id="sub-name">superlfy</span>
-Role:<span wicket:id="role-name">Role</span>
-</div>
-	<div>
-<div style="float: left;">
-<h4>Table of Prohibit Actions</h4>
-        <form wicket:id="form">
-                <div wicket:id="group">
-                    <table class="dataAction">
-                        <thead>
-                                <tr>
-                                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
-                                        <th>Action Name</th>
-                                        <th>Description</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <tr wicket:id="actions">
-                                        <td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
-                                        <td><span wicket:id="action-name">Action 1</span></td>
-                                        <td><span wicket:id="action-description">Description 1</span></td>
-                                </tr>
-                                </tbody>
-                        </table>
-                </div>
-                <div wicket:id="paging-navigator">Paging navigation goes here</div>
-                <div class="button">
-                        <input type="submit" value="Grant Actions" wicket:id="save-link" />
-                </div>
-        </form>
-        </div>
-        <div style="float: left; padding-left: 3em;">
-	<h4>Table of Grant Actions </h4>
-	<form wicket:id="form-map">
-                <div wicket:id="group-map">
-                    <table class="dataAction">
-                        <thead>
-                                <tr>
-                                        <th><input type="checkbox" wicket:id="master-checkbox-map" /></th>
-                                        <th>Action Name</th>
-                                        <th>Description</th>
-                                </tr>
-                        </thead>
-                        <tbody>
-                                <tr wicket:id="actions-map">
-                                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
-                                        <td><span wicket:id="action-name">Action 1</span></td>
-                                        <td><span wicket:id="action-description">Description 1</span></td>
-                                </tr>
-                                </tbody>
-                        </table>
-                </div>
-                <div class="button">
-                        <input type="submit" value="Prohibit Actions" wicket:id="save-link-map" />
-                </div>
-        </form>
+	<div class="name">Username:<span wicket:id="user-name">Vasja</span>&nbsp;&#059;
+	Subsystem:<span wicket:id="sub-name">superlfy</span>&nbsp;&#059; Role:<span
+		wicket:id="role-name">Role</span></div>
+
+	<form wicket:id="form">
+	<table>
+	<tr>
+	<td valign="top">
+	<h4 class="tableHeading">Prohibited Actions</h4>
+	<div wicket:id="group">
+	<table class="dataAction">
+		<thead>
+			<tr>
+				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox" /></th>
+				<th>Action Name</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="actions">
+				<td class="checkbox-cell"><input type="checkbox"
+					wicket:id="selected" /></td>
+				<td><span wicket:id="action-name">Action 1</span></td>
+				<td><span wicket:id="action-description">Description 1</span></td>
+			</tr>
+		</tbody>
+	</table>
 	</div>
-        </div>
-        <div style="clear: both;"></div>
-        <div>
-                        <input type="submit" value="Back" wicket:id="back" />
-            </div>    
+	</td>
+
+	<td align="center" style="padding: 1em;">
+	<div class="button"><input class="buttonAction" type="submit" value="Grant &gt;"
+		wicket:id="map-action" /></div>
+	<div class="button"><input class="buttonAction" type="submit" value="&lt; Prohibit"
+		wicket:id="unmap-action" /></div>
+	</td>
+	<td valign="top">
+	<h4 class="tableHeading">Granted Actions</h4>
+	<div wicket:id="group-map">
+	
+	<table class="dataAction">
+		<thead>
+			<tr>
+				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-map" /></th>
+				<th>Action Name</th>
+				<th>Description</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="actions-map">
+				<td class="checkbox-cell"><input type="checkbox"
+					wicket:id="selected" /></td>
+				<td><span wicket:id="action-name">Action 1</span></td>
+				<td><span wicket:id="action-description">Description 1</span></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	</td>
+	</tr>
+	</table>
+	</form>
+	
+	<div class="button"><input type="submit" value="Back" wicket:id="back" /></div>
 </wicket:extend>
 </body>
 </html>
