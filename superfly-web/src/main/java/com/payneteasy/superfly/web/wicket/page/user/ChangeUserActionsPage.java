@@ -11,7 +11,6 @@ import java.util.Set;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
@@ -28,10 +27,13 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
@@ -53,6 +55,10 @@ public class ChangeUserActionsPage extends BasePage {
 	private UserService userService;
 	@SpringBean
 	private SubsystemService subsystemService;
+	@SpringBean
+	private ActionService actionService;
+	@SpringBean
+	private RoleService roleService;
 
 	public ChangeUserActionsPage(PageParameters params) {
 		super(params);
@@ -63,8 +69,10 @@ public class ChangeUserActionsPage extends BasePage {
 
 		UIUser user = userService.getUser(userId);
 		UISubsystem subsystem = subsystemService.getSubsystem(subId);
+		UIRole role = roleService.getRole(roleId);
 		add(new Label("user-name", user.getUsername()));
 		add(new Label("sub-name", subsystem.getName()));
+		add(new Label("role-name",role.getRoleName()));
 		final Filters filters = new Filters(); 
 		// LIst mapp action
 		final List<SelectObjectWrapper<UIActionForCheckboxForUser>> actionsWrap = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForUser>>();
@@ -125,22 +133,15 @@ public class ChangeUserActionsPage extends BasePage {
 				SelectObjectWrapper<UIActionForCheckboxForUser> action = item.getModelObject();
 				item.add(new Check<SelectObjectWrapper<UIActionForCheckboxForUser>>("selected",
 						item.getModel()));
-				item
-						.add(new Label("subsystem-name", action.getObject()
-								.getSubsystemName()));
-				item.add(new Label("role-name", action.getObject().getRoleName()));
+				UIAction act = actionService.getAction(action.getObject().getActionId());
 				item.add(new Label("action-name", action.getObject().getActionName()));
+				item.add(new Label("action-description",act.getActionDescription()));
 				
 			}
 		};
 		groupMap.add(actionsDataViewMap);
 
-		PageParameters pageParams = new PageParameters();
-		pageParams.add("userId", String.valueOf(userId));
-		formMap.add(new SubmitLink("save-link-map"));
-		formMap.add(new BookmarkablePageLink<Page>("cancel-link-map",
-				UserDetailsPage.class, pageParams));
-
+		formMap.add(new SubmitLink("save-link-map"));		
 	
 		// list unmap action
 		final ObjectHolder<List<UIActionForCheckboxForUser>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForUser>>();
@@ -223,11 +224,9 @@ public class ChangeUserActionsPage extends BasePage {
 				UIActionForCheckboxForUser action = item.getModelObject();
 				item.add(new Check<UIActionForCheckboxForUser>("mapped",
 						item.getModel()));
-				item
-						.add(new Label("subsystem-name", action
-								.getSubsystemName()));
-				item.add(new Label("role-name", action.getRoleName()));
+				UIAction act = actionService.getAction(action.getActionId());
 				item.add(new Label("action-name", action.getActionName()));
+				item.add(new Label("action-description",act.getActionDescription()));
 			}
 		};
 		group.add(actionsDataView);
@@ -239,8 +238,8 @@ public class ChangeUserActionsPage extends BasePage {
 		
 
 		form.add(new SubmitLink("save-link"));
-		form.add(new BookmarkablePageLink<Page>("cancel-link",
-				UserDetailsPage.class, pageParams1));
+		
+		add(new BookmarkablePageLink<Page>("back",UserDetailsPage.class,pageParams1));
 	}
 
 	protected void doSubmit(long userId,long roleId,long subId,

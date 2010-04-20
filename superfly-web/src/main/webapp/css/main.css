@@ -230,16 +230,10 @@ table.data td.checkbox-cell {
 	padding-top: 0.5em;
 }
 INPUT {
-	background-color: #DCDCDC;
 	order-bottom-left-radius: 2px 2px;
 	border-bottom-right-radius: 2px 2px;
 	border-top-left-radius: 2px 2px;
 	border-top-right-radius: 2px 2px;
-	font-size: 15px;
-	height: 1.85em !important;
-	margin: 0.2em;
-	padding: 0px 8px;
-	font-family: inherit;
 	
 }
 table.dataSubRoles {
@@ -267,3 +261,26 @@ table.dataSubRoles td a {
 	margin-right: 2em;
 }
 .highlight { background-color: rgb(238,249, 249); }
+
+table.dataAction {
+	border: 1px solid #C5D7EF;
+	empty-cells: show;
+	margin-bottom: 0.5em;
+	width: 100%
+}
+
+table.dataAction thead th {
+	background: #C5D7EF none repeat scroll 0 0;
+	font-weight: bold;
+	vertical-align: bottom;
+	text-align: center;
+}
+
+table.dataAction td {
+	margin: 0;
+	border: 1px solid #C5D7EF;
+	padding: 0.35em 1em 0.25em 0.35em;
+}
+.hide{
+display: none;
+}
