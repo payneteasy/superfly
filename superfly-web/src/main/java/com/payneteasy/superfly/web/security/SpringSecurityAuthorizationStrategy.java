@@ -75,7 +75,11 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
 				if (cachedProperties != null) {
 					return cachedProperties;
 				}
-				in = SpringSecurityAuthorizationStrategy.class.getClassLoader().getResourceAsStream(PROD_FILE_PATH);
+				ClassLoader cl = Thread.currentThread().getContextClassLoader();
+				if (cl == null) {
+					cl = getClass().getClassLoader();
+				}
+				in = cl.getResourceAsStream(PROD_FILE_PATH);
 			}
 		    prop.load(in);
 		    if (!devMode) {
