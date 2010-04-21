@@ -120,4 +120,18 @@ public class GroupServiceImpl implements GroupService {
 		return result;
 	}
 
+	public List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(
+			int startFrom, int recordsCount, int orderFieldNumber,
+			boolean orderType, long groupId, String actionSubstring) {
+		return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount, 
+				orderFieldNumber, 
+				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
+				groupId, actionSubstring);
+	}
+
+	public int getAllGroupUnMappedActionsCount(long groupId,
+			String actionSubstring) {
+		return groupDao.getAllGroupUnMappedActionsCount(groupId, actionSubstring);
+	}
+
 }

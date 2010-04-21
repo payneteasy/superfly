@@ -85,7 +85,7 @@ public class UIActionForCheckboxForUser implements Serializable {
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-
+    
 	@Override
 	public int hashCode() {
 		final int prime = 31;

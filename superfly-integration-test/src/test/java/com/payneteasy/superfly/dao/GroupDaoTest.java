@@ -68,5 +68,7 @@ public class GroupDaoTest extends AbstractDaoTest {
 		UIGroup newGroup = groupDao.getGroupById(request.getId());
 		assertNotNull("Group must be cloned", newGroup);
 	}
-	
+	public void testGetAllGroupUnMappedActions(){
+		groupDao.getAllGroupUnMappedActions(0, 10, 1, "asc", getAnyGroupId(), null);
+	}
 }
