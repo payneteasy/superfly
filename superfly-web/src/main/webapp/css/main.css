@@ -134,7 +134,6 @@ table.data thead th {
 }
 
 table.data td {
-	
 	margin: 0;
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
@@ -207,7 +206,7 @@ div.release-date {
 	margin-bottom: 5px;
 }
 
-table.data td.checkbox-cell, table.data th.checkbox-cell{
+table.data td.checkbox-cell,table.data th.checkbox-cell {
 	padding: 0.35em 0.35em 0.25em 0.35em;
 	text-align: center;
 }
@@ -223,19 +222,21 @@ table.data td.checkbox-cell, table.data th.checkbox-cell{
 	padding-bottom: 1em;
 	padding-top: 1em;
 }
+
 .namecopy {
 	font-weight: 600;
 	font-size: 0.9em;
 	padding-bottom: 0.5em;
 	padding-top: 0.5em;
 }
+
 INPUT {
 	order-bottom-left-radius: 2px 2px;
 	border-bottom-right-radius: 2px 2px;
 	border-top-left-radius: 2px 2px;
 	border-top-right-radius: 2px 2px;
-	
 }
+
 table.dataSubRoles {
 	border: 1px solid #C5D7EF;
 	empty-cells: show;
@@ -260,7 +261,10 @@ table.dataSubRoles td a {
 	margin-left: 2em;
 	margin-right: 2em;
 }
-.highlight { background-color: rgb(238,249, 249); }
+
+.highlight {
+	background-color: rgb(238, 249, 249);
+}
 
 table.dataAction {
 	border: 1px solid #C5D7EF;
@@ -280,19 +284,27 @@ table.dataAction td {
 	margin: 0;
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
-	
 }
-.hide{
-display: none;
+
+.hide {
+	display: none;
 }
-table.dataAction td.checkbox-cell, table.dataAction th.checkbox-cell{
+
+table.dataAction td.checkbox-cell,table.dataAction th.checkbox-cell {
 	padding: 0.35em 0.35em 0.25em 0.35em;
 	text-align: center;
 }
-.buttonAction{
-  width: 6em;
-  padding-bottom: 1em;
-}
-h4.tableHeading{
+
+.buttonAction {
+	width: 6em;
 	padding-bottom: 1em;
+}
+
+h4.tableHeading {
+	padding-bottom: 1em;
+}
+
+div.scroll {
+	overflow: -moz-scrollbars-vertical;
+	overflow: auto; height: 30em;
 }
