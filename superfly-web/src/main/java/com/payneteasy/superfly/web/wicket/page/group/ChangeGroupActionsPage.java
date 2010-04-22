@@ -218,20 +218,4 @@ public class ChangeGroupActionsPage extends BasePage {
 	protected String getTitle() {
 		return "Change group actions";
 	}
-
-	@SuppressWarnings("unused")
-	private static class Filter implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private UIActionForCheckboxForGroup actionForCheckboxForGroup;
-
-		public UIActionForCheckboxForGroup getActionForCheckboxForGroup() {
-			return actionForCheckboxForGroup;
-		}
-
-		public void setActionForCheckboxForGroup(
-				UIActionForCheckboxForGroup actionForCheckboxForGroup) {
-			this.actionForCheckboxForGroup = actionForCheckboxForGroup;
-		}
-
-	}
 }

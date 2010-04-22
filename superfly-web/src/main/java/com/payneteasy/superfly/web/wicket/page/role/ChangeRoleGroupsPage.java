@@ -3,143 +3,183 @@ package com.payneteasy.superfly.web.wicket.page.role;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.annotation.Secured;
 
-import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
+import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.service.RoleService;
-import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
-import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
-
+import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 @Secured("ROLE_ADMIN")
 public class ChangeRoleGroupsPage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
-	private boolean isWizard;
-
-	public ChangeRoleGroupsPage(PageParameters params) {
-		super(params);
-		final long roleId = params.getAsLong("id", -1);
-		isWizard = params.getAsBoolean("wizard", false);
-		
-		final ObjectHolder<List<UIGroupForCheckbox>> rolesHolder = new ObjectHolder<List<UIGroupForCheckbox>>();
-		final InitializingModel<Collection<UIGroupForCheckbox>> rolesCheckGroupModel = new InitializingModel<Collection<UIGroupForCheckbox>>() {
+	public ChangeRoleGroupsPage(PageParameters parameters) {
+      final long roleId = parameters.getAsLong("id");
+      UIRole role = roleService.getRole(roleId);
+      add(new Label("role-name",role.getRoleName()));
+      //groups mapped
+      List<UIGroupForCheckbox> roleGroupMapped = roleService.getMappedRoleGroups(0, Integer.MAX_VALUE, 1, true, roleId);
+      final List<SelectObjectWrapper<UIGroupForCheckbox>> roleGroupMappedWrapper = new ArrayList<SelectObjectWrapper<UIGroupForCheckbox>>();
+      for(UIGroupForCheckbox uig: roleGroupMapped){
+    	  roleGroupMappedWrapper.add(new SelectObjectWrapper<UIGroupForCheckbox>(uig));
+      }
+      final InitializingModel<Collection<SelectObjectWrapper<UIGroupForCheckbox>>> groupsCheckActionsModelMap = new InitializingModel<Collection<SelectObjectWrapper<UIGroupForCheckbox>>>() {
 
 			@Override
-			protected Collection<UIGroupForCheckbox> getInitialValue() {
-				final Collection<UIGroupForCheckbox> checkedRoles = new HashSet<UIGroupForCheckbox>();
-				for (UIGroupForCheckbox role : rolesHolder.getObject()) {
-					if (role.isMapped()) {
-						checkedRoles.add(role);
+			protected Collection<SelectObjectWrapper<UIGroupForCheckbox>> getInitialValue() {
+				final Collection<SelectObjectWrapper<UIGroupForCheckbox>> checkedActions = new HashSet<SelectObjectWrapper<UIGroupForCheckbox>>();
+				for (SelectObjectWrapper<UIGroupForCheckbox> action : roleGroupMappedWrapper) {
+					if (action.isSelected()) {
+						checkedActions.add(action);
 					}
 				}
-				return checkedRoles;
+				return checkedActions;
 			}
 
 		};
-
-		final IDataProvider<UIGroupForCheckbox> rolesProvider = new BaseDataProvider<UIGroupForCheckbox>() {
-
-			public Iterator<? extends UIGroupForCheckbox> iterator(int first,
-					int count) {
-				List<UIGroupForCheckbox> allGroupsForRole = roleService
-						.getAllRoleGroups(first, count,
-								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-								DaoConstants.ASC, roleId);
-				rolesHolder.setObject(allGroupsForRole);
-				rolesCheckGroupModel.clearInitialized();
-				return allGroupsForRole.iterator();
-			}
-
-			public int size() {
-				return roleService.getAllRoleGroupsCount(roleId);
-			}
-
-		};
-		final Form<Void> form = new Form<Void>("form") {
-			public void onSubmit() {
-				doSubmit(roleId, rolesHolder.getObject(), rolesCheckGroupModel
-						.getObject());
-			}
-		};
+		Form<Void> form = new Form("form");
 		add(form);
+		final CheckGroup<SelectObjectWrapper<UIGroupForCheckbox>> groupMap = new CheckGroup<SelectObjectWrapper<UIGroupForCheckbox>>(
+				"group-map", groupsCheckActionsModelMap);
+		form.add(groupMap);
+		groupMap.add(new CheckGroupSelector("master-checkbox-map", groupMap));
+		ListView<SelectObjectWrapper<UIGroupForCheckbox>> groupMapListView = new ListView<SelectObjectWrapper<UIGroupForCheckbox>>(
+				"list-group-map", roleGroupMappedWrapper) {
 
-		final CheckGroup<UIGroupForCheckbox> group = new CheckGroup<UIGroupForCheckbox>(
-				"group", rolesCheckGroupModel);
-		form.add(group);
-		group.add(new CheckGroupSelector("master-checkbox", group));
-		DataView<UIGroupForCheckbox> rolesDataView = new PagingDataView<UIGroupForCheckbox>(
-				"actions", rolesProvider) {
 			@Override
-			protected void populateItem(Item<UIGroupForCheckbox> item) {
-				UIGroupForCheckbox role = item.getModelObject();
-				item.add(new Check<UIGroupForCheckbox>("mapped", item
-						.getModel(), group));
-				item.add(new Label("subsystem-name", role.getSubsystemName()));
-				item.add(new Label("group-name", role.getGroupName()));
+			protected void populateItem(
+					ListItem<SelectObjectWrapper<UIGroupForCheckbox>> item) {
+				SelectObjectWrapper<UIGroupForCheckbox> action = item
+						.getModelObject();
+				item.add(new Label("group-name", action.getObject()
+						.getGroupName()));
+				item.add(new Label("group-sub", action.getObject()
+						.getSubsystemName()));
+				item
+						.add(new Check<SelectObjectWrapper<UIGroupForCheckbox>>(
+								"selected", item.getModel()));
 			}
+
 		};
-		group.add(rolesDataView);
+		groupMap.add(groupMapListView);
+		form.add(new Button("group1-unmap"){
 
-		form.add(new PagingNavigator("paging-navigator", rolesDataView));
-
-		form.add(new SubmitLink("save-actions-link"));
-		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
-		
-		PageParameters pageParams = new PageParameters();
-		pageParams.add("id", String.valueOf(roleId));
-		pageParams.add("wizard", "true");
-		BookmarkablePageLink<ChangeRoleActionsPage> nextLink = new BookmarkablePageLink<ChangeRoleActionsPage>(
-				"next-link", ChangeRoleActionsPage.class, pageParams);
-		nextLink.setVisible(isWizard);
-		form.add(nextLink);
-
-	}
-
-	protected void doSubmit(long roleId, List<UIGroupForCheckbox> allGroups,
-			Collection<UIGroupForCheckbox> checkedGroups) {
-		List<Long> idsToAdd = new ArrayList<Long>();
-		List<Long> idsToRemove = new ArrayList<Long>();
-		for (UIGroupForCheckbox group : allGroups) {
-			if (checkedGroups.contains(group)) {
-				idsToAdd.add(group.getGroupId());
-			} else {
-				idsToRemove.add(group.getGroupId());
+			@Override
+			public void onSubmit() {
+				Collection<SelectObjectWrapper<UIGroupForCheckbox>> checkedActions = groupsCheckActionsModelMap
+				.getObject();
+				List<Long> delIds = new ArrayList<Long>();
+				List<Long> addIds = new ArrayList<Long>();
+				for(SelectObjectWrapper<UIGroupForCheckbox> sow: checkedActions){
+					if(sow.isSelected()){delIds.add(sow.getObject().getGroupId());}
+					else{addIds.add(sow.getObject().getGroupId());}
+				}
+				RoutineResult result = roleService.changeRoleGroups(roleId, delIds, addIds);
+				if (result.isOk()) {
+					info("Groups changed; please be aware that some sessions could be invalidated");
+				} else {
+					error("Error while changing user actions: "
+							+ result.getErrorMessage());
+				}
+				PageParameters parameters = new PageParameters();
+				parameters.add("id", String.valueOf(roleId));
+				setResponsePage(ChangeRoleGroupsPage.class, parameters);
 			}
-		}
+			
+		});
+		//groups unmap
+		
+		List<UIGroupForCheckbox> roleGroupUnMapped = roleService.getUnMappedRoleGroups(0, Integer.MAX_VALUE, 1, true, roleId);
+	      final List<SelectObjectWrapper<UIGroupForCheckbox>> roleGroupUnMappedWrapper = new ArrayList<SelectObjectWrapper<UIGroupForCheckbox>>();
+	      for(UIGroupForCheckbox uig: roleGroupUnMapped){
+	    	  roleGroupUnMappedWrapper.add(new SelectObjectWrapper<UIGroupForCheckbox>(uig));
+	      }
+	      final InitializingModel<Collection<SelectObjectWrapper<UIGroupForCheckbox>>> groupsCheckActionsModelUnMap = new InitializingModel<Collection<SelectObjectWrapper<UIGroupForCheckbox>>>() {
 
-		RoutineResult result = roleService.changeRoleGroups(roleId, idsToAdd, idsToRemove);
-		if (result.isOk()) {
-			info("Groups changed; please be aware that some sessions could be invalidated");
-		} else {
-			error("Error while changing role groups: " + result.getErrorMessage());
-		}
+				@Override
+				protected Collection<SelectObjectWrapper<UIGroupForCheckbox>> getInitialValue() {
+					final Collection<SelectObjectWrapper<UIGroupForCheckbox>> checkedActions = new HashSet<SelectObjectWrapper<UIGroupForCheckbox>>();
+					for (SelectObjectWrapper<UIGroupForCheckbox> action : roleGroupUnMappedWrapper) {
+						if (action.isSelected()) {
+							checkedActions.add(action);
+						}
+					}
+					return checkedActions;
+				}
+
+			};
+			final CheckGroup<SelectObjectWrapper<UIGroupForCheckbox>> groupUnMap = new CheckGroup<SelectObjectWrapper<UIGroupForCheckbox>>(
+					"group-unmap", groupsCheckActionsModelUnMap);
+			form.add(groupUnMap);
+			groupUnMap.add(new CheckGroupSelector("master-checkbox-unmap", groupUnMap));
+			ListView<SelectObjectWrapper<UIGroupForCheckbox>> groupUnMapListView = new ListView<SelectObjectWrapper<UIGroupForCheckbox>>(
+					"list-group-unmap", roleGroupUnMappedWrapper) {
+
+				@Override
+				protected void populateItem(
+						ListItem<SelectObjectWrapper<UIGroupForCheckbox>> item) {
+					SelectObjectWrapper<UIGroupForCheckbox> action = item
+							.getModelObject();
+					item.add(new Label("group-name", action.getObject()
+							.getGroupName()));
+					item.add(new Label("group-sub", action.getObject()
+							.getSubsystemName()));
+					item
+							.add(new Check<SelectObjectWrapper<UIGroupForCheckbox>>(
+									"selected", item.getModel()));
+				}
+
+			};
+			groupUnMap.add(groupUnMapListView);
+			form.add(new Button("group1-map"){
+
+				@Override
+				public void onSubmit() {
+					Collection<SelectObjectWrapper<UIGroupForCheckbox>> checkedActions = groupsCheckActionsModelUnMap
+					.getObject();
+					List<Long> delIds = new ArrayList<Long>();
+					List<Long> addIds = new ArrayList<Long>();
+					for(SelectObjectWrapper<UIGroupForCheckbox> sow: checkedActions){
+						if(sow.isSelected()){delIds.add(sow.getObject().getGroupId());}
+						else{addIds.add(sow.getObject().getGroupId());}
+					}
+					RoutineResult result = roleService.changeRoleGroups(roleId, addIds, delIds);
+					if (result.isOk()) {
+						info("Groups changed; please be aware that some sessions could be invalidated");
+					} else {
+						error("Error while changing user actions: "
+								+ result.getErrorMessage());
+					}
+					PageParameters parameters = new PageParameters();
+					parameters.add("id", String.valueOf(roleId));
+					setResponsePage(ChangeRoleGroupsPage.class, parameters);
+				}
+				
+			});
+			add(new BookmarkablePageLink<Page>("back", ListRolesPage.class,
+					parameters));
 	}
 
 	@Override
 	protected String getTitle() {
-		return "Role Groups";
+		return "Change group";
 	}
 
 }

@@ -35,7 +35,6 @@ public interface RoleDao {
 	List<UIRoleForFilter> getRolesForFilter(String subsystemIds,
 			String rolePrefix, int startFrom, int recordsCount);
 
-	
 	@AStoredProcedure(name = "ui_get_roles_list")
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, String orderType, String rolesName,
@@ -83,7 +82,25 @@ public interface RoleDao {
 	@AStoredProcedure(name = "ui_get_mapped_role_actions_list_count")
 	int getMappedRoleActionsCount(long roleId, String actionName);
 
+	@AStoredProcedure(name = "ui_get_unmapped_role_actions_list")
+	List<UIActionForCheckboxForRole> getUnMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId, String actionName);
+
+	@AStoredProcedure(name = "ui_get_unmapped_role_actions_list_count")
+	int getUnMappedRoleActionsCount(long roleId, String actionName);
+
 	@AStoredProcedure(name = "ui_change_role_actions")
 	RoutineResult changeRoleActions(long roleId, String actionToAddIds,
 			String actionToRemoveIds);
+
+	@AStoredProcedure(name = "ui_get_mapped_role_groups_list")
+	List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId);
+
+	@AStoredProcedure(name = "ui_get_unmapped_role_groups_list")
+	List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId);
 }

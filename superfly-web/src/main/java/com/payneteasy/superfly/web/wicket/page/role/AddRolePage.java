@@ -54,7 +54,7 @@ public class AddRolePage extends BasePage {
 						.add("idSubsystem", String.valueOf(role
 								.getSubsystemId()));
 				params.add("wizard", "true");
-				getRequestCycle().setResponsePage(ChangeRoleGroupsPage.class,
+				getRequestCycle().setResponsePage(AddRoleGroupsPage.class,
 						params);
 				getRequestCycle().setRedirect(true);
 			}

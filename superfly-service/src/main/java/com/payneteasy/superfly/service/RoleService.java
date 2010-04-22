@@ -23,7 +23,7 @@ public interface RoleService {
 	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc, String rolesName,
 			List<Long> subsystems);
-    
+
 	int getRoleCount(String rolesName, List<Long> subsystems);
 
 	RoutineResult deleteRole(long roleId);
@@ -50,10 +50,22 @@ public interface RoleService {
 			int recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);
 
+	List<UIActionForCheckboxForRole> getUnMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId, String actionName);
+
 	int getMappedRoleActionsCount(long roleId, String actionName);
 
 	int getAllRoleGroupsCount(long roleId);
 
 	RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
 			List<Long> actionToRemoveIds);
+
+	List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId);
+
+	List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId);
 }

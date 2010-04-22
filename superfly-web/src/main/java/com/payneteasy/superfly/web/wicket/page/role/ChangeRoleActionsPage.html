@@ -3,8 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
-<title>Change role actions</title>
+<title>Change user actions</title>
 <wicket:head>
+	
 <script type="text/javascript">
    function highlight(obj) {
       obj.prevClassName = obj.className;
@@ -18,38 +19,70 @@
 </head>
 <body>
 <wicket:extend>
-	<div class="filters">
-	<form wicket:id="filters-form"><span>Action name
-	substring: <input wicket:id="action-name-substring" /></span> <input
-		type="submit" value="Filter" /></form>
-	</div>
+	<div class="name">Role name:<span wicket:id="role-name">role</span></div>
 	<form wicket:id="form">
-	<div wicket:id="group">
-	<table class="data">
+	<table>
+	<tr>
+	<td valign="top">
+	<h4 class="tableHeading">Prohibited Actions</h4>
+	<div class="scroll">
+	<div wicket:id="group-unmap">
+	<table class="dataAction">
 		<thead>
 			<tr>
-				<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-				<th>Subsystem</th>
-				<th>Role</th>
-				<th>Action</th>
+				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-unmap" /></th>
+				<th>Action Name</th>
+				<th>Subsystem Name</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="actions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+			<tr wicket:id="list-action-unmap" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td class="checkbox-cell"><input type="checkbox"
-					wicket:id="mapped" /></td>
-				<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-				<td><span wicket:id="role-name">Role 1</span></td>
+					wicket:id="selected" /></td>
 				<td><span wicket:id="action-name">Action 1</span></td>
+				<td><span wicket:id="action-sub">sub 1</span></td>
 			</tr>
 		</tbody>
 	</table>
 	</div>
-	<div wicket:id="paging-navigator">Paging navigation goes here</div>
-	<div><input type="submit" value="Apply" wicket:id="save-actions-link" />
-	<input type="submit" value="Back" wicket:id="back-link" />
-	<input type="submit" value="Cancel" wicket:id="cancel" /></div>
+	</div>
+	</td>
+
+	<td align="center" style="padding: 1em; padding-top: 5em;" valign="top">
+	<div class="button"><input class="buttonAction" type="submit" value="Grant &gt;"
+		wicket:id="action-map" /></div>
+	<div class="button"><input class="buttonAction" type="submit" value="&lt; Prohibit"
+		wicket:id="action-unmap" /></div>
+	</td>
+	<td valign="top">
+	<h4 class="tableHeading">Granted Actions</h4>
+	<div wicket:id="group-map">
+	<div class="scroll">
+	<table class="dataAction">
+		<thead>
+			<tr>
+				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-map" /></th>
+				<th>Action Name</th>
+				<th>Sub Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr wicket:id="list-action-map" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+				<td class="checkbox-cell"><input type="checkbox"
+					wicket:id="selected" /></td>
+				<td><span wicket:id="action-name">Action 1</span></td>
+				<td><span wicket:id="action-sub">sub 1</span></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	</div>
+	</td>
+	</tr>
+	</table>
 	</form>
+	
+	<div class="button"><input type="submit" value="Back" wicket:id="back" /></div>
 </wicket:extend>
 </body>
 </html>

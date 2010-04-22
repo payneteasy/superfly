@@ -3,6 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
@@ -26,7 +27,10 @@ public class RoleDaoTest extends AbstractDaoTest {
 		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
 		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), "dmi");
 	}
-
+    public void testGetUnMappedRoleActions(){
+    	roleDao.getUnMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
+    	roleDao.getUnMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), "dsf");
+    }
 	public void testGetMappedRoleActionsCount() {
 		roleDao.getMappedRoleActionsCount(getAnyRoleId(), null);
 		roleDao.getMappedRoleActionsCount(getAnyRoleId(), "dmi");
@@ -114,5 +118,11 @@ public class RoleDaoTest extends AbstractDaoTest {
 		result = roleDao.deleteRole(role.getRoleId());
 		assertRoutineResult(result);
 
+	}
+	public void testgetMappedRoleGroups(){
+		List<UIGroupForCheckbox> testRoleGroups=roleDao.getMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
+	}
+	public void testGetUnMappedRoleGroups(){
+		List<UIGroupForCheckbox> testRoleGroups = roleDao.getUnMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
 }
