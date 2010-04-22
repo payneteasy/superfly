@@ -93,8 +93,8 @@ public class UserDetailsPage extends BasePage {
 		
 		PageParameters param = new PageParameters();
 		param.add("userId",String.valueOf(userId));
-		add(new BookmarkablePageLink<AddSubsystemWithRole>("add-sub",
-				AddSubsystemWithRole.class,param));
+		add(new BookmarkablePageLink<AddSubsystemWithRolePage>("add-sub",
+				AddSubsystemWithRolePage.class,param));
 	}
 
 	@Override

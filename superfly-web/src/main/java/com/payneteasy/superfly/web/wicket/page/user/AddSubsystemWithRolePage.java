@@ -37,7 +37,7 @@ import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceR
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
-public class AddSubsystemWithRole extends BasePage {
+public class AddSubsystemWithRolePage extends BasePage {
 	@SpringBean
 	private UserService userService;
 	@SpringBean
@@ -45,7 +45,7 @@ public class AddSubsystemWithRole extends BasePage {
 	@SpringBean
 	private SubsystemService subsystemService;
 
-	public AddSubsystemWithRole(PageParameters params) {
+	public AddSubsystemWithRolePage(PageParameters params) {
 		super(params);
 		final long userId = params.getAsLong("userId");
 		UIUser user = userService.getUser(userId);
