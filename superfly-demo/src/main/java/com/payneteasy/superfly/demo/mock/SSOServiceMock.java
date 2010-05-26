@@ -14,6 +14,7 @@ import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserExistsException;
 
 /**
  * Mock SSOService implementation.
@@ -66,6 +67,10 @@ public class SSOServiceMock implements SSOService {
 				actions.toArray(new SSOAction[actions.size()])));
 		
 		return users;
+	}
+
+	public void registerUser(String username, String password, String email,
+			long subsystemId, String principalName) throws UserExistsException {
 	}
 
 }
