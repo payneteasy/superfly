@@ -9,6 +9,12 @@ import com.payneteasy.superfly.api.Notifications;
 import com.payneteasy.superfly.client.session.AbstractSessionStoreAwareNotificationSinkFilter;
 import com.payneteasy.superfly.jira.SuperflyContextLocator;
 
+/**
+ * Called by a Superfly server when users info is changed and users need to
+ * be refetched.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class UsersChangedNotificationSinkFilter extends
 		AbstractSessionStoreAwareNotificationSinkFilter {
 	

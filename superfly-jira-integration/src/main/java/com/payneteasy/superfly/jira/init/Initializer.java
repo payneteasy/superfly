@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.util.StringUtils;
-
+import com.atlassian.core.util.StringUtils;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.client.SuperflyDataSender;
@@ -31,12 +29,10 @@ public class Initializer {
 	
 	private UserStoreUpdater userStoreUpdater;
 	
-	@Required
 	public void setSender(SuperflyDataSender sender) {
 		this.sender = sender;
 	}
 
-	@Required
 	public void setSsoService(SSOService ssoService) {
 		this.ssoService = ssoService;
 	}
@@ -45,12 +41,10 @@ public class Initializer {
 		this.subsystemIdentifier = subsystemIdentifier;
 	}
 
-	@Required
 	public void setPrincipalName(String principalName) {
 		this.principalName = principalName;
 	}
 
-	@Required
 	public void setGroupsCommaDelimitedList(String groupsCommaDelimitedList) {
 		this.groupsCommaDelimitedList = groupsCommaDelimitedList;
 	}
@@ -62,7 +56,7 @@ public class Initializer {
 		initGroups();
 	}
 	
-	public void destroy() throws Exception {
+	public void destroy() {
 		if (userStoreUpdater != null) {
 			userStoreUpdater.cleanup();
 		}
@@ -88,7 +82,7 @@ public class Initializer {
 	}
 	
 	protected String[] obtainGroups() {
-		return StringUtils.commaDelimitedListToStringArray(groupsCommaDelimitedList);
+		return StringUtils.splitCommaSeparatedString(groupsCommaDelimitedList);
 	}
 	
 	protected void initSuperflyContext() {

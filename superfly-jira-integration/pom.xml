@@ -29,13 +29,12 @@
 			<artifactId>superfly-client-opt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>atlassian-jira</artifactId>
 		</dependency>
+	    <dependency>
+	        <groupId>com.googlecode.xremoting</groupId>
+	        <artifactId>xremoting-core</artifactId>
+	    </dependency>
 	</dependencies>
 </project>

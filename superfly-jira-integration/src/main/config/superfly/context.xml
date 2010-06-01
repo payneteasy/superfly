@@ -58,7 +58,7 @@
 	<bean id="superflyDataSender" class="com.payneteasy.superfly.client.SuperflyDataSender">
 		<property name="ssoService" ref="ssoService"/>
 		<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
-		<property name="subsystemIdentifier" value="jira"/>
+		<property name="subsystemIdentifier" value="${subsystem.name}"/>
 		<property name="autoSend" value="false"/>
 	</bean>
 	

@@ -52,12 +52,11 @@
 			<name>Our maven releases repository with common user access</name>
 			<url>https://superfly.googlecode.com/svn/maven2/release</url>
 		</repository>
-        <!-- jdbc proc repository -->
-        <repository>
-            <id>jdbc-proc-release</id>
-            <name>jdbc proc release</name>
-            <url>http://jdbc-proc.googlecode.com/svn/maven2/release</url>
-        </repository>
+	    <repository>
+	        <id>xremoting-release</id>
+	        <name>xremoting release</name>
+	        <url>http://xremoting.googlecode.com/svn/maven2/release</url>
+	    </repository>
         <!-- Atlassian repository -->
         <repository>
             <id>atlassian-public</id>
@@ -267,6 +266,17 @@
 		    	<groupId>commons-codec</groupId>
 		    	<artifactId>commons-codec</artifactId>
 		    	<version>1.3</version>
+		    </dependency>
+		    
+		    <dependency>
+		        <groupId>com.googlecode.xremoting</groupId>
+		        <artifactId>xremoting-core</artifactId>
+		        <version>1.0-3</version>
+		    </dependency>
+		    <dependency>
+		        <groupId>com.thoughtworks.xstream</groupId>
+		        <artifactId>xstream</artifactId>
+		        <version>1.1.1</version>
 		    </dependency>
 		    
 			<!-- WICKET DEPENDENCIES -->

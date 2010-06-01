@@ -21,7 +21,17 @@
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-httpclient-ssl</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core-tiger</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

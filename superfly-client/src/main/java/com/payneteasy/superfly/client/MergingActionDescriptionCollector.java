@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
 
@@ -22,7 +20,6 @@ public class MergingActionDescriptionCollector implements
 	
 	private ActionDescriptionCollector[] collectors;
 
-	@Required
 	public void setCollectors(ActionDescriptionCollector[] collectors) {
 		this.collectors = collectors;
 	}

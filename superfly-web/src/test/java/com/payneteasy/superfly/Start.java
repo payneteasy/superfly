@@ -43,6 +43,7 @@ public class Start {
 	        secureConnector.setKeyPassword("changeit");
 	        secureConnector.setTruststore("src/test/resources/ca_ts");
 	        secureConnector.setTrustPassword("changeit");
+	        secureConnector.setNeedClientAuth(true);
 	        
 	        server.setConnectors(new Connector[]{connector, secureConnector});
 

@@ -3,11 +3,9 @@ package com.payneteasy.superfly.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.util.StringUtils;
-
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
+import com.payneteasy.superfly.common.utils.StringUtils;
 
 /**
  * ActionDescriptionCollector implementation which just takes a comma-delimited
@@ -20,7 +18,6 @@ public class CommaDelimitedListActionDescriptionCollector implements
 	
 	private String commaDelimitedList;
 
-	@Required
 	public void setCommaDelimitedList(String commaDelimitedList) {
 		this.commaDelimitedList = commaDelimitedList;
 	}

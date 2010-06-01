@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOService;
@@ -19,7 +19,7 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  * 
  * @author Roman Puchkovskiy
  */
-public class SuperflyDataSender implements InitializingBean {
+public class SuperflyDataSender {
 	
 	private Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
 	
@@ -30,12 +30,10 @@ public class SuperflyDataSender implements InitializingBean {
 	private StringTransformer[] transformers = new StringTransformer[0];
 	private boolean autoSend = true;
 
-	@Required
 	public void setSsoService(SSOService ssoService) {
 		this.ssoService = ssoService;
 	}
 
-	@Required
 	public void setActionDescriptionCollector(
 			ActionDescriptionCollector actionDescriptionCollector) {
 		this.actionDescriptionCollector = actionDescriptionCollector;
@@ -61,6 +59,7 @@ public class SuperflyDataSender implements InitializingBean {
 		this.autoSend = autoSend;
 	}
 
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 		if (autoSend) {
 			Timer timer = new Timer();

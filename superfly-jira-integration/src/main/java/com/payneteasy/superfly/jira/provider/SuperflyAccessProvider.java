@@ -15,7 +15,8 @@ import com.payneteasy.superfly.jira.JiraUtils;
  */
 public class SuperflyAccessProvider extends BaseSuperflyUserProvider implements
 		AccessProvider {
-	
+	private static final long serialVersionUID = -68588532298857581L;
+
 	public boolean handles(String name) {
 		if (getUserStore().userExists(name)) {
 			return true;

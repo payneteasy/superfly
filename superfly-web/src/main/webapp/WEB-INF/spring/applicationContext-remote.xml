@@ -18,6 +18,11 @@
     <bean name="ssoServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
         <property name="service" ref="ssoService"/>
         <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
-    </bean> 
+    </bean>
+    
+    <bean name="ssoServiceXRemotingExporter" class="com.googlecode.xremoting.spring.XRemotingServiceExporter">
+        <property name="service" ref="ssoService"/>
+        <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+    </bean>
 
 </beans>

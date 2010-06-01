@@ -2,8 +2,6 @@ package com.payneteasy.superfly.client;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
 
@@ -19,12 +17,10 @@ public class TransformingActionDescriptionCollector implements
 	private ActionDescriptionCollector collector;
 	private StringTransformer[] transformers;
 	
-	@Required
 	public void setCollector(ActionDescriptionCollector collector) {
 		this.collector = collector;
 	}
 
-	@Required
 	public void setTransformers(StringTransformer[] transformers) {
 		this.transformers = transformers;
 	}

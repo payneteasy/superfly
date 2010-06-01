@@ -17,6 +17,7 @@
 			comments in applicationContext-service.xml).
 		-->
 		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
+		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
         
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN"/>
         

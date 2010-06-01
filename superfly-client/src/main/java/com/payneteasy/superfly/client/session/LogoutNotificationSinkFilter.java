@@ -4,9 +4,8 @@ package com.payneteasy.superfly.client.session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.util.StringUtils;
-
 import com.payneteasy.superfly.api.Notifications;
+import com.payneteasy.superfly.common.utils.StringUtils;
 
 /**
  * Filter that accepts notifications from the Superfly server.

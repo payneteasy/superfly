@@ -18,16 +18,6 @@
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-common</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core-tiger</artifactId>
-			<scope>test</scope>
-		</dependency>
 	    <dependency>
 	    	<groupId>commons-digester</groupId>
 	    	<artifactId>commons-digester</artifactId>
