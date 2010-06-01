@@ -6,10 +6,14 @@
     </plugin-info>
     	
 	<servlet-filter name="logoutNotificationSinkFilter"  key="logoutNotificationSinkFilter"
-			class="com.payneteasy.superfly.client.session.LogoutNotificationSinkFilter"
+			class="com.payneteasy.superfly.client.session.DefaultProtectedLogoutNotificationSinkFilter"
 			location="after-encoding" weight="0">
 		<description>Destroys sessions for users which were logged out on the Superfly server.</description>
 		<url-pattern>/*</url-pattern>
+		<init-param>
+			<param-name>propertiesResource</param-name>
+			<param-value>classpath:superfly/superfly.properties</param-value>
+		</init-param>
 		<dispatcher>REQUEST</dispatcher>
 	</servlet-filter>
 	
@@ -18,6 +22,10 @@
 			location="after-encoding" weight="10">
 		<description>Destroys users cache and makes users to be refetched from the Superfly server.</description>
 		<url-pattern>/*</url-pattern>
+		<init-param>
+			<param-name>propertiesResource</param-name>
+			<param-value>classpath:superfly/superfly.properties</param-value>
+		</init-param>
 		<dispatcher>REQUEST</dispatcher>
 	</servlet-filter>
 		

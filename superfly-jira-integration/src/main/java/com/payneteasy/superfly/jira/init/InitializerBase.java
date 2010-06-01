@@ -1,10 +1,5 @@
 package com.payneteasy.superfly.jira.init;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -18,10 +13,9 @@ import com.googlecode.xremoting.core.spi.Requester;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.client.CommaDelimitedListActionDescriptionCollector;
 import com.payneteasy.superfly.client.SuperflyDataSender;
+import com.payneteasy.superfly.client.utils.CommonUtils;
 
 public class InitializerBase {
-	
-	private final String CLASSPATH_PREFIX = "classpath:";
 	
 	protected Properties properties;
 	protected Initializer initializer;
@@ -50,49 +44,11 @@ public class InitializerBase {
 	}
 
 	protected Properties loadProperties(String propsLocation) {
-		InputStream propsIS = null;
-		Properties properties;
-		try {
-			if (propsLocation.startsWith(CLASSPATH_PREFIX)) {
-				propsIS = getInputStreamFromClasspath(propsLocation);
-			} else {
-				propsIS = getInputStreamFromFile(propsLocation);
-			}
-			if (propsIS == null) {
-				throw new IllegalStateException("Null properties stream: please check whether resource exists: " + propsLocation);
-			}
-			properties = new Properties();
-			properties.load(propsIS);
-		} catch (IOException e) {
-			throw new IllegalStateException("Could not load properties from the following location: " + propsLocation, e);
-		} finally {
-			if (propsIS != null) {
-				try {
-					propsIS.close();
-				} catch (IOException e) {
-					// ignoring
-				}
-			}
-		}
-		return properties;
+		return CommonUtils.loadPropertiesThrowing(propsLocation);
 	}
 	
 	protected String getProperty(String key) {
 		return properties.getProperty(key);
-	}
-
-	protected InputStream getInputStreamFromClasspath(String resourceLocation) {
-		InputStream propsIS;
-		String location = resourceLocation.substring(CLASSPATH_PREFIX.length());
-		propsIS = getClass().getClassLoader().getResourceAsStream(location);
-		return propsIS;
-	}
-	
-	protected InputStream getInputStreamFromFile(String filename)
-			throws FileNotFoundException {
-		InputStream propsIS;
-		propsIS = new FileInputStream(filename);
-		return propsIS;
 	}
 	
 	protected SSOService createSSOService() throws MalformedURLException {
@@ -110,13 +66,13 @@ public class InitializerBase {
 		URL keystoreUrl = null;
 		URL truststoreUrl = null;
 		if (keystoreResource != null) {
-			keystoreUrl = getResourceUrl(keystoreResource);
+			keystoreUrl = CommonUtils.getResourceUrl(keystoreResource);
 			if (keystoreUrl == null) {
 				throw new IllegalStateException("Did not find a resource: " + keystoreResource);
 			}
 		}
 		if (truststoreResource != null) {
-			truststoreUrl = getResourceUrl(truststoreResource);
+			truststoreUrl = CommonUtils.getResourceUrl(truststoreResource);
 			if (truststoreUrl == null) {
 				throw new IllegalStateException("Did not find a resource: " + truststoreResource);
 			}
@@ -135,21 +91,4 @@ public class InitializerBase {
 		return httpClient;
 	}
 	
-	protected URL getResourceUrl(String location) throws MalformedURLException {
-		if (location.startsWith(CLASSPATH_PREFIX)) {
-			String loc = location.substring(CLASSPATH_PREFIX.length());
-			return getClasspathResourceUrl(loc);
-		} else {
-			return getFileResourceUrl(location);
-		}
-	}
-
-	protected URL getClasspathResourceUrl(String loc) {
-		return getClass().getClassLoader().getResource(loc);
-	}
-	
-	protected URL getFileResourceUrl(String location) throws MalformedURLException {
-		return new File(location).toURI().toURL();
-	}
-
 }

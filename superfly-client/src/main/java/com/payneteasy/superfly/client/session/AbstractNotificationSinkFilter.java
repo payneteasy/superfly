@@ -16,15 +16,11 @@ import javax.servlet.http.HttpServletRequest;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractNotificationSinkFilter implements Filter {
-
-	public AbstractNotificationSinkFilter() {
-		super();
-	}
-
+	
 	protected abstract boolean doFilterRequest(HttpServletRequest request);
 
 	protected abstract boolean acceptsNotificationType(String notificationType);
-
+	
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
@@ -34,12 +30,18 @@ public abstract class AbstractNotificationSinkFilter implements Filter {
 		if ("POST".equals(request.getMethod())) {
 			String notificationType = request.getParameter(getSuperflyNotificationParameterName());
 			if (notificationType != null && acceptsNotificationType(notificationType)) {
-				if (doFilterRequest(request)) {
-					return;
+				if (isAllowed(request)) {
+					if (doFilterRequest(request)) {
+						return;
+					}
 				}
 			}
 		}
 		chain.doFilter(req, resp);
+	}
+	
+	protected boolean isAllowed(HttpServletRequest request) {
+		return true;
 	}
 
 	protected String getSuperflyNotificationParameterName() {

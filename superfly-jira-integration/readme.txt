@@ -131,6 +131,8 @@
         supply here
       - CN of the client certificate must match the subsystem name you created
         for this Jira instance on Superfly server
+    * notification.allowed.ips defines a comma-separated list of IPs from which
+      notifications are allowed. If it's empty, no restrictions will be made.
 
 
   2. Superfly server configuration
