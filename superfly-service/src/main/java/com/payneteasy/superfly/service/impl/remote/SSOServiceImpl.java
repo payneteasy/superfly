@@ -60,14 +60,16 @@ public class SSOServiceImpl implements SSOService {
 				obtainSubsystemIdentifier(subsystemIdentifier), principalName);
 	}
 	
-	protected String obtainSubsystemIdentifier(String systemIdentifier) {
-		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
-	}
-
+	/**
+	 * @see SSOService#registerUser(String, String, String, long, String)
+	 */
 	public void registerUser(String username, String password, String email,
 			long subsystemId, String principalName) {
-		
-		
+		internalSSOService.registerUser(username, password, email, subsystemId, principalName);
+	}
+	
+	protected String obtainSubsystemIdentifier(String systemIdentifier) {
+		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
 }

@@ -13,14 +13,16 @@
   	superfly-remote-api-xxx.jar
   	superfly-common-xxx.jar
   	superfly-client-xxx.jar
-  	superfly-client-opt-xxx.jar
-  	superfly-httpclient-ssl-xxx.jar
   	superfly-jira-integration-xxx.jar
-  	httpclient-3.1.jar
-  	spring-2.5.6.jar
-  	slf4j-api-1.4.2.jar
-  	slf4j-log4j12-1.4.2.jar
+  	httpclient-3.x.jar (if not there yet)
+  	slf4j-api-xxx.jar (if not there yet)
+  	slf4j-log4j12-xxx.jar (if not there yet)
   3. Modify WEB-INF/web.xml:
+    3.0. Please note that if you're deploying to Jira 4.0 or higher, you don't
+      need to define filters, filter mappings, context params or context
+      listeners. For Jira 4.0 or higher, you only need to explicitly define the
+      following listener: com.payneteasy.superfly.client.session.SessionMappingMaintainingListener
+      (it's the last in section 3.3). 
   	3.1. Add the following code after all other filter definitions:
   	
 <!-- Superfly:START -->
@@ -50,15 +52,13 @@
 	3.3. Add the following code anywhere where listener definitions are allowed
 	(for instance, after all listeners):
 	
-    <!-- Superfly:START - Spring Context Loader Listener that will init Superfly stuff -->
+    <!-- Superfly:START - Listeners -->
     <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>
-        	classpath:superfly/context.xml
-        </param-value>
+        <param-name>superfly-properties-location</param-name>
+        <param-value>classpath:superfly/superfly.properties</param-value>
     </context-param>
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>com.payneteasy.superfly.jira.init.InitializerContextListener</listener-class>
     </listener>
     <listener>
 		<listener-class>com.payneteasy.superfly.client.session.SessionMappingMaintainingListener</listener-class>
@@ -66,7 +66,8 @@
     <!-- Superfly:END -->
 
   4. Modify WEB-INF/classes/osuser.xml
-    4.1. Comment out the following provider definitions:
+    4.1. Comment out the following provider definitions (note that class names
+        may be different for different Jira versions):
     
 	<provider class="com.atlassian.core.ofbiz.osuser.CoreOFBizCredentialsProvider">
 		<property name="exclusive-access">true</property>
@@ -80,7 +81,7 @@
 		<property name="exclusive-access">true</property>
 	</provider>
 	
-	4.2. Add the following after the commented-out lines:
+	4.2. Add the following after the lines which were commented out:
 	
 <!-- Superfly:START -->
     <provider class="com.payneteasy.superfly.jira.provider.SuperflyCredentialsProvider"/>
@@ -88,18 +89,19 @@
     <provider class="com.payneteasy.superfly.jira.provider.SuperflyProfileProvider"/>
 <!-- Superfly:END -->
 
-  5. Modify propertyset.xml: add the following lines:
+  5. Modify WEB-INF/classes/propertyset.xml: add the following lines:
 	
     <!-- Superfly:START -->
     <propertyset name="superfly" class="com.payneteasy.superfly.jira.provider.SuperflyPropertySet"/>
     <!-- Superfly:END -->
     
-  6. Modify seraph-config.xml:
-    6.1. Comment out the following line:
+  6. Modify WEB-INF/classes/seraph-config.xml:
+    6.1. Comment out the following line (note that class name may be different
+        for different Jira versions):
     
 		<authenticator class="com.atlassian.seraph.auth.DefaultAuthenticator"/>
 		
-	6.2. Add the following just after the commented-out line:
+	6.2. Add the following just after the line which was commented out:
 	
 <!-- Superfly:START - Jira Authenticator -->
     <authenticator class="com.payneteasy.superfly.jira.auth.SuperflyJiraAuthenticator"/>

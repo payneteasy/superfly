@@ -110,12 +110,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		}
 		return result;
 	}
-
-	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
-		return new SSOUserWithActions(user.getUsername(), user.getEmail(),
-				convertToSSOActions(user.getActions()));
-	}
-
+	
 	public void registerUser(String username, String password, String email,
 			long subsystemId, String principalName) {
 		RegisterUser registerUser = new RegisterUser();
@@ -124,6 +119,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setPassword(password);
 		registerUser.setPrincipalName(principalName);
 		registerUser.setSubsystemId(subsystemId);
-           userDao.registerUser(registerUser);
+        userDao.registerUser(registerUser);
+	}
+
+	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
+		return new SSOUserWithActions(user.getUsername(), user.getEmail(),
+				convertToSSOActions(user.getActions()));
 	}
 }

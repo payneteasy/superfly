@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 public class UserWithActions implements Serializable {
+	private static final long serialVersionUID = -5266387450864343102L;
+
 	private String username;
 	private String email;
 	private List<AuthAction> actions;

@@ -6,6 +6,7 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
   begin
     select u.user_id,
            u.user_name,
+           u.email user_email,
            r.role_name,
            r.principal_name,
            ss.callback_information,
@@ -45,6 +46,7 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
     union
     select u.user_id,
            u.user_name,
+           u.email user_email,
            r.role_name,
            r.principal_name,
            ss.callback_information,

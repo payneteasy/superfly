@@ -48,4 +48,17 @@ public interface InternalSSOService {
 	 */
 	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier,
 			String principalName);
+	
+	/**
+	 * Registers a user.
+	 * 
+	 * @param username		name
+	 * @param password		user's password
+	 * @param email			user's email
+	 * @param subsystemId	ID of a subsystem to which he's to be given a role
+	 * @param principalName	principal name of a role which should be given to
+	 * a user
+	 */
+	void registerUser(String username, String password, String email,
+			long subsystemId, String principalName);
 }

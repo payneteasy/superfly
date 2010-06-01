@@ -138,15 +138,10 @@ public class UserServiceImpl implements UserService {
 			rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
 			rolesToGrantActionsIds.retainAll(rolesToAddIds);
 		}
-		RoutineResult result = userDao
-				.changeUserRoles(
-						userId,
-						StringUtils
-								.collectionToCommaDelimitedString(rolesToAddIds),
-						StringUtils
-								.collectionToCommaDelimitedString(rolesToRemoveIds),
-						StringUtils
-								.collectionToCommaDelimitedString(rolesToGrantActionsIds));
+		RoutineResult result = userDao.changeUserRoles(userId,
+				StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
+				StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
+				StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
@@ -192,13 +187,10 @@ public class UserServiceImpl implements UserService {
 	public RoutineResult changeUserRoleActions(long userId,
 			Collection<Long> roleActionToAddIds,
 			Collection<Long> roleActionToRemoveIds) {
-		RoutineResult result = userDao
-				.changeUserRoleActions(
-						userId,
-						com.payneteasy.superfly.utils.StringUtils
-								.collectionToCommaDelimitedString(roleActionToAddIds),
-						com.payneteasy.superfly.utils.StringUtils
-								.collectionToCommaDelimitedString(roleActionToRemoveIds));
+		RoutineResult result = userDao.changeUserRoleActions(
+				userId,
+				com.payneteasy.superfly.utils.StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
+				com.payneteasy.superfly.utils.StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}

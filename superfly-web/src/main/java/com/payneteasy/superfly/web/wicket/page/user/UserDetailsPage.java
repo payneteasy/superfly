@@ -51,7 +51,7 @@ public class UserDetailsPage extends BasePage {
 						.getSubsystemByName(rfc);
 				actionsParameters.add("subId", String
 						.valueOf(subsystem.getId()));
-				item.add(new BookmarkablePageLink("add-role",
+				item.add(new BookmarkablePageLink<ChangeUserActionsPage>("add-role",
 						ChangeUserRolesPage.class, actionsParameters));
 				
 				List<UIRoleWithActions> roles = sort.getRoles(rfc);
@@ -69,7 +69,7 @@ public class UserDetailsPage extends BasePage {
 								"user-action", ChangeUserActionsPage.class,params);
 						it.add(userAction);
 						userAction.add(new Label("role-name", role.getName()));
-						it.add(new Link("delete-role"){
+						it.add(new Link<Void>("delete-role"){
 
 							@Override
 							public void onClick() {
