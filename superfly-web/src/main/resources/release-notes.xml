@@ -60,5 +60,12 @@
     			was moved to superfly-spring-security-2.0.
     		</description>
     	</item>
+    	<item type="task">
+    		<name>Jira integration</name>
+    		<description>
+    			It's possible to configure Jira to use Superfly as a security
+    			provider.
+    		</description>
+    	</item>
     </release>
 </news>
