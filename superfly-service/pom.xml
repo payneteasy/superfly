@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<artifactId>jdbc-proc-daofactory</artifactId>
-			<groupId>com.googlecode.jdbc-proc</groupId>
+			<groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

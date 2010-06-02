@@ -156,8 +156,8 @@
 			</dependency>
 			<dependency>
 				<artifactId>jdbc-proc-daofactory</artifactId>
-				<groupId>com.googlecode.jdbc-proc</groupId>
-				<version>1.0-23</version>
+				<groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
+				<version>1.0-27</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
