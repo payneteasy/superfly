@@ -45,7 +45,7 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
            and instr(concat(',', coalesce(i_ssys_list, ss.ssys_id), ','),
                      concat(',', ss.ssys_id, ',')
               ) > 0
-     where ur.user_user_id = i_user_id
+     where u.user_id = i_user_id
     union
     select u.user_id,
            u.user_name,
@@ -81,7 +81,7 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
            and instr(concat(',', coalesce(i_ssys_list, ss.ssys_id), ','),
                      concat(',', ss.ssys_id, ',')
               ) > 0
-     where ur.user_user_id = i_user_id;
+     where u.user_id = i_user_id;
   end
 $$
 delimiter ;
