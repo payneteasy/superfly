@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -82,8 +83,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
 		actionDao.saveActions(subsystemIdentifier, actions);
-		logger.debug("Saved actions for subsystem " + subsystemIdentifier
-				+ ": " + actions.size());
+		if (logger.isDebugEnabled()) {
+			logger.debug("Saved actions for subsystem " + subsystemIdentifier
+					+ ": " + actions.size());
+			logger.debug("Actions are: " + Arrays.asList(actionDescriptions));
+		}
 	}
 
 	private List<ActionToSave> convertActionDescriptions(
