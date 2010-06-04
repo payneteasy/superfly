@@ -51,16 +51,17 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 			throw new CollectionException(e);
 		}
 		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Collected the following actions: " + list);
-		}
-		
 		List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
 		for (ActionDescriptionBean bean : list) {
 			ActionDescription action = new ActionDescription();
 			BeanUtils.copyProperties(bean, action);
 			actions.add(action);
 		}
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Collected the following actions: " + actions);
+		}
+
 		
 		return actions;
 	}
