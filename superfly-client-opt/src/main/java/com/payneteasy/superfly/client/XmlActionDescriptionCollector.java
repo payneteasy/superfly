@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.digester.Digester;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
@@ -20,6 +22,8 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  * @author Roman Puchkovskiy
  */
 public class XmlActionDescriptionCollector implements ActionDescriptionCollector {
+	
+	private static final Logger logger = LoggerFactory.getLogger(XmlActionDescriptionCollector.class);
 	
 	private Resource resource;
 
@@ -45,6 +49,10 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 			throw new CollectionException(e);
 		} catch (SAXException e) {
 			throw new CollectionException(e);
+		}
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Collected the following actions: " + list);
 		}
 		
 		List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());

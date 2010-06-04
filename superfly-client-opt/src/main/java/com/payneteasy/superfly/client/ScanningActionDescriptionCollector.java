@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -32,6 +34,8 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  */
 public class ScanningActionDescriptionCollector implements
 		ActionDescriptionCollector {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ScanningActionDescriptionCollector.class);
 	
 	protected static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
 	
@@ -77,6 +81,11 @@ public class ScanningActionDescriptionCollector implements
 				throw new CollectionException(e);
 			}
 		}
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Collected the following actions: " + names);
+		}
+		
 		return buildDescriptions(names);
 	}
 
