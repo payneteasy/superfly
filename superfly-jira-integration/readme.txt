@@ -15,7 +15,7 @@
   	superfly-client-xxx.jar
   	superfly-jira-integration-xxx.jar
   	xremoting-1.0-3.jar
-  	httpclient-3.x.jar (if not there yet)
+  	commons-httpclient-3.x.jar (if not there yet)
   	slf4j-api-xxx.jar (if not there yet)
   	slf4j-log4j12-xxx.jar (if not there yet)
   3. Modify WEB-INF/web.xml:

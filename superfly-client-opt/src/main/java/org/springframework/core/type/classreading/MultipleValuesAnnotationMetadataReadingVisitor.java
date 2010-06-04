@@ -15,94 +15,74 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.springframework.asm.AnnotationVisitor;
+import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Type;
 import org.springframework.asm.commons.EmptyVisitor;
 import org.springframework.core.type.AnnotationMetadata;
 
-public class MultipleValuesAnnotationMetadataReadingVisitor
-		extends ClassMetadataReadingVisitor implements AnnotationMetadata {
-	
-	private final Map<String, Map<String, Object>> attributesMap = new LinkedHashMap<String, Map<String, Object>>();
+import com.payneteasy.superfly.client.classreading.AnnotationAttributesSource;
+import com.payneteasy.superfly.client.classreading.AnnotationMetadataHolder;
+import com.payneteasy.superfly.client.classreading.MethodAnnotationMetadataSource;
 
-	private final Map<String, Set<String>> metaAnnotationMap = new LinkedHashMap<String, Set<String>>();
+public class MultipleValuesAnnotationMetadataReadingVisitor
+		extends ClassMetadataReadingVisitor implements AnnotationMetadata,
+		MethodAnnotationMetadataSource {
+
+	private final AnnotationMetadataHolder classAnnotationMetadataHolder = new AnnotationMetadataHolder();
+	private final Map<String, AnnotationMetadataHolder> methodAnnotationMetadataHolders = new HashMap<String, AnnotationMetadataHolder>();
 
 	private final ClassLoader classLoader;
+	private final boolean visitMethodAnnotations;
 
-	public MultipleValuesAnnotationMetadataReadingVisitor(ClassLoader classLoader) {
+	public MultipleValuesAnnotationMetadataReadingVisitor(ClassLoader classLoader,
+			boolean visitMethodAnnotations) {
 		this.classLoader = classLoader;
+		this.visitMethodAnnotations = visitMethodAnnotations;
 	}
 	
+	@Override
+	public MethodVisitor visitMethod(int access, final String name, final String desc,
+			final String signature, String[] exceptions) {
+		MethodVisitor visitor;
+		if (!visitMethodAnnotations) {
+			visitor = new EmptyVisitor();
+		} else {
+			visitor = new EmptyVisitor() {
+				@Override
+				public AnnotationVisitor visitAnnotation(final String methodAnnotDesc, boolean methodAnnotVisible) {
+					final String annotationClassName = Type.getType(methodAnnotDesc).getClassName();
+					AnnotationMetadataHolder holder = methodAnnotationMetadataHolders.get(desc);
+					if (holder == null) {
+						holder = new AnnotationMetadataHolder();
+						methodAnnotationMetadataHolders.put(desc, holder);
+					}
+					return new AnnotationValueExtractingVisitor(annotationClassName, holder);
+				}
+			};
+		}
+		return visitor;
+	}
+
+	@Override
 	public AnnotationVisitor visitAnnotation(final String desc, boolean visible) {
-		final String className = Type.getType(desc).getClassName();
-		final Map<String, List<Object>> attributes = new LinkedHashMap<String, List<Object>>();
-		return new EmptyVisitor() {
-			public void visit(String name, Object value) {
-				// Explicitly defined annotation attribute value.
-				List<Object> existingValues = attributes.get(name);
-				if (existingValues == null) {
-					existingValues = new ArrayList<Object>();
-					attributes.put(name, existingValues);
-				}
-				existingValues.add(value);
-			}
-			@SuppressWarnings("unchecked")
-			public void visitEnd() {
-				try {
-					Class annotationClass = classLoader.loadClass(className);
-					// Check declared default values of attributes in the annotation type.
-					Method[] annotationAttributes = annotationClass.getMethods();
-					for (int i = 0; i < annotationAttributes.length; i++) {
-						Method annotationAttribute = annotationAttributes[i];
-						String attributeName = annotationAttribute.getName();
-						Object defaultValue = annotationAttribute.getDefaultValue();
-						if (defaultValue != null && !attributes.containsKey(attributeName)) {
-							attributes.put(attributeName, Collections.singletonList(defaultValue));
-						}
-					}
-					// Register annotations that the annotation type is annotated with.
-					Annotation[] metaAnnotations = annotationClass.getAnnotations();
-					Set<String> metaAnnotationTypeNames = new HashSet<String>();
-					for (Annotation metaAnnotation : metaAnnotations) {
-						metaAnnotationTypeNames.add(metaAnnotation.annotationType().getName());
-					}
-					metaAnnotationMap.put(className, metaAnnotationTypeNames);
-				}
-				catch (ClassNotFoundException ex) {
-					// Class not found - can't determine meta-annotations.
-				}
-				
-				Map<String, Object> attrs = new HashMap<String, Object>();
-				for (Entry<String, List<Object>> entry : attributes.entrySet()) {
-					String attrName = entry.getKey();
-					List<Object> attrValues = entry.getValue();
-					Object singleValue;
-					if (attrValues.size() > 1) {
-						singleValue = convertToArray(attrValues);
-					} else {
-						singleValue = attrValues.get(0);
-					}
-					attrs.put(attrName, singleValue);
-				}
-				
-				attributesMap.put(className, attrs);
-			}
-		};
+		final String annotationClassName = Type.getType(desc).getClassName();
+		return new AnnotationValueExtractingVisitor(annotationClassName, classAnnotationMetadataHolder);
 	}
 	
 	public Set<String> getAnnotationTypes() {
-		return this.attributesMap.keySet();
+		return this.classAnnotationMetadataHolder.getAttributesMap().keySet();
 	}
 
 	public boolean hasAnnotation(String annotationType) {
-		return this.attributesMap.containsKey(annotationType);
+		return this.classAnnotationMetadataHolder.getAttributesMap().containsKey(annotationType);
 	}
 
 	public Set<String> getMetaAnnotationTypes(String annotationType) {
-		return this.metaAnnotationMap.get(annotationType);
+		return this.classAnnotationMetadataHolder.getMetaAnnotationMap().get(annotationType);
 	}
 
 	public boolean hasMetaAnnotation(String metaAnnotationType) {
-		Collection<Set<String>> allMetaTypes = this.metaAnnotationMap.values();
+		Collection<Set<String>> allMetaTypes = this.classAnnotationMetadataHolder.getMetaAnnotationMap().values();
 		for (Set<String> metaTypes : allMetaTypes) {
 			if (metaTypes.contains(metaAnnotationType)) {
 				return true;
@@ -112,7 +92,7 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 	}
 
 	public Map<String, Object> getAnnotationAttributes(String annotationType) {
-		return this.attributesMap.get(annotationType);
+		return this.classAnnotationMetadataHolder.getAttributesMap().get(annotationType);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,6 +120,90 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 			}
 		}
 		return result;
+	}
+	
+	private final class AnnotationValueExtractingVisitor extends EmptyVisitor {
+		private final Map<String, List<Object>> attributes;
+		private final String annotationClassName;
+		private final AnnotationMetadataHolder annotationMetadataHolder;
+
+		private AnnotationValueExtractingVisitor(String annotationClassName,
+				AnnotationMetadataHolder annotationMetadataHolder) {
+			this.attributes = new LinkedHashMap<String, List<Object>>();
+			this.annotationClassName = annotationClassName;
+			this.annotationMetadataHolder = annotationMetadataHolder;
+		}
+		
+		public void visit(String name, Object value) {
+			// Explicitly defined annotation attribute value.
+			List<Object> existingValues = attributes.get(name);
+			if (existingValues == null) {
+				existingValues = new ArrayList<Object>();
+				attributes.put(name, existingValues);
+			}
+			existingValues.add(value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public void visitEnd() {
+			try {
+				Class annotationClass = classLoader.loadClass(annotationClassName);
+				// Check declared default values of attributes in the annotation type.
+				Method[] annotationAttributes = annotationClass.getMethods();
+				for (int i = 0; i < annotationAttributes.length; i++) {
+					Method annotationAttribute = annotationAttributes[i];
+					String attributeName = annotationAttribute.getName();
+					Object defaultValue = annotationAttribute.getDefaultValue();
+					if (defaultValue != null && !attributes.containsKey(attributeName)) {
+						attributes.put(attributeName, Collections.singletonList(defaultValue));
+					}
+				}
+				// Register annotations that the annotation type is annotated with.
+				Annotation[] metaAnnotations = annotationClass.getAnnotations();
+				Set<String> metaAnnotationTypeNames = new HashSet<String>();
+				for (Annotation metaAnnotation : metaAnnotations) {
+					metaAnnotationTypeNames.add(metaAnnotation.annotationType().getName());
+				}
+				annotationMetadataHolder.getMetaAnnotationMap().put(annotationClassName, metaAnnotationTypeNames);
+			}
+			catch (ClassNotFoundException ex) {
+				// Class not found - can't determine meta-annotations.
+			}
+			
+			Map<String, Object> attrs = new HashMap<String, Object>();
+			for (Entry<String, List<Object>> entry : attributes.entrySet()) {
+				String attrName = entry.getKey();
+				List<Object> attrValues = entry.getValue();
+				Object singleValue;
+				if (attrValues.size() > 1) {
+					singleValue = convertToArray(attrValues);
+				} else {
+					singleValue = attrValues.get(0);
+				}
+				attrs.put(attrName, singleValue);
+			}
+			
+			annotationMetadataHolder.getAttributesMap().put(annotationClassName, attrs);
+		}
+	}
+
+	public Map<String, AnnotationAttributesSource> getMethodsAnnotationMetadata() {
+		Map<String, AnnotationAttributesSource> map = new HashMap<String, AnnotationAttributesSource>();
+		for (Entry<String, AnnotationMetadataHolder> entry : methodAnnotationMetadataHolders.entrySet()) {
+			map.put(entry.getKey(), createAnnotationAttributesSource(entry.getValue()));
+		}
+		return map;
+	}
+
+	protected AnnotationAttributesSource createAnnotationAttributesSource(
+			final AnnotationMetadataHolder holder) {
+		return new AnnotationAttributesSource() {
+			
+			public Map<String, Object> getAnnotationAttributes(
+					String annotationClassName) {
+				return holder.getAttributesMap().get(annotationClassName);
+			}
+		};
 	}
 
 }

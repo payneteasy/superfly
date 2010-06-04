@@ -12,20 +12,21 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.MultipleAnnotationValuesCachingMetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.client.classreading.AnnotationAttributesSource;
+import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReader;
+import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReaderFactory;
 import com.payneteasy.superfly.client.exception.CollectionException;
 
 /**
  * ActionDescriptionCollector implementation which scans classes in the given
  * packages looking for a given annotation (by default Secured) and extracts
  * action names from its attributes.
- * Descriptions of resulting actions are null.
+ * Descriptions of the resulting actions are null.
  * 
  * @author Roman Puchkovskiy
  */
@@ -37,7 +38,7 @@ public class ScanningActionDescriptionCollector implements
 	private String[] basePackages = new String[0];
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
-	private MetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
+	private MethodReadingMetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
 	private Class<? extends Annotation> annotationClass;
 	private ValuesExtractor valuesExtractor = new DefaultValuesExtractor();
 
@@ -55,7 +56,7 @@ public class ScanningActionDescriptionCollector implements
 		this.resourcePattern = resourcePattern;
 	}
 
-	public void setMetadataReaderFactory(MetadataReaderFactory metadataReaderFactory) {
+	public void setMetadataReaderFactory(MethodReadingMetadataReaderFactory metadataReaderFactory) {
 		this.metadataReaderFactory = metadataReaderFactory;
 	}
 
@@ -86,18 +87,32 @@ public class ScanningActionDescriptionCollector implements
 		Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath);
 		for (Resource resource : resources) {
 			if (resource.isReadable()) {
-				MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(resource);
+				MethodReadingMetadataReader metadataReader = this.metadataReaderFactory.getMethodReadingMetadataReader(resource);
+				
+				// class annotations
 				Map<String, Object> attributes = metadataReader
 						.getAnnotationMetadata()
 						.getAnnotationAttributes(annotationClass.getName());
-				if (attributes != null) {
-					Object value = attributes.get(null);
-					if (value != null) {
-						String[] values = valuesExtractor.extract(value);
-						for (String v : values) {
-							names.add(v);
-						}
-					}
+				processAnnotationAttributes(names, attributes);
+				
+				// method annotations
+				Map<String, AnnotationAttributesSource> methodsAnnotationMetadata = metadataReader.getMethodAnnotationMetadataSource().getMethodsAnnotationMetadata();
+				for (AnnotationAttributesSource attributesSource : methodsAnnotationMetadata.values()) {
+					attributes = attributesSource.getAnnotationAttributes(annotationClass.getName());
+					processAnnotationAttributes(names, attributes);
+				}
+			}
+		}
+	}
+
+	protected void processAnnotationAttributes(Set<String> names,
+			Map<String, Object> attributes) {
+		if (attributes != null) {
+			Object value = attributes.get(null);
+			if (value != null) {
+				String[] values = valuesExtractor.extract(value);
+				for (String v : values) {
+					names.add(v);
 				}
 			}
 		}

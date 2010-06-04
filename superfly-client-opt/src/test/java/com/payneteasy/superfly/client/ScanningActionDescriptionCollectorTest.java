@@ -20,7 +20,7 @@ public class ScanningActionDescriptionCollectorTest extends TestCase {
 		collector.setAnnotationClass(Secured.class);
 		List<ActionDescription> descriptions = collector.collect();
 		assertNotNull("Null result", descriptions);
-		assertEquals("Wrong number of actions collected", 5, descriptions.size());
+		assertEquals("Wrong number of actions collected", 6, descriptions.size());
 
 		Set<String> names = new HashSet<String>(descriptions.size());
 		for (ActionDescription d : descriptions) {
@@ -33,5 +33,6 @@ public class ScanningActionDescriptionCollectorTest extends TestCase {
 		assertTrue(names.contains("multiple1"));
 		assertTrue(names.contains("multiple2"));
 		assertTrue(names.contains("nested"));
-	}
+		assertTrue(names.contains("method"));
+	}	
 }

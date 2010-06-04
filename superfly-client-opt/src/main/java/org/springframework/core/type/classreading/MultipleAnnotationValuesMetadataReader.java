@@ -4,7 +4,10 @@ import org.springframework.asm.ClassReader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 
-public class MultipleAnnotationValuesMetadataReader implements MetadataReader {
+import com.payneteasy.superfly.client.classreading.MethodAnnotationMetadataSource;
+import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReader;
+
+public class MultipleAnnotationValuesMetadataReader implements MethodReadingMetadataReader {
 	
 	private final ClassReader classReader;
 
@@ -23,7 +26,13 @@ public class MultipleAnnotationValuesMetadataReader implements MetadataReader {
 	}
 	
 	public AnnotationMetadata getAnnotationMetadata() {
-		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader);
+		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader, false);
+		this.classReader.accept(visitor, true);
+		return visitor;
+	}
+
+	public MethodAnnotationMetadataSource getMethodAnnotationMetadataSource() {
+		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader, true);
 		this.classReader.accept(visitor, true);
 		return visitor;
 	}

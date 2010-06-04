@@ -11,10 +11,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
+import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReader;
+import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReaderFactory;
+
 public class MultipleAnnotationValuesCachingMetadataReaderFactory implements
-		MetadataReaderFactory {
+		MethodReadingMetadataReaderFactory {
 	
-	private final Map<Resource, MetadataReader> classReaderCache = new HashMap<Resource, MetadataReader>();
+	private final Map<Resource, MethodReadingMetadataReader> classReaderCache = new HashMap<Resource, MethodReadingMetadataReader>();
 	
 	private final ResourceLoader resourceLoader;
 
@@ -44,15 +47,15 @@ public class MultipleAnnotationValuesCachingMetadataReaderFactory implements
 	}
 
 
-	public MetadataReader getMetadataReader(String className) throws IOException {
+	public MethodReadingMetadataReader getMetadataReader(String className) throws IOException {
 		String resourcePath = ResourceLoader.CLASSPATH_URL_PREFIX +
 				ClassUtils.convertClassNameToResourcePath(className) + ClassUtils.CLASS_FILE_SUFFIX;
 		return getMetadataReader(this.resourceLoader.getResource(resourcePath));
 	}
 	
-	public MetadataReader getMetadataReader(Resource resource) throws IOException {
+	public MethodReadingMetadataReader getMetadataReader(Resource resource) throws IOException {
 		synchronized (this.classReaderCache) {
-			MetadataReader metadataReader = this.classReaderCache.get(resource);
+			MethodReadingMetadataReader metadataReader = this.classReaderCache.get(resource);
 			if (metadataReader == null) {
 				metadataReader = doGetMetadataReader(resource);
 				this.classReaderCache.put(resource, metadataReader);
@@ -61,7 +64,18 @@ public class MultipleAnnotationValuesCachingMetadataReaderFactory implements
 		}
 	}
 	
-	private MetadataReader doGetMetadataReader(Resource resource) throws IOException {
+	public MethodReadingMetadataReader getMethodReadingMetadataReader(
+			String className) throws IOException {
+		return getMetadataReader(className);
+	}
+
+	public MethodReadingMetadataReader getMethodReadingMetadataReader(
+			Resource resource) throws IOException {
+		return getMetadataReader(resource);
+	}
+
+	
+	private MethodReadingMetadataReader doGetMetadataReader(Resource resource) throws IOException {
 		InputStream is = resource.getInputStream();
 		try {
 			return new MultipleAnnotationValuesMetadataReader(new ClassReader(is), this.resourceLoader.getClassLoader());
