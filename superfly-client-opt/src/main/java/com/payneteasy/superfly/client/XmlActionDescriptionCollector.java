@@ -61,7 +61,6 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 		if (logger.isDebugEnabled()) {
 			logger.debug("Collected the following actions: " + actions);
 		}
-
 		
 		return actions;
 	}
