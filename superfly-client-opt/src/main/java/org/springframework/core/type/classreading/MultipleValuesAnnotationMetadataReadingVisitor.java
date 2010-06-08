@@ -44,6 +44,7 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 	public MethodVisitor visitMethod(int access, final String name, final String desc,
 			final String signature, String[] exceptions) {
 		MethodVisitor visitor;
+		final String methodKey = name + ":" + desc;
 		if (!visitMethodAnnotations) {
 			visitor = new EmptyVisitor();
 		} else {
@@ -51,10 +52,10 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 				@Override
 				public AnnotationVisitor visitAnnotation(final String methodAnnotDesc, boolean methodAnnotVisible) {
 					final String annotationClassName = Type.getType(methodAnnotDesc).getClassName();
-					AnnotationMetadataHolder holder = methodAnnotationMetadataHolders.get(desc);
+					AnnotationMetadataHolder holder = methodAnnotationMetadataHolders.get(methodKey);
 					if (holder == null) {
 						holder = new AnnotationMetadataHolder();
-						methodAnnotationMetadataHolders.put(desc, holder);
+						methodAnnotationMetadataHolders.put(methodKey, holder);
 					}
 					return new AnnotationValueExtractingVisitor(annotationClassName, holder);
 				}
@@ -187,12 +188,12 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 		}
 	}
 
-	public Map<String, AnnotationAttributesSource> getMethodsAnnotationMetadata() {
-		Map<String, AnnotationAttributesSource> map = new HashMap<String, AnnotationAttributesSource>();
-		for (Entry<String, AnnotationMetadataHolder> entry : methodAnnotationMetadataHolders.entrySet()) {
-			map.put(entry.getKey(), createAnnotationAttributesSource(entry.getValue()));
+	public Set<AnnotationAttributesSource> getMethodsAnnotationMetadata() {
+		Set<AnnotationAttributesSource> set = new HashSet<AnnotationAttributesSource>();
+		for (AnnotationMetadataHolder holder : methodAnnotationMetadataHolders.values()) {
+			set.add(createAnnotationAttributesSource(holder));
 		}
-		return map;
+		return set;
 	}
 
 	protected AnnotationAttributesSource createAnnotationAttributesSource(

@@ -105,8 +105,8 @@ public class ScanningActionDescriptionCollector implements
 				processAnnotationAttributes(names, attributes);
 				
 				// method annotations
-				Map<String, AnnotationAttributesSource> methodsAnnotationMetadata = metadataReader.getMethodAnnotationMetadataSource().getMethodsAnnotationMetadata();
-				for (AnnotationAttributesSource attributesSource : methodsAnnotationMetadata.values()) {
+				Set<AnnotationAttributesSource> methodsAnnotationMetadata = metadataReader.getMethodAnnotationMetadataSource().getMethodsAnnotationMetadata();
+				for (AnnotationAttributesSource attributesSource : methodsAnnotationMetadata) {
 					attributes = attributesSource.getAnnotationAttributes(annotationClass.getName());
 					processAnnotationAttributes(names, attributes);
 				}

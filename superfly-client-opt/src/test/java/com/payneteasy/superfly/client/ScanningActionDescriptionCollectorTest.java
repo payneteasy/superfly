@@ -34,5 +34,23 @@ public class ScanningActionDescriptionCollectorTest extends TestCase {
 		assertTrue(names.contains("multiple2"));
 		assertTrue(names.contains("nested"));
 		assertTrue(names.contains("method"));
-	}	
+	}
+	
+	public void testCollectSameParametersMethods() throws CollectionException {
+		ScanningActionDescriptionCollector collector = new ScanningActionDescriptionCollector();
+		collector.setBasePackages(new String[]{getClass().getPackage().getName() + ".test_methods"});
+		collector.setAnnotationClass(Secured.class);
+		List<ActionDescription> descriptions = collector.collect();
+		assertNotNull("Null result", descriptions);
+		assertEquals("Wrong number of actions collected", 2, descriptions.size());
+
+		Set<String> names = new HashSet<String>(descriptions.size());
+		for (ActionDescription d : descriptions) {
+			assertFalse("Duplicate name " + d.getName(), names.contains(d.getName()));
+			names.add(d.getName());
+		}
+		
+		assertTrue(names.contains("method1"));
+		assertTrue(names.contains("method2"));
+	}
 }
