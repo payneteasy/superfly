@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.RegisterUser;
+import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
@@ -21,13 +21,6 @@ import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
  * @author Roman Puchkovskiy
  */
 public interface UserDao {
-	/**
-	 * 
-	 * @param registerUser 
-	 * @return routine result
-	 */
-	@AStoredProcedure(name = "register_user")
-	RoutineResult registerUser(RegisterUser registerUser);
 	/**
 	 * Authenticates a user and, if ok, returns his roles with actions.
 	 * 
@@ -404,6 +397,7 @@ public interface UserDao {
 	@AStoredProcedure(name = "ui_get_user_role_actions")
 	UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds,
 			String actionNameSubstring, String roleNameSubstring);
+	
 	/**
 	 * 
 	 * @param userId
@@ -412,4 +406,13 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_add_subsystem_with_role")
 	RoutineResult addSubsystemWithRole(long userId, long roleId);
+	
+	/**
+	 * Registers a user.
+	 * 
+	 * @param registerUser	user to be registered 
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "register_user")
+	RoutineResult registerUser(UserRegisterRequest registerUser);
 }

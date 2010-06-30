@@ -61,11 +61,12 @@ public class SSOServiceImpl implements SSOService {
 	}
 	
 	/**
-	 * @see SSOService#registerUser(String, String, String, long, String)
+	 * @see SSOService#registerUser(String, String, String, String, String)
 	 */
 	public void registerUser(String username, String password, String email,
-			long subsystemId, String principalName) {
-		internalSSOService.registerUser(username, password, email, subsystemId, principalName);
+			String subsystemIdentifier, String principalName) {
+		internalSSOService.registerUser(username, password, email,
+				obtainSubsystemIdentifier(subsystemIdentifier), principalName);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {

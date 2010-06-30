@@ -3,7 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.RegisterUser;
+import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -59,11 +59,11 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 
 	public void testRegisterUser() {
-		RegisterUser registerUser = new RegisterUser();
+		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername("testRegName");
 		registerUser.setPassword("passw");
 		registerUser.setEmail("reg@gmail.com");
-		registerUser.setSubsystemId(1);
+		registerUser.setSubsystemName("superfly");
 		registerUser.setPrincipalName("principals");
 		RoutineResult result = userDao.registerUser(registerUser);
 		assertRoutineResult(result);

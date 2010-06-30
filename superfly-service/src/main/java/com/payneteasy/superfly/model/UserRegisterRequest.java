@@ -4,13 +4,14 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
-public class RegisterUser implements Serializable {
+public class UserRegisterRequest implements Serializable {
+	private static final long serialVersionUID = -4093140271801747768L;
 	
-    private long userid;
+	private long userid;
 	private String username;
 	private String password;
 	private String email;
-	private long subsystemId;
+	private String subsystemName;
 	private String principalName;
 	
 	@Column(name = "user_id")
@@ -30,6 +31,7 @@ public class RegisterUser implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
 	@Column(name = "user_password")
 	public String getPassword() {
 		return password;
@@ -38,6 +40,7 @@ public class RegisterUser implements Serializable {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 	@Column(name = "user_email")
 	public String getEmail() {
 		return email;
@@ -46,14 +49,16 @@ public class RegisterUser implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	@Column(name = "ssys_id")
-	public long getSubsystemId() {
-		return subsystemId;
+	
+	@Column(name = "subsystem_name")
+	public String getSubsystemName() {
+		return subsystemName;
 	}
 
-	public void setSubsystemId(long subsystemId) {
-		this.subsystemId = subsystemId;
+	public void setSubsystemName(String subsystemName) {
+		this.subsystemName = subsystemName;
 	}
+
 	@Column(name = "principal_list")
 	public String getPrincipalName() {
 		return principalName;

@@ -22,7 +22,7 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.RegisterUser;
+import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
 
@@ -116,13 +116,13 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 	
 	public void registerUser(String username, String password, String email,
-			long subsystemId, String principalName) {
-		RegisterUser registerUser = new RegisterUser();
+			String subsystemIdentifier, String principalName) {
+		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
 		registerUser.setPassword(password);
 		registerUser.setPrincipalName(principalName);
-		registerUser.setSubsystemId(subsystemId);
+		registerUser.setSubsystemName(subsystemIdentifier);
         userDao.registerUser(registerUser);
 	}
 

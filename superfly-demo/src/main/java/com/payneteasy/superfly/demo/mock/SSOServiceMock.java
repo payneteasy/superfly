@@ -70,7 +70,7 @@ public class SSOServiceMock implements SSOService {
 	}
 
 	public void registerUser(String username, String password, String email,
-			long subsystemId, String principalName) throws UserExistsException {
+			String subsystemIdentifier, String principalName) throws UserExistsException {
 	}
 
 }

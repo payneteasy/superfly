@@ -3,7 +3,7 @@ delimiter $$
 create procedure register_user(i_user_name varchar(32),
                                 i_user_password varchar(32),
                                 i_user_email varchar(255),
-                                i_ssys_id int(10),
+                                i_subsystem_name varchar(32),
                                 i_principal_list text,
                                 out o_user_id int(10)
 )
