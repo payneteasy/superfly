@@ -31,8 +31,7 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 
 	public void testGetUsersAndActions() {
-		List<UserWithActions> users = userDao.getUsersAndActions("superfly",
-				"admin");
+		List<UserWithActions> users = userDao.getUsersAndActions("superfly");
 		assertNotNull("Must authenticate successfully", users);
 		assertTrue("Must authenticate successfully", users.size() > 0);
 	}
@@ -64,7 +63,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		registerUser.setPassword("passw");
 		registerUser.setEmail("reg@gmail.com");
 		registerUser.setSubsystemName("superfly");
-		registerUser.setPrincipalName("principals");
+		registerUser.setPrincipalNames("principal1,principal2");
 		RoutineResult result = userDao.registerUser(registerUser);
 		assertRoutineResult(result);
 	}

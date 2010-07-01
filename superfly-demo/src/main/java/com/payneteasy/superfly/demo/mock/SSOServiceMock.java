@@ -50,7 +50,7 @@ public class SSOServiceMock implements SSOService {
 	}
 
 	public List<SSOUserWithActions> getUsersWithActions(
-			String subsystemIdentifier, String principalName) {
+			String subsystemIdentifier) {
 		List<SSOUserWithActions> users = new ArrayList<SSOUserWithActions>();
 		List<SSOAction> actions;
 		
@@ -70,7 +70,8 @@ public class SSOServiceMock implements SSOService {
 	}
 
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String principalName) throws UserExistsException {
+			String subsystemIdentifier, String[] principalNames)
+			throws UserExistsException {
 	}
 
 }

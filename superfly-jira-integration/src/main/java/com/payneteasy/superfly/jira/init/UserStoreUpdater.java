@@ -14,18 +14,16 @@ public class UserStoreUpdater {
 	private SSOService ssoService;
 	private UserStore userStore;
 	private String subsystemIdentifier;
-	private String principalName;
 	private boolean updating = false;
 	private Object updatingMonitor = new Object();
 	private Thread updatingThread = null;
 	
 	public UserStoreUpdater(SSOService ssoService, UserStore userStore,
-			String subsystemIdentifier, String principalName) {
+			String subsystemIdentifier) {
 		super();
 		this.ssoService = ssoService;
 		this.userStore = userStore;
 		this.subsystemIdentifier = subsystemIdentifier;
-		this.principalName = principalName;
 	}
 
 	public void runUpdate() {
@@ -44,7 +42,7 @@ public class UserStoreUpdater {
 					boolean ok = false;
 					while (!ok) {
 						try {
-							userStore.setUsers(ssoService.getUsersWithActions(subsystemIdentifier, principalName));
+							userStore.setUsers(ssoService.getUsersWithActions(subsystemIdentifier));
 							ok = true;
 						} catch (Exception e) {
 							logger.warn("Exception while getting users", e);

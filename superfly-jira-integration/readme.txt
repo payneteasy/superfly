@@ -117,8 +117,6 @@
     * subsystem.name must match the name of a subsystem which you've chosen
       for your Jira instance on the Superfly side; it must match the CN of
       your SSL certificate (default is 'jira')
-    * principal.name must match the name of a principal through which actions
-      are assigned to Jira users (default is 'jira')
     * actions.list must be a comma-separated list of groups you would like to
       have in Jira (it's called 'actions.list' as Superfly's actions are mapped
       to Jira's groups).
@@ -142,14 +140,12 @@
   1. Create a subsystem for your Jira instance - its name must match CN of the
     client certificate that will be used by Jira to authenticate itself to the
     Superfly server.
-  2. Create a role and map a principal that will be used by Jira (by default
-    the principal is 'jira'). Principal name must match the principal.name value
-    (see 'Installation').
+  2. Create roles.
   3. Launch the Jira instance with this Integration installed so that Jira
     sends its groups (which are actions for Superfly).
-  4. Assign all these actions to the created role.
+  4. Assign these actions to the created roles.
   5. Create users and assign actions to them; when an action is assigned to
-    a user through role with Jira principal, this causes that user to have the
+    a user through a role in Jira subsystem, this causes that user to have the
     group with the same name as action is named in Jira.
   
   After this, users should be able to login to Jira.

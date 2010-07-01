@@ -4,6 +4,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+/**
+ * Context listener which initializes Superfly+Jira machinery on startup.
+ * 
+ * @author Roman Puchkovskiy
+ */
 public class InitializerContextListener extends InitializerBase implements ServletContextListener {
 	
 	public void contextInitialized(ServletContextEvent sce) {

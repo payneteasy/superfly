@@ -1,7 +1,6 @@
 drop procedure if exists list_users;
 delimiter $$
-create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
-)
+create procedure list_users(i_subsystem_name varchar(32))
  main_sql:
   begin
     select u.user_id,
@@ -19,14 +18,6 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
                      join
                        roles r
                      on r.role_id = ur.role_role_id
-                        and instr(concat(',',
-                                         coalesce(i_principal_list,
-                                                  r.principal_name
-                                         ),
-                                         ','
-                                  ),
-                                  concat(',', r.principal_name, ',')
-                           )
                    join
                      subsystems ss
                    on r.ssys_ssys_id = ss.ssys_id and ss.allow_list_users = 'Y'
@@ -59,14 +50,6 @@ create procedure list_users(i_subsystem_name varchar(32), i_principal_list text
                    join
                      roles r
                    on r.role_id = ur.role_role_id
-                      and instr(concat(',',
-                                       coalesce(i_principal_list,
-                                                r.principal_name
-                                       ),
-                                       ','
-                                ),
-                                concat(',', r.principal_name, ',')
-                         )
                  join
                    subsystems ss
                  on r.ssys_ssys_id = ss.ssys_id and ss.allow_list_users = 'Y'

@@ -52,21 +52,21 @@ public class SSOServiceImpl implements SSOService {
 	}
 	
 	/**
-	 * @see SSOService#getUsersWithActions(String, String)
+	 * @see SSOService#getUsersWithActions(String)
 	 */
 	public List<SSOUserWithActions> getUsersWithActions(
-			String subsystemIdentifier, String principalName) {
+			String subsystemIdentifier) {
 		return internalSSOService.getUsersWithActions(
-				obtainSubsystemIdentifier(subsystemIdentifier), principalName);
+				obtainSubsystemIdentifier(subsystemIdentifier));
 	}
 	
 	/**
-	 * @see SSOService#registerUser(String, String, String, String, String)
+	 * @see SSOService#registerUser(String, String, String, String, String[])
 	 */
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String principalName) {
+			String subsystemIdentifier, String[] principalNames) {
 		internalSSOService.registerUser(username, password, email,
-				obtainSubsystemIdentifier(subsystemIdentifier), principalName);
+				obtainSubsystemIdentifier(subsystemIdentifier), principalNames);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {

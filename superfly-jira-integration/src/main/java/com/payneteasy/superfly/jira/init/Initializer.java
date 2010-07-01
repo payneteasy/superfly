@@ -24,7 +24,6 @@ public class Initializer {
 	private SuperflyDataSender sender;
 	private SSOService ssoService;
 	private String subsystemIdentifier;
-	private String principalName;
 	private String groupsCommaDelimitedList;
 	
 	private UserStoreUpdater userStoreUpdater;
@@ -39,10 +38,6 @@ public class Initializer {
 
 	public void setSubsystemIdentifier(String subsystemIdentifier) {
 		this.subsystemIdentifier = subsystemIdentifier;
-	}
-
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
 	}
 
 	public void setGroupsCommaDelimitedList(String groupsCommaDelimitedList) {
@@ -72,7 +67,7 @@ public class Initializer {
 	}
 
 	protected List<SSOUserWithActions> obtainUsers() {
-		return ssoService.getUsersWithActions(subsystemIdentifier, principalName);
+		return ssoService.getUsersWithActions(subsystemIdentifier);
 	}
 	
 	protected void initGroups() {
@@ -89,7 +84,7 @@ public class Initializer {
 		SuperflyContextLocator.getSuperflyContext().setSsoService(ssoService);
 		SuperflyContextLocator.getSuperflyContext().setSubsystemIdentifier(subsystemIdentifier);
 		userStoreUpdater = new UserStoreUpdater(ssoService, getUserStore(),
-				subsystemIdentifier, principalName);
+				subsystemIdentifier);
 		SuperflyContextLocator.getSuperflyContext().setUserStoreUpdater(userStoreUpdater);
 	}
 }

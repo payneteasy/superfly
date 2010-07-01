@@ -44,13 +44,10 @@ public interface SSOService {
 	 * 
 	 * @param subsystemIdentifier
 	 *            identifier of the subsystem from which users will be obtained
-	 * @param principalName
-	 *            principal name
 	 * @return users with actions
 	 * @since 1.1
 	 */
-	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier,
-			String principalName);
+	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
    /**
     * Registers user and gives him requested principal.
     * 
@@ -59,12 +56,12 @@ public interface SSOService {
     * @param email					email of the user
     * @param subsystemIdentifier	identifier of the subsystem from which
     * 								users will be obtained
-    * @param principalName 			principal name
+    * @param principalNames 		principals which roles to give to users
     * @throws UserExistsException if user with such a name already exists
     * @since 1.1
     */
 	void registerUser(String username, String password, String email,
-			String subsystemIdentifier,
-			String principalName)throws UserExistsException;
+			String subsystemIdentifier, String[] principalNames)
+			throws UserExistsException;
 
 }

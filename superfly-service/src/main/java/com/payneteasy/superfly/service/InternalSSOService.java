@@ -43,22 +43,21 @@ public interface InternalSSOService {
 	 * 
 	 * @param subsystemIdentifier	identifier of the subsystem from which
 	 * 								users will be obtained
-	 * @param principalName			principal name
 	 * @return users with actions
 	 */
-	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier,
-			String principalName);
+	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
 	
 	/**
 	 * Registers a user.
 	 * 
-	 * @param username		name
-	 * @param password		user's password
-	 * @param email			user's email
-	 * @param subsystemIdentifier	identifier of a subsystem to which he's to be given a role
-	 * @param principalName	principal name of a role which should be given to
-	 * a user
+	 * @param username				name
+	 * @param password				user's password
+	 * @param email					user's email
+	 * @param subsystemIdentifier	identifier of a subsystem to which he's to
+	 * 								be given a role
+	 * @param principalNames		principal name of roles which should be
+	 * 								given to a user
 	 */
 	void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String principalName);
+			String subsystemIdentifier, String[] principalNames);
 }

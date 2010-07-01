@@ -15,7 +15,15 @@ import com.payneteasy.superfly.client.CommaDelimitedListActionDescriptionCollect
 import com.payneteasy.superfly.client.SuperflyDataSender;
 import com.payneteasy.superfly.client.utils.CommonUtils;
 
-public class InitializerBase {
+/**
+ * Base class which contains logic for initialization of Superfly+Jira
+ * integration machinery. It's meant to be subclassed by (for instance)
+ * context listeners or some other classes which instances have their own
+ * lifecycle.
+ * 
+ * @author Roman Puchkovskiy
+ */
+public abstract class InitializerBase {
 	
 	protected Properties properties;
 	protected Initializer initializer;
@@ -24,7 +32,6 @@ public class InitializerBase {
 		SSOService ssoService = createSSOService();
 		initializer = new Initializer();
 		initializer.setSubsystemIdentifier(getProperty("subsystem.name"));
-		initializer.setPrincipalName(getProperty("principal.name"));
 		initializer.setGroupsCommaDelimitedList(getProperty("actions.list"));
 		initializer.setSsoService(ssoService);
 		initializer.setSender(createSender(ssoService));

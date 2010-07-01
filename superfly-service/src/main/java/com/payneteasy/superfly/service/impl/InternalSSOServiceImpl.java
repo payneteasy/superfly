@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOAction;
@@ -104,9 +105,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	public List<SSOUserWithActions> getUsersWithActions(
-			String subsystemIdentifier, String principalName) {
-		List<UserWithActions> users = userDao.getUsersAndActions(
-				subsystemIdentifier, principalName);
+			String subsystemIdentifier) {
+		List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
 		List<SSOUserWithActions> result = new ArrayList<SSOUserWithActions>(
 				users.size());
 		for (UserWithActions user : users) {
@@ -116,12 +116,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 	
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String principalName) {
+			String subsystemIdentifier, String[] principalNames) {
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
 		registerUser.setPassword(password);
-		registerUser.setPrincipalName(principalName);
+		registerUser.setPrincipalNames(StringUtils.arrayToDelimitedString(principalNames, ","));
 		registerUser.setSubsystemName(subsystemIdentifier);
         userDao.registerUser(registerUser);
 	}

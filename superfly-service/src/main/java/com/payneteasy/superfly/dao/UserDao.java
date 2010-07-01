@@ -40,12 +40,10 @@ public interface UserDao {
 	 * a given principal.
 	 * 
 	 * @param subsystemName		name of the subsystem from which to obtain info
-	 * @param principalName		name of the principal of a role through which
-	 * 							actions of interest are given to users
 	 * @return users with actions
 	 */
 	@AStoredProcedure(name = "list_users")
-	List<UserWithActions> getUsersAndActions(String subsystemName, String principalName);
+	List<UserWithActions> getUsersAndActions(String subsystemName);
 	
 	/**
 	 * Returns users which satisfy to the given conditions.

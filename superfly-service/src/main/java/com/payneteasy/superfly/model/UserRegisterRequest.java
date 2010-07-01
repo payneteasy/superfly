@@ -12,7 +12,7 @@ public class UserRegisterRequest implements Serializable {
 	private String password;
 	private String email;
 	private String subsystemName;
-	private String principalName;
+	private String principalNames;
 	
 	@Column(name = "user_id")
 	public long getUserid() {
@@ -60,12 +60,12 @@ public class UserRegisterRequest implements Serializable {
 	}
 
 	@Column(name = "principal_list")
-	public String getPrincipalName() {
-		return principalName;
+	public String getPrincipalNames() {
+		return principalNames;
 	}
 
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
+	public void setPrincipalNames(String principalNames) {
+		this.principalNames = principalNames;
 	}
 
 }
