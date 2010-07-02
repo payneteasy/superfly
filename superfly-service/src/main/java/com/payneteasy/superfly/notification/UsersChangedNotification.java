@@ -11,7 +11,7 @@ public class UsersChangedNotification extends AbstractNotification {
 	
 	@Override
 	public String toString() {
-		return "UsersChangedNotification";
+		return "UsersChangedNotification [for " + getCallbackUri() + "]";
 	}
 
 }
