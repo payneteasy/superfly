@@ -17,3 +17,5 @@ create table sessions(
 );
 
 call run_install_command('alter table users add column email varchar(255) not null', '42S21');
+
+source quartz-tables.sql

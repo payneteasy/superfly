@@ -1,12 +1,17 @@
 package com.payneteasy.superfly.notification;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
+import com.payneteasy.superfly.service.job.TryToSendNotificationJob;
+import com.payneteasy.superfly.utils.SchedulerUtils;
 
 /**
  * Default Notifier implementation which delegates some actions to strategies.
@@ -17,32 +22,45 @@ public class DefaultNotifier implements Notifier {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
 	
-	private NotificationSendStrategy sendStrategy;
+	private Scheduler scheduler;
+	private String sendStrategyBeanName;
+	private int maxRetries = 3;
 
 	@Required
-	public void setSendStrategy(NotificationSendStrategy sendStrategy) {
-		this.sendStrategy = sendStrategy;
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+
+	@Required
+	public void setSendStrategyBeanName(String sendStrategyBeanName) {
+		this.sendStrategyBeanName = sendStrategyBeanName;
+	}
+
+	public void setMaxRetries(int maxRetries) {
+		this.maxRetries = maxRetries;
 	}
 
 	public void notifyAboutLogout(List<LogoutNotification> notifications) {
 		for (LogoutNotification notification : notifications) {
-			try {
-				sendStrategy.send(notification);
-			} catch (NotificationException e) {
-				logger.error(e.getMessage(), e);
-			}
+			createJob(notification);
 		}
 	}
 
-	public void notifyAboutUsersChanged(
-			List<UsersChangedNotification> notifications) {
+	public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
 		for (UsersChangedNotification notification : notifications) {
-			try {
-				sendStrategy.send(notification);
-			} catch (NotificationException e) {
-				logger.error(e.getMessage(), e);
-			}
+			createJob(notification);
 		}
 	}
-
+	
+	private void createJob(AbstractNotification notification) {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put("beanName", sendStrategyBeanName);
+		dataMap.put("notification", notification);
+		dataMap.put("retriesLeft", maxRetries);
+		try {
+			SchedulerUtils.scheduleJob(scheduler, TryToSendNotificationJob.class, dataMap);
+		} catch (SchedulerException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
 }

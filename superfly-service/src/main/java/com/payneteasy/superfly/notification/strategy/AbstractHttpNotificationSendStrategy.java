@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.payneteasy.superfly.notification.NotificationException;
+
 /**
  * Base for any send strategy using HTTP to deliver notifications.
  * 
@@ -22,18 +24,16 @@ public abstract class AbstractHttpNotificationSendStrategy implements
 	protected HttpClient httpClient;
 
 	protected void doCall(String uri, String notificationType,
-			ParameterSetter parameterSetter) {
+			ParameterSetter parameterSetter) throws NotificationException {
 		PostMethod httpMethod = new PostMethod(uri);
 		httpMethod.setParameter("superflyNotification", notificationType);
 		parameterSetter.setParameters(httpMethod);
 		try {
 			httpClient.executeMethod(httpMethod);
 		} catch (HttpException e) {
-			throw new WrapperException(e);
+			throw new NotificationException(e);
 		} catch (IOException e) {
-			throw new WrapperException(e);
-		} catch (RuntimeException e) {
-			throw new WrapperException(e);
+			throw new NotificationException(e);
 		} finally {
 			try {
 				httpMethod.releaseConnection();
@@ -43,21 +43,6 @@ public abstract class AbstractHttpNotificationSendStrategy implements
 		}
 	}
 	
-	protected void doExecute(final Runnable runnable) {
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					runnable.run();
-				} catch (WrapperException e) {
-					Throwable cause = e.getCause();
-					logger.error(cause.getMessage(), cause);
-				} catch (RuntimeException e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		}).start();
-	}
-
 	@Required
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
@@ -66,25 +51,4 @@ public abstract class AbstractHttpNotificationSendStrategy implements
 	protected static interface ParameterSetter {
 		void setParameters(PostMethod httpMethod);
 	}
-	
-	protected static class WrapperException extends RuntimeException {
-
-		public WrapperException() {
-			super();
-		}
-
-		public WrapperException(String message, Throwable cause) {
-			super(message, cause);
-		}
-
-		public WrapperException(String message) {
-			super(message);
-		}
-
-		public WrapperException(Throwable cause) {
-			super(cause);
-		}
-		
-	}
-
 }

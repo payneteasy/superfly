@@ -17,29 +17,19 @@ public class SimpleSendStrategy extends AbstractHttpNotificationSendStrategy {
 	
 	public void send(final LogoutNotification notification)
 			throws NotificationException {
-		Runnable task = new Runnable() {
-			public void run() {
-				doCall(notification.getCallbackUri(), Notifications.LOGOUT, new ParameterSetter() {
-					public void setParameters(PostMethod httpMethod) {
-						httpMethod.setParameter("superflyLogoutSessionIds",
-								StringUtils.collectionToCommaDelimitedString(notification.getSessionIds()));
-					}
-				});
+		doCall(notification.getCallbackUri(), Notifications.LOGOUT, new ParameterSetter() {
+			public void setParameters(PostMethod httpMethod) {
+				httpMethod.setParameter("superflyLogoutSessionIds",
+						StringUtils.collectionToCommaDelimitedString(notification.getSessionIds()));
 			}
-		};
-		doExecute(task);
+		});
 	}
 
 	public void send(final UsersChangedNotification notification)
 			throws NotificationException {
-		Runnable task = new Runnable() {
-			public void run() {
-				doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, new ParameterSetter() {
-					public void setParameters(PostMethod httpMethod) {
-					}
-				});
+		doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, new ParameterSetter() {
+			public void setParameters(PostMethod httpMethod) {
 			}
-		};
-		doExecute(task);
+		});
 	}
 }

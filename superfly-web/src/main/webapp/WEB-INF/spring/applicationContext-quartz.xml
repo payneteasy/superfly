@@ -24,6 +24,12 @@
 				<ref bean="expireSessionsTrigger"/>
 			</list>
 		</property>
-	</bean>		
+	</bean>
+	
+	<bean id="persistentScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+	</bean>
 
 </beans>

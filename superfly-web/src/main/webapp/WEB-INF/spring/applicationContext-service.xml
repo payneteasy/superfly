@@ -56,10 +56,11 @@
 	</bean>
 	
 	<bean id="notifier" class="com.payneteasy.superfly.notification.DefaultNotifier">
-		<property name="sendStrategy" ref="simpleSendStrategy"/>
+		<property name="scheduler" ref="persistentScheduler"/>
+		<property name="sendStrategyBeanName" value="sendStrategy"/>
 	</bean>
 	
-	<bean id="simpleSendStrategy" class="com.payneteasy.superfly.notification.strategy.SimpleSendStrategy">
+	<bean id="sendStrategy" class="com.payneteasy.superfly.notification.strategy.SimpleSendStrategy">
 		<property name="httpClient" ref="notifierHttpClient"/>
 	</bean>
 	
