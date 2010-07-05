@@ -39,22 +39,25 @@ public class UserStoreUpdater {
 			updating = true;
 			updatingThread = new Thread(new Runnable() {
 				public void run() {
-					boolean ok = false;
-					while (!ok) {
-						try {
-							userStore.setUsers(ssoService.getUsersWithActions(subsystemIdentifier));
-							ok = true;
-						} catch (Exception e) {
-							logger.warn("Exception while getting users", e);
+					try {
+						boolean ok = false;
+						while (!ok) {
 							try {
-								Thread.sleep(RETRY_PERIOD_MILLIS);
-							} catch (InterruptedException e1) {
-								logger.warn("Sleep was interrupted", e1);
+								userStore.setUsers(ssoService.getUsersWithActions(subsystemIdentifier));
+								ok = true;
+							} catch (Exception e) {
+								logger.warn("Exception while getting users", e);
+								try {
+									Thread.sleep(RETRY_PERIOD_MILLIS);
+								} catch (InterruptedException e1) {
+									logger.warn("Sleep was interrupted", e1);
+								}
 							}
 						}
+						updatingThread = null;
+					} finally {
+						updating = false;
 					}
-					updatingThread = null;
-					updating = false;
 				}
 			});
 			updatingThread.start();

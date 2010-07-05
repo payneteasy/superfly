@@ -67,4 +67,12 @@ public class UserWithActions implements Serializable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(username).append(" (").append(email).append(") ");
+		buf.append(actions);
+		return buf.toString();
+	}
 }
