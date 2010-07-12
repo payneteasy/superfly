@@ -131,7 +131,7 @@
       - CN of the client certificate must match the subsystem name you created
         for this Jira instance on Superfly server
     * notification.allowed.ips defines a comma-separated list of IPs from which
-      notifications are allowed. If it's empty, no restrictions will be made.
+      notifications are allowed. If it's empty, no restrictions will be made. 
 
 
   2. Superfly server configuration
@@ -149,4 +149,9 @@
     group with the same name as action is named in Jira.
   
   After this, users should be able to login to Jira.
+  
+  As users will be now managed by Superfly (i.e. externally to Jira), you may
+  wish to switch 'External user management' setting to 'Yes' (on
+  Administration -> Global Settings -> General Configuration screen). This will
+  remove links like 'Add user' and so on so they don't confuse your users.
   
