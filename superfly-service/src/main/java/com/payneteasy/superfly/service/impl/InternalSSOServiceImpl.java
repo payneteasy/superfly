@@ -26,15 +26,16 @@ import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.NotificationService;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(InternalSSOServiceImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
 
 	private UserDao userDao;
 	private ActionDao actionDao;
+	private NotificationService notificationService;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -44,6 +45,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
+	}
+	
+	@Required
+	public void setNotificationService(NotificationService notificationService) {
+		this.notificationService = notificationService;
 	}
 
 	public SSOUser authenticate(String username, String password,
@@ -124,6 +130,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setPrincipalNames(StringUtils.arrayToDelimitedString(principalNames, ","));
 		registerUser.setSubsystemName(subsystemIdentifier);
         userDao.registerUser(registerUser);
+        
+        notificationService.notifyAboutUsersChanged();
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

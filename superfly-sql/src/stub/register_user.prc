@@ -13,14 +13,14 @@ create procedure register_user(i_user_name         varchar(32),
          values (i_user_name, i_user_password, i_user_email);
 
     set o_user_id   = last_insert_id();
-
+    
     insert into user_roles(user_user_id, role_role_id)
       select o_user_id, r.role_id
         from subsystems ss
              join roles r
                on r.ssys_ssys_id = ss.ssys_id
              left join user_roles ur
-               on r.role_id = ur.role_role_id
+               on (r.role_id = ur.role_role_id and ur.user_user_id = o_user_id)
        where     instr(concat(',', i_principal_list, ','), concat(',', r.role_name, ','))
              and ur.urol_id is null
              and ss.subsystem_name = i_subsystem_name;
