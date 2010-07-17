@@ -1,5 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>3</version>
+	</parent>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-parent</artifactId>
 	<packaging>pom</packaging>
@@ -19,12 +24,52 @@
         <module>superfly-spring-security</module>
         <module>superfly-jira-integration</module>
 	</modules>
+	
+	<url>http://code.google.com/p/superfly/</url>
 
 	<scm>
 		<connection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</connection>
 		<developerConnection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</developerConnection>
 		<url>http://superfly.googlecode.com/</url>
 	</scm>
+	
+	<licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+	</licenses>
+	
+	<developers>
+		<developer>
+			<id>roman.puchkovskiy</id>
+			<email>roman.puchkovskiy@gmail.com</email>
+			<name>Roman Puchkovskiy</name>
+		</developer>
+		<developer>
+			<id>esinev</id>
+			<email>esinev@gmail.com</email>
+		</developer>
+		<developer>
+			<id>mgoryachkin</id>
+			<email>mgoryachkin@gmail.com</email>
+		</developer>
+		<developer>
+			<id>pasha.zarubin</id>
+			<email>pasha.zarubin@gmail.com</email>
+		</developer>
+		<developer>
+			<id>izinchenko</id>
+			<email>izinchenko@gmail.com</email>
+		</developer>
+        <developer>
+            <email>slava.zarubin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>gendlin@gmail.com</email>
+        </developer>
+	</developers>
 
 	<!--
     -      Distributions
@@ -446,4 +491,27 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>deploy</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+    	</profile>
+	</profiles>
 </project>
