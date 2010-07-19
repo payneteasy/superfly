@@ -12,6 +12,7 @@ import javax.persistence.Column;
  */
 public class RoutineResult implements Serializable {
 	private static final String OK = "OK";
+	private static final String DUPLICATE = "duplicate";
 	
 	private String status;
 	private String errorMessage;
@@ -35,6 +36,10 @@ public class RoutineResult implements Serializable {
 	}
 	
 	public boolean isOk() {
-		return OK.equals(status);
+		return OK.equalsIgnoreCase(status);
+	}
+	
+	public boolean isDuplicate() {
+		return DUPLICATE.equalsIgnoreCase(status);
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOService;
@@ -70,7 +71,7 @@ public class SSOServiceMock implements SSOService {
 	}
 
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String[] principalNames)
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
 			throws UserExistsException {
 	}
 

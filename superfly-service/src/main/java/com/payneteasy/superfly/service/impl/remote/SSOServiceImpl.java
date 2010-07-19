@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.service.InternalSSOService;
 
 /**
@@ -61,12 +63,13 @@ public class SSOServiceImpl implements SSOService {
 	}
 	
 	/**
-	 * @see SSOService#registerUser(String, String, String, String, String[])
+	 * @see SSOService#registerUser(String, String, String, String, RoleGrantSpecification[])
 	 */
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String[] principalNames) {
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
+			throws UserExistsException {
 		internalSSOService.registerUser(username, password, email,
-				obtainSubsystemIdentifier(subsystemIdentifier), principalNames);
+				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {

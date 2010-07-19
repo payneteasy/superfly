@@ -48,20 +48,22 @@ public interface SSOService {
 	 * @since 1.1
 	 */
 	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
-   /**
-    * Registers user and gives him requested principal.
-    * 
-    * @param username				name of the user
-    * @param password				password of the user
-    * @param email					email of the user
-    * @param subsystemIdentifier	identifier of the subsystem from which
-    * 								users will be obtained
-    * @param principalNames 		principals which roles to give to users
-    * @throws UserExistsException if user with such a name already exists
-    * @since 1.1
-    */
+	
+    /**
+     * Registers user and gives him requested principal.
+     * 
+     * @param username				name of the user
+     * @param password				password of the user
+     * @param email					email of the user
+     * @param subsystemHint			hint to the identifier of a subsystem
+     * 								from which roles will be taken
+     * @param roleGrants 			which roles to grant
+     * @throws UserExistsException if user with such a name already exists
+     * @since 1.1
+     * @see RoleGrantSpecification
+     */
 	void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String[] principalNames)
+			String subsystemHint, RoleGrantSpecification[] roleGrants)
 			throws UserExistsException;
 
 }

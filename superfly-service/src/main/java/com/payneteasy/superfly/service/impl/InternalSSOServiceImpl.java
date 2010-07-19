@@ -11,18 +11,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
@@ -122,16 +124,35 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 	
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String[] principalNames) {
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
+			throws UserExistsException {
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
 		registerUser.setPassword(password);
-		registerUser.setPrincipalNames(StringUtils.arrayToDelimitedString(principalNames, ","));
+		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);
-        userDao.registerUser(registerUser);
-        
-        notificationService.notifyAboutUsersChanged();
+        RoutineResult result = userDao.registerUser(registerUser);
+        if (result.isOk()) {
+        	for (RoleGrantSpecification roleGrant : roleGrants) {
+        		result = userDao.grantRolesToUser(registerUser.getUserid(),
+        				roleGrant.isDetectSubsystemIdentifier()
+        						? subsystemIdentifier
+								: roleGrant.getSubsystemIdentifier(),
+        				roleGrant.getPrincipalName());
+        		if (!result.isOk()) {
+        			throw new IllegalStateException("Status: " + result.getStatus()
+        					+ ", errorMessage: " + result.getErrorMessage());
+        		}
+        	}
+        	
+        	notificationService.notifyAboutUsersChanged();
+        } else if (result.isDuplicate()) {
+        	throw new UserExistsException(result.getErrorMessage());
+        } else {
+        	throw new IllegalStateException("Status: " + result.getStatus()
+        			+ ", errorMessage: " + result.getErrorMessage());
+        }
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

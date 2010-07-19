@@ -413,4 +413,16 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "register_user")
 	RoutineResult registerUser(UserRegisterRequest registerUser);
+	
+	/**
+	 * Grants roles with the given principal names in a subsystem with the
+	 * given name to a user with the given ID.
+	 * 
+	 * @param userId			ID of the user
+	 * @param subsystemName		name of a subsystem
+	 * @param principalNames	comma-separated list of principal names
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "grant_roles_to_user")
+	RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames);
 }

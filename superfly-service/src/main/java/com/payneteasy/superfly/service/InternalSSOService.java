@@ -3,8 +3,10 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserExistsException;
 
 /**
  * Internal service used to implement SSOService.
@@ -55,9 +57,9 @@ public interface InternalSSOService {
 	 * @param email					user's email
 	 * @param subsystemIdentifier	identifier of a subsystem to which he's to
 	 * 								be given a role
-	 * @param principalNames		principal name of roles which should be
-	 * 								given to a user
+	 * @param roleGrants 			which roles to grant
+	 * @throws UserExistsException 
 	 */
 	void registerUser(String username, String password, String email,
-			String subsystemIdentifier, String[] principalNames);
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants) throws UserExistsException;
 }
