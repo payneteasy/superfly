@@ -13,7 +13,7 @@ public class AuthRole implements Serializable {
 	private long sessionId;
 	private List<AuthAction> actions = new ArrayList<AuthAction>();
 
-	@Column(name = "role_name")
+	@Column(name = "principal_name")
 	public String getRoleName() {
 		return roleName;
 	}
