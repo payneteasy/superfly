@@ -21,7 +21,7 @@ create procedure register_user(i_user_name         varchar(32),
                on r.ssys_ssys_id = ss.ssys_id
              left join user_roles ur
                on (r.role_id = ur.role_role_id and ur.user_user_id = o_user_id)
-       where     instr(concat(',', i_principal_list, ','), concat(',', r.role_name, ','))
+       where     instr(concat(',', i_principal_list, ','), concat(',', r.principal_name, ','))
              and ur.urol_id is null
              and ss.subsystem_name = i_subsystem_name;
 
