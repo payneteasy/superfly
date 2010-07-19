@@ -97,11 +97,6 @@
 			<name>Our maven releases repository with common user access</name>
 			<url>https://superfly.googlecode.com/svn/maven2/release</url>
 		</repository>
-	    <repository>
-	        <id>xremoting-release</id>
-	        <name>xremoting release</name>
-	        <url>http://xremoting.googlecode.com/svn/maven2/release</url>
-	    </repository>
         <!-- Atlassian repository -->
         <repository>
             <id>atlassian-public</id>
@@ -322,7 +317,7 @@
 		    <dependency>
 		        <groupId>com.googlecode.xremoting</groupId>
 		        <artifactId>xremoting-core</artifactId>
-		        <version>1.0-3</version>
+		        <version>1.0-4</version>
 		    </dependency>
 		    <dependency>
 		        <groupId>com.thoughtworks.xstream</groupId>
