@@ -75,29 +75,21 @@
     -      Distributions
     -->
 	<distributionManagement>
-		<repository>
-			<id>superfly-release</id>
-			<name>Local Maven repository of releases</name>
-		    <!-- 
-		        Use https://superfly.googlecode.com/svn/maven2/release to include superfly repository
-		    -->
-            <url>file:///${HOME}/svn/superfly-maven2-release</url>
-		</repository>
-		<snapshotRepository>
-			<id>superfly-snapshot</id>
-			<name>Local Maven repository of snapshots</name>
-			<url>file:///${HOME}/svn/superfly-maven2-snapshot</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>		
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>sonatype oss RELEASE repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>sonatype oss SNAPSHOT repository</name>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
-		<repository>
-			<id>superfly-release</id>
-			<name>Our maven releases repository with common user access</name>
-			<url>https://superfly.googlecode.com/svn/maven2/release</url>
-		</repository>
-        <!-- Atlassian repository -->
+        <!-- Atlassian repositories -->
         <repository>
             <id>atlassian-public</id>
             <url>https://maven.atlassian.com/repository/public</url>
@@ -112,11 +104,13 @@
             <id>atlassian-m2-repository</id>
             <url>https://maven.atlassian.com/content/groups/public/</url>
 	    </repository>
+	    <!-- Sun repository -->
 		<repository>
 		  	<id>maven2-repository.dev.java.net</id>
 		  	<name>Java.net Repository for Maven</name>
 		  	<url>http://download.java.net/maven/2/</url>
 		</repository>
+		<!-- ibiblio mirror for some artifacts -->
 		<repository>
 		  	<id>ibiblio-mirrors</id>
 		  	<name>ibiblio mirrors</name>
