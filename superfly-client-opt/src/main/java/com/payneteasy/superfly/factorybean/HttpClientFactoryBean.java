@@ -5,6 +5,7 @@ import java.net.URL;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.protocol.Protocol;
@@ -25,6 +26,7 @@ public class HttpClientFactoryBean implements FactoryBean {
 	private String password;
 	private String authHost;
 	private StoresAndSSLConfig hostConfig = null;
+	private HttpConnectionManager httpConnectionManager = null;
 	
 	private HttpClient httpClient = null;
 	
@@ -64,6 +66,14 @@ public class HttpClientFactoryBean implements FactoryBean {
 		this.hostConfig = hostConfig;
 	}
 
+	public HttpConnectionManager getHttpConnectionManager() {
+		return httpConnectionManager;
+	}
+
+	public void setHttpConnectionManager(HttpConnectionManager httpConnectionManager) {
+		this.httpConnectionManager = httpConnectionManager;
+	}
+
 	public synchronized Object getObject() throws Exception {
 		if (httpClient == null) {
 			createAndConfigureHttpClient();
@@ -80,6 +90,9 @@ public class HttpClientFactoryBean implements FactoryBean {
 		httpClient.getParams().setAuthenticationPreemptive(isAuthenticationPreemptive());
 		initCredentials();
 		initSocketFactory();
+		if (httpConnectionManager != null) {
+			httpClient.setHttpConnectionManager(httpConnectionManager);
+		}
 	}
 
 	protected HttpClient createHttpClient() {
