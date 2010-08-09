@@ -9,7 +9,7 @@
 	<artifactId>superfly-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Superfly parent project</name>
-	<version>1.1-1-SNAPSHOT</version>
+	<version>1.1-1</version>
 	<description>Parent POM of the Superfly project</description>
 	<modules>
 		<module>superfly-remote-api</module>
@@ -28,9 +28,9 @@
 	<url>http://code.google.com/p/superfly/</url>
 
 	<scm>
-		<connection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</connection>
-		<developerConnection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</developerConnection>
-		<url>http://superfly.googlecode.com/</url>
+		<connection>scm:svn:https://superfly.googlecode.com/svn/tags/superfly-parent-1.1-1</connection>
+		<developerConnection>scm:svn:https://superfly.googlecode.com/svn/tags/superfly-parent-1.1-1</developerConnection>
+		<url>http://superfly.googlecode.com/tags/superfly-parent-1.1-1</url>
 	</scm>
 	
 	<licenses>
@@ -123,37 +123,37 @@
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-remote-api</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-service</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-httpclient-ssl</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-common</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-client</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-client-opt</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-spring-security-common</artifactId>
-				<version>1.1-1-SNAPSHOT</version>
+				<version>1.1-1</version>
 			</dependency>
 			
 			<dependency>
