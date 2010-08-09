@@ -42,7 +42,7 @@
             </description>
         </item>
     </release>
-    <release number="1.1" date="unknown yet">
+    <release number="1.1" date="2010.08.09">
     	<item type="task">
     		<name>Local mode</name>
     		<description>
@@ -65,6 +65,12 @@
     		<description>
     			It's possible to configure Jira to use Superfly as a security
     			provider.
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>UI enhancements</name>
+    		<description>
+    			UI is made a bit more friendly.
     		</description>
     	</item>
     </release>
