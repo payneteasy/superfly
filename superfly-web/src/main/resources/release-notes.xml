@@ -42,6 +42,7 @@
             </description>
         </item>
     </release>
+    
     <release number="1.1" date="2010.08.09">
     	<item type="task">
     		<name>Local mode</name>
@@ -71,6 +72,15 @@
     		<name>UI enhancements</name>
     		<description>
     			UI is made a bit more friendly.
+    		</description>
+    	</item>
+    </release>
+    
+    <release number="1.1-2" date="Unreleased yet">
+    	<item type="task">
+    		<name>UI enhancements</name>
+    		<description>
+    			Actions are sorted by name in lists.
     		</description>
     	</item>
     </release>

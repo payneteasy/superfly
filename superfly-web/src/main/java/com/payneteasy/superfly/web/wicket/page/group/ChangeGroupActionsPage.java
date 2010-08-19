@@ -1,39 +1,28 @@
 package com.payneteasy.superfly.web.wicket.page.group;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.Strings;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
-import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
-import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.GroupService;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
@@ -41,13 +30,7 @@ import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 @Secured("ROLE_ADMIN")
 public class ChangeGroupActionsPage extends BasePage {
 	@SpringBean
-	ActionService actionService;
-
-	@SpringBean
-	SubsystemService ssysService;
-
-	@SpringBean
-	GroupService groupService;
+	private GroupService groupService;
 
 	public ChangeGroupActionsPage(PageParameters parameters) {
 		final long groupId = parameters.getAsLong("gid");
@@ -56,7 +39,7 @@ public class ChangeGroupActionsPage extends BasePage {
 
 		// list unmap action
 		List<UIActionForCheckboxForGroup> unMappedActions = groupService
-				.getAllGroupUnMappedActions(0, Integer.MAX_VALUE, 1, true,
+				.getAllGroupUnMappedActions(0, Integer.MAX_VALUE, 5, true,
 						groupId, null);
 		final List<SelectObjectWrapper<UIActionForCheckboxForGroup>> unMappedActionsWrapper = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForGroup>>();
 		for (UIActionForCheckboxForGroup uia : unMappedActions) {
@@ -78,7 +61,7 @@ public class ChangeGroupActionsPage extends BasePage {
 			}
 
 		};
-		Form<Void> form = new Form("form");
+		Form<Void> form = new Form<Void>("form");
 		add(form);
 		final CheckGroup<SelectObjectWrapper<UIActionForCheckboxForGroup>> groupUnMap = new CheckGroup<SelectObjectWrapper<UIActionForCheckboxForGroup>>(
 				"group-unmap", actionsCheckGroupModelUnMap);
@@ -136,7 +119,7 @@ public class ChangeGroupActionsPage extends BasePage {
 		});
 		// list map action
 		List<UIActionForCheckboxForGroup> mappedActions = groupService
-				.getAllGroupMappedActions(0, Integer.MAX_VALUE, 1, true,
+				.getAllGroupMappedActions(0, Integer.MAX_VALUE, 5, true,
 						groupId, null);
 		final List<SelectObjectWrapper<UIActionForCheckboxForGroup>> mappedActionsWrapper = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForGroup>>();
 		for (UIActionForCheckboxForGroup uia : mappedActions) {
@@ -166,15 +149,11 @@ public class ChangeGroupActionsPage extends BasePage {
 			@Override
 			protected void populateItem(
 					ListItem<SelectObjectWrapper<UIActionForCheckboxForGroup>> item) {
-				SelectObjectWrapper<UIActionForCheckboxForGroup> action = item
-						.getModelObject();
-				item.add(new Label("action-name", action.getObject()
-						.getActionName()));
-				item.add(new Label("action-sub", action.getObject()
-						.getSubsystemName()));
-				item
-						.add(new Check<SelectObjectWrapper<UIActionForCheckboxForGroup>>(
-								"selected", item.getModel()));
+				SelectObjectWrapper<UIActionForCheckboxForGroup> action = item.getModelObject();
+				item.add(new Label("action-name", action.getObject().getActionName()));
+				item.add(new Label("action-sub", action.getObject().getSubsystemName()));
+				item.add(new Check<SelectObjectWrapper<UIActionForCheckboxForGroup>>(
+						"selected", item.getModel()));
 
 			}
 

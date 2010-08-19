@@ -38,7 +38,7 @@ public class ChangeRoleActionsPage extends BasePage {
 		add(new Label("role-name",role.getRoleName()));
 		//actions map
 		List<UIActionForCheckboxForRole> roleActionsMapped = roleService
-				.getMappedRoleActions(0, Integer.MAX_VALUE, 1, true, roleId,
+				.getMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId,
 						null);
 		final List<SelectObjectWrapper<UIActionForCheckboxForRole>> roleActionsMappedWrapper = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForRole>>();
 		for (UIActionForCheckboxForRole uia : roleActionsMapped) {
@@ -60,7 +60,7 @@ public class ChangeRoleActionsPage extends BasePage {
 			}
 
 		};
-		Form<Void> form = new Form("form");
+		Form<Void> form = new Form<Void>("form");
 		add(form);
 		final CheckGroup<SelectObjectWrapper<UIActionForCheckboxForRole>> groupMap = new CheckGroup<SelectObjectWrapper<UIActionForCheckboxForRole>>(
 				"group-map", actionsCheckActionsModelMap);
@@ -113,7 +113,7 @@ public class ChangeRoleActionsPage extends BasePage {
 		});
 		//unmap actions 
 		List<UIActionForCheckboxForRole> roleActionsUnMapped = roleService
-		.getUnMappedRoleActions(0, Integer.MAX_VALUE, 1, true, roleId, null);
+				.getUnMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId, null);
 		final List<SelectObjectWrapper<UIActionForCheckboxForRole>> roleActionsUnMappedWrapper = new ArrayList<SelectObjectWrapper<UIActionForCheckboxForRole>>();
 		for(UIActionForCheckboxForRole uia: roleActionsUnMapped){
 			roleActionsUnMappedWrapper.add(new SelectObjectWrapper<UIActionForCheckboxForRole>(uia));
