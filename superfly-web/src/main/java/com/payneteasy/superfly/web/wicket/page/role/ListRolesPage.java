@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -36,6 +37,7 @@ import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
+import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
@@ -51,13 +53,13 @@ public class ListRolesPage extends BasePage {
 		super();
 		add(new EmptyPanel("confirmPanel"));
 		
-		final RoleFilter roleFilter = new RoleFilter();
+		final StickyFilters stickyFilters = getSession().getStickyFilters();
 		Form<RoleFilter> filtersForm = new Form<RoleFilter>("filters-form");
 		add(filtersForm);
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						roleFilter, "subsystem"), subsystemService
-						.getSubsystemsForFilter(),
+						stickyFilters, "subsystem"),
+				subsystemService.getSubsystemsForFilter(),
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
@@ -77,13 +79,13 @@ public class ListRolesPage extends BasePage {
 			}
 
 		};
-		String[] fieldNames = { "roleId", "roleName", "principalName","subsystemName" };
+		String[] fieldNames = { "roleId", "roleName", "principalName", "subsystemName" };
 		SortableDataProvider<UIRoleForList> rolesDataProvider = new IndexedSortableDataProvider<UIRoleForList>(
 				fieldNames) {
 
 			public Iterator<? extends UIRoleForList> iterator(int first,
 					int count) {
-				UISubsystemForFilter subsystem = roleFilter.getSubsystem();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
 					List<UIRoleForList> roles = roleService.getRoles(first, count,
@@ -104,7 +106,7 @@ public class ListRolesPage extends BasePage {
 			}
 
 			public int size() {
-				UISubsystemForFilter subsystem = roleFilter.getSubsystem();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
 					return roleService.getRoleCount(null,
@@ -142,11 +144,11 @@ public class ListRolesPage extends BasePage {
 				item.add(new Label("principal-name",role.getPrincipalName()));
 				item.add(new Label("subsystem-name", role.getSubsystem()));
 				item.add(new Check<UIRoleForList>("selected", item.getModel(),group));
-				item.add(new BookmarkablePageLink("role-edit",
+				item.add(new BookmarkablePageLink<Page>("role-edit",
 						EditRolePage.class).setParameter("id", role.getId()));
-				item.add(new BookmarkablePageLink("role-groups",
+				item.add(new BookmarkablePageLink<Page>("role-groups",
 						ChangeRoleGroupsPage.class).setParameter("id", role.getId()));
-				item.add(new BookmarkablePageLink("role-actions",
+				item.add(new BookmarkablePageLink<Page>("role-actions",
 						ChangeRoleActionsPage.class).setParameter("id", role.getId()));
 				item.add(new SubmitLink("delete-role"){
 
@@ -225,17 +227,6 @@ public class ListRolesPage extends BasePage {
 		return "Roles";
 	}
 
-	@SuppressWarnings("unused")
 	private class RoleFilter implements Serializable {
-		private UISubsystemForFilter subsystem;
-
-		public UISubsystemForFilter getSubsystem() {
-			return subsystem;
-		}
-
-		public void setSubsystem(UISubsystemForFilter subsystem) {
-			this.subsystem = subsystem;
-		}
-
 	}
 }

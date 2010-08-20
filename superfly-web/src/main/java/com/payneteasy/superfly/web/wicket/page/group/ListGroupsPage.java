@@ -32,8 +32,8 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
@@ -50,18 +50,18 @@ public class ListGroupsPage extends BasePage {
 		add(new EmptyPanel("confirmPanel"));
 		
 		// FILTER
-		final GroupFilter groupFilter = new GroupFilter();
+		final StickyFilters stickyFilters = getSession().getStickyFilters();
 		Form<GroupFilter> filtersForm = new Form<GroupFilter>("filters-form");
 		add(filtersForm);
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						groupFilter, "subsystem"), ssysService
-						.getSubsystemsForFilter(),
+						stickyFilters, "subsystem"),
+				ssysService.getSubsystemsForFilter(),
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
 		final List<Long> subsystemIds = new ArrayList<Long>();
-		if (groupFilter.getSubsystem() != null) subsystemIds.add(groupFilter.getSubsystem().getId());
+		if (stickyFilters.getSubsystem() != null) subsystemIds.add(stickyFilters.getSubsystem().getId());
 
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "groupId", "groupName", "groupSubsystemId", "groupSubsystem"};
@@ -70,7 +70,7 @@ public class ListGroupsPage extends BasePage {
 						
 			public Iterator<? extends UIGroupForList> iterator(int first,
 					int count) {
-				UISubsystemForFilter subsystem = groupFilter.getSubsystem();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
 					List<UIGroupForList> list = groupService.getGroupsForSubsystems(first, count,
@@ -87,7 +87,7 @@ public class ListGroupsPage extends BasePage {
 			}
 
 			public int size() {
-				UISubsystemForFilter subsystem = groupFilter.getSubsystem();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if(subsystem==null){
 					return groupService.getGroupsCount(null, subsystem == null ? null : null);
@@ -98,8 +98,6 @@ public class ListGroupsPage extends BasePage {
 			}
 
 		};
-
-		
 		
 //		DATAVIEW
 		final CheckGroup<UIGroupForList> checkGroup = new CheckGroup<UIGroupForList>("group", new ArrayList<UIGroupForList>());
@@ -206,19 +204,8 @@ public class ListGroupsPage extends BasePage {
 		return "Groups";
 	}
 
-	@SuppressWarnings("unused")
 	private class GroupFilter implements Serializable {
 		private static final long serialVersionUID = 1L;
-		private UISubsystemForFilter subsystem;
-	
-		public UISubsystemForFilter getSubsystem() {
-			return subsystem;
-		}
-	
-		public void setSubsystem(UISubsystemForFilter subsystem) {
-			this.subsystem = subsystem;
-		}
-	
 	}
 
 }

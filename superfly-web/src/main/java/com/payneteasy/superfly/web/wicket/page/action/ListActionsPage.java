@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -23,7 +24,6 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
@@ -37,6 +37,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
+import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
@@ -50,25 +51,25 @@ public class ListActionsPage extends BasePage {
 
 	public ListActionsPage() {
 		super();
-		final ActionFilter actionFilter = new ActionFilter();
+		final StickyFilters stickyFilters = getSession().getStickyFilters();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);	
 		
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
 				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						actionFilter, "subsystem"), subsystemService
-						.getSubsystemsForFilter(),
+						stickyFilters, "subsystem"),
+				subsystemService.getSubsystemsForFilter(),
 				new SubsystemChoiceRenderer());
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
       
-		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",new Model("")){
-
+		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",
+				new PropertyModel<String>(stickyFilters, "actionNameSubstring")){
 			@Override
 			protected Iterator<String> getChoices(String input) {
 				if (Strings.isEmpty(input))
                 {
-                    return Collections.EMPTY_LIST.iterator();
+                    return Collections.<String>emptyList().iterator();
                 }
 				List<String> choices = new ArrayList<String>(10);
 				List<UIActionForFilter> action = actionService.getActionForFilter();
@@ -87,9 +88,8 @@ public class ListActionsPage extends BasePage {
 		};
 		filtersForm.add(autoTextNameAction);
 		final List<Long> subsystemIds = new ArrayList<Long>();
-		if (actionFilter.getSubsystem() != null) {
-
-			subsystemIds.add(actionFilter.getSubsystem().getId());
+		if (stickyFilters.getSubsystem() != null) {
+			subsystemIds.add(stickyFilters.getSubsystem().getId());
 		}
 		final ObjectHolder<List<UIActionForList>> actionsHolder = new ObjectHolder<List<UIActionForList>>();
 		final InitializingModel<Collection<UIActionForList>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForList>>() {
@@ -114,12 +114,12 @@ public class ListActionsPage extends BasePage {
 
 			public Iterator<? extends UIActionForList> iterator(int first,
 					int count) {
-				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
-				String actionForFilter = autoTextNameAction.getModelObject();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
+				String actionForFilter = stickyFilters.getActionNameSubstring();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
 					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
+							getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null,
 							subsystem == null ? null : null);
 					actionsHolder.setObject(actions);
 					actionsCheckGroupModel.clearInitialized();
@@ -127,7 +127,7 @@ public class ListActionsPage extends BasePage {
 				} else {
 					subsystemId.add(subsystem.getId());
 					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), actionForFilter==null?null:actionForFilter, null,
+							getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null,
 							subsystem == null ? null : subsystemId);
 					actionsHolder.setObject(actions);
 					actionsCheckGroupModel.clearInitialized();
@@ -136,9 +136,9 @@ public class ListActionsPage extends BasePage {
 			}
 
 			public int size() {
-				UISubsystemForFilter subsystem = actionFilter.getSubsystem();
+				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
-				if(subsystem==null){
+				if(subsystem == null){
 					return actionService.getActionCount(null, null, subsystem == null ? null : null);
 				}else{
 					subsystemId.add(subsystem.getId());
@@ -184,7 +184,7 @@ public class ListActionsPage extends BasePage {
 						.isLogAction() ? "yes" : "NO"));
 				item.add(switchLogLevel);
 				item.add(new Check<UIActionForList>("selected", item.getModel(),group));
-				item.add(new BookmarkablePageLink("copy-action",
+				item.add(new BookmarkablePageLink<Page>("copy-action",
 						CopyActionPropertiesPage.class ).setParameter("id", action.getId()));
 				
 			}
@@ -221,31 +221,11 @@ public class ListActionsPage extends BasePage {
 
 	}
 
-	@SuppressWarnings("unused")
-	private class ActionFilter implements Serializable {
-		private UISubsystemForFilter subsystem;
-		private UIActionForFilter actionForFilter;
-
-		public UIActionForFilter getActionForFilter() {
-			return actionForFilter;
-		}
-
-		public void setActionForFilter(UIActionForFilter actionForFilter) {
-			this.actionForFilter = actionForFilter;
-		}
-
-		public UISubsystemForFilter getSubsystem() {
-			return subsystem;
-		}
-
-		public void setSubsystem(UISubsystemForFilter subsystem) {
-			this.subsystem = subsystem;
-		}
-
-	}
-	
 	@Override
 	protected String getTitle() {
 		return "Actions";
+	}
+	
+	private class ActionFilter implements Serializable {
 	}
 }

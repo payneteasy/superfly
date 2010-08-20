@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
 import com.payneteasy.superfly.web.security.SecurityUtils;
+import com.payneteasy.superfly.web.wicket.SuperflySession;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
@@ -47,6 +48,11 @@ public abstract class BasePage extends WebPage {
 	
 	protected String getHeadTitlePostfix() {
 		return getTitle();
+	}
+	
+	@Override
+	public SuperflySession getSession() {
+		return (SuperflySession) super.getSession();
 	}
 	
 }

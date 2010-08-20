@@ -80,7 +80,7 @@
     	<item type="task">
     		<name>UI enhancements</name>
     		<description>
-    			Actions are sorted by name in lists.
+    			Actions are sorted by name in lists. Filters are made sticky.
     		</description>
     	</item>
     </release>

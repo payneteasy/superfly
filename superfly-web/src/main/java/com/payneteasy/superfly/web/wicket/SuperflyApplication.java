@@ -1,6 +1,9 @@
 package com.payneteasy.superfly.web.wicket;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.Request;
+import org.apache.wicket.Response;
+import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
@@ -35,7 +38,7 @@ import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 
-public class WicketApplication extends WebApplication{
+public class SuperflyApplication extends WebApplication{
 
 	@Override
 	protected void init() {
@@ -83,6 +86,11 @@ public class WicketApplication extends WebApplication{
 	@Override
 	public Class<? extends Page> getHomePage() {
 		return HomePage.class;
+	}
+
+	@Override
+	public Session newSession(Request request, Response response) {
+		return new SuperflySession(request);
 	}
     
 }
