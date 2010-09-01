@@ -8,4 +8,7 @@ public interface AnnotatedMethodsClass {
 	
 	@Secured("method2")
 	void method2();
+	
+	@Secured({"multiple_method1", "multiple_method2"})
+	void method3();
 }
