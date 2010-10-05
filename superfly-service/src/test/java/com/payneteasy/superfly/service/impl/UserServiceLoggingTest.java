@@ -14,6 +14,8 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
+import com.payneteasy.superfly.password.NullSaltSource;
+import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
@@ -29,6 +31,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setUserDao(userDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
+		service.setPasswordEncoder(new PlaintextPasswordEncoder());
+		service.setSaltSource(new NullSaltSource());
 		userService = service;
 	}
 	

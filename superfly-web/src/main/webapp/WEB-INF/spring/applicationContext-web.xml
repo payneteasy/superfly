@@ -7,4 +7,11 @@
 	<bean id="userInfoService" class="com.payneteasy.superfly.web.security.UserInfoServiceAcegi">
 	</bean>
 	
+	<bean id="policyName" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-policy"/>
+	</bean>
+	<bean id="salt" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-salt"/>
+	</bean>
+	
 </beans>

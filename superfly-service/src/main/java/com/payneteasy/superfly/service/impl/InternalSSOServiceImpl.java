@@ -27,6 +27,8 @@ import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
@@ -40,6 +42,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private ActionDao actionDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
+	private PasswordEncoder passwordEncoder;
+	private SaltSource saltSource;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -61,10 +65,21 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.loggerSink = loggerSink;
 	}
 
+	@Required
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Required
+	public void setSaltSource(SaltSource saltSource) {
+		this.saltSource = saltSource;
+	}
+
 	public SSOUser authenticate(String username, String password,
 			String subsystemIdentifier, String userIpAddress, String sessionInfo) {
 		SSOUser ssoUser;
-		List<AuthRole> authRoles = userDao.authenticate(username, password,
+		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+		List<AuthRole> authRoles = userDao.authenticate(username, encPassword,
 				subsystemIdentifier, userIpAddress, sessionInfo);
 		boolean ok = authRoles != null && !authRoles.isEmpty();
 		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
@@ -138,7 +153,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
-		registerUser.setPassword(password);
+		registerUser.setPassword(passwordEncoder.encode(password, saltSource.getSalt(username)));
 		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);
         RoutineResult result = userDao.registerUser(registerUser);

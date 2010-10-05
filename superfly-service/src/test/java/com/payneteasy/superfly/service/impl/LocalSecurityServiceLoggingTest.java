@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.password.NullSaltSource;
+import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 
 public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest {
@@ -25,6 +27,8 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		service.setUserDao(userDao);
 		service.setLoggerSink(loggerSink);
 		service.setLocalRoleName("local");
+		service.setPasswordEncoder(new PlaintextPasswordEncoder());
+		service.setSaltSource(new NullSaltSource());
 		localSecurityService = service;
 	}
 	

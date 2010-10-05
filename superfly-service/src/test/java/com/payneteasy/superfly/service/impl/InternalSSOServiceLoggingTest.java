@@ -14,6 +14,8 @@ import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.password.NullSaltSource;
+import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.NotificationService;
 
@@ -29,6 +31,8 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setUserDao(userDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
+		service.setPasswordEncoder(new PlaintextPasswordEncoder());
+		service.setSaltSource(new NullSaltSource());
 		internalSSOService = service;
 	}
 	

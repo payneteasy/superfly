@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 
@@ -21,6 +23,8 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	private String localSubsystemName = "superfly";
 	private String localRoleName = "admin";
 	private LoggerSink loggerSink;
+	private PasswordEncoder passwordEncoder;
+	private SaltSource saltSource;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -40,8 +44,19 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		this.loggerSink = loggerSink;
 	}
 
+	@Required
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Required
+	public void setSaltSource(SaltSource saltSource) {
+		this.saltSource = saltSource;
+	}
+
 	public String[] authenticate(String username, String password) {
-		List<AuthRole> roles = userDao.authenticate(username, password,
+		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+		List<AuthRole> roles = userDao.authenticate(username, encPassword,
 				localSubsystemName, null, null);
 		if (roles != null) {
 			AuthRole role = null;

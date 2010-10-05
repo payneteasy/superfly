@@ -17,21 +17,15 @@ public abstract class AbstractServiceLoggingTest extends TestCase {
 	}
 	
 	protected RoutineResult failureResult() {
-		RoutineResult result = new RoutineResult();
-		result.setStatus("fail");
-		return result;
+		return RoutineResult.failureResult();
 	}
 	
 	protected RoutineResult okResult() {
-		RoutineResult result = new RoutineResult();
-		result.setStatus("OK");
-		return result;
+		return RoutineResult.okResult();
 	}
 	
 	protected RoutineResult duplicateResult() {
-		RoutineResult result = new RoutineResult();
-		result.setStatus("duplicate");
-		return result;
+		return RoutineResult.duplicateResult();
 	}
 	
 }

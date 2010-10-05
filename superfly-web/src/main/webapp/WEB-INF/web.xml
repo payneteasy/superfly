@@ -36,6 +36,15 @@
 		<param-value>superfly</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>superfly-policy</param-name>
+		<param-value>none</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-salt</param-name>
+		<param-value>kdjfKJ48jfjf$Etj84f>DFJ48fj4fzFJdf8jADfj84fjaijdf84jfjzdfjakjfajf8j4qaq</param-value>
+	</context-param>
+	
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>

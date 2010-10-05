@@ -16,12 +16,16 @@
 		<property name="actionDao" ref="actionDao" />
 		<property name="notificationService" ref="notificationService"/>
 		<property name="loggerSink" ref="loggerSink"/>
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
 	</bean>
 	
 	<bean id="localSecurityService"
 		class="com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl">
 		<property name="userDao" ref="userDao"/>
 		<property name="loggerSink" ref="loggerSink"/>
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
 	</bean>
 
 	<bean id="subsystemService"
@@ -43,6 +47,8 @@
 		<property name="userDao" ref="userDao" />
 		<property name="notificationService" ref="notificationService" />
 		<property name="loggerSink" ref="loggerSink"/>
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
 	</bean>
 	
 	<bean id="roleService"
@@ -81,6 +87,14 @@
 	<bean id="notificationService" class="com.payneteasy.superfly.service.impl.NotificationServiceImpl">
 		<property name="notifier" ref="notifier"/>
 		<property name="subsystemDao" ref="subsystemDao"/>
+	</bean>
+	
+	<bean id="passwordEncoder" class="com.payneteasy.superfly.spring.PasswordEncoderFactoryBean">
+		<property name="policyName" ref="policyName"/>
+	</bean>
+	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
+		<property name="policyName" ref="policyName"/>
+		<property name="data" ref="salt"/>
 	</bean>
 	
 </beans>
