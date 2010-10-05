@@ -97,4 +97,16 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 	
+	public void testAuthenticateNoRoles() throws Exception {
+		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+						.andReturn(Collections.<AuthRole>emptyList());
+		loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
+		EasyMock.replay(loggerSink, userDao);
+		
+		internalSSOService.authenticate("username", "password", null, null, null);
+		
+		EasyMock.verify(loggerSink);
+	}
+	
 }
