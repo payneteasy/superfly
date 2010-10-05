@@ -21,6 +21,7 @@
 	<bean id="localSecurityService"
 		class="com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl">
 		<property name="userDao" ref="userDao"/>
+		<property name="loggerSink" ref="loggerSink"/>
 	</bean>
 
 	<bean id="subsystemService"

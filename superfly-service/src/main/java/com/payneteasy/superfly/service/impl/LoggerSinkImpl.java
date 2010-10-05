@@ -16,7 +16,14 @@ public class LoggerSinkImpl implements LoggerSink {
 	}
 
 	public void info(Logger logger, String eventType, boolean success, String resourceIdentity) {
-		String message = String.format("%s:%s:%s:%s", userInfoService.getUsername(),
+		String username = userInfoService.getUsername();
+		String usernameFormatted;
+		if (username == null) {
+			usernameFormatted = "<null>";
+		} else {
+			usernameFormatted = username;
+		}
+		String message = String.format("%s:%s:%s:%s", usernameFormatted,
 				eventType, resourceIdentity, success ? "success" : "failure");
 		logger.info(message);
 	}

@@ -4,12 +4,15 @@ package com.payneteasy.superfly.service.impl;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
+import java.util.Collections;
+
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.NotificationService;
@@ -66,6 +69,30 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		} catch (IllegalStateException e) {
 			// expected
 		}
+		
+		EasyMock.verify(loggerSink);
+	}
+	
+	public void testAuthenticate() throws Exception {
+		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+						.andReturn(Collections.singletonList(new AuthRole()));
+		loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(true), eq("username"));
+		EasyMock.replay(loggerSink, userDao);
+		
+		internalSSOService.authenticate("username", "password", null, null, null);
+		
+		EasyMock.verify(loggerSink);
+	}
+	
+	public void testAuthenticateFail() throws Exception {
+		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+						.andReturn(null);
+		loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
+		EasyMock.replay(loggerSink, userDao);
+		
+		internalSSOService.authenticate("username", "password", null, null, null);
 		
 		EasyMock.verify(loggerSink);
 	}

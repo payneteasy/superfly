@@ -28,4 +28,20 @@ public class LoggerSinkImplTest extends TestCase {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
 		assertEquals("test-user:create_user:new-user:success", appender.getLastMessage());
 	}
+	
+	public void testInfoWithNullUser() {
+		loggerSink.setUserInfoService(new UserInfoServiceMock() {
+			@Override
+			public String getUsername() {
+				return null;
+			}
+		});
+		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
+		assertEquals("<null>:create_user:new-user:success", appender.getLastMessage());
+	}
+	
+	public void testInfoFailure() {
+		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", false, "new-user");
+		assertEquals("test-user:create_user:new-user:failure", appender.getLastMessage());
+	}
 }

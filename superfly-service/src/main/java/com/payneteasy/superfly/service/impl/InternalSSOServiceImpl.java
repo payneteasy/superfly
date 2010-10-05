@@ -66,6 +66,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		SSOUser ssoUser;
 		List<AuthRole> authRoles = userDao.authenticate(username, password,
 				subsystemIdentifier, userIpAddress, sessionInfo);
+		loggerSink.info(logger, "REMOTE_LOGIN", authRoles != null, username);
 		if (authRoles != null && !authRoles.isEmpty()) {
 			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(
 					authRoles.size());
