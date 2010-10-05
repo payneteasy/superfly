@@ -11,6 +11,8 @@ import javax.persistence.Column;
  * @author Roman Puchkovskiy
  */
 public class UICloneUserRequest implements Serializable {
+	private static final long serialVersionUID = 1305784938422515978L;
+	
 	private Long id;
 	private String username;
 	private String password;

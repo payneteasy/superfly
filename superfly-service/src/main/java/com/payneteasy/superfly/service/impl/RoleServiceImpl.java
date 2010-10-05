@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +16,19 @@ import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.role.UIRoleForView;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class RoleServiceImpl implements RoleService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
 	private RoleDao roleDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
 
 	@Required
 	public void setRoleDao(RoleDao roleDao) {
@@ -32,6 +38,11 @@ public class RoleServiceImpl implements RoleService {
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
+	}
+
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
 	}
 
 	public List<UIRoleForFilter> getRolesForFilter() {
@@ -56,6 +67,7 @@ public class RoleServiceImpl implements RoleService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "DELETE_ROLE", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 
@@ -70,6 +82,7 @@ public class RoleServiceImpl implements RoleService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "UPDATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
 
@@ -78,29 +91,32 @@ public class RoleServiceImpl implements RoleService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CREATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
 
 	public RoutineResult changeRoleGroups(long roleId,
 			List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
-		RoutineResult result = roleDao.changeRoleGroups(roleId, StringUtils
-				.collectionToCommaDelimitedString(groupToAddIds), StringUtils
-				.collectionToCommaDelimitedString(groupToRemoveIds));
+		RoutineResult result = roleDao.changeRoleGroups(roleId,
+				StringUtils.collectionToCommaDelimitedString(groupToAddIds),
+				StringUtils.collectionToCommaDelimitedString(groupToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
 		return result;
 
 	}
 
 	public RoutineResult changeRoleActions(long roleId,
 			List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
-		RoutineResult result = roleDao.changeRoleActions(roleId, StringUtils
-				.collectionToCommaDelimitedString(actionToAddIds), StringUtils
-				.collectionToCommaDelimitedString(actionToRemoveIds));
+		RoutineResult result = roleDao.changeRoleActions(roleId,
+				StringUtils.collectionToCommaDelimitedString(actionToAddIds),
+				StringUtils.collectionToCommaDelimitedString(actionToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 

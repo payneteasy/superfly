@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,14 +20,18 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
 @Transactional
 public class UserServiceImpl implements UserService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private UserDao userDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -35,6 +41,11 @@ public class UserServiceImpl implements UserService {
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
+	}
+
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
 	}
 
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
@@ -52,7 +63,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public RoutineResult createUser(UIUserForCreate user) {
-		return userDao.createUser(user);
+		RoutineResult result = userDao.createUser(user);
+		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
+		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
 	}
@@ -62,7 +75,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public RoutineResult updateUser(UIUser user) {
-		return userDao.updateUser(user);
+		RoutineResult result = userDao.updateUser(user);
+		loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
+		return result;
 	}
 
 	public RoutineResult deleteUser(long userId) {
@@ -70,6 +85,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "DELETE_USER", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -78,6 +94,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "LOCK_USER", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -86,10 +103,11 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "UNLOCK_USER", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
-	public long cloneUser(long templateUserId, String newUsername,
+	public Long cloneUser(long templateUserId, String newUsername,
 			String newPassword) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
@@ -99,6 +117,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
 		return request.getId();
 	}
 
@@ -145,6 +164,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -194,6 +214,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 

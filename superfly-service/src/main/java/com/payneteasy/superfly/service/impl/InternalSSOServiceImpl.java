@@ -28,6 +28,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 
 @Transactional
@@ -38,6 +39,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private UserDao userDao;
 	private ActionDao actionDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -52,6 +54,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
+	}
+
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
 	}
 
 	public SSOUser authenticate(String username, String password,
@@ -147,9 +154,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         	}
         	
         	notificationService.notifyAboutUsersChanged();
+        	loggerSink.info(logger, "REGISTER_USER", true, username);
         } else if (result.isDuplicate()) {
+        	loggerSink.info(logger, "REGISTER_USER", false, username);
         	throw new UserExistsException(result.getErrorMessage());
         } else {
+        	loggerSink.info(logger, "REGISTER_USER", false, username);
         	throw new IllegalStateException("Status: " + result.getStatus()
         			+ ", errorMessage: " + result.getErrorMessage());
         }

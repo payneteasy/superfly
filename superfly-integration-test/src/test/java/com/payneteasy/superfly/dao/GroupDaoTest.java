@@ -33,7 +33,7 @@ public class GroupDaoTest extends AbstractDaoTest {
 		assertRoutineResult(routineResult);
         groupDao.updateGroup(group.getId(), "test_updated");
         assertEquals(groupDao.getGroupById(group.getId()).getName(),"test_updated");
-		routineResult = groupDao.deleteGorup(group.getId());
+		routineResult = groupDao.deleteGroup(group.getId());
 		assertRoutineResult(routineResult);
 	}
 	
