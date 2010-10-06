@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,11 +27,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.annotation.Secured;
 
-import com.payneteasy.superfly.dao.DaoConstants;
-import com.payneteasy.superfly.model.ui.role.UIRole;
-import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -125,6 +120,18 @@ public class CreateUserPage extends BasePage {
 				target.addComponent(models);
 			}
 		});
+		form.add(new RequiredTextField<String>("name",
+				new PropertyModel<String>(user, "name")));
+		
+		form.add(new RequiredTextField<String>("surname",
+				new PropertyModel<String>(user, "surname")));
+		
+		form.add(new RequiredTextField<String>("secretQuestion",
+				new PropertyModel<String>(user, "secretQuestion")));
+		
+		form.add(new RequiredTextField<String>("secretAnswer",
+				new PropertyModel<String>(user, "secretAnswer")));
+		
 		form.add(new Button("add") {
 
 			@Override

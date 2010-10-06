@@ -14,6 +14,10 @@ public class UIUser implements Serializable {
 	private String username;
 	private String password;
 	private String email;
+	private String name;
+	private String surname;
+	private String secretQuestion;
+	private String secretAnswer;
 
 	@Column(name = "user_id")
 	public Long getId() {
@@ -49,6 +53,42 @@ public class UIUser implements Serializable {
 
 	public final void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Column(name = "name")
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "surname")
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
+
+	@Column(name = "secret_question")
+	public String getSecretQuestion() {
+		return secretQuestion;
+	}
+
+	public void setSecretQuestion(String secretQuestion) {
+		this.secretQuestion = secretQuestion;
+	}
+
+	@Column(name = "secret_answer")
+	public String getSecretAnswer() {
+		return secretAnswer;
+	}
+
+	public void setSecretAnswer(String secretAnswer) {
+		this.secretAnswer = secretAnswer;
 	}
 
 }
