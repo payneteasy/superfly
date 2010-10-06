@@ -7,10 +7,10 @@
         <Arg>java:/comp/env/jdbc/superfly</Arg>
         <Arg>
             <New class="org.apache.commons.dbcp.BasicDataSource">
-                <Set name="url">jdbc:mysql://localhost:3306/superfly?autoReconnect=false&amp;characterEncoding=utf8</Set>
+                <Set name="url">jdbc:mysql://localhost:3306/sso?autoReconnect=false&amp;characterEncoding=utf8</Set>
                 <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
-                <Set name="username">superfly</Set>
-                <Set name="password">123superfly123</Set>
+                <Set name="username">sso</Set>
+                <Set name="password">123sso123</Set>
                 <Set name="accessToUnderlyingConnectionAllowed">true</Set>
                 <Set name="testOnBorrow">true</Set>
                 <Set name="validationQuery">{call create_collections()}</Set>
