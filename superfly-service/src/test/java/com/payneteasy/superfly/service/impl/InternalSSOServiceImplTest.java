@@ -67,7 +67,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 			}
 		});
 		EasyMock.replay(userDao);
-		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{});
+		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{},"user", "user", "question", "answer");
 		EasyMock.verify(userDao);
 	}
 }

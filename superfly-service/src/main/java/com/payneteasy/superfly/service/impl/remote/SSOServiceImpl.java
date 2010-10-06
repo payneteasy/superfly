@@ -66,10 +66,10 @@ public class SSOServiceImpl implements SSOService {
 	 * @see SSOService#registerUser(String, String, String, String, RoleGrantSpecification[])
 	 */
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,String name, String surname, String secretQuestion, String secretAnswer)
 			throws UserExistsException {
 		internalSSOService.registerUser(username, password, email,
-				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants);
+				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants, name, surname, secretQuestion, secretAnswer);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {
