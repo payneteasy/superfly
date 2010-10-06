@@ -3,7 +3,11 @@ delimiter $$
 create procedure ui_create_user(i_user_name varchar(32),
                                 i_user_password varchar(32),
                                 i_user_email varchar(255),
-                                i_role_id int(10),  
+                                i_role_id int(10),
+                                i_name varchar(32),
+                                i_surname varchar(32),
+                                i_secret_question varchar(255),
+                                i_secret_answer varchar(255),  
                                 out o_user_id int(10)
 )
  main_sql:
@@ -12,9 +16,9 @@ create procedure ui_create_user(i_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password, email, is_account_locked
+             user_name, user_password, email, is_account_locked, name, surname, secret_question, secret_answer
           )
-    values (i_user_name, i_user_password, i_user_email,'N');
+    values (i_user_name, i_user_password, i_user_email,'N', i_name, i_surname, i_secret_question, i_secret_answer);
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;
