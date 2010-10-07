@@ -238,3 +238,4 @@ create table mysql_routines_return_arguments (
 \. ui_create/ui_add_subsystem_with_role.prc
 
 \. stub/grant_roles_to_user.prc
+\. stub/login_locked.prc
