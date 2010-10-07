@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service.impl;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+
+import com.payneteasy.superfly.api.PolicyValidationException;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -54,7 +56,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		EasyMock.verify(userDao);
 	}
 	
-	public void testRegisterUserPasswordEncoding() throws UserExistsException {
+	public void testRegisterUserPasswordEncoding() throws UserExistsException, PolicyValidationException {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("md5");
 		internalSSOService.setPasswordEncoder(encoder);

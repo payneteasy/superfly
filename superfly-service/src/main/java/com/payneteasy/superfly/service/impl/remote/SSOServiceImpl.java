@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl.remote;
 
 import java.util.List;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
@@ -67,7 +68,7 @@ public class SSOServiceImpl implements SSOService {
 	 */
 	public void registerUser(String username, String password, String email,
 			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException {
+			throws UserExistsException, PolicyValidationException {
 		internalSSOService.registerUser(username, password, email,
 				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants, name, surname, secretQuestion, secretAnswer);
 	}

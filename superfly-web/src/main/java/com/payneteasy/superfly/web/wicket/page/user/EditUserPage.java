@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.EmailAddressPatternValidator;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.annotation.Secured;

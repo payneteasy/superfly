@@ -3,7 +3,7 @@ package com.payneteasy.superfly.policy.impl;
 import com.payneteasy.superfly.policy.IPolicy;
 import com.payneteasy.superfly.policy.IPolicyContext;
 import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.policy.PolicyException;
+import com.payneteasy.superfly.api.PolicyValidationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public abstract class AbstractPolicyValidation<T extends IPolicyContext> impleme
 
     protected List<IPolicy<T>> policyList=new ArrayList<IPolicy<T>>();
 
-    public void validate(T aContext) throws PolicyException {
+    public void validate(T aContext) throws PolicyValidationException {
        for(IPolicy<T> policy:policyList){
            policy.apply(aContext);
        }

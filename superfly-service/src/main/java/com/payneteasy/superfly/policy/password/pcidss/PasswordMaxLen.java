@@ -1,8 +1,7 @@
 package com.payneteasy.superfly.policy.password.pcidss;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.policy.IPolicy;
-import com.payneteasy.superfly.policy.IPolicyContext;
-import com.payneteasy.superfly.policy.PolicyException;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 
 /**
@@ -18,11 +17,11 @@ public class PasswordMaxLen implements IPolicy<PasswordCheckContext> {
         theMaxPasswordLen = aMaxPasswordLen;
     }
 
-    public void apply(PasswordCheckContext aContext) throws PolicyException {
+    public void apply(PasswordCheckContext aContext) throws PolicyValidationException {
         if(aContext.getPassword()==null)
-            throw new PolicyException(PolicyException.EMPTY_PASSWORD);
+            throw new PolicyValidationException(PolicyValidationException.EMPTY_PASSWORD);
         if(aContext.getPassword().length()<theMaxPasswordLen)
-            throw new PolicyException(PolicyException.SHORT_PASSWORD);
+            throw new PolicyValidationException(PolicyValidationException.SHORT_PASSWORD);
     }
 
 

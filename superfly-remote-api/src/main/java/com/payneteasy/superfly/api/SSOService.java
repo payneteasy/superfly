@@ -68,6 +68,6 @@ public interface SSOService {
 	 */
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException;
+			throws UserExistsException,PolicyValidationException;
 
 }

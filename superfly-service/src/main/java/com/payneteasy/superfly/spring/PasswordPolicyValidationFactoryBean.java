@@ -1,9 +1,6 @@
 package com.payneteasy.superfly.spring;
 
-import com.payneteasy.superfly.password.ConstantSaltSource;
-import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValidation;
 

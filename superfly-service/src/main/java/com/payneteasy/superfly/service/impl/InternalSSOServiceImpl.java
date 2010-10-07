@@ -7,18 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.SSOAction;
-import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.ActionToSave;
@@ -45,7 +41,14 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 
-	@Required
+    private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+
+    @Required
+    public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
+        this.policyValidation = policyValidation;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -140,7 +143,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	public void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException {
+			throws UserExistsException, PolicyValidationException {
+        
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
@@ -151,6 +155,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSurname(surname);
 		registerUser.setSecretQuestion(secretQuestion);
 		registerUser.setSecretAnswer(secretAnswer);
+
+        // validate password policy
+        policyValidation.validate(new PasswordCheckContext(password,username,passwordEncoder,saltSource,Collections.<String>emptyList()));
+
 		RoutineResult result = userDao.registerUser(registerUser);
 		if (result.isOk()) {
 			for (RoleGrantSpecification roleGrant : roleGrants) {

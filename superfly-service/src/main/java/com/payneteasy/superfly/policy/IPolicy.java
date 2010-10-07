@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.policy;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
+
 /**
  * Kuccyp
  * Date: 06.10.2010
@@ -8,5 +10,5 @@ package com.payneteasy.superfly.policy;
  * Skype: kuccyp
  */
 public interface IPolicy<T extends IPolicyContext> {
-    void apply(T aContext) throws PolicyException;
+    void apply(T aContext) throws PolicyValidationException;
 }

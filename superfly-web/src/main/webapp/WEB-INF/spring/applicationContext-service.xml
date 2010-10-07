@@ -18,6 +18,7 @@
 		<property name="loggerSink" ref="loggerSink"/>
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
+        <property name="policyValidation" ref="passwordPolicyValidation"/>
 	</bean>
 	
 	<bean id="localSecurityService"
@@ -92,9 +93,14 @@
 	<bean id="passwordEncoder" class="com.payneteasy.superfly.spring.PasswordEncoderFactoryBean">
 		<property name="policyName" ref="policyName"/>
 	</bean>
+
 	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
 		<property name="policyName" ref="policyName"/>
 		<property name="data" ref="salt"/>
 	</bean>
-	
+
+    <bean id="passwordPolicyValidation" class="com.payneteasy.superfly.spring.PasswordPolicyValidationFactoryBean">
+        <property name="policyName" ref="policyName"/>
+    </bean>
+    
 </beans>

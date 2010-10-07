@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.policy.password.pcidss;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.policy.IPolicy;
-import com.payneteasy.superfly.policy.PolicyException;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 
 /**
@@ -14,9 +14,9 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 public class PasswordComplex implements IPolicy<PasswordCheckContext> {
 
 
-    public void apply(PasswordCheckContext aContext) throws PolicyException {
+    public void apply(PasswordCheckContext aContext) throws PolicyValidationException {
         if(aContext.getPassword()==null)
-            throw new PolicyException(PolicyException.EMPTY_PASSWORD);
+            throw new PolicyValidationException(PolicyValidationException.EMPTY_PASSWORD);
 
 //Факторы сложности
         int has_only_numeric = 0;
@@ -48,7 +48,7 @@ public class PasswordComplex implements IPolicy<PasswordCheckContext> {
                    has_lower= false;
                    has_upper = false;
                    has_signs = false;
-                   throw new PolicyException(PolicyException.SIMPLE_PASSWORD);
+                   throw new PolicyValidationException(PolicyValidationException.SIMPLE_PASSWORD);
                }
         
 
@@ -73,7 +73,7 @@ public class PasswordComplex implements IPolicy<PasswordCheckContext> {
 
 
         if(!has_numeric && (!has_lower || !has_upper)){
-            throw new PolicyException(PolicyException.SIMPLE_PASSWORD);
+            throw new PolicyValidationException(PolicyValidationException.SIMPLE_PASSWORD);
         }
     }
 

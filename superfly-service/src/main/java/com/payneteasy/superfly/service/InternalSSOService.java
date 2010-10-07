@@ -7,6 +7,7 @@ import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.PolicyValidationException;
 
 /**
  * Internal service used to implement SSOService.
@@ -37,7 +38,6 @@ public interface InternalSSOService {
 	 * 
 	 * @param subsystemIdentifier
 	 *            identifier of the system
-	 * @param roleDescriptions
 	 *            descriptions of roles
 	 * @param actionDescriptions
 	 *            descriptions of actions
@@ -71,5 +71,5 @@ public interface InternalSSOService {
 	 */
 	void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException;
+			throws UserExistsException, PolicyValidationException;
 }
