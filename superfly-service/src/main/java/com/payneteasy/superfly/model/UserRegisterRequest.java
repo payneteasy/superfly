@@ -17,6 +17,7 @@ public class UserRegisterRequest implements Serializable {
 	private String surname;
 	private String secretQuestion;
 	private String secretAnswer;
+    private String salt;
 
 	@Column(name = "user_id")
 	public long getUserid() {
@@ -108,4 +109,12 @@ public class UserRegisterRequest implements Serializable {
 		this.secretAnswer = secretAnswer;
 	}
 
+    @Column(name="salt")
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 }

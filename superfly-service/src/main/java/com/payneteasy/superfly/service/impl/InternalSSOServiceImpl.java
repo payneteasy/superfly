@@ -148,7 +148,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
-		registerUser.setPassword(passwordEncoder.encode(password, saltSource.getSalt(username)));
+        registerUser.setSalt(saltSource.getSalt(username));
+		registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
 		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);
 		registerUser.setName(name);
