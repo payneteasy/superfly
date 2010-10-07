@@ -3,12 +3,11 @@ package com.payneteasy.superfly.security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Assert;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.util.Assert;
 
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
@@ -31,8 +30,8 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Assert.assertNotNull("Must have an authentication here", authentication);
-		Assert.assertTrue(authentication instanceof SSOUserTransportAuthenticationToken);
+		Assert.notNull(authentication);
+		Assert.isTrue(authentication instanceof SSOUserTransportAuthenticationToken);
 		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
 		
 		String hotp = obtainHotp(request);
