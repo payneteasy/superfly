@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -31,6 +34,9 @@ public class EditUserPage extends BasePage {
 
 	@SpringBean
 	private UserService userService;
+
+    @SpringBean
+    private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
 	public EditUserPage(PageParameters params) {
 		super(params);
@@ -66,6 +72,8 @@ public class EditUserPage extends BasePage {
 				"password2", new PropertyModel<String>(user, "password2"));
 		form.add(password2Field);
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
+
+        form.add(new PasswordInputValidator(password1Field,policyValidation));
 
 		form.add(new RequiredTextField<String>("name",
 				new PropertyModel<String>(user, "name")));
