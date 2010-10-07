@@ -19,6 +19,7 @@
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
         <property name="policyValidation" ref="passwordPolicyValidation"/>
+        <property name="loginsLocked" ref="loginsLocked"/>
 	</bean>
 	
 	<bean id="localSecurityService"
@@ -103,4 +104,9 @@
         <property name="policyName" ref="policyName"/>
     </bean>
     
+    <bean id="loginsLocked" class="com.payneteasy.superfly.service.loginsLocked.LoginsLockedImpl">
+        <property name="maxLoginsFailed" ref="loginsFaildQuantity"/>
+        <property name="isLoginsLocked" ref="loginsFaildIsLocked"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
 </beans>

@@ -29,6 +29,7 @@ import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.loginsLocked.LoginsLocked;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
@@ -43,15 +44,16 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private HOTPProvider hotpProvider = new NullHOTPProvider();
+	private LoginsLocked loginsLocked;
 
-    private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
-    @Required
-    public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
-        this.policyValidation = policyValidation;
-    }
+	@Required
+	public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
+		this.policyValidation = policyValidation;
+	}
 
-    @Required
+	@Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -85,6 +87,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.hotpProvider = hotpProvider;
 	}
 
+	@Required
+	public void setLoginsLocked(LoginsLocked loginsLocked) {
+		this.loginsLocked = loginsLocked;
+	}
+
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
 			String sessionInfo) {
 		SSOUser ssoUser;
@@ -104,6 +111,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			ssoUser = new SSOUser(username, actionsMap, preferences);
 			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
+			loginsLocked.checkLoginsFailed(username, password);
 			ssoUser = null;
 		}
 		return ssoUser;
@@ -151,11 +159,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	public void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
 			throws UserExistsException, PolicyValidationException {
-        
+
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
-        registerUser.setSalt(saltSource.getSalt(username));
+		registerUser.setSalt(saltSource.getSalt(username));
 		registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
 		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);
@@ -164,8 +172,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSecretQuestion(secretQuestion);
 		registerUser.setSecretAnswer(secretAnswer);
 
-        // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password,username,passwordEncoder,saltSource,Collections.<String>emptyList()));
+		// validate password policy
+		policyValidation.validate(new PasswordCheckContext(password, username, passwordEncoder, saltSource, Collections
+				.<String> emptyList()));
 
 		RoutineResult result = userDao.registerUser(registerUser);
 		if (result.isOk()) {
@@ -191,7 +200,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 					+ result.getErrorMessage());
 		}
 	}
-	
+
 	public boolean authenticateHOTP(String username, String hotp) {
 		return hotpProvider.authenticate(username, hotp);
 	}

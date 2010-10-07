@@ -14,4 +14,10 @@
 		<property name="initParamName" value="superfly-salt"/>
 	</bean>
 	
+	<bean id="loginsFaildIsLocked" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-logins-faild-isLocked"/>
+	</bean>
+	<bean id="loginsFaildQuantity" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-logins-faild-quantity"/>
+	</bean>
 </beans>
