@@ -3,8 +3,6 @@ package com.payneteasy.superfly.policy.password.pcidss;
 import com.payneteasy.superfly.policy.IPolicy;
 import com.payneteasy.superfly.policy.PolicyException;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
-import org.apache.commons.lang.math.NumberUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Kuccyp
