@@ -10,6 +10,7 @@ drop table if exists user_history;
 create table user_history(
   `user_user_id`         int(10) not null,
   `user_password` varchar(128) not null,
+  `salt` varchar(64) not null,
   `number_history` int(10) unsigned NOT NULL,                                                                           
   `start_date` datetime DEFAULT NULL,                                                                                   
   `end_date` datetime DEFAULT NULL,                                                                                     
