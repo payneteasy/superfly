@@ -5,6 +5,10 @@ create procedure register_user(i_user_name         varchar(32),
                                i_user_email        varchar(255),
                                i_subsystem_name    varchar(32),
                                i_principal_list    text,
+                               i_name 		   varchar(32),   
+                               i_surname	   varchar(32),
+                               i_secret_question   varchar(255),
+                               i_secret_answer     varchar(255),
                                out o_user_id       int(10)
                               )
  main_sql:
