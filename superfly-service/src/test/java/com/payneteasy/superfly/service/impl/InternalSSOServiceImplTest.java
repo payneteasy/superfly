@@ -22,18 +22,22 @@ import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spi.HOTPProvider;
 
 public class InternalSSOServiceImplTest extends TestCase {
 	
 	private UserDao userDao;
 	private InternalSSOServiceImpl internalSSOService;
+	private HOTPProvider hotpProvider;
 	
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
+		hotpProvider = EasyMock.createMock(HOTPProvider.class);
 		InternalSSOServiceImpl service = new InternalSSOServiceImpl();
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
+		service.setHOTPProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
 		internalSSOService = service;
 	}
@@ -73,5 +77,18 @@ public class InternalSSOServiceImplTest extends TestCase {
 		EasyMock.replay(userDao);
 		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{},"user", "user", "question", "answer");
 		EasyMock.verify(userDao);
+	}
+	
+	public void testAuthenticateHOTP() {
+		EasyMock.expect(hotpProvider.authenticate("pete", "123456")).andReturn(true);
+		EasyMock.replay(hotpProvider);
+		assertTrue(internalSSOService.authenticateHOTP("pete", "123456"));
+		EasyMock.verify(hotpProvider);
+		
+		EasyMock.reset(hotpProvider);
+		EasyMock.expect(hotpProvider.authenticate("pete", "123456")).andReturn(false);
+		EasyMock.replay(hotpProvider);
+		assertFalse(internalSSOService.authenticateHOTP("pete", "123456"));
+		EasyMock.verify(hotpProvider);
 	}
 }

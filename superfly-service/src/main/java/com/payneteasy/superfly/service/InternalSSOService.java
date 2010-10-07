@@ -72,4 +72,13 @@ public interface InternalSSOService {
 	void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
 			throws UserExistsException, PolicyValidationException;
+
+	/**
+	 * Authenticates using HOTP (HMAC-based One Time Password).
+	 * 
+	 * @param username	username
+	 * @param hotp		HOTP
+	 * @return authentication result
+	 */
+	boolean authenticateHOTP(String username, String hotp);
 }

@@ -72,6 +72,13 @@ public class SSOServiceImpl implements SSOService {
 		internalSSOService.registerUser(username, password, email,
 				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants, name, surname, secretQuestion, secretAnswer);
 	}
+
+	/**
+	 * @see SSOService#authenticateUsingHOTP(String, String)
+	 */
+	public boolean authenticateUsingHOTP(String username, String hotp) {
+		return internalSSOService.authenticateHOTP(username, hotp);
+	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.hotp.NullHOTPProvider;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
@@ -28,6 +29,7 @@ import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -40,6 +42,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
+	private HOTPProvider hotpProvider = new NullHOTPProvider();
 
     private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
@@ -76,6 +79,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setSaltSource(SaltSource saltSource) {
 		this.saltSource = saltSource;
+	}
+
+	public void setHOTPProvider(HOTPProvider hotpProvider) {
+		this.hotpProvider = hotpProvider;
 	}
 
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
@@ -183,6 +190,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
 					+ result.getErrorMessage());
 		}
+	}
+	
+	public boolean authenticateHOTP(String username, String hotp) {
+		return hotpProvider.authenticate(username, hotp);
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

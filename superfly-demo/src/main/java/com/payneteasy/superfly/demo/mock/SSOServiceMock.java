@@ -75,4 +75,8 @@ public class SSOServiceMock implements SSOService {
 			throws UserExistsException {
 	}
 
+	public boolean authenticateUsingHOTP(String username, String hotp) {
+		return true;
+	}
+
 }

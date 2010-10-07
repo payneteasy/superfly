@@ -48,6 +48,17 @@ public interface SSOService {
 	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
 
 	/**
+	 * Authenticates a user using an HOTP implementation configured on the
+	 * Superfly server.
+	 * 
+	 * @param username	name of the user to authenticate
+	 * @param hotp		one-time password
+	 * @return true if authentication is successful
+	 * @since 1.2
+	 */
+	boolean authenticateUsingHOTP(String username, String hotp);
+
+	/**
 	 * Registers user and gives him requested principal.
 	 * 
 	 * @param username
