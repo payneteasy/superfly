@@ -8,4 +8,18 @@ package com.payneteasy.superfly.policy;
  * Skype: kuccyp
  */
 public class PolicyException extends Exception {
+
+    public final  static String EMPTY_PASSWORD="P000";
+    public final  static String SHORT_PASSWORD="P001";
+    public final  static String SIMPLE_PASSWORD="P002";
+
+    private final String code;
+
+    public PolicyException(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
 }

@@ -7,5 +7,5 @@ package com.payneteasy.superfly.policy;
  * (C) 2010
  * Skype: kuccyp
  */
-public class IPolicyContext {
+public interface IPolicyContext {
 }

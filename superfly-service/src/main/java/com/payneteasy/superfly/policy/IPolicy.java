@@ -7,6 +7,6 @@ package com.payneteasy.superfly.policy;
  * (C) 2010
  * Skype: kuccyp
  */
-public interface IPolicy {
-    void apply(IPolicyContext aContext) throws PolicyException;
+public interface IPolicy<T extends IPolicyContext> {
+    void apply(T aContext) throws PolicyException;
 }
