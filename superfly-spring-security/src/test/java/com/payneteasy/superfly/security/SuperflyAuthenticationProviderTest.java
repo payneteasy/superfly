@@ -26,7 +26,7 @@ public class SuperflyAuthenticationProviderTest extends AbstractSuperflyAuthenti
 	
 	public void testStep1Success() {
 		EasyMock.expect(ssoService.authenticate(eq("pete"), eq("secret"), anyObject(AuthenticationRequestInfo.class)))
-				.andReturn(createSSOUser());
+				.andReturn(createSSOUserWithOneRole());
 		EasyMock.replay(ssoService);
 		assertNotNull(provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null)));
 		EasyMock.verify(ssoService);
@@ -34,7 +34,7 @@ public class SuperflyAuthenticationProviderTest extends AbstractSuperflyAuthenti
 	
 	public void testStep1_5Success() {
 		try {
-			provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUser()));
+			provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUserWithOneRole()));
 			fail();
 		} catch (StepTwoException e) {
 			// expected
@@ -42,7 +42,7 @@ public class SuperflyAuthenticationProviderTest extends AbstractSuperflyAuthenti
 	}
 
 	public void testStep2Success() {
-		assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUser(), createSSORole())));
+		assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole())));
 	}
 	
 	public void testBadPassword() {

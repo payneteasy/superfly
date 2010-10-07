@@ -36,7 +36,7 @@ public class SuperflyMockAuthenticationProviderTest extends AbstractSuperflyAuth
 	
 	public void testStep1_5Success() {
 		try {
-			provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUser()));
+			provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUserWithOneRole()));
 			fail();
 		} catch (StepTwoException e) {
 			// expected
@@ -44,7 +44,7 @@ public class SuperflyMockAuthenticationProviderTest extends AbstractSuperflyAuth
 	}
 
 	public void testStep2Success() {
-		assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUser(), createSSORole())));
+		assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole())));
 	}
 
 	public void testBadPassword() {

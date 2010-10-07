@@ -2,6 +2,7 @@ package com.payneteasy.superfly.security;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 
 import org.easymock.EasyMock;
 import org.springframework.security.access.intercept.RunAsUserToken;
@@ -12,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
 public class SuperflyHOTPAuthenticationProviderTest extends
@@ -40,15 +43,36 @@ public class SuperflyHOTPAuthenticationProviderTest extends
 		expect(ssoService.authenticateUsingHOTP("pete", "123456"))
 				.andReturn(true);
 		replay(ssoService);
-		Authentication auth = provider.authenticate(createBeforeHotpAuth("123456"));
+		Authentication auth = provider.authenticate(createBeforeHotpAuth(1, "123456"));
 		assertNotNull(auth);
+		assertTrue(auth instanceof HOTPCheckedToken);
+	}
+	
+	public void testSuccessAndFinalAuthentication() {
+		provider.setFinishWithSuperflyFinalAuthentication(true);
+		// this is for case when user has exactly one role
+		expect(ssoService.authenticateUsingHOTP("pete", "123456"))
+				.andReturn(true);
+		replay(ssoService);
+		Authentication auth = provider.authenticate(createBeforeHotpAuth(1, "123456"));
+		assertNotNull(auth);
+		assertTrue(auth instanceof SSOUserAuthenticationToken);
+
+		reset(ssoService);
+		// this is for case when user has more than one role
+		expect(ssoService.authenticateUsingHOTP("pete", "123456"))
+				.andReturn(true);
+		replay(ssoService);
+		auth = provider.authenticate(createBeforeHotpAuth(2, "123456"));
+		assertNotNull(auth);
+		assertTrue(auth instanceof HOTPCheckedToken);
 	}
 	
 	public void testBadCredentials() {
 		expect(ssoService.authenticateUsingHOTP("pete", "123456")).andReturn(false);
 		replay(ssoService);
 		try {
-			provider.authenticate(createBeforeHotpAuth("123456"));
+			provider.authenticate(createBeforeHotpAuth(1, "123456"));
 			fail();
 		} catch (BadCredentialsException e) {
 			// expected
@@ -61,14 +85,14 @@ public class SuperflyHOTPAuthenticationProviderTest extends
 	
 	public void testNullCredentials() {
 		try {
-			provider.authenticate(createBeforeHotpAuth(null));
+			provider.authenticate(createBeforeHotpAuth(1, null));
 			fail();
 		} catch (BadCredentialsException e) {
 			// expected
 		}
 	}
 
-	private CheckHOTPToken createBeforeHotpAuth(String hotp) {
-		return new CheckHOTPToken(createSSOUser(), hotp);
+	protected CheckHOTPToken createBeforeHotpAuth(int roleCount, String hotp) {
+		return new CheckHOTPToken(createSSOUser(roleCount), hotp);
 	}
 }

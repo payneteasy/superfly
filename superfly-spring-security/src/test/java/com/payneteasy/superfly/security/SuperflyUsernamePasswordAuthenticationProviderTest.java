@@ -2,6 +2,7 @@ package com.payneteasy.superfly.security;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 
 import org.easymock.EasyMock;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,7 +11,9 @@ import org.springframework.security.core.Authentication;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 
 public class SuperflyUsernamePasswordAuthenticationProviderTest extends
 		AbstractSuperflyAuthenticationProviderTest {
@@ -31,10 +34,34 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
 	
 	public void testSuccess() {
 		expect(ssoService.authenticate("pete", "secret", null))
-				.andReturn(createSSOUser());
+				.andReturn(createSSOUserWithOneRole());
 		replay(ssoService);
-		Authentication auth = provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null));
+		Authentication auth = provider.authenticate(createPasswordAuthentication());
 		assertNotNull(auth);
+	}
+
+	private UsernamePasswordAuthRequestInfoAuthenticationToken createPasswordAuthentication() {
+		return new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null);
+	}
+	
+	public void testSuccessAndFinalAuthentication() {
+		provider.setFinishWithSuperflyFinalAuthentication(true);
+		// this is for case when user has exactly one role
+		expect(ssoService.authenticate("pete", "secret", null))
+				.andReturn(createSSOUserWithOneRole());
+		replay(ssoService);
+		Authentication auth = provider.authenticate(createPasswordAuthentication());
+		assertNotNull(auth);
+		assertTrue(auth instanceof SSOUserAuthenticationToken);
+
+		reset(ssoService);
+		// this is for case when user has more than one role
+		expect(ssoService.authenticate("pete", "secret", null))
+				.andReturn(createSSOUser(2));
+		replay(ssoService);
+		auth = provider.authenticate(createPasswordAuthentication());
+		assertNotNull(auth);
+		assertTrue(auth instanceof UsernamePasswordCheckedToken);
 	}
 	
 	public void testBadCredentials() {
@@ -65,7 +92,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
 		expect(ssoService.authenticate("pete", "secret", null)).andReturn(createSSOUserWithNoRoles());
 		replay(ssoService);
 		try {
-			provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null));
+			provider.authenticate(createPasswordAuthentication());
 			fail();
 		} catch (BadCredentialsException e) {
 			// expected
