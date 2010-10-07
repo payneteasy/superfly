@@ -22,10 +22,16 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
 public class SuperflyHOTPAuthenticationProcessingFilter extends
 		AbstractAuthenticationProcessingFilter {
 	
+	private String hotpParameter = "j_hotp";
+	
 	public SuperflyHOTPAuthenticationProcessingFilter() {
 		super("/j_superfly_hotp_security_check");
 	}
 	
+	public void setHotpParameter(String hotpParameter) {
+		this.hotpParameter = hotpParameter;
+	}
+
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException {
@@ -46,6 +52,6 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 	}
 	
 	protected String obtainHotp(HttpServletRequest request) {
-		return request.getParameter("j_hotp");
+		return request.getParameter(hotpParameter);
 	}
 }

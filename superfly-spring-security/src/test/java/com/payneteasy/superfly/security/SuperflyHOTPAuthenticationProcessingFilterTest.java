@@ -3,11 +3,8 @@ package com.payneteasy.superfly.security;
 import static org.easymock.EasyMock.anyBoolean;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
-import javax.servlet.Filter;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -24,8 +21,6 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
 public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
 
-	private Filter filter;
-	
 	public void setUp() {
 		super.setUp();
 		SuperflyHOTPAuthenticationProcessingFilter procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
@@ -33,18 +28,6 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		procFilter.afterPropertiesSet();
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
 		filter = procFilter;
-	}
-	
-	public void testDoNothing() throws Exception {
-		expect(request.getRequestURI()).andReturn("/").anyTimes();
-		// expecting that chain will just proceed
-		chain.doFilter(request, response);
-		expectLastCall();
-		replay(request, response, chain);
-		
-		filter.doFilter(request, response, chain);
-		
-		verify(request, response, chain);
 	}
 	
 	public void testAuthenticate() throws Exception {
@@ -55,16 +38,16 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 				.andAnswer(new IAnswer<Authentication>() {
 					public Authentication answer() throws Throwable {
 						CheckHOTPToken token = (CheckHOTPToken) EasyMock.getCurrentArguments()[0];
-						assertEquals("user", token.getName());
+						assertEquals("pete", token.getName());
 						assertEquals("123456", token.getCredentials().toString());
-						return new HOTPCheckedToken(createSSOUser());
+						return new HOTPCheckedToken(createSSOUserWithOneRole());
 					}
 				});
 		// expecting a redirect to a success
 		expectRedirectTo("/");
 		replay(request, response, chain, authenticationManager);
 		
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUser()));
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUserWithOneRole()));
 		filter.doFilter(request, response, chain);
 		assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(), SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
 		
@@ -81,7 +64,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		expectRedirectTo("/login-failed");
 		replay(request, response, chain, authenticationManager);
 
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUser()));
+		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUserWithOneRole()));
 		filter.doFilter(request, response, chain);
 		
 		verify(request, response, chain, authenticationManager);

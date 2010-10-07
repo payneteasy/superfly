@@ -15,24 +15,13 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
  * 
  * @author Roman Puchkovskiy
  */
-public abstract class AbstractSuperflySingleStepAuthenticationProvider implements
-		AuthenticationProvider {
+public abstract class AbstractSuperflySingleStepAuthenticationProvider extends AbstractRoleTransformingAuthenticationProvider {
 	
 	protected boolean finishWithSuperflyFinalAuthentication = false;
-	private StringTransformer[] roleNameTransformers = new StringTransformer[]{};
-	private RoleSource roleSource = createDefaultRoleSource();
 	protected SSOService ssoService;
 	
 	public void setFinishWithSuperflyFinalAuthentication(boolean b) {
 		this.finishWithSuperflyFinalAuthentication = b;
-	}
-	
-	public void setRoleNameTransformers(StringTransformer[] roleNameTransformers) {
-		this.roleNameTransformers = roleNameTransformers;
-	}
-
-	public void setRoleSource(RoleSource roleSource) {
-		this.roleSource = roleSource;
 	}
 	
 	@Required
@@ -45,13 +34,6 @@ public abstract class AbstractSuperflySingleStepAuthenticationProvider implement
 		return new SSOUserAuthenticationToken(ssoUser, role,
 				authentication.getCredentials(), authentication.getDetails(),
 				roleNameTransformers, roleSource);
-	}
-	
-	protected RoleSource createDefaultRoleSource() {
-		RoleSource[] sources = new RoleSource[2];
-		sources[0] = new SSOActionRoleSource();
-		sources[1] = new SSORoleRoleSource();
-		return new CompoundRoleSource(sources);
 	}
 	
 	protected Authentication createAuthentication(Authentication authRequest,

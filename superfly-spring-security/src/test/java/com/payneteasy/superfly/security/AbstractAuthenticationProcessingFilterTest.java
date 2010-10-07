@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.security;
 
 import org.easymock.EasyMock;
+import static org.easymock.EasyMock.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -21,8 +22,20 @@ public abstract class AbstractAuthenticationProcessingFilterTest extends
 		SecurityContextHolder.clearContext();
 	}
 
-	protected SSOUser createSSOUser() {
-		return new SSOUser("user", null, null);
+//	protected SSOUser createSSOUser() {
+//		return new SSOUser("user", null, null);
+//	}
+	
+	public void testDoNothing() throws Exception {
+		expect(request.getRequestURI()).andReturn("/").anyTimes();
+		// expecting that chain will just proceed
+		chain.doFilter(request, response);
+		expectLastCall();
+		replay(request, response, chain);
+		
+		filter.doFilter(request, response, chain);
+		
+		verify(request, response, chain);
 	}
 
 }

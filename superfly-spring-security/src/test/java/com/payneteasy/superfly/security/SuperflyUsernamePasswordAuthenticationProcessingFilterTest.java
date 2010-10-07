@@ -3,11 +3,8 @@ package com.payneteasy.superfly.security;
 import static org.easymock.EasyMock.anyBoolean;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
-import javax.servlet.Filter;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -23,8 +20,6 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
 public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
 
-	private Filter filter;
-	
 	public void setUp() {
 		super.setUp();
 		SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
@@ -33,18 +28,6 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
 		procFilter.setSubsystemIdentifier("my-subsystem");
 		filter = procFilter;
-	}
-	
-	public void testDoNothing() throws Exception {
-		expect(request.getRequestURI()).andReturn("/").anyTimes();
-		// expecting that chain will just proceed
-		chain.doFilter(request, response);
-		expectLastCall();
-		replay(request, response, chain);
-		
-		filter.doFilter(request, response, chain);
-		
-		verify(request, response, chain);
 	}
 	
 	public void testAuthenticate() throws Exception {
@@ -57,7 +40,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 						UsernamePasswordAuthRequestInfoAuthenticationToken token = (UsernamePasswordAuthRequestInfoAuthenticationToken) EasyMock.getCurrentArguments()[0];
 						assertEquals("192.168.0.4", token.getAuthRequestInfo().getIpAddress());
 						assertEquals("my-subsystem", token.getAuthRequestInfo().getSubsystemIdentifier());
-						return new UsernamePasswordCheckedToken(createSSOUser());
+						return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 					}
 				});
 		// expecting a redirect to a success
