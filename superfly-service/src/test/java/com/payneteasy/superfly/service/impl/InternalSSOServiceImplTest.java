@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -33,6 +34,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
+        service.setPolicyValidation(new DefaultPasswordPolicyValidation());
 		internalSSOService = service;
 	}
 	

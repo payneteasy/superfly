@@ -5,6 +5,8 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
@@ -32,6 +34,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setLoggerSink(loggerSink);
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
+        service.setPolicyValidation(new DefaultPasswordPolicyValidation());
 		internalSSOService = service;
 	}
 
