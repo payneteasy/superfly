@@ -17,7 +17,7 @@ import java.util.List;
  */
 public abstract class AbstractPolicyValidation<T extends IPolicyContext> implements IPolicyValidation<T>{
 
-    protected AbstractPolicyValidation() {
+    public AbstractPolicyValidation() {
         init();
     }
 

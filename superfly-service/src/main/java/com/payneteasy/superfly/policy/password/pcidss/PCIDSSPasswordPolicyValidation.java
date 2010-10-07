@@ -13,7 +13,8 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 
 //TODO make get parameters from spring for example 
 public class PCIDSSPasswordPolicyValidation extends AbstractPolicyValidation<PasswordCheckContext>{
-    public void init() {
+    @Override
+    protected void init() {
         addPolicy(new PasswordMaxLen(7));
         addPolicy(new PasswordComplex());
         addPolicy(new PasswordAlreadyExist(4));

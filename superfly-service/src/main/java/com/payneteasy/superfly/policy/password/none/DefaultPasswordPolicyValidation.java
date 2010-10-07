@@ -13,6 +13,7 @@ import com.payneteasy.superfly.policy.password.pcidss.PasswordMaxLen;
  * Skype: kuccyp
  */
 public class DefaultPasswordPolicyValidation extends AbstractPolicyValidation<PasswordCheckContext>{
-    public void init() {
+    @Override
+    protected void init() {
     }
 }

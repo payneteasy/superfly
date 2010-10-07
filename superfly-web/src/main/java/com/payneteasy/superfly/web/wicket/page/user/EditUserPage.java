@@ -1,16 +1,15 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
+import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
@@ -19,10 +18,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.annotation.Secured;
-
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 /**
  * Page used to edit a user.
@@ -36,7 +31,7 @@ public class EditUserPage extends BasePage {
 	private UserService userService;
 
     @SpringBean
-    private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+    private IPolicyValidation<PasswordCheckContext> policyValidation;
 
 	public EditUserPage(PageParameters params) {
 		super(params);
