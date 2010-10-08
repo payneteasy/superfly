@@ -24,7 +24,10 @@ public class InsufficientAuthenticationAccessDecisionManager extends
 	public void setInsufficientAuthenticationClasses(Class<?>[] classes) {
 		insufficientAuthenticationClasses = classes;
 	}
-
+	
+	public InsufficientAuthenticationAccessDecisionManager() {
+	}
+	
 	public InsufficientAuthenticationAccessDecisionManager(
 			AccessDecisionManager delegate) {
 		super(delegate);
