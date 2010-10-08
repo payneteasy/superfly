@@ -52,6 +52,10 @@ public class InsufficientAuthenticationAccessDecisionManagerTest extends
 		manager.decide(new Suf(), createFilter(), Collections.<ConfigAttribute>emptySet());
 		verify(delegate);
 	}
+	
+	public void testDefaultConstructor() {
+		new InsufficientAuthenticationAccessDecisionManager();
+	}
 
 	private GenericFilterBean createFilter() {
 		return new GenericFilterBean() {
