@@ -16,6 +16,8 @@ create table mysql_routines_return_arguments (
 
 \. get/get_user_actions.sql
 
+\. get/get_user_salt.sql
+
 \. get/list_users.sql
 
 \. get/get_procedures_resultset.prc
@@ -105,6 +107,8 @@ create table mysql_routines_return_arguments (
 \. ui_delete/ui_delete_expired_sessions.prc
 
 \. save/save_actions.prc
+
+\. save/update_user_salt.prc
 
 \. ui_get/ui_get_groups_list.prc
 

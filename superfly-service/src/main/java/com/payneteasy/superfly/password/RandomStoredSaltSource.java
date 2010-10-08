@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.utils.RandomGUID;
 
 /**
  * Kuccyp
@@ -18,6 +20,17 @@ public class RandomStoredSaltSource implements SaltSource{
     }
 
     public String getSalt(String username) {
-        return username;
+        String salt=userDao.getUserSalt(username);
+        if(salt==null){
+            return generateNewSalt(username);
+        }
+        return salt;
+    }
+
+    private String generateNewSalt(String username) {
+        RandomGUID guid=new RandomGUID(true);
+        String salt=CryptoHelper.SHA256(guid.toString());
+        userDao.updateUserSalt(username,salt);
+        return salt;
     }
 }

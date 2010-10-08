@@ -455,4 +455,10 @@ public interface UserDao {
 	@AStoredProcedure(name = "login_locked")
 	RoutineResult loginLocked(String userName, long maxLoginsFailed);
 
+
+    @AStoredProcedure(name = "get_user_salt")
+    String getUserSalt(String userName);
+
+    @AStoredProcedure(name = "update_user_salt")
+    void updateUserSalt(String username, String salt);
 }
