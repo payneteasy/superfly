@@ -18,6 +18,6 @@ create table user_history(
   PRIMARY KEY (`user_user_id`,`number_history`),                                                                        
   KEY `idx_user_history_start_end_dates` (`user_user_id`,`start_date`,`end_date`),
   CONSTRAINT `fk_user_history_users` FOREIGN KEY (`user_user_id`) REFERENCES `users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;                                                                                    
+);                                                                                    
 
 
