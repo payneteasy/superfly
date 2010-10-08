@@ -5,18 +5,18 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
-import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.NotificationService;
 
@@ -35,6 +35,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
+        service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
 		internalSSOService = service;
 	}
 

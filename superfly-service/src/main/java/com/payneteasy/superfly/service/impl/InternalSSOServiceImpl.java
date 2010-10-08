@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.hotp.NullHOTPProvider;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
@@ -29,7 +30,6 @@ import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.loginsLocked.LoginsLocked;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
@@ -44,7 +44,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private HOTPProvider hotpProvider = new NullHOTPProvider();
-	private LoginsLocked loginsLocked;
+	private LockoutStrategy lockoutStrategy;
 
 	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
@@ -88,8 +88,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	@Required
-	public void setLoginsLocked(LoginsLocked loginsLocked) {
-		this.loginsLocked = loginsLocked;
+	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+		this.lockoutStrategy = lockoutStrategy;
 	}
 
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
@@ -111,7 +111,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			ssoUser = new SSOUser(username, actionsMap, preferences);
 			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
-			loginsLocked.checkLoginsFailed(username, password);
+			lockoutStrategy.checkLoginsFailed(username, password);
 			ssoUser = null;
 		}
 		return ssoUser;

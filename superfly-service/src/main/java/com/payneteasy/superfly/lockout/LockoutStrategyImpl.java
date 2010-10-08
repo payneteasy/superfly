@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.service.loginsLocked;
+package com.payneteasy.superfly.lockout;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.payneteasy.superfly.dao.UserDao;
 
 @Transactional
-public class LoginsLockedImpl implements LoginsLocked {
+public class LockoutStrategyImpl implements LockoutStrategy {
 
 	private Long maxLoginsFailed;
 	private Boolean isLoginsLocked;

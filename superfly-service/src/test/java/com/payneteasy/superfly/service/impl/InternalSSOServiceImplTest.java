@@ -14,6 +14,7 @@ import org.easymock.IAnswer;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.password.ConstantSaltSource;
@@ -39,6 +40,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setHOTPProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
+        service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
 		internalSSOService = service;
 	}
 	
