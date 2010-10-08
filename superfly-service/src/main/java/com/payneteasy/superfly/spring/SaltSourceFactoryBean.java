@@ -6,6 +6,8 @@ import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.SaltSource;
 
+import java.util.Map;
+
 /**
  * {@link FactoryBean} for {@link SaltSource}. Produces it according to the
  * current policy value.
@@ -17,23 +19,23 @@ public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean {
 	private SaltSource source;
 	private String data = "data";
 
-	public void setData(String data) {
+    private Map<String,SaltSource> salts;
+
+    public void setSalts(Map<String, SaltSource> salts) {
+        this.salts = salts;
+    }
+
+    public void setData(String data) {
 		this.data = data;
 	}
 
 	public Object getObject() throws Exception {
 		if (source == null) {
 			Policy p = findPolicyByIdentifier();
-			switch (p) {
-			case NONE:
-				source = new NullSaltSource();
-				break;
-			case PCIDSS:
-				source = new ConstantSaltSource(data);
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
+            if(salts.containsKey(p.name().toLowerCase())){
+				source = salts.get(p.name().toLowerCase());
+			} else
+                throw new IllegalArgumentException();
 		}
 		return source;
 	}

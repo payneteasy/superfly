@@ -13,6 +13,8 @@ create procedure ui_update_user(i_user_id int(10),
 )
  main_sql:
   begin
+    declare v_start_date       datetime default now();
+
     update users
        set user_password     = coalesce(i_user_password, user_password),   
            salt = coalesce(i_salt, salt),    
@@ -21,8 +23,37 @@ create procedure ui_update_user(i_user_id int(10),
            surname = i_surname, 
            secret_question = i_secret_question, 
            secret_answer = i_secret_answer
-             
      where user_id = i_user_id;
+
+    if i_user_password is not null then 
+
+    update user_history
+       set end_date = v_start_date, update_date = now()
+     where user_user_id = i_user_id and end_date > v_start_date;
+
+       
+    insert into user_history(user_user_id,
+                             user_password,
+                             salt,
+                             number_history,
+                             start_date,
+                             end_date,
+                             update_date
+                                 )
+      select user_user_id,
+             i_user_password,
+             i_salt,
+             uh.number_history + 1,
+             v_start_date start_date,
+             '2999-12-31' end_date,
+             null update_date
+        from user_history uh
+       where uh.user_user_id = i_user_id
+             and uh.number_history = (select max(uhl.number_history)
+                                         from user_history uhl
+                                        where uhl.user_user_id = i_user_id);
+ 
+    end if;
 
     select 'OK' status, null error_message;
   end

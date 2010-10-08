@@ -30,12 +30,11 @@ create procedure get_user_actions(i_user_name varchar(32),
       insert into unauthorised_access
             (
                printed_user_name,
-               printed_password,
                access_date,
                ip_address,
                session_info
             )
-      values (i_user_name, i_user_password, now(), ip_address, session_info);
+      values (i_user_name, now(), ip_address, session_info);
 
       commit;
 

@@ -95,15 +95,33 @@
 		<property name="policyName" ref="policyName"/>
 	</bean>
 
+    <bean id="nullSaltSouce" class="com.payneteasy.superfly.password.NullSaltSource">
+    </bean>
+
+    <bean id="constantSaltSouce" class="com.payneteasy.superfly.password.ConstantSaltSource">
+    </bean>
+    
+    <bean id="randomStoredSaltSouce" class="com.payneteasy.superfly.password.RandomStoredSaltSource">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+    
+
 	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
 		<property name="policyName" ref="policyName"/>
 		<property name="data" ref="salt"/>
+        <property name="salts">
+            <map>
+               <entry key="none" value-ref="nullSaltSouce"/>
+               <entry key="pcidss" value-ref="randomStoredSaltSouce"/>
+            </map>
+        </property>
 	</bean>
 
     <bean id="passwordPolicyValidation" class="com.payneteasy.superfly.spring.PasswordPolicyValidationFactoryBean">
         <property name="policyName" ref="policyName"/>
     </bean>
-    
+
+
     <bean id="lockoutStrategy" class="com.payneteasy.superfly.spring.LockoutStrategyFactoryBean">
         <property name="policyName" ref="policyName"/>
         <property name="maxLoginsFailed" ref="maxLoginsFailed"/>

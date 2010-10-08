@@ -30,6 +30,11 @@ create procedure ui_create_user(i_user_name varchar(32),
 
     set o_user_id   = last_insert_id();
 
+
+    insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date)
+         values (o_user_id,i_user_password,i_salt,1,now(),'2999-12-31');
+
+
     insert into user_roles
           (
             user_user_id, role_role_id

@@ -26,8 +26,8 @@ create procedure register_user(i_user_name         varchar(32),
 
     set o_user_id   = last_insert_id();
 
-    insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date,update_date)
-         values (o_user_id,i_user_password,i_salt,1,now(),'2999-12-31',now());
+    insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date)
+         values (o_user_id,i_user_password,i_salt,1,now(),'2999-12-31');
 
     
     if i_principal_list is not null then
