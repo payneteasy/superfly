@@ -90,7 +90,8 @@ public class UserServiceImpl implements UserService {
 	private void copyUserAndEncryptPassword(UIUser user,
 			UIUser userForDao) {
 		BeanUtils.copyProperties(user, userForDao);
-		userForDao.setPassword(passwordEncoder.encode(user.getPassword(), saltSource.getSalt(user.getUsername())));
+        userForDao.setSalt(saltSource.getSalt(user.getUsername()));
+		userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
 	}
 
 	public UIUser getUser(long userId) {
