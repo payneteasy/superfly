@@ -37,11 +37,13 @@ public class InsufficientAuthenticationAccessDecisionManagerTest extends
 	}
 	
 	public void testInsufficientAuthentication() {
+		Insuf auth = new Insuf();
 		try {
-			manager.decide(new Insuf(), createFilter(), Collections.<ConfigAttribute>emptySet());
+			manager.decide(auth, createFilter(), Collections.<ConfigAttribute>emptySet());
 			fail();
 		} catch (InsufficientAuthenticationException e) {
 			// expected
+			assertSame(auth, e.getAuthentication());
 		}
 	}
 	

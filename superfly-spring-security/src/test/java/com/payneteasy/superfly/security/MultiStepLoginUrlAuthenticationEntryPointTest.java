@@ -57,12 +57,27 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		EasyMock.expectLastCall();
 	}
 	
+	public void testStep1() throws Exception {
+		initExpectingRedirect("http://localhost/step-one.html");
+		
+		EasyMock.replay(response, request);
+		
+		Step1Authentication auth = new Step1Authentication();
+		InsufficientAuthenticationException ex = new InsufficientAuthenticationException("Insufficient!");
+		ex.setAuthentication(auth);
+		entryPoint.commence(request, response, ex);
+		assertNull(SecurityContextHolder.getContext().getAuthentication());
+		
+		EasyMock.verify(response);
+	}
+	
 	public void testStep2() throws Exception {
 		initExpectingRedirect("http://localhost/step-two.html");
 		
 		EasyMock.replay(response, request);
 		
-		SecurityContextHolder.getContext().setAuthentication(new Step2Authentication());
+		Step2Authentication auth = new Step2Authentication();
+		SecurityContextHolder.getContext().setAuthentication(auth);
 		entryPoint.commence(request, response, new InsufficientAuthenticationException("Insufficient!"));
 		
 		EasyMock.verify(response);
@@ -73,11 +88,17 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		
 		EasyMock.replay(response, request);
 		
-		InsufficientAuthenticationException auth = new InsufficientAuthenticationException("Insufficient!");
-		auth.setAuthentication(new Step2Authentication());
-		entryPoint.commence(request, response, auth);
+		InsufficientAuthenticationException ex = new InsufficientAuthenticationException("Insufficient!");
+		Step2Authentication auth = new Step2Authentication();
+		ex.setAuthentication(auth);
+		entryPoint.commence(request, response, ex);
+		assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
 		
 		EasyMock.verify(response);
+	}
+	
+	private static class Step1Authentication extends EmptyAuthenticationToken {
+		private static final long serialVersionUID = 1L;
 	}
 	
 	private static class Step2Authentication extends EmptyAuthenticationToken {

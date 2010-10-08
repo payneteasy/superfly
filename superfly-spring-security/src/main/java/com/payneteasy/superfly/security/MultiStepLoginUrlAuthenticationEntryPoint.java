@@ -41,6 +41,11 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
 		}
 		if (auth != null) {
 			url = stepInsufficientAuthenticationMapping.get(auth.getClass());
+			if (url != null) {
+				// mapping matched, so restoring authentication...
+				// TODO: is this correct? it's explicitly cleared before...
+				SecurityContextHolder.getContext().setAuthentication(auth);
+			}
 		}
 		if (url == null) {
 			url = getLoginFormUrl();

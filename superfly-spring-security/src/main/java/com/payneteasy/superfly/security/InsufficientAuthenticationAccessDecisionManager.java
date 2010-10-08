@@ -45,7 +45,9 @@ public class InsufficientAuthenticationAccessDecisionManager extends
 			}
 		}
 		if (insufficient) {
-			throw new InsufficientAuthenticationException(authentication.getClass().getName());
+			InsufficientAuthenticationException ex = new InsufficientAuthenticationException(authentication.getClass().getName());
+			ex.setAuthentication(authentication);
+			throw ex;
 		}
 		// sufficient authentication, just proceed
 		getDelegate().decide(authentication, object, configAttributes);
