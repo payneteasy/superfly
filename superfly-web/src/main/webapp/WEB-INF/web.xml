@@ -46,11 +46,7 @@
 	</context-param>
 	
 	<context-param>
-		<param-name>superfly-logins-faild-isLocked</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>superfly-logins-faild-quantity</param-name>
+		<param-name>superfly-max-logins-faild</param-name>
 		<param-value>6</param-value>
 	</context-param>
 	

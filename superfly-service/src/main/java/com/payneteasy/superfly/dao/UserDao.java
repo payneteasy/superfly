@@ -446,7 +446,13 @@ public interface UserDao {
 	@AStoredProcedure(name = "grant_roles_to_user")
 	RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames);
 
+	/**
+	 * 
+	 * @param userName user's name
+	 * @param maxLoginsFailed maximum logins failed
+	 * @return routine result
+	 */
 	@AStoredProcedure(name = "login_locked")
-	RoutineResult loginLocked(String userName, String password, long maxLoginsFailed);
+	RoutineResult loginLocked(String userName, long maxLoginsFailed);
 
 }

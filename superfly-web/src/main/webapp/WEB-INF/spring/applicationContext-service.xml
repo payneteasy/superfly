@@ -104,9 +104,9 @@
         <property name="policyName" ref="policyName"/>
     </bean>
     
-    <bean id="lockoutStrategy" class="com.payneteasy.superfly.lockout.LockoutStrategyImpl">
-        <property name="maxLoginsFailed" ref="loginsFaildQuantity"/>
-        <property name="isLoginsLocked" ref="loginsFaildIsLocked"/>
+    <bean id="lockoutStrategy" class="com.payneteasy.superfly.spring.LockoutStrategyFactoryBean">
+        <property name="policyName" ref="policyName"/>
+        <property name="maxLoginsFailed" ref="maxLoginsFailed"/>
         <property name="userDao" ref="userDao"/>
     </bean>
 </beans>
