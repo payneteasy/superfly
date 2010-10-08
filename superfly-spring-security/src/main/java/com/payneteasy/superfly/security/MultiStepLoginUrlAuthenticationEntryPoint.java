@@ -24,7 +24,7 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
 	
 	private Map<Class<? extends Authentication>, String> stepInsufficientAuthenticationMapping = Collections.emptyMap();
 	
-	public void setStepExceptionMapping(
+	public void setInsufficientAuthenticationMapping(
 			Map<Class<? extends Authentication>,
 			String> mapping) {
 		this.stepInsufficientAuthenticationMapping = mapping;

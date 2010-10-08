@@ -30,7 +30,7 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		entryPoint.setLoginFormUrl("/step-one.html");
 		Map<Class<? extends Authentication>, String> mapping = new HashMap<Class<? extends Authentication>, String>();
 		mapping.put(Step2Authentication.class, "/step-two.html");
-		entryPoint.setStepExceptionMapping(mapping);
+		entryPoint.setInsufficientAuthenticationMapping(mapping);
 		
 		EasyMock.expect(request.getServerPort()).andReturn(80).anyTimes();
 		EasyMock.expect(request.getScheme()).andReturn("http").anyTimes();
