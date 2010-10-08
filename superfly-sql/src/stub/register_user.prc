@@ -1,7 +1,7 @@
 drop procedure if exists register_user;
 delimiter $$
 create procedure register_user(i_user_name         varchar(32),
-                               i_user_password     varchar(32),
+                               i_user_password     varchar(128),
                                i_user_email        varchar(255),
                                i_subsystem_name    varchar(32),
                                i_principal_list    text,
@@ -25,6 +25,10 @@ create procedure register_user(i_user_name         varchar(32),
          values (i_user_name, i_user_password, i_user_email,'N',i_name,i_surname,i_secret_question,i_secret_answer,i_salt);
 
     set o_user_id   = last_insert_id();
+
+    insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date,update_date)
+         values (o_user_id,i_user_password,i_salt,1,now(),'2999-12-31',now());
+
     
     if i_principal_list is not null then
 	    insert into user_roles(user_user_id, role_role_id)

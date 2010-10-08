@@ -2,7 +2,6 @@ package com.payneteasy.superfly.spring;
 
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValidation;
 
@@ -16,7 +15,6 @@ import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValida
 public class PasswordPolicyValidationFactoryBean extends AbstractPolicyDependingFactoryBean{
 
     AbstractPolicyValidation policyValidation;
-    Class policyClass;
 
     public Object getObject() throws Exception {
         if (policyValidation == null) {
