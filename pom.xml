@@ -13,6 +13,7 @@
 	<description>Parent POM of the Superfly project</description>
 	<modules>
 		<module>superfly-remote-api</module>
+		<module>superfly-spi</module>
 		<module>superfly-service</module>
 		<module>superfly-web</module>
         <module>superfly-httpclient-ssl</module>
@@ -23,7 +24,6 @@
         <module>superfly-spring-security-2.0</module>
         <module>superfly-spring-security</module>
         <module>superfly-jira-integration</module>
-        <module>superfly-spi</module>
 	</modules>
 	
 	<url>http://code.google.com/p/superfly/</url>
