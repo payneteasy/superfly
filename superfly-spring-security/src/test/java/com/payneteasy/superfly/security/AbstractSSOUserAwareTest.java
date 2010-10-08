@@ -4,21 +4,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 
-import junit.framework.TestCase;
-
 public abstract class AbstractSSOUserAwareTest extends TestCase {
-
-	public AbstractSSOUserAwareTest() {
-		super();
-	}
-
-	public AbstractSSOUserAwareTest(String name) {
-		super(name);
-	}
 
 	protected SSOUser createSSOUserWithOneRole() {
 		return createSSOUser(1);

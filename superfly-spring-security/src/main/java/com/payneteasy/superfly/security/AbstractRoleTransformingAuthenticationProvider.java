@@ -14,10 +14,6 @@ public abstract class AbstractRoleTransformingAuthenticationProvider implements
 	protected StringTransformer[] roleNameTransformers = new StringTransformer[]{};
 	protected RoleSource roleSource = createDefaultRoleSource();
 
-	public AbstractRoleTransformingAuthenticationProvider() {
-		super();
-	}
-
 	public void setRoleNameTransformers(StringTransformer[] roleNameTransformers) {
 		this.roleNameTransformers = roleNameTransformers;
 	}
