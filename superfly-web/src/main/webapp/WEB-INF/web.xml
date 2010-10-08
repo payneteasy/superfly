@@ -38,7 +38,7 @@
 	
 	<context-param>
 		<param-name>superfly-policy</param-name>
-		<param-value>none</param-value>
+		<param-value>pcidss</param-value>
 	</context-param>
 	<context-param>
 		<param-name>superfly-salt</param-name>
@@ -47,7 +47,7 @@
 	
 	<context-param>
 		<param-name>superfly-max-logins-faild</param-name>
-		<param-value>6</param-value>
+		<param-value>3</param-value>
 	</context-param>
 	
     <listener>
