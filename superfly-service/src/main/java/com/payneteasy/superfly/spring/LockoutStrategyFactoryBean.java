@@ -32,7 +32,7 @@ public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBe
 				throw new IllegalArgumentException();
 			}
 		}
-		return null;
+		return lockoutStrategy;
 	}
 
 	public Class<?> getObjectType() {

@@ -111,7 +111,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			ssoUser = new SSOUser(username, actionsMap, preferences);
 			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
-			lockoutStrategy.checkLoginsFailed(username, password);
+			lockoutStrategy.checkLoginsFailed(username);
 			ssoUser = null;
 		}
 		return ssoUser;

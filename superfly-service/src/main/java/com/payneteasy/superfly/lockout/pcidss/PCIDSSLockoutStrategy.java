@@ -14,7 +14,7 @@ public class PCIDSSLockoutStrategy implements LockoutStrategy {
     }
 	
 
-	public void checkLoginsFailed(String userName, String password) {
+	public void checkLoginsFailed(String userName) {
     	   userDao.loginLocked(userName, maxLoginsFailed);
 	}
 }
