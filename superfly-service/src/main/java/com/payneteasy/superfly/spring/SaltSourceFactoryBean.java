@@ -1,12 +1,10 @@
 package com.payneteasy.superfly.spring;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.FactoryBean;
 
-import com.payneteasy.superfly.password.ConstantSaltSource;
-import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.SaltSource;
-
-import java.util.Map;
 
 /**
  * {@link FactoryBean} for {@link SaltSource}. Produces it according to the

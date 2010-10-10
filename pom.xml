@@ -24,6 +24,7 @@
         <module>superfly-spring-security-2.0</module>
         <module>superfly-spring-security</module>
         <module>superfly-jira-integration</module>
+        <module>superfly-spi-support</module>
 	</modules>
 	
 	<url>http://code.google.com/p/superfly/</url>

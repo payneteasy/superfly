@@ -9,7 +9,7 @@
 	<bean id="loggerSink" class="com.payneteasy.superfly.service.impl.LoggerSinkImpl">
 		<property name="userInfoService" ref="userInfoService"/>
 	</bean>
-
+	
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
@@ -20,6 +20,7 @@
 		<property name="saltSource" ref="saltSource"/>
         <property name="policyValidation" ref="passwordPolicyValidation"/>
         <property name="lockoutStrategy" ref="lockoutStrategy"/>
+        <property name="HOTPProvider" ref="hotpProvider"/>
 	</bean>
 	
 	<bean id="localSecurityService"
@@ -121,10 +122,13 @@
         <property name="policyName" ref="policyName"/>
     </bean>
 
-
     <bean id="lockoutStrategy" class="com.payneteasy.superfly.spring.LockoutStrategyFactoryBean">
         <property name="policyName" ref="policyName"/>
         <property name="maxLoginsFailed" ref="maxLoginsFailed"/>
         <property name="userDao" ref="userDao"/>
     </bean>
+    
+	<bean id="hotpProvider" class="com.payneteasy.superfly.spring.HOTPProviderFactoryBean">
+	</bean>
+
 </beans>
