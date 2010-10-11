@@ -1,16 +1,15 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
@@ -18,10 +17,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.annotation.Secured;
-
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 /**
  * Page used to create a user.
@@ -56,8 +51,11 @@ public class CloneUserPage extends BasePage {
 		add(form);
 		form.add(new Label("old-userid", String.valueOf(oldUser.getId())));
 		form.add(new Label("old-username", oldUser.getUsername()));
-		form.add(new RequiredTextField<String>("username",
-				new PropertyModel<String>(user, "username")));
+
+        FormComponent<String> userName=new RequiredTextField<String>("username",
+				new PropertyModel<String>(user, "username"));
+
+		form.add(userName);
 		TextField<String> email = new TextField<String>("email",new PropertyModel<String>(user,"email"));
 		email.add(EmailAddressValidator.getInstance());
 		form.add(email.setRequired(true));
@@ -69,7 +67,7 @@ public class CloneUserPage extends BasePage {
 		form.add(password2Field);
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
-        form.add(new PasswordInputValidator(password1Field,policyValidation));
+        form.add(new PasswordInputValidator(userName,password1Field,userService));
 	}
 	
 	@Override

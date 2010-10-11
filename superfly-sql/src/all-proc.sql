@@ -20,6 +20,8 @@ create table mysql_routines_return_arguments (
 
 \. get/list_users.sql
 
+\. get/get_user_password_history.sql
+
 \. get/get_procedures_resultset.prc
 
 \. create/create_collections.prc

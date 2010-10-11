@@ -52,6 +52,7 @@
 		<property name="loggerSink" ref="loggerSink"/>
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
+        <property name="policyValidation" ref="passwordPolicyValidation"/>
 	</bean>
 	
 	<bean id="roleService"

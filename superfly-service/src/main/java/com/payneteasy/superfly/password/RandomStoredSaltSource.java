@@ -21,7 +21,7 @@ public class RandomStoredSaltSource implements SaltSource{
 
     public String getSalt(String username) {
         String salt=userDao.getUserSalt(username);
-        if(salt==null){
+        if(salt==null || salt.isEmpty()){
             return generateNewSalt(username);
         }
         return salt;

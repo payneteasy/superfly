@@ -16,14 +16,12 @@ import java.util.List;
  */
 public class PasswordCheckContext implements IPolicyContext{
     public PasswordCheckContext(String aPassword) {
-        this(aPassword,null,null,null, Collections.<String>emptyList());
+        this(aPassword,null,Collections.<PasswordSaltPair>emptyList());
     }
 
-    public PasswordCheckContext(String aPassword,String aUsername,PasswordEncoder aPasswordEncoder,SaltSource aSaltSource, List<String> aPasswordHistory) {
+    public PasswordCheckContext(String aPassword,PasswordEncoder aPasswordEncoder,List<PasswordSaltPair> aPasswordHistory) {
         thePassword = aPassword;
-        theUsername = aUsername;
         thePasswordEncoder = aPasswordEncoder;
-        theSaltSource = aSaltSource;
         thePasswordHistory=aPasswordHistory;
     }
 
@@ -33,8 +31,8 @@ public class PasswordCheckContext implements IPolicyContext{
       public boolean isPasswordExit(String aPassword,int aHistoryLength){
 
           int length=0;
-          for(String pwd:thePasswordHistory){
-              if(length<aHistoryLength && pwd.equals(thePasswordEncoder.encode(aPassword,theSaltSource.getSalt(theUsername)))){
+          for(PasswordSaltPair pwd:thePasswordHistory){
+              if(length<aHistoryLength && thePasswordEncoder.encode(aPassword,pwd.getSalt()).equals(pwd.getPassword())){
                   return true;
               }
               length++;
@@ -44,8 +42,6 @@ public class PasswordCheckContext implements IPolicyContext{
 
       /** Password */
       private final String thePassword;
-      private final String theUsername;
       private final PasswordEncoder thePasswordEncoder;
-      private final SaltSource theSaltSource;
-      private final List<String> thePasswordHistory;
+      private final List<PasswordSaltPair> thePasswordHistory;
 }

@@ -14,6 +14,7 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 
 /**
  * DAO used to work with users.
@@ -461,4 +462,7 @@ public interface UserDao {
 
     @AStoredProcedure(name = "update_user_salt")
     void updateUserSalt(String username, String salt);
+
+    @AStoredProcedure(name="get_user_password_history")
+    List<PasswordSaltPair> getUserPasswordHistory(String username);
 }

@@ -1,8 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
@@ -30,8 +28,6 @@ public class EditUserPage extends BasePage {
 	@SpringBean
 	private UserService userService;
 
-    @SpringBean
-    private IPolicyValidation<PasswordCheckContext> policyValidation;
 
 	public EditUserPage(PageParameters params) {
 		super(params);
@@ -54,8 +50,11 @@ public class EditUserPage extends BasePage {
 			}
 		};
 		add(form);
-		form.add(new Label("username", new PropertyModel<String>(user,
-				"username")));
+
+
+        form.add(new Label("username", new PropertyModel<String>(user,
+                "username")));
+
 		TextField<String> email = new TextField<String>("email",
 				new PropertyModel<String>(user, "email"));
 		email.add(EmailAddressValidator.getInstance());
@@ -68,7 +67,7 @@ public class EditUserPage extends BasePage {
 		form.add(password2Field);
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
 
-        form.add(new PasswordInputValidator(password1Field,policyValidation));
+        form.add(new PasswordInputValidator(user.getUsername(),password1Field,userService));
 
 		form.add(new RequiredTextField<String>("name",
 				new PropertyModel<String>(user, "name")));

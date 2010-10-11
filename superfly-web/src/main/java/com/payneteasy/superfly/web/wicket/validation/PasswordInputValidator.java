@@ -1,8 +1,7 @@
 package com.payneteasy.superfly.web.wicket.validation;
 
 import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.UserService;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
@@ -16,24 +15,46 @@ import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
  */
 public class PasswordInputValidator extends AbstractFormValidator {
 
-    private final FormComponent<?> theFormComponent;
-    private final IPolicyValidation<PasswordCheckContext> thePolicyValidation;
+    private final FormComponent<?> theFormComponentUserName;
+    private final FormComponent<?> theFormComponentPassword;
+    private final String theUserName;
+    private final UserService theUserService;
 
-    public PasswordInputValidator(FormComponent<?> aFormComponent, IPolicyValidation<PasswordCheckContext> aPolicyValidation) {
-        theFormComponent = aFormComponent;
-        thePolicyValidation = aPolicyValidation;
+    public PasswordInputValidator(FormComponent<?> aFormComponentUserName,FormComponent<?> aFormComponentPassword, UserService aUserService) {
+        theFormComponentUserName = aFormComponentUserName;
+        theFormComponentPassword=aFormComponentPassword;
+        theUserService= aUserService;
+        theUserName=null;
     }
 
+    public PasswordInputValidator(String aUserName,FormComponent<?> aFormComponentPassword, UserService aUserService) {
+        theFormComponentUserName = null;
+        theFormComponentPassword=aFormComponentPassword;
+        theUserService= aUserService;
+        theUserName=aUserName;
+    }
+    
     public FormComponent<?>[] getDependentFormComponents() {
-        return new FormComponent[]{theFormComponent};
+        if(theUserName==null){
+            return new FormComponent[]{theFormComponentUserName,theFormComponentPassword};
+        } else {
+            return new FormComponent[]{theFormComponentPassword};
+        }
     }
 
     public void validate(Form<?> form) {
-        PasswordCheckContext password = new PasswordCheckContext(theFormComponent.getInput());
         try {
-            thePolicyValidation.validate(password);
+            theUserService.validatePassword(getUserName(),theFormComponentPassword.getInput());
         } catch (PolicyValidationException e) {
-            error(theFormComponent, e.getCode());
+            error(theFormComponentPassword, e.getCode());
+        }
+    }
+
+    private String getUserName() {
+        if(theUserName==null) {
+            return theFormComponentUserName.getInput();
+        } else {
+            return theUserName;
         }
     }
 }

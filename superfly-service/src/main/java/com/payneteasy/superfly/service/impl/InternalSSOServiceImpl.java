@@ -173,8 +173,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSecretAnswer(secretAnswer);
 
 		// validate password policy
-		policyValidation.validate(new PasswordCheckContext(password, username, passwordEncoder, saltSource, Collections
-				.<String> emptyList()));
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
 
 		RoutineResult result = userDao.registerUser(registerUser);
 		if (result.isOk()) {

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,8 +40,14 @@ public class UserServiceImpl implements UserService {
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
+    private IPolicyValidation<PasswordCheckContext> policyValidation;
 
-	@Required
+    @Required
+    public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
+        this.policyValidation = policyValidation;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -260,7 +269,11 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
+    public void validatePassword(String username,String password) throws PolicyValidationException {
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
+    }
+
+    public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
 			Long subsystemId, String actionSubstring, int startFrom,
 			int recordsCount) {
 		String subsystemIds = subsystemId == null ? null : subsystemId

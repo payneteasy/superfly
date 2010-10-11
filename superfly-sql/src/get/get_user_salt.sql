@@ -4,9 +4,13 @@ create procedure get_user_salt(i_user_name varchar(32))
  main_sql:
   begin
 
-    select salt 
+    declare v_salt varchar(64) default null;
+
+    select salt into v_salt
       from users u
      where u.user_name = i_user_name;
+
+    select v_salt as salt; 
 
   end
 ;

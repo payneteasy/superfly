@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
@@ -298,4 +299,6 @@ public interface UserService {
 	 * @return
 	 */
 	RoutineResult addSubsystemWithRole(long userId, long roleId);
+
+    void validatePassword(String username,String password) throws PolicyValidationException;
 }
