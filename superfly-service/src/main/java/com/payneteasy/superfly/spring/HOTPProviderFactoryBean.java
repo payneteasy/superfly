@@ -2,6 +2,8 @@ package com.payneteasy.superfly.spring;
 
 import java.util.ServiceLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -25,6 +27,8 @@ import com.payneteasy.superfly.spisupport.ObjectResolver;
  * @author Roman Puchkovskiy
  */
 public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, InitializingBean {
+	
+	private static final Logger logger = LoggerFactory.getLogger(HOTPProviderFactoryBean.class);
 	
 	private BeanFactory beanFactory;
 	
@@ -74,8 +78,10 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 		ServiceLoader<HOTPProvider> loader = ServiceLoader.load(HOTPProvider.class);
 		if (loader.iterator().hasNext()) {
 			hotpProvider = loader.iterator().next();
+			logger.info("Found the following implementation via service loader: " + hotpProvider.getClass().getName());
 		} else {
 			hotpProvider = new NullHOTPProvider();
+			logger.info("Did not find an implementation via service loader. Falling back to a default implementation");
 		}
 		ObjectResolver objectResolver = createObjectResolver();
 		HOTPProviderContext context = createHOTPProviderContext(objectResolver);

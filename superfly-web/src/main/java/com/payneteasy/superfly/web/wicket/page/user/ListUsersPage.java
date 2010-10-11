@@ -1,7 +1,12 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
@@ -16,7 +21,11 @@ import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
+import org.apache.wicket.util.time.Time;
 import org.springframework.security.annotation.Secured;
 
 import com.payneteasy.superfly.model.RoutineResult;
@@ -26,6 +35,7 @@ import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
@@ -47,6 +57,8 @@ public class ListUsersPage extends BasePage {
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
+	@SpringBean
+	private HOTPProvider hotpProvider;
 
 	public ListUsersPage() {
 		super();
@@ -129,6 +141,57 @@ public class ListUsersPage extends BasePage {
 						EditUserPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
+				
+				Link<Void> downloadHotpTableLink = new Link<Void>("download-hotp-table") {
+					@Override
+					public void onClick() {
+						ByteArrayOutputStream os = new ByteArrayOutputStream();
+						try {
+							hotpProvider.outputSequenceForDownload(user.getUsername(), os);
+						} catch (IOException e) {
+							throw new IllegalStateException(e);
+						}
+						final byte[] bytes = os.toByteArray();
+						IResourceStream resourceStream = new IResourceStream() {
+								private Locale locale;
+								
+								public Time lastModifiedTime() {
+									return Time.now();
+								}
+								
+								public void setLocale(Locale locale) {
+								}
+								
+								public long length() {
+									return bytes.length;
+								}
+								
+								public Locale getLocale() {
+									return locale;
+								}
+								
+								public InputStream getInputStream() throws ResourceStreamNotFoundException {
+									return new ByteArrayInputStream(bytes);
+								}
+								
+								public String getContentType() {
+									return "application/vnd.ms-excel";
+								}
+								
+								public void close() throws IOException {
+								}
+						};
+						getRequestCycle().setRequestTarget(new ResourceStreamRequestTarget(resourceStream) {
+							@Override
+							public String getFileName() {
+								return hotpProvider.getSequenceForDownloadFileName(user.getUsername());
+							}
+						});
+					}
+					
+				};
+				downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
+				item.add(downloadHotpTableLink);
 			}
 		};
 		add(usersDataView);
