@@ -38,6 +38,8 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 	private int lookahead = 10;
 	private int tableSize = 100;
 	
+	private boolean allowTestProvider = false;
+	
 	private HOTPProvider hotpProvider;
 	
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -61,6 +63,10 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 		this.tableSize = tableSize;
 	}
 
+	public void setAllowTestProvider(boolean allowTestProvider) {
+		this.allowTestProvider = allowTestProvider;
+	}
+
 	public Object getObject() throws Exception {
 		return hotpProvider;
 	}
@@ -78,15 +84,19 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
 		ServiceLoader<HOTPProvider> loader = ServiceLoader.load(HOTPProvider.class);
 		Iterator<HOTPProvider> iterator = loader.iterator();
+		boolean found = false;
 		if (iterator.hasNext()) {
-			HOTPProvider provider = iterator.next();
-			while (iterator.hasNext()
-					&& "com.payneteasy.superfly.spring.TestHOTPProvider".equals(provider.getClass().getName())) {
-				// it's a soooooo ugly... but Eclipse currently launches java applications for Debug
-				// using dependencies test classpaths too
-				provider = iterator.next();
+			while (iterator.hasNext()) {
+				HOTPProvider provider = iterator.next();
+				if (!"com.payneteasy.superfly.spring.TestHOTPProvider".equals(provider.getClass().getName())
+						|| allowTestProvider) {
+					hotpProvider = provider;
+					found = true;
+					break;
+				}
 			}
-			hotpProvider = provider;
+		}
+		if (found) {
 			logger.info("Found the following implementation via service loader: " + hotpProvider.getClass().getName());
 		} else {
 			hotpProvider = new NullHOTPProvider();

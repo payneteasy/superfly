@@ -14,6 +14,7 @@ public class HOTPProviderFactoryBeanTest extends TestCase {
 	public void setUp() throws Exception {
 		factoryBean = new HOTPProviderFactoryBean();
 		factoryBean.setBeanFactory(TrivialProxyFactory.createProxy(ListableBeanFactory.class));
+		factoryBean.setAllowTestProvider(true);
 		factoryBean.afterPropertiesSet();
 	}
 	
