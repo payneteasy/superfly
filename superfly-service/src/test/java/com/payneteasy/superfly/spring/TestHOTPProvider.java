@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.spring;
 
+import java.io.OutputStream;
+
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPProviderContext;
 
@@ -17,6 +19,17 @@ public class TestHOTPProvider implements HOTPProvider {
 
 	public boolean isInitialized() {
 		return initialized;
+	}
+
+	public String getSequenceForDownloadFileName(String username) {
+		return null;
+	}
+
+	public void outputSequenceForDownload(String username, OutputStream os) {
+	}
+
+	public boolean outputsSequenceForDownload() {
+		return false;
 	}
 
 }

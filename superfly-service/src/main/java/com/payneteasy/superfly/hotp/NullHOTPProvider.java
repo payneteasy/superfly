@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.hotp;
 
+import java.io.OutputStream;
+
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPProviderContext;
 
@@ -14,5 +16,17 @@ public class NullHOTPProvider implements HOTPProvider {
 	
 	public boolean authenticate(String username, String hotp) {
 		return true;
+	}
+
+	public String getSequenceForDownloadFileName(String username) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void outputSequenceForDownload(String username, OutputStream os) {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean outputsSequenceForDownload() {
+		return false;
 	}
 }

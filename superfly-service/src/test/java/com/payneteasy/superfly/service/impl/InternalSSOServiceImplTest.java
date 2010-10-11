@@ -46,7 +46,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
-		service.setHOTPProvider(hotpProvider);
+		service.setHotpProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));

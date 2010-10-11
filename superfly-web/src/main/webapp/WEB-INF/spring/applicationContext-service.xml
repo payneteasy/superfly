@@ -18,10 +18,11 @@
 		<property name="loggerSink" ref="loggerSink" />
 		<property name="passwordEncoder" ref="passwordEncoder" />
 		<property name="saltSource" ref="saltSource" />
+		<property name="hotpSaltGenerator" ref="saltGenerator"/>
 		<property name="policyValidation" ref="passwordPolicyValidation" />
 		<property name="lockoutStrategy" ref="lockoutStrategy" />
 		<property name="registerUserStrategy" ref="registerUserStrategy" />
-		<property name="HOTPProvider" ref="hotpProvider" />
+		<property name="hotpProvider" ref="hotpProvider" />
 	</bean>
 
 	<bean id="localSecurityService"
@@ -51,6 +52,7 @@
 		<property name="loggerSink" ref="loggerSink" />
 		<property name="passwordEncoder" ref="passwordEncoder" />
 		<property name="saltSource" ref="saltSource" />
+		<property name="hotpSaltGenerator" ref="saltGenerator"/>
 		<property name="policyValidation" ref="passwordPolicyValidation" />
 	</bean>
 
@@ -109,6 +111,7 @@
 
 	<bean id="randomStoredSaltSouce" class="com.payneteasy.superfly.password.RandomStoredSaltSource">
 		<property name="userDao" ref="userDao" />
+		<property name="saltGenerator" ref="saltGenerator"/>
 	</bean>
 
 

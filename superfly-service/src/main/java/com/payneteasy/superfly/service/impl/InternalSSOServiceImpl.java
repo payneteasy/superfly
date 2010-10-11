@@ -92,7 +92,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.hotpSaltGenerator = hotpSaltGenerator;
 	}
 
-	public void setHOTPProvider(HOTPProvider hotpProvider) {
+	public void setHotpProvider(HOTPProvider hotpProvider) {
 		this.hotpProvider = hotpProvider;
 	}
 
