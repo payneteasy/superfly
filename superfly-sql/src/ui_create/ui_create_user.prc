@@ -24,10 +24,10 @@ create procedure ui_create_user(i_user_name varchar(32),
     insert into users
           (
              user_name, user_password, email, is_account_locked, name, 
-             surname, secret_question, secret_answer, salt, hotp_salt
+             surname, secret_question, secret_answer, salt, hotp_salt, is_password_temp
           )
     values (i_user_name, i_user_password, i_user_email,'N', 
-            i_name, i_surname, i_secret_question, i_secret_answer, i_salt, i_hotp_salt);
+            i_name, i_surname, i_secret_question, i_secret_answer, i_salt, i_hotp_salt,'Y');
 
     set o_user_id   = last_insert_id();
 
