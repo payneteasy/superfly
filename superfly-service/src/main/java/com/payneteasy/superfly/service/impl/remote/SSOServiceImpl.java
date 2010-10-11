@@ -84,4 +84,12 @@ public class SSOServiceImpl implements SSOService {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
+	public String getFlagTempPassword(String userName) {
+		return internalSSOService.getFlagTempPassword(userName);
+	}
+
+	public void changeTempPassword(String userName, String password) {
+		internalSSOService.changeTempPassword(userName, password);
+	}
+
 }

@@ -468,4 +468,20 @@ public interface UserDao {
 
     @AStoredProcedure(name="expire_passwords")
     void expirePasswords(int days);
+    
+    /**
+     * 
+     * @param userName user name
+     * @return flag of temporary password
+     */
+    @AStoredProcedure(name="get_flag_temp_password")
+    String getFlagTempPassword(String userName);
+    
+    /**
+     * 
+     * @param userName user name
+     * @param password password
+     */
+    @AStoredProcedure(name="change_temp_password")
+    RoutineResult changeTempPassword(String userName, String password);
 }

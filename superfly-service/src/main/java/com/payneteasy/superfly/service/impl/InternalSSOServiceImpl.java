@@ -223,4 +223,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
 		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
 	}
+
+	public String getFlagTempPassword(String userName) {
+		return userDao.getFlagTempPassword(userName);
+	}
+
+	public void changeTempPassword(String userName, String password) {
+		userDao.changeTempPassword(userName, password);
+	}
 }

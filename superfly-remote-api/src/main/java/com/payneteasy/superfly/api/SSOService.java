@@ -80,5 +80,17 @@ public interface SSOService {
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
 			throws UserExistsException,PolicyValidationException;
-
+	/**
+     * 
+     * @param userName user name
+     * @return flag of temporary password
+     */
+    String getFlagTempPassword(String userName);
+    
+    /**
+     * 
+     * @param userName user name
+     * @param password password
+     */
+    void changeTempPassword(String userName, String password);
 }
