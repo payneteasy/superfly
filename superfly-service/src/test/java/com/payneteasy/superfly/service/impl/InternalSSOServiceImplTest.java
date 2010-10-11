@@ -3,7 +3,10 @@ package com.payneteasy.superfly.service.impl;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
+import java.util.Collections;
+
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import junit.framework.TestCase;
 
@@ -69,6 +72,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		encoder.setAlgorithm("md5");
 		internalSSOService.setPasswordEncoder(encoder);
 		internalSSOService.setSaltSource(new ConstantSaltSource("e2e4"));
+		EasyMock.expect(userDao.getUserPasswordHistory("user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		EasyMock.expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
 				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
