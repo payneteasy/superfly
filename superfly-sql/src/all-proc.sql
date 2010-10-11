@@ -247,3 +247,7 @@ create table mysql_routines_return_arguments (
 
 \. stub/grant_roles_to_user.prc
 \. stub/login_locked.prc
+
+\. stub/get_hotp_data.prc
+
+\. stub/update_hotp_counter.prc

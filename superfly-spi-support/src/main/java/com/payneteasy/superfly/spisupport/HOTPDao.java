@@ -23,6 +23,6 @@ public interface HOTPDao {
 	 * @param username	name of the user
 	 * @param newValue	value to set for the counter
 	 */
-	@AStoredProcedure(name = "increment_hotp_counter")
-	void incrementCounter(String username, long newValue);
+	@AStoredProcedure(name = "update_hotp_counter")
+	void updateCounter(String username, long newValue);
 }
