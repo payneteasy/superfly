@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.spi;
 
-import com.payneteasy.superfly.spisupport.ObjectResolver;
+import com.payneteasy.superfly.spisupport.HOTPProviderContext;
 
 /**
  * Provides HOTP (HMAC-based One Time Password) facilities.
@@ -13,9 +13,9 @@ public interface HOTPProvider {
 	/**
 	 * Initializes the provider.
 	 * 
-	 * @param objectResolver	resolver which may be used to provide dependencies
+	 * @param context		context used to get parameters and dependencies
 	 */
-	void init(ObjectResolver objectResolver);
+	void init(HOTPProviderContext context);
 	
 	/**
 	 * Authenticates a user using HOTP.

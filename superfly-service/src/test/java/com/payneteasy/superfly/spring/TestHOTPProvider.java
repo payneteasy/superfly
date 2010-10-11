@@ -1,13 +1,13 @@
 package com.payneteasy.superfly.spring;
 
 import com.payneteasy.superfly.spi.HOTPProvider;
-import com.payneteasy.superfly.spisupport.ObjectResolver;
+import com.payneteasy.superfly.spisupport.HOTPProviderContext;
 
 public class TestHOTPProvider implements HOTPProvider {
 	
 	private boolean initialized = false;
 	
-	public void init(ObjectResolver objectResolver) {
+	public void init(HOTPProviderContext context) {
 		initialized = true;
 	}
 
