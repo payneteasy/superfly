@@ -24,6 +24,7 @@ import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -49,6 +50,7 @@ public class InternalSSOServiceImplTest extends TestCase {
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));
+        service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
 		internalSSOService = service;
 	}
 	
