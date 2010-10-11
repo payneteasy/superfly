@@ -28,6 +28,7 @@ import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
@@ -47,6 +48,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private SaltGenerator hotpSaltGenerator;
 	private HOTPProvider hotpProvider = new NullHOTPProvider();
 	private LockoutStrategy lockoutStrategy;
+	private RegisterUserStrategy registerUserStrategy;
 
 	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
@@ -97,6 +99,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
 		this.lockoutStrategy = lockoutStrategy;
+	}
+
+	@Required
+	public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
+		this.registerUserStrategy = registerUserStrategy;
 	}
 
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
@@ -181,9 +188,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSecretAnswer(secretAnswer);
 
 		// validate password policy
-		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+				.getUserPasswordHistory(username)));
 
-		RoutineResult result = userDao.registerUser(registerUser);
+		RoutineResult result = registerUserStrategy.registerUser(registerUser);
 		if (result.isOk()) {
 			for (RoleGrantSpecification roleGrant : roleGrants) {
 				result = userDao.grantRolesToUser(

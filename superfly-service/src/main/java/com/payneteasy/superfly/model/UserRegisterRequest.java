@@ -17,7 +17,8 @@ public class UserRegisterRequest implements Serializable {
 	private String surname;
 	private String secretQuestion;
 	private String secretAnswer;
-    private String salt;
+	private String salt;
+	private String isPasswordTemp;
     private String hotpSalt;
 
 	@Column(name = "user_id")
@@ -110,14 +111,22 @@ public class UserRegisterRequest implements Serializable {
 		this.secretAnswer = secretAnswer;
 	}
 
-    @Column(name="salt")
-    public String getSalt() {
-        return salt;
-    }
+	@Column(name = "salt")
+	public String getSalt() {
+		return salt;
+	}
 
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	@Column(name="is_password_temp")
+	public String getIsPasswordTemp() {
+		return isPasswordTemp;
+	}
+
+	public void setIsPasswordTemp(String isPasswordTemp) {
+		this.isPasswordTemp = isPasswordTemp;
+	}
 
     @Column(name="hotp_salt")
 	public String getHotpSalt() {
