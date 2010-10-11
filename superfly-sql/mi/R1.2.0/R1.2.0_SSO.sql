@@ -21,3 +21,4 @@ create table user_history(
 );                                                                                    
 
 
+call run_install_command('alter table users add column is_password_temp varchar(1) not null default "N"', '42S21');
