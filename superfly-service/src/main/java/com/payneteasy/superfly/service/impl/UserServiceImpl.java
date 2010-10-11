@@ -273,6 +273,10 @@ public class UserServiceImpl implements UserService {
         policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
     }
 
+    public void expirePasswords(int days) {
+        userDao.expirePasswords(days);
+    }
+
     public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
 			Long subsystemId, String actionSubstring, int startFrom,
 			int recordsCount) {

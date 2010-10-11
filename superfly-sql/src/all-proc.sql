@@ -112,6 +112,8 @@ create table mysql_routines_return_arguments (
 
 \. save/update_user_salt.prc
 
+\. save/expire_passwords.prc
+
 \. ui_get/ui_get_groups_list.prc
 
 \. ui_get/ui_get_mapped_group_actions_list.prc

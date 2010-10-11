@@ -301,4 +301,6 @@ public interface UserService {
 	RoutineResult addSubsystemWithRole(long userId, long roleId);
 
     void validatePassword(String username,String password) throws PolicyValidationException;
+
+    void expirePasswords(int days);
 }

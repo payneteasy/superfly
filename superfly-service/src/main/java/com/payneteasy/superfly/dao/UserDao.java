@@ -465,4 +465,7 @@ public interface UserDao {
 
     @AStoredProcedure(name="get_user_password_history")
     List<PasswordSaltPair> getUserPasswordHistory(String username);
+
+    @AStoredProcedure(name="expire_passwords")
+    void expirePasswords(int days);
 }
