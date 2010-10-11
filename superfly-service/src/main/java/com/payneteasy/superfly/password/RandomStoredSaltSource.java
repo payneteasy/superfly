@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.password;
 
-import com.payneteasy.superfly.common.utils.CryptoHelper;
+import org.springframework.beans.factory.annotation.Required;
+
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.utils.RandomGUID;
 
 /**
  * Kuccyp
@@ -14,23 +14,33 @@ import com.payneteasy.superfly.utils.RandomGUID;
 public class RandomStoredSaltSource implements SaltSource{
 
     private UserDao userDao;
+    private SaltGenerator saltGenerator;
 
+    @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    public String getSalt(String username) {
+    @Required
+    public void setSaltGenerator(SaltGenerator saltGenerator) {
+		this.saltGenerator = saltGenerator;
+	}
+
+	public String getSalt(String username) {
         String salt=userDao.getUserSalt(username);
         if(salt==null || salt.isEmpty()){
-            return generateNewSalt(username);
+            return generateNewSaltAndSave(username);
         }
         return salt;
     }
 
-    private String generateNewSalt(String username) {
-        RandomGUID guid=new RandomGUID(true);
-        String salt=CryptoHelper.SHA256(guid.toString());
+    private String generateNewSaltAndSave(String username) {
+        String salt = generateSalt();
         userDao.updateUserSalt(username,salt);
         return salt;
     }
+
+	private String generateSalt() {
+		return saltGenerator.generate();
+	}
 }

@@ -25,6 +25,7 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
     private IPolicyValidation<PasswordCheckContext> policyValidation;
+    private SaltGenerator hotpSaltGenerator;
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -72,6 +74,11 @@ public class UserServiceImpl implements UserService {
 		this.saltSource = saltSource;
 	}
 
+	@Required
+	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
+		this.hotpSaltGenerator = hotpSaltGenerator;
+	}
+
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
 			Long complectId, Long subsystemId, int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc) {
@@ -89,6 +96,7 @@ public class UserServiceImpl implements UserService {
 	public RoutineResult createUser(UIUserForCreate user) {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
+		userForDao.setHotpSalt(hotpSaltGenerator.generate());
 		RoutineResult result = userDao.createUser(userForDao);
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
 		return result;
@@ -143,11 +151,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public Long cloneUser(long templateUserId, String newUsername,
-			String newPassword) {
+			String newPassword, String newEmail) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
+		request.setEmail(newEmail);
         request.setSalt(saltSource.getSalt(newUsername));
+        request.setHotpSalt(hotpSaltGenerator.generate());
 		request.setPassword(passwordEncoder.encode(newPassword,request.getSalt()));
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {

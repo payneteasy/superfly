@@ -15,6 +15,19 @@
 	</bean>
 	
 	<bean id="maxLoginsFailed" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-		<property name="initParamName" value="superfly-max-logins-faild"/>
+		<property name="initParamName" value="superfly-max-logins-failed"/>
+	</bean>
+	
+	<bean id="hotpMasterKey" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-hotpMasterKey"/>
+	</bean>
+	<bean id="hotpCodeDigits" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-hotpCodeDigits"/>
+	</bean>
+	<bean id="hotpTableSize" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-hotpTableSize"/>
+	</bean>
+	<bean id="hotpLookahead" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-hotpLookahead"/>
 	</bean>
 </beans>

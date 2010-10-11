@@ -9,7 +9,8 @@ create procedure register_user(i_user_name         varchar(32),
                                i_surname	   varchar(32),
                                i_secret_question   varchar(255),
                                i_secret_answer     varchar(255),
-                               i_salt              varchar(128), 			 
+                               i_salt              varchar(128),
+                               i_hotp_salt		   varchar(128), 			 
                                out o_user_id       int(10)
                               )
  main_sql:
@@ -21,13 +22,13 @@ create procedure register_user(i_user_name         varchar(32),
 		leave main_sql;
 	end if;
   
-    insert into users(user_name, user_password, email, is_account_locked,`name`,surname,secret_question,secret_answer,salt)
-         values (i_user_name, i_user_password, i_user_email,'N',i_name,i_surname,i_secret_question,i_secret_answer,i_salt);
+    insert into users(user_name, user_password, email, is_account_locked, `name`,surname, secret_question ,secret_answer, salt, hotp_salt)
+         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_salt, i_hotp_salt);
 
     set o_user_id   = last_insert_id();
 
     insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date)
-         values (o_user_id,i_user_password,i_salt,1,now(),'2999-12-31');
+         values (o_user_id, i_user_password, i_salt, 1, now(), '2999-12-31');
 
     
     if i_principal_list is not null then

@@ -14,6 +14,7 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
+import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 
@@ -32,6 +33,7 @@ public class UserServiceImplTest extends TestCase {
 		encoder.setAlgorithm("sha1");
 		userService.setPasswordEncoder(encoder);
 		userService.setSaltSource(new ConstantSaltSource("c3pio"));
+		userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
 	}
 	
 	public void testCreateUserPasswordEncryption() {
@@ -39,6 +41,7 @@ public class UserServiceImplTest extends TestCase {
 			public RoutineResult answer() throws Throwable {
 				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+				assertNotNull(user.getHotpSalt());
 				return RoutineResult.okResult();
 			}
 		});
@@ -80,7 +83,26 @@ public class UserServiceImplTest extends TestCase {
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret");
+		userService.cloneUser(1L, "pete", "secret", "email");
+		
+		EasyMock.verify(userDao);
+	}
+	
+	public void testCloneUser() {
+		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
+				assertEquals("pete", user.getUsername());
+				assertNotNull(user.getPassword());
+				assertEquals("new-email", user.getEmail());
+				assertNotNull(user.getSalt());
+				assertNotNull(user.getHotpSalt());
+				return RoutineResult.okResult();
+			}
+		});
+		EasyMock.replay(userDao);
+		
+		userService.cloneUser(1L, "pete", "secret", "new-email");
 		
 		EasyMock.verify(userDao);
 	}

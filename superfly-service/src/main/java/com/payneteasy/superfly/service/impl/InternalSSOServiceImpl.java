@@ -26,6 +26,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -43,6 +44,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
+	private SaltGenerator hotpSaltGenerator;
 	private HOTPProvider hotpProvider = new NullHOTPProvider();
 	private LockoutStrategy lockoutStrategy;
 
@@ -81,6 +83,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setSaltSource(SaltSource saltSource) {
 		this.saltSource = saltSource;
+	}
+
+	@Required
+	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
+		this.hotpSaltGenerator = hotpSaltGenerator;
 	}
 
 	public void setHOTPProvider(HOTPProvider hotpProvider) {
@@ -164,6 +171,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
 		registerUser.setSalt(saltSource.getSalt(username));
+		registerUser.setHotpSalt(hotpSaltGenerator.generate());
 		registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
 		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);

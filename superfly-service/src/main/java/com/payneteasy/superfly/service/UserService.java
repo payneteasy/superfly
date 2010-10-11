@@ -102,9 +102,11 @@ public interface UserService {
 	 * @param templateUserId	ID of the user which will be cloned
 	 * @param newUsername		new user's name
 	 * @param newPassword		new user's password
+	 * @param newEmail			new user's email
 	 * @return new user ID
 	 */
-	Long cloneUser(long templateUserId, String newUsername, String newPassword);
+	Long cloneUser(long templateUserId, String newUsername, String newPassword,
+			String newEmail);
 	
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or

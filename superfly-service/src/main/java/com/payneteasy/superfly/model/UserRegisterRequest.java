@@ -18,6 +18,7 @@ public class UserRegisterRequest implements Serializable {
 	private String secretQuestion;
 	private String secretAnswer;
     private String salt;
+    private String hotpSalt;
 
 	@Column(name = "user_id")
 	public long getUserid() {
@@ -117,4 +118,13 @@ public class UserRegisterRequest implements Serializable {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    @Column(name="hotp_salt")
+	public String getHotpSalt() {
+		return hotpSalt;
+	}
+
+	public void setHotpSalt(String hotpSalt) {
+		this.hotpSalt = hotpSalt;
+	}
 }

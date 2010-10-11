@@ -16,6 +16,7 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
@@ -33,6 +34,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setLoggerSink(loggerSink);
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
+		service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
 		userService = service;
 	}
 	
@@ -159,7 +161,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(true), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email");
 		
 		EasyMock.verify(loggerSink);
 	}
@@ -169,7 +171,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(false), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email");
 		
 		EasyMock.verify(loggerSink);
 	}

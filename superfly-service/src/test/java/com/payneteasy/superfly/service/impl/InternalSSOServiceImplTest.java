@@ -24,6 +24,7 @@ import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spi.HOTPProvider;
@@ -44,6 +45,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		service.setHOTPProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
+        service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
 		internalSSOService = service;
 	}
 	
@@ -77,6 +79,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 			public RoutineResult answer() throws Throwable {
 				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.md5Hex("secret{e2e4}"), user.getPassword());
+				assertNotNull(user.getHotpSalt());
 				return RoutineResult.okResult();
 			}
 		});

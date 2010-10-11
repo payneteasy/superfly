@@ -42,7 +42,7 @@ public class CloneUserPage extends BasePage {
 		Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
 			@Override
 			protected void onSubmit() {
-				userService.cloneUser(userId, user.getUsername(), user.getPassword());
+				userService.cloneUser(userId, user.getUsername(), user.getPassword(), user.getEmail());
 				getRequestCycle().setResponsePage(ListUsersPage.class);
 				getRequestCycle().setRedirect(true);
 				info("User cloned: " + oldUser.getUsername() + " to " + user.getUsername());
@@ -56,7 +56,7 @@ public class CloneUserPage extends BasePage {
 				new PropertyModel<String>(user, "username"));
 
 		form.add(userName);
-		TextField<String> email = new TextField<String>("email",new PropertyModel<String>(user,"email"));
+		TextField<String> email = new TextField<String>("email",new PropertyModel<String>(user, "email"));
 		email.add(EmailAddressValidator.getInstance());
 		form.add(email.setRequired(true));
 		FormComponent<String> password1Field = new PasswordTextField("password",

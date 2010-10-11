@@ -18,6 +18,7 @@
 		<property name="loggerSink" ref="loggerSink"/>
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
+		<property name="hotpSaltGenerator" ref="saltGenerator"/>
         <property name="policyValidation" ref="passwordPolicyValidation"/>
         <property name="lockoutStrategy" ref="lockoutStrategy"/>
         <property name="HOTPProvider" ref="hotpProvider"/>
@@ -52,6 +53,7 @@
 		<property name="loggerSink" ref="loggerSink"/>
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
+		<property name="hotpSaltGenerator" ref="saltGenerator"/>
         <property name="policyValidation" ref="passwordPolicyValidation"/>
 	</bean>
 	
@@ -96,6 +98,10 @@
 	<bean id="passwordEncoder" class="com.payneteasy.superfly.spring.PasswordEncoderFactoryBean">
 		<property name="policyName" ref="policyName"/>
 	</bean>
+	
+    <bean id="saltGenerator" class="com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator">
+    </bean>
+	
 
     <bean id="nullSaltSouce" class="com.payneteasy.superfly.password.NullSaltSource">
     </bean>
@@ -105,6 +111,7 @@
     
     <bean id="randomStoredSaltSouce" class="com.payneteasy.superfly.password.RandomStoredSaltSource">
         <property name="userDao" ref="userDao"/>
+        <property name="saltGenerator" ref="saltGenerator"/>
     </bean>
     
 
@@ -130,6 +137,10 @@
     </bean>
     
 	<bean id="hotpProvider" class="com.payneteasy.superfly.spring.HOTPProviderFactoryBean">
+		<property name="masterKey" ref="hotpMasterKey"/>
+		<property name="codeDigits" ref="hotpCodeDigits"/>
+		<property name="lookahead" ref="hotpLookahead"/>
+		<property name="tableSize" ref="hotpTableSize"/>
 	</bean>
 
 </beans>

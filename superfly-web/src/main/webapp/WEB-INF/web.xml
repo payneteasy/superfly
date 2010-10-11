@@ -46,8 +46,28 @@
 	</context-param>
 	
 	<context-param>
-		<param-name>superfly-max-logins-faild</param-name>
+		<param-name>superfly-max-logins-failed</param-name>
 		<param-value>3</param-value>
+	</context-param>
+
+	<!-- Modification of ANY of HOTP-related parameters here (except for
+		lookahead window size) must be followed by regeneration of user tokens
+		as server-side HOTP sequences will be changed -->	
+	<context-param>
+		<param-name>superfly-hotpMasterKey</param-name>
+		<param-value>dakjf89j4f89j4faio[jf89j4fkl;mdAKDJFLAKJ4Fkdfjliajf894jfozjdf</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpCodeDigits</param-name>
+		<param-value>6</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpLookahead</param-name>
+		<param-value>10</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpTableSize</param-name>
+		<param-value>100</param-value>
 	</context-param>
 	
     <listener>

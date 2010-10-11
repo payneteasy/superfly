@@ -59,3 +59,5 @@ insert into user_role_actions
             (select ract_id from role_actions where role_role_id = (select role_id from roles where role_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly')) and actn_actn_id = (select actn_id from actions where action_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly'))))
 ;
 
+update users set hotp_counter = 0 where hotp_counter is null;
+update users set hotp_salt = sha1(concat(user_name, user_password, unix_timestamp()));

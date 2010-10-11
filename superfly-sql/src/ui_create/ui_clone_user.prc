@@ -3,6 +3,7 @@ delimiter $$
 create procedure ui_clone_user(i_new_user_name varchar(32),
                                i_new_user_password varchar(128),
                                i_new_user_salt varchar(64),
+                               i_new_hotp_salt varchar(64),
                                i_new_user_email varchar(255),
                                i_template_user_id int(10),
                                out o_user_id int(10)
@@ -13,9 +14,9 @@ create procedure ui_clone_user(i_new_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password, email, salt
+             user_name, user_password, email, salt, hotp_salt
           )
-    values (i_new_user_name, i_new_user_password, i_new_user_email,i_new_user_salt);
+    values (i_new_user_name, i_new_user_password, i_new_user_email, i_new_user_salt, i_new_hotp_salt);
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;
