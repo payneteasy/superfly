@@ -24,7 +24,7 @@ create procedure register_user(i_user_name         varchar(32),
 	end if;
   
     insert into users(user_name, user_password, email, is_account_locked, `name`,surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt)
-         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, is_password_temp,i_salt, i_hotp_salt);
+         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt);
 
     set o_user_id   = last_insert_id();
 
