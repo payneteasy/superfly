@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.spring;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 
 import org.slf4j.Logger;
@@ -76,8 +77,16 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 		Assert.notNull(beanFactory);
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
 		ServiceLoader<HOTPProvider> loader = ServiceLoader.load(HOTPProvider.class);
-		if (loader.iterator().hasNext()) {
-			hotpProvider = loader.iterator().next();
+		Iterator<HOTPProvider> iterator = loader.iterator();
+		if (iterator.hasNext()) {
+			HOTPProvider provider = iterator.next();
+			while (iterator.hasNext()
+					&& "com.payneteasy.superfly.spring.TestHOTPProvider".equals(provider.getClass().getName())) {
+				// it's a soooooo ugly... but Eclipse currently launches java applications for Debug
+				// using dependencies test classpaths too
+				provider = iterator.next();
+			}
+			hotpProvider = provider;
 			logger.info("Found the following implementation via service loader: " + hotpProvider.getClass().getName());
 		} else {
 			hotpProvider = new NullHOTPProvider();

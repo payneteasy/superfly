@@ -82,4 +82,13 @@ public class SSOServiceMock implements SSOService {
 			PolicyValidationException {
 	}
 
+	public void changeTempPassword(String userName, String password) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getFlagTempPassword(String userName) {
+		return null;
+	}
+
 }
