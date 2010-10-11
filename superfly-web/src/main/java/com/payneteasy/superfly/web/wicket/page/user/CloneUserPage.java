@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -30,6 +33,9 @@ public class CloneUserPage extends BasePage {
 	
 	@SpringBean
 	private UserService userService;
+
+    @SpringBean
+    private IPolicyValidation<PasswordCheckContext> policyValidation;
 
 	public CloneUserPage(PageParameters params) {
 		super(params);
@@ -63,6 +69,7 @@ public class CloneUserPage extends BasePage {
 		form.add(password2Field);
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
+        form.add(new PasswordInputValidator(password1Field,policyValidation));
 	}
 	
 	@Override

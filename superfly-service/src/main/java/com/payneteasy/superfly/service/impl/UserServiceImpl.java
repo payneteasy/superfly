@@ -138,7 +138,8 @@ public class UserServiceImpl implements UserService {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
-		request.setPassword(passwordEncoder.encode(newPassword, saltSource.getSalt(newUsername)));
+        request.setSalt(saltSource.getSalt(newUsername));
+		request.setPassword(passwordEncoder.encode(newPassword,request.getSalt()));
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();

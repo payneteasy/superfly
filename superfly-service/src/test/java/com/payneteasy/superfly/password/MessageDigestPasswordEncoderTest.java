@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.payneteasy.superfly.common.utils.CryptoHelper;
+import com.payneteasy.superfly.utils.RandomGUID;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.binary.Hex;
@@ -36,5 +38,15 @@ public class MessageDigestPasswordEncoderTest extends TestCase {
 		String expected = new String(Hex.encodeHex(bytes));
 		assertEquals(expected, encoded);
 	}
+
+    public void testNewPassword() {
+        RandomGUID guid=new RandomGUID(true);
+        String salt= CryptoHelper.SHA256(guid.toString());
+        System.out.println(salt);
+        MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
+        encoder.setAlgorithm("SHA-256");
+        String password = encoder.encode("123admin123", salt);
+        System.out.println(password);
+    }
 
 }

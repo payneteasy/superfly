@@ -18,6 +18,7 @@ public class UICloneUserRequest implements Serializable {
 	private String password;
 	private Long templateUserId;
 	private String email;
+    private String salt;
 
 	@Column(name = "user_id")
 	public Long getId() {
@@ -54,7 +55,7 @@ public class UICloneUserRequest implements Serializable {
 		this.email = email;
 	}
 
-	@Column(name = "templete_user_id")
+	@Column(name = "template_user_id")
 	public Long getTemplateUserId() {
 		return templateUserId;
 	}
@@ -62,4 +63,13 @@ public class UICloneUserRequest implements Serializable {
 	public void setTemplateUserId(Long templateUserId) {
 		this.templateUserId = templateUserId;
 	}
+
+    @Column(name="new_user_salt")
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 }
