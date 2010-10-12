@@ -35,8 +35,10 @@ public class PasswordEncryptor {
 		
 		Class.forName ("com.mysql.jdbc.Driver").newInstance ();
         Connection conn = DriverManager.getConnection (url, username, password);
+        conn.setAutoCommit(false);
         Statement st = conn.createStatement();
-        PreparedStatement prepSt = conn.prepareStatement("update users set user_password = ?, salt = ? where user_id = ?");
+        PreparedStatement updatePasswordSt = conn.prepareStatement("update users set user_password = ?, salt = ? where user_id = ?");
+        PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, 1, now(), '2999-12-31')");
         
         System.out.println("Starting password encryption");
         ResultSet rs = st.executeQuery("select user_id, user_name, user_password from users where (user_password is null or user_password = '' or length(user_password) <> " + test.length() + ")");
@@ -46,18 +48,28 @@ public class PasswordEncryptor {
         	password = rs.getString("user_password");
         	String salt = saltGenerator.generate();
         	String newPassword = passwordEncoder.encode(password != null ? password : "", salt);
-        	System.out.println(String.format("User %s (%d): old password '%s', salt '%s', new password '%s'",
-        			username, id, password, salt, newPassword));
-        	prepSt.setString(1, newPassword);
-        	prepSt.setString(2, salt);
-        	prepSt.setLong(3, id);
-        	prepSt.addBatch();
+//        	System.out.println(String.format("User %s (%d): old password '%s', salt '%s', new password '%s'",
+//        			username, id, password, salt, newPassword));
+        	updatePasswordSt.setString(1, newPassword);
+        	updatePasswordSt.setString(2, salt);
+        	updatePasswordSt.setLong(3, id);
+        	updatePasswordSt.addBatch();
+        	
+        	insertHistorySt.setLong(1, id);
+        	insertHistorySt.setString(2, newPassword);
+        	insertHistorySt.setString(3, salt);
+        	insertHistorySt.addBatch();
         }
         rs.close();
         st.close();
-        prepSt.executeBatch();
-        prepSt.close();
         
+        updatePasswordSt.executeBatch();
+        insertHistorySt.executeBatch();
+
+        conn.commit();
+        
+        updatePasswordSt.close();
+        insertHistorySt.close();
         conn.close();
         
         System.out.println("Finished password encryption");
