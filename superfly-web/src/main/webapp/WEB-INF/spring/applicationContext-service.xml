@@ -150,4 +150,12 @@
 		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao" />
 	</bean>
+	
+	<bean id="resetPasswordStrategy"
+		class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
+		<property name="policyName" ref="policyName" />
+		<property name="userDao" ref="userDao" />
+		<property name="saltSource" ref="saltSource" />
+		<property name="passwordEncoder" ref="passwordEncoder" />
+	</bean>
 </beans>

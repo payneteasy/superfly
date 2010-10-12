@@ -32,6 +32,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
@@ -50,6 +51,7 @@ import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
  */
 @Secured("ROLE_ADMIN")
 public class ListUsersPage extends BasePage {
+	private final static String POLICY_NAME="none";
 	
 	@SpringBean
 	private UserService userService;
@@ -59,6 +61,8 @@ public class ListUsersPage extends BasePage {
 	private SubsystemService subsystemService;
 	@SpringBean
 	private HOTPProvider hotpProvider;
+	@SpringBean
+	private ResetPasswordStrategy resetPasswordStrategy;
 
 	public ListUsersPage() {
 		super();
@@ -109,7 +113,7 @@ public class ListUsersPage extends BasePage {
 			@Override
 			protected void populateItem(Item<UIUserForList> item) {
 				final UIUserForList user = item.getModelObject();
-				PageParameters actionsParameters = new PageParameters();
+				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(user.getId()));
 				BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("view-user",
 						UserDetailsPage.class, actionsParameters);
@@ -141,6 +145,14 @@ public class ListUsersPage extends BasePage {
 						EditUserPage.class, actionsParameters));
 				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
 						CloneUserPage.class, actionsParameters));
+				Link<String> resetLink = new Link<String>("reset-password-link") {
+					
+					@Override
+					public void onClick() {
+						setResponsePage(ResetPasswordUserPage.class, actionsParameters);
+					}
+				};
+				item.add(resetLink.setVisible(!resetPasswordStrategy.getPolicyName().equals(POLICY_NAME)));
 				
 				Link<Void> downloadHotpTableLink = new Link<Void>("download-hotp-table") {
 					@Override

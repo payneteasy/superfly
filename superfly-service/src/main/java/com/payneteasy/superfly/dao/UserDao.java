@@ -446,39 +446,56 @@ public interface UserDao {
 
 	/**
 	 * 
-	 * @param userName user's name
-	 * @param maxLoginsFailed maximum logins failed
+	 * @param userName
+	 *            user's name
+	 * @param maxLoginsFailed
+	 *            maximum logins failed
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "login_locked")
 	RoutineResult loginLocked(String userName, long maxLoginsFailed);
 
+	@AStoredProcedure(name = "get_user_salt")
+	String getUserSalt(String userName);
 
-    @AStoredProcedure(name = "get_user_salt")
-    String getUserSalt(String userName);
+	@AStoredProcedure(name = "update_user_salt")
+	void updateUserSalt(String username, String salt);
 
-    @AStoredProcedure(name = "update_user_salt")
-    void updateUserSalt(String username, String salt);
+	@AStoredProcedure(name = "get_user_password_history")
+	List<PasswordSaltPair> getUserPasswordHistory(String username);
 
-    @AStoredProcedure(name="get_user_password_history")
-    List<PasswordSaltPair> getUserPasswordHistory(String username);
+	@AStoredProcedure(name = "expire_passwords")
+	void expirePasswords(int days);
+
+	/**
+	 * 
+	 * @param userName
+	 *            user name
+	 * @return flag of temporary password
+	 */
+	@AStoredProcedure(name = "get_flag_temp_password")
+	String getFlagTempPassword(String userName);
+
+	/**
+	 * 
+	 * @param userName user name
+	 * @param password password
+	 *            
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "change_temp_password")
+	RoutineResult changeTempPassword(String userName, String password);
+
+	/**
+	 * 
+	 * @param userId user id
+	 * @param password generated password
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "reset_password")
+	RoutineResult resetPassword(long userId, String password);
 
     @AStoredProcedure(name="get_users_with_expired_passwords")
     List<User> getUsersWithExpiredPasswords(int days);
-    
-    /**
-     * 
-     * @param userName user name
-     * @return flag of temporary password
-     */
-    @AStoredProcedure(name="get_flag_temp_password")
-    String getFlagTempPassword(String userName);
-    
-    /**
-     * 
-     * @param userName user name
-     * @param password password
-     */
-    @AStoredProcedure(name="change_temp_password")
-    RoutineResult changeTempPassword(String userName, String password);
+  
 }

@@ -229,6 +229,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	public void changeTempPassword(String userName, String password) {
-		userDao.changeTempPassword(userName, password);
+		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }
