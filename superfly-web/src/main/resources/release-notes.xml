@@ -137,5 +137,11 @@
     			and ready for providers to be plugged in.
     		</description>
     	</item>
+    	<item type="task">
+    		<name>Logging</name>
+    		<description>
+    			Logging of operations with system objects.
+    		</description>
+    	</item>
     </release>
 </news>
