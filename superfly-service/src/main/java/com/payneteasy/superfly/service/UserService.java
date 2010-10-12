@@ -92,9 +92,11 @@ public interface UserService {
 	/**
 	 * Unlocks a user.
 	 * 
-	 * @param userId	ID of the user to unlock
+	 * @param userId					ID of the user to unlock
+	 * @param unlockingSuspendedUser	true if we're trying to unlock a
+	 * suspended user
 	 */
-	RoutineResult unlockUser(long userId);
+	String unlockUser(long userId, boolean unlockingSuspendedUser);
 
 	/**
 	 * Clones a user.

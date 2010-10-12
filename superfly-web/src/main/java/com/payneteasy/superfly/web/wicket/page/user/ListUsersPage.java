@@ -123,8 +123,12 @@ public class ListUsersPage extends BasePage {
 					@Override
 					public void onClick() {
 						if (user.isAccountLocked()) {
-							userService.unlockUser(user.getId());
-							info("User unlocked: " + user.getUsername());
+							String newPassword = userService.unlockUser(user.getId(), user.isAccountSuspended());
+							String message = "User unlocked: " + user.getUsername();
+							if (newPassword != null) {
+								message += "; temporary password is" + newPassword;
+							}
+							info(message);
 						} else {
 							RoutineResult result = userService.lockUser(user.getId());
 							if (result.isOk()) {

@@ -17,4 +17,12 @@ public interface SaltSource {
 	 * @return salt
 	 */
 	String getSalt(String username);
+	
+	/**
+	 * Returns salt value by user id.
+	 * 
+	 * @param userId	ID of a user
+	 * @return salt
+	 */
+	String getSalt(long userId);
 }

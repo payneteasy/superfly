@@ -7,6 +7,7 @@ import java.util.List;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.User;
 import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
 	private SaltSource saltSource;
     private IPolicyValidation<PasswordCheckContext> policyValidation;
     private SaltGenerator hotpSaltGenerator;
+    private AccountPolicy accountPolicy;
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -78,6 +80,11 @@ public class UserServiceImpl implements UserService {
 	@Required
 	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
 		this.hotpSaltGenerator = hotpSaltGenerator;
+	}
+
+	@Required
+	public void setAccountPolicy(AccountPolicy accountPolicy) {
+		this.accountPolicy = accountPolicy;
 	}
 
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
@@ -142,13 +149,11 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	public RoutineResult unlockUser(long userId) {
-		RoutineResult result = userDao.unlockUser(userId);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "UNLOCK_USER", result.isOk(), String.valueOf(userId));
-		return result;
+	public String unlockUser(long userId, boolean unlockingSuspendedUser) {
+		String newPassword = accountPolicy.unlockUser(userId, unlockingSuspendedUser);
+		notificationService.notifyAboutUsersChanged();
+		loggerSink.info(logger, "UNLOCK_USER", true, String.valueOf(userId));
+		return newPassword;
 	}
 
 	public Long cloneUser(long templateUserId, String newUsername,

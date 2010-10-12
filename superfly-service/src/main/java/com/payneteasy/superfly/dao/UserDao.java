@@ -149,6 +149,18 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_unlock_user")
 	RoutineResult unlockUser(long userId);
+	
+	/**
+	 * Unlocks a suspended user.
+	 * 
+	 * @param userId
+	 *            ID of the user to unlock
+	 * @param newPassword
+	 * 			  new password to set as a temp password
+	 * @return routine result
+	 */
+	@AStoredProcedure(name = "ui_unlock_suspended_user")
+	RoutineResult unlockSuspendedUser(long userId, String newPassword);
 
 	/**
 	 * Creates a clone of the given user with new name and password.
@@ -460,12 +472,27 @@ public interface UserDao {
 
 	@AStoredProcedure(name = "update_user_salt")
 	void updateUserSalt(String username, String salt);
+    
+    @AStoredProcedure(name = "get_user_salt_by_user_id")
+    String getUserSaltByUserId(long userId);
 
 	@AStoredProcedure(name = "get_user_password_history")
 	List<PasswordSaltPair> getUserPasswordHistory(String username);
+    
+    @AStoredProcedure(name = "update_user_salt_by_user_id")
+    void updateUserSaltByUserId(long userId, String salt);
 
 	@AStoredProcedure(name = "expire_passwords")
 	void expirePasswords(int days);
+
+    /**
+     * Suspends users which have not logged in for a specified period of time
+     * in days.
+     *
+     * @param days		number of days (period length)
+     */
+    @AStoredProcedure(name="suspend_users")
+    void suspendUsers(int days);
 
 	/**
 	 * 
@@ -499,3 +526,4 @@ public interface UserDao {
     List<User> getUsersWithExpiredPasswords(int days);
   
 }
+

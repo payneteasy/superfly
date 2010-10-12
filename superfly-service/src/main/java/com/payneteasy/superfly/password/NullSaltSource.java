@@ -11,4 +11,8 @@ public class NullSaltSource implements SaltSource {
 		return null;
 	}
 
+	public String getSalt(long userId) {
+		return null;
+	}
+
 }

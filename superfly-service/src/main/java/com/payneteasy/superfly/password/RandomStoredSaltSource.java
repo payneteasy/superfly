@@ -29,14 +29,28 @@ public class RandomStoredSaltSource implements SaltSource{
 	public String getSalt(String username) {
         String salt=userDao.getUserSalt(username);
         if(salt==null || salt.isEmpty()){
-            return generateNewSaltAndSave(username);
+            salt = generateNewSaltAndSave(username);
         }
         return salt;
     }
+	
+	public String getSalt(long userId) {
+		String salt = userDao.getUserSaltByUserId(userId);
+		if (salt == null || salt.isEmpty()) {
+			salt = generateNewSaltAndSave(userId);
+		}
+		return salt;
+	}
 
     private String generateNewSaltAndSave(String username) {
         String salt = generateSalt();
         userDao.updateUserSalt(username,salt);
+        return salt;
+    }
+    
+    private String generateNewSaltAndSave(long userId) {
+        String salt = generateSalt();
+        userDao.updateUserSaltByUserId(userId, salt);
         return salt;
     }
 

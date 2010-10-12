@@ -2,8 +2,6 @@ package com.payneteasy.superfly.policy.password.none;
 
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
-import com.payneteasy.superfly.policy.password.pcidss.PasswordComplex;
-import com.payneteasy.superfly.policy.password.pcidss.PasswordMaxLen;
 
 /**
  * Kuccyp

@@ -25,4 +25,8 @@ public class ConstantSaltSource implements SaltSource {
 		return salt;
 	}
 
+	public String getSalt(long userId) {
+		return salt;
+	}
+
 }

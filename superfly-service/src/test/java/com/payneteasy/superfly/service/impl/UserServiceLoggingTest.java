@@ -17,6 +17,7 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
+import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
@@ -35,6 +36,9 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
 		service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
+		SimpleAccountPolicy accountPolicy = new SimpleAccountPolicy();
+		accountPolicy.setUserDao(userDao);
+		service.setAccountPolicy(accountPolicy);
 		userService = service;
 	}
 	
@@ -140,18 +144,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("UNLOCK_USER"), eq(true), eq("1"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.unlockUser(1L);
-		
-		EasyMock.verify(loggerSink);
-	}
-	
-	public void testUnlockUserFail() throws Exception {
-		userDao.unlockUser(anyLong());
-		EasyMock.expectLastCall().andReturn(failureResult());
-		loggerSink.info(anyObject(Logger.class), eq("UNLOCK_USER"), eq(false), eq("1"));
-		EasyMock.replay(loggerSink, userDao);
-		
-		userService.unlockUser(1L);
+		userService.unlockUser(1L, false);
 		
 		EasyMock.verify(loggerSink);
 	}

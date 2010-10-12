@@ -54,6 +54,7 @@
 		<property name="saltSource" ref="saltSource" />
 		<property name="hotpSaltGenerator" ref="saltGenerator"/>
 		<property name="policyValidation" ref="passwordPolicyValidation" />
+		<property name="accountPolicy" ref="accountPolicy" />
 	</bean>
 
 	<bean id="roleService" class="com.payneteasy.superfly.service.impl.RoleServiceImpl">
@@ -100,6 +101,10 @@
 	</bean>
 	
     <bean id="saltGenerator" class="com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator">
+    </bean>
+    
+    <bean id="passwordGenerator" class="com.payneteasy.superfly.password.PasswordGeneratorImpl">
+    	<property name="passwordLength" value="8"/>
     </bean>
 	
 
@@ -149,6 +154,14 @@
 		class="com.payneteasy.superfly.spring.RegisterUserStrategyFactoryBean">
 		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao" />
+	</bean>
+	
+	<bean id="accountPolicy" class="com.payneteasy.superfly.spring.AccountPolicyFactoryBean">
+		<property name="policyName" ref="policyName" />
+		<property name="userDao" ref="userDao"/>
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
+		<property name="passwordGenerator" ref="passwordGenerator"/>
 	</bean>
 	
 	<bean id="resetPasswordStrategy"
