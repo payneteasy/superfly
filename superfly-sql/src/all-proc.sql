@@ -253,3 +253,4 @@ create table mysql_routines_return_arguments (
 \. stub/update_hotp_counter.prc
 \. stub/get_flag_temp_password.prc
 \. stub/change_temp_password.prc
+\. stub/reset_password.prc
