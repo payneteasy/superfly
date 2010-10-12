@@ -4,11 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.model.User;
-import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.policy.account.AccountPolicy;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -29,6 +25,9 @@ import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.account.AccountPolicy;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
@@ -290,11 +289,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void expirePasswords(int days) {
-        List<User> users=userDao.getUsersWithExpiredPasswords(days);
-        for(User u:users){
-            logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
-            lockUser(u.getUserid());
-        }
+    	accountPolicy.expirePasswordsIfNeeded(days, this);
     }
 
     public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
@@ -324,11 +319,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public void suspendUsers(int days) {
-		List<User> users = userDao.getUsersToSuspend(days);
-		for (User user : users) {
-			logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
-			suspendUser(user.getUserid());
-		}
+		accountPolicy.suspendUsersIfNeeded(days, this);
 	}
 
 }
