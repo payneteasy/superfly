@@ -307,4 +307,8 @@ public interface UserService {
     void validatePassword(String username,String password) throws PolicyValidationException;
 
     void expirePasswords(int days);
+
+	void suspendUser(long userId);
+	
+	void suspendUsers(int days);
 }

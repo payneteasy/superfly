@@ -315,4 +315,20 @@ public class UserServiceImpl implements UserService {
 				actionSubstring);
 	}
 
+	public void suspendUser(long userId) {
+		RoutineResult result = userDao.suspendUser(userId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
+	}
+
+	public void suspendUsers(int days) {
+		List<User> users = userDao.getUsersToSuspend(days);
+		for (User user : users) {
+			logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
+			suspendUser(user.getUserid());
+		}
+	}
+
 }

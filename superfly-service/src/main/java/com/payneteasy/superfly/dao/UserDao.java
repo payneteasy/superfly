@@ -524,6 +524,12 @@ public interface UserDao {
 
     @AStoredProcedure(name="get_users_with_expired_passwords")
     List<User> getUsersWithExpiredPasswords(int days);
+
+    @AStoredProcedure(name="ui_suspend_user")
+	RoutineResult suspendUser(long anyLong);
+    
+    @AStoredProcedure(name="get_users_to_suspend")
+    List<User> getUsersToSuspend(int days);
   
 }
 

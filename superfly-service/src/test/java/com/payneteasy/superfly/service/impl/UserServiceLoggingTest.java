@@ -213,4 +213,26 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 	
+	public void testSuspendUser() throws Exception {
+		userDao.suspendUser(anyLong());
+		EasyMock.expectLastCall().andReturn(okResult());
+		loggerSink.info(anyObject(Logger.class), eq("SUSPEND_USER"), eq(true), eq("1"));
+		EasyMock.replay(loggerSink, userDao);
+		
+		userService.suspendUser(1L);
+		
+		EasyMock.verify(loggerSink);
+	}
+	
+	public void testSuspendUserFail() throws Exception {
+		userDao.suspendUser(anyLong());
+		EasyMock.expectLastCall().andReturn(failureResult());
+		loggerSink.info(anyObject(Logger.class), eq("SUSPEND_USER"), eq(false), eq("1"));
+		EasyMock.replay(loggerSink, userDao);
+		
+		userService.suspendUser(1L);
+		
+		EasyMock.verify(loggerSink);
+	}
+	
 }

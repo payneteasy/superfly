@@ -254,7 +254,8 @@ create table mysql_routines_return_arguments (
 \. stub/get_flag_temp_password.prc
 \. stub/change_temp_password.prc
 
-\. save/suspend_users.prc
+\. ui_update/ui_suspend_user.prc
+\. get/get_users_to_suspend.prc
 \. ui_update/ui_unlock_suspended_user.prc
 
 \. get/get_user_salt_by_user_id.sql
