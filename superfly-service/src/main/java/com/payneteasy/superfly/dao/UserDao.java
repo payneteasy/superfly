@@ -3,10 +3,7 @@ package com.payneteasy.superfly.dao;
 import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
-import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.UserRegisterRequest;
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -466,8 +463,8 @@ public interface UserDao {
     @AStoredProcedure(name="get_user_password_history")
     List<PasswordSaltPair> getUserPasswordHistory(String username);
 
-    @AStoredProcedure(name="expire_passwords")
-    void expirePasswords(int days);
+    @AStoredProcedure(name="get_users_with_expired_passwords")
+    List<User> getUsersWithExpiredPasswords(int days);
     
     /**
      * 

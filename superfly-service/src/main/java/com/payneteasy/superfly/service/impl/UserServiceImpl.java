@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.model.User;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
@@ -284,7 +285,11 @@ public class UserServiceImpl implements UserService {
     }
 
     public void expirePasswords(int days) {
-        userDao.expirePasswords(days);
+        List<User> users=userDao.getUsersWithExpiredPasswords(days);
+        for(User u:users){
+            logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
+            lockUser(u.getUserid());
+        }
     }
 
     public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
