@@ -6,12 +6,18 @@ import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.resetpassword.none.NoneResetPasswordStrategy;
 import com.payneteasy.superfly.resetpassword.pcidss.PCIDSSResetPasswordStrategy;
+import com.payneteasy.superfly.service.LoggerSink;
 
 public class ResetPasswordStrategyFactoryBean extends AbstractPolicyDependingFactoryBean {
 	private ResetPasswordStrategy resetPasswordStrategy;
 	private UserDao userDao;
 	private SaltSource saltSource;
 	private PasswordEncoder passwordEncoder;
+	private LoggerSink loggerSink;
+
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
+	}
 
 	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
 		this.passwordEncoder = passwordEncoder;
@@ -34,7 +40,7 @@ public class ResetPasswordStrategyFactoryBean extends AbstractPolicyDependingFac
 				break;
 			case PCIDSS:
 				resetPasswordStrategy = new PCIDSSResetPasswordStrategy(userDao, saltSource, passwordEncoder,
-						p.getIdentifier());
+						loggerSink, p.getIdentifier());
 				break;
 			default:
 				throw new IllegalArgumentException();

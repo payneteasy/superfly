@@ -157,5 +157,6 @@
 		<property name="userDao" ref="userDao" />
 		<property name="saltSource" ref="saltSource" />
 		<property name="passwordEncoder" ref="passwordEncoder" />
+		<property name="loggerSink" ref="loggerSink" />
 	</bean>
 </beans>
