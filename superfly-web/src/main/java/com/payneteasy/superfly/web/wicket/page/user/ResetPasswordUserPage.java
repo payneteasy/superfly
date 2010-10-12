@@ -37,7 +37,7 @@ public class ResetPasswordUserPage extends BasePage {
 
 			@Override
 			protected String load() {
-				setNewPassword(getRandomString(6));
+				setNewPassword(getRandomString(7));
 				return getNewPassword();
 			}
 		});
