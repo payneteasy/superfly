@@ -126,7 +126,7 @@ public class ListUsersPage extends BasePage {
 							String newPassword = userService.unlockUser(user.getId(), user.isAccountSuspended());
 							String message = "User unlocked: " + user.getUsername();
 							if (newPassword != null) {
-								message += "; temporary password is" + newPassword;
+								message += "; temporary password is " + newPassword;
 							}
 							info(message);
 						} else {
