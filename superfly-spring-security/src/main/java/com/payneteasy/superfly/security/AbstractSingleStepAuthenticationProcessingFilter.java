@@ -10,12 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.authentication.AuthenticationProcessingFilter;
 
 import com.payneteasy.superfly.security.exception.PreconditionsException;
 
 /**
- * Base for {@link AuthenticationProcessingFilter} implementations for a single
+ * Base for {@link AbstractAuthenticationProcessingFilter} implementations for a single
  * step of a multi-step authentication.
  *
  * @author Roman Puchkovskiy
