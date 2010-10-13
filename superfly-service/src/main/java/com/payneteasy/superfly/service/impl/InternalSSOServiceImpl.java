@@ -228,7 +228,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return userDao.getFlagTempPassword(userName);
 	}
 
-	public void changeTempPassword(String userName, String password) {
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+                .getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }
