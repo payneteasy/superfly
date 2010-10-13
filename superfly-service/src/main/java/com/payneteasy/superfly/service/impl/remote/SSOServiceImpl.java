@@ -88,7 +88,7 @@ public class SSOServiceImpl implements SSOService {
 		return internalSSOService.getFlagTempPassword(userName);
 	}
 
-	public void changeTempPassword(String userName, String password) {
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
 		internalSSOService.changeTempPassword(userName, password);
 	}
 

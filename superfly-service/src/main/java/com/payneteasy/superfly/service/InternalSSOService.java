@@ -96,5 +96,5 @@ public interface InternalSSOService {
      * @param userName user name
      * @param password password
      */
-    void changeTempPassword(String userName, String password);
+    void changeTempPassword(String userName, String password) throws PolicyValidationException;
 }
