@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -85,8 +86,10 @@ public class CreateUserPage extends BasePage {
 				"form", new Model<UIUserCheckPassword>(user));
 
 		add(form);
-		form.add(new RequiredTextField<String>("username",
-				new PropertyModel<String>(user, "username")));
+
+        FormComponent<String> userName=new RequiredTextField<String>("username",new PropertyModel<String>(user, "username"));
+		form.add(userName);
+
 		TextField<String> email = new TextField<String>("email",
 				new PropertyModel<String>(user, "email"));
 		email.add(EmailAddressValidator.getInstance());
@@ -99,9 +102,13 @@ public class CreateUserPage extends BasePage {
 				"password2", new PropertyModel<String>(user, "password2"))
 				.setRequired(true);
 		form.add(password2Field);
-		form
-				.add(new EqualPasswordInputValidator(password1Field,
+		form.add(new EqualPasswordInputValidator(password1Field,
 						password2Field));
+
+
+        form.add(new PasswordInputValidator(userName,password1Field,userService));
+
+
 		// DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
 				"subsystem", new PropertyModel<UISubsystemForList>(this,
