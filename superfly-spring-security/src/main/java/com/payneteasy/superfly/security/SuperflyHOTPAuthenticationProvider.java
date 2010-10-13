@@ -16,7 +16,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  * 
  * @author Roman Puchkovskiy
  */
-public class SuperflyHOTPAuthenticationProvider extends AbstractSuperflySingleStepAuthenticationProvider {
+public class SuperflyHOTPAuthenticationProvider extends AbstractSingleStepAuthenticationProvider {
 
 	private Class<? extends Object> supportedAuthenticationClass = CheckHOTPToken.class;
 

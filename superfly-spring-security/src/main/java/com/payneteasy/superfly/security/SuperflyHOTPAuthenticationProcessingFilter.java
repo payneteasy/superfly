@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 
 import com.payneteasy.superfly.api.SSOUser;
@@ -20,7 +19,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  * @author Roman Puchkovskiy
  */
 public class SuperflyHOTPAuthenticationProcessingFilter extends
-		AbstractAuthenticationProcessingFilter {
+		AbstractSingleStepAuthenticationProcessingFilter {
 	
 	private String hotpParameter = "j_hotp";
 	
@@ -33,7 +32,7 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
+	protected Authentication doAttemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Assert.notNull(authentication);

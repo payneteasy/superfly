@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
@@ -23,7 +22,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  * @author Roman Puchkovskiy
  */
 public class SuperflySelectRoleAuthenticationProcessingFilter extends
-		AbstractAuthenticationProcessingFilter {
+		AbstractSingleStepAuthenticationProcessingFilter {
 	
 	private String roleParameter = "j_role";
 
@@ -36,7 +35,7 @@ public class SuperflySelectRoleAuthenticationProcessingFilter extends
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
+	protected Authentication doAttemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
 		String roleKey = obtainRoleKey(request);

@@ -19,10 +19,12 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
 
 public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
+	
+	private SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter;
 
 	public void setUp() {
 		super.setUp();
-		SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
+		procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
 		procFilter.afterPropertiesSet();
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
@@ -67,7 +69,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		
 		verify(request, response, chain, authenticationManager);
 	}
-
+	
 	private void initExpectationsForAuthentication() {
 		expect(request.getRequestURI()).andReturn("/j_superfly_password_security_check").anyTimes();
 		expect(request.getParameter("j_username")).andReturn("user").anyTimes();

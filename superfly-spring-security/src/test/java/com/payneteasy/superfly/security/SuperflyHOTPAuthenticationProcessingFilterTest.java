@@ -14,16 +14,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 
 
 public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
+	
+	private SuperflyHOTPAuthenticationProcessingFilter procFilter;
 
 	public void setUp() {
 		super.setUp();
-		SuperflyHOTPAuthenticationProcessingFilter procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
+		procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
 		procFilter.afterPropertiesSet();
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
@@ -47,7 +50,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		expectRedirectTo("/");
 		replay(request, response, chain, authenticationManager);
 		
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUserWithOneRole()));
+		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
 		filter.doFilter(request, response, chain);
 		assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(), SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
 		
@@ -64,10 +67,45 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		expectRedirectTo("/login-failed");
 		replay(request, response, chain, authenticationManager);
 
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordCheckedToken(createSSOUserWithOneRole()));
+		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
 		filter.doFilter(request, response, chain);
 		
 		verify(request, response, chain, authenticationManager);
+	}
+	
+	public void testRequiredExistingAuthenticationOk() throws Exception {
+		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{UsernamePasswordCheckedToken.class});
+		
+		// expecting some request examination...
+		initExpectationsForAuthentication();
+		// expecting authentication attempt
+		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
+				.andReturn(new HOTPCheckedToken(createSSOUserWithOneRole()));
+		// expecting a redirect to a failure page
+		expectRedirectTo("/");
+		replay(request, response, chain, authenticationManager);
+
+		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
+		
+		filter.doFilter(request, response, chain);
+	}
+	
+	public void testRequiredExistingAuthenticationFailure() throws Exception {
+		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{EmptyAuthenticationToken.class});
+		
+		// expecting some request examination...
+		initExpectationsForAuthentication();
+		// expecting a redirect to a failure page
+		expectRedirectTo("/login-failed");
+		replay(request, response, chain, authenticationManager);
+
+		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
+		
+		filter.doFilter(request, response, chain);
+	}
+
+	protected UsernamePasswordCheckedToken createInputAuthentication() {
+		return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 	}
 
 	private void initExpectationsForAuthentication() {

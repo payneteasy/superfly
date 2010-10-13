@@ -15,7 +15,7 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
  * 
  * @author Roman Puchkovskiy
  */
-public class SuperflyUsernamePasswordAuthenticationProvider extends AbstractSuperflySingleStepAuthenticationProvider {
+public class SuperflyUsernamePasswordAuthenticationProvider extends AbstractSingleStepAuthenticationProvider {
 
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {

@@ -15,7 +15,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
  * 
  * @author Roman Puchkovskiy
  */
-public abstract class AbstractSuperflySingleStepAuthenticationProvider extends AbstractRoleTransformingAuthenticationProvider {
+public abstract class AbstractSingleStepAuthenticationProvider extends AbstractRoleTransformingAuthenticationProvider {
 	
 	protected boolean finishWithSuperflyFinalAuthentication = false;
 	protected SSOService ssoService;
