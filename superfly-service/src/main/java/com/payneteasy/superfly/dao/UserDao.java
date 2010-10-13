@@ -482,18 +482,6 @@ public interface UserDao {
     @AStoredProcedure(name = "update_user_salt_by_user_id")
     void updateUserSaltByUserId(long userId, String salt);
 
-	@AStoredProcedure(name = "expire_passwords")
-	void expirePasswords(int days);
-
-    /**
-     * Suspends users which have not logged in for a specified period of time
-     * in days.
-     *
-     * @param days		number of days (period length)
-     */
-    @AStoredProcedure(name="suspend_users")
-    void suspendUsers(int days);
-
 	/**
 	 * 
 	 * @param userName
