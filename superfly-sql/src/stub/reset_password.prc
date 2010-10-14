@@ -5,7 +5,7 @@ create procedure reset_password(i_user_id int(10),
                                )
 main_sql:
   begin
-    update users u set u.user_password = i_user_password, u.is_password_temp = 'Y' where u.user_id = i_user_id;
+    update users u set u.user_password = i_user_password, u.is_password_temp = 'Y', u.logins_failed = null  where u.user_id = i_user_id;
     select 'OK' status, null error_message;
   end
 $$
