@@ -14,12 +14,16 @@ create procedure ui_clone_user(i_new_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password, email, salt, hotp_salt
+             user_name, user_password, email, salt, hotp_salt,is_password_temp,create_date
           )
-    values (i_new_user_name, i_new_user_password, i_new_user_email, i_new_user_salt, i_new_hotp_salt);
+    values (i_new_user_name, i_new_user_password, i_new_user_email, i_new_user_salt, i_new_hotp_salt,'Y',now());
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;
+
+    insert into user_history (user_user_id,user_password,salt,number_history,start_date,end_date)
+         values (o_user_id,i_new_user_password,i_new_user_salt,1,now(),'2999-12-31');
+
 
     insert into user_roles
           (
