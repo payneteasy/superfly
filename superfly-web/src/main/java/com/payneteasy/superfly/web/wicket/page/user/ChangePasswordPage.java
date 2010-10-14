@@ -9,6 +9,7 @@ import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
@@ -80,9 +81,10 @@ public class ChangePasswordPage extends BasePage {
 
             @Override
             public void onSubmit() {
-                getRequestCycle().setRedirect(false);
+                userService.changeTempPassword(user.getUsername(),user.getPassword());
+                getRequestCycle().setRedirect(true);
+                getRequestCycle().setResponsePage(HomePage.class);
                 getRequestCycle().getSession().invalidate();
-                SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
                 SecurityContextHolder.clearContext();
             }
 
