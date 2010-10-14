@@ -8,7 +8,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/spring/applicationContext-security-none.xml
+        	/WEB-INF/spring/applicationContext-security-!policy!.xml
         	/WEB-INF/spring/applicationContext-common.xml
         	/WEB-INF/spring/applicationContext-datasource.xml
         	/WEB-INF/spring/applicationContext-dao.xml

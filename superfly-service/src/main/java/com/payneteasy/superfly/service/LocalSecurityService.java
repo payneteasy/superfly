@@ -16,4 +16,13 @@ public interface LocalSecurityService {
 	 * or if user is locked)
 	 */
 	String[] authenticate(String username, String password);
+	
+	/**
+	 * Authenticates a user's one-time password.
+	 * 
+	 * @param username	user name
+	 * @param hotp		one-time password
+	 * @return authentication result
+	 */
+	boolean authenticateUsingHOTP(String username, String hotp);
 }

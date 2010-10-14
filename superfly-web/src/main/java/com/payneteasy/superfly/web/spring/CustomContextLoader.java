@@ -26,7 +26,7 @@ public class CustomContextLoader extends ContextLoader {
 		String[] oldLocations = applicationContext.getConfigLocations();
 		String[] newLocations = new String[oldLocations.length];
 		for (int i = 0; i < oldLocations.length; i++) {
-			newLocations[i] = oldLocations[i].replaceAll("\\$\\{policy\\}", policy);
+			newLocations[i] = oldLocations[i].replaceAll("\\!policy\\!", policy);
 		}
 		applicationContext.setConfigLocations(newLocations);
 	}

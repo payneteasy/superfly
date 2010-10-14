@@ -2,7 +2,7 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 		
     <sec:http auto-config="false">
@@ -28,8 +28,11 @@
 
     </sec:http>
     
+    <sec:authentication-manager alias="authenticationManager">
+        <sec:authentication-provider ref="superflyLocalAuthenticationProvider"/>
+    </sec:authentication-manager>
+    
 	<bean id="superflyLocalAuthenticationProvider" class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
-		<sec:custom-authentication-provider/>
 		<property name="localSecurityService" ref="localSecurityService"/>
 	</bean>
 	

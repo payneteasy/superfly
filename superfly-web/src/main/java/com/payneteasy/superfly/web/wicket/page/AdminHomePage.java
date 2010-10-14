@@ -1,17 +1,16 @@
 package com.payneteasy.superfly.web.wicket.page;
 
-import com.payneteasy.superfly.model.releasenotes.Release;
-import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
-import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
-import org.apache.wicket.Page;
+import java.util.List;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.payneteasy.superfly.model.releasenotes.Release;
+import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
+import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
 
 @Secured("ROLE_ADMIN")
 public class AdminHomePage extends BasePage{

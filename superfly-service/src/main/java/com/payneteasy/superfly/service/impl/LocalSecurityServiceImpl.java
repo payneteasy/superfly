@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.hotp.NullHOTPProvider;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
@@ -25,6 +27,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
+	private HOTPProvider hotpProvider = new NullHOTPProvider();
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -54,6 +57,10 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		this.saltSource = saltSource;
 	}
 
+	public void setHotpProvider(HOTPProvider hotpProvider) {
+		this.hotpProvider = hotpProvider;
+	}
+
 	public String[] authenticate(String username, String password) {
 		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
 		List<AuthRole> roles = userDao.authenticate(username, encPassword,
@@ -77,6 +84,10 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);
 		return null;
+	}
+
+	public boolean authenticateUsingHOTP(String username, String hotp) {
+		return hotpProvider.authenticate(username, hotp);
 	}
 
 }

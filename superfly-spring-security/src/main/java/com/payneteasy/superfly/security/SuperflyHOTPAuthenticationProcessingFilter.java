@@ -40,14 +40,21 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 		
 		CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
 		authentication = extractLatestAuthOrSimpleAuth(authentication);
-		Assert.isTrue(authentication instanceof SSOUserTransportAuthenticationToken);
-		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
 		
 		String hotp = obtainHotp(request);
-		
-		Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
+
+		Authentication authRequest = createSimpleAuthRequest(authentication,
+				hotp);
 		
 		return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
+	}
+
+	protected Authentication createSimpleAuthRequest(
+			Authentication authentication, String hotp) {
+		Assert.isTrue(authentication instanceof SSOUserTransportAuthenticationToken);
+		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
+		Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
+		return authRequest;
 	}
 
 	protected Authentication createCheckHotpAuthRequest(String hotp, SSOUser ssoUser) {

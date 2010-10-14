@@ -20,6 +20,15 @@
 			<artifactId>superfly-client-opt</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-spring-security</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
@@ -31,14 +40,28 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
+<!-- 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core-tiger</artifactId>
+		</dependency>
+ -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
 		</dependency>
         <dependency>
             <groupId>org.opensymphony.quartz</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
+	    <dependency>
+	    	<groupId>commons-collections</groupId>
+	    	<artifactId>commons-collections</artifactId>
+	    </dependency>
         
 	    <dependency>
 	        <groupId>com.googlecode.xremoting</groupId>

@@ -20,6 +20,7 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
 	
 	private AuthenticationProvider delegateProvider;
 	private Class<?>[] supportedSimpleAuthenticationClasses = new Class<?>[]{};
+	private Class<?>[] notSupportedSimpleAuthenticationClasses = new Class<?>[]{};
 	private AuthenticationValidator authenticationValidator = null;
 	private AuthenticationPostProcessor authenticationPostProcessor = null;
 
@@ -30,6 +31,10 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
 	
 	public void setSupportedSimpleAuthenticationClasses(Class<?>[] classes) {
 		this.supportedSimpleAuthenticationClasses = classes;
+	}
+	
+	public void setNotSupportedSimpleAuthenticationClasses(Class<?>[] classes) {
+		this.notSupportedSimpleAuthenticationClasses = classes;
 	}
 
 	public void setAuthenticationValidator(
@@ -55,6 +60,13 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
 			request = compoundAuthentication.getCurrentAuthenticationRequest();
 		} else {
 			request = authentication;
+		}
+		
+		// do not do anything for unsupported classes
+		for (Class<?> clazz : notSupportedSimpleAuthenticationClasses) {
+			if (clazz == request.getClass()) {
+				return null;
+			}
 		}
 		
 		Authentication result = delegateProvider.authenticate(request);

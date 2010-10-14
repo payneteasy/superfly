@@ -78,6 +78,18 @@ public class CompoundAuthenticationProviderTest extends TestCase {
 		assertTrue(provider.supports(UsernamePasswordAuthenticationToken.class));
 	}
 	
+	public void testNotSupportedByCompoundProvider() {
+		provider.setDelegateProvider(new AbstractTestProvider() {
+			public Authentication authenticate(Authentication authentication)
+					throws AuthenticationException {
+				throw new BadCredentialsException("bad");
+			}
+		});
+		CompoundAuthentication compound = new CompoundAuthentication(new UsernamePasswordAuthenticationToken("user", "password"));
+		provider.setNotSupportedSimpleAuthenticationClasses(new Class<?>[]{UsernamePasswordAuthenticationToken.class});
+		assertNull(provider.authenticate(compound));
+	}
+	
 	public void testAuthenticationPostprocessing() {
 //		provider.setFinishWithFinalAuthentication
 	}

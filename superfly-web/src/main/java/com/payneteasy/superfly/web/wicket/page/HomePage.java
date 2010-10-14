@@ -3,20 +3,13 @@ package com.payneteasy.superfly.web.wicket.page;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.payneteasy.superfly.web.security.SecurityUtils;
-import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.model.releasenotes.Release;
-import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
-import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
+import com.payneteasy.superfly.web.security.SecurityUtils;
+import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
 
 @Secured({"ROLE_ADMIN","ROLE_ACTION_TEMP_PASSWORD"})
 public class HomePage extends BasePage{

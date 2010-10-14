@@ -1,10 +1,12 @@
 package com.payneteasy.superfly.web.security;
 
+import java.util.Collection;
+
 import junit.framework.TestCase;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.payneteasy.superfly.service.UserInfoService;
 
@@ -28,7 +30,7 @@ public class UserInfoServiceAcegiTest extends TestCase {
 	}
 	
 	private final class NameOnlyAuthentication implements Authentication {
-		public GrantedAuthority[] getAuthorities() {
+		public Collection<GrantedAuthority> getAuthorities() {
 			return null;
 		}
 

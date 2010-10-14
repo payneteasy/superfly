@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.client.test;
 
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
 @Secured("single")
 public class AnnotatedClass1 {
