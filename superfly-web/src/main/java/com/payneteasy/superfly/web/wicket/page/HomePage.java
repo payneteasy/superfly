@@ -18,7 +18,7 @@ import com.payneteasy.superfly.model.releasenotes.Release;
 import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
 import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
 
-@Secured({"ROLE_ADMIN","ROLE_TEMP_PASSWORD"})
+@Secured({"ROLE_ADMIN","ROLE_ACTION_TEMP_PASSWORD"})
 public class HomePage extends BasePage{
   private static final List<Class<? extends Page>> entryPages =
       new ArrayList<Class<? extends Page>>();

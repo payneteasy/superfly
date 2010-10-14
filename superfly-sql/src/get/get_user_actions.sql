@@ -189,7 +189,7 @@ create procedure get_user_actions(i_user_name varchar(32),
     	   r.role_name,
            r.principal_name,
            ss.callback_information,
-           'temp_password' as  action_action_name,
+           'action_temp_password' as  action_action_name,
            'Y' as action_log_action
       from           user_roles ur
                    join

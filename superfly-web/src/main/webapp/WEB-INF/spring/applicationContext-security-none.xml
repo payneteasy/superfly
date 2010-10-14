@@ -19,7 +19,7 @@
 		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
 		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
         
-        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_TEMP_PASSWORD"/>
+        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
         
         <sec:logout />
         <sec:form-login default-target-url="/"/>

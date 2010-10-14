@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author Roman Puchkovskiy
  */
-@Secured("ROLE_TEMP_PASSWORD")
+@Secured("ROLE_ACTION_TEMP_PASSWORD")
 public class ChangePasswordPage extends BasePage {
 
 	@SpringBean
