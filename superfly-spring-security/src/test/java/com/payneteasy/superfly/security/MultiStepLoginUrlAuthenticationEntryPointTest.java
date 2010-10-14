@@ -15,6 +15,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 
 public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
@@ -93,6 +94,21 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		ex.setAuthentication(auth);
 		entryPoint.commence(request, response, ex);
 		assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
+		
+		EasyMock.verify(response);
+	}
+		
+	public void testStep2FromCompound() throws Exception {
+		initExpectingRedirect("http://localhost/step-two.html");
+		
+		EasyMock.replay(response, request);
+		
+		Step2Authentication auth = new Step2Authentication();
+		CompoundAuthentication compound = new CompoundAuthentication();
+		compound.addReadyAuthentication(auth);
+		SecurityContextHolder.getContext().setAuthentication(compound);
+		entryPoint.commence(request, response, new InsufficientAuthenticationException("Insufficient!"));
+		assertSame(compound, SecurityContextHolder.getContext().getAuthentication());
 		
 		EasyMock.verify(response);
 	}

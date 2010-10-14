@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
 
@@ -35,7 +37,7 @@ public class SuperflySelectRoleAuthenticationProcessingFilter extends
 	}
 
 	@Override
-	protected Authentication doAttemptAuthentication(HttpServletRequest request,
+	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
 		String roleKey = obtainRoleKey(request);
@@ -57,8 +59,11 @@ public class SuperflySelectRoleAuthenticationProcessingFilter extends
 			throw new BadCredentialsException("Unknown role: " + roleKey);
 		}
 		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
+		
 		Authentication authRequest = createUserRoleAuthRequest(ssoUser, selectedRole);
-		return getAuthenticationManager().authenticate(authRequest);
+		return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
 	}
 	
 	protected String obtainRoleKey(HttpServletRequest request) {

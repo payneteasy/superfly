@@ -7,11 +7,11 @@ import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
 
-public class SuperflyAuthenticationPostProcessorTest extends AbstractSSOUserAwareTest {
-	private SuperflyAuthenticationPostProcessor processor;
+public class SSOUserShortCircuitingPostProcessorTest extends AbstractSSOUserAwareTest {
+	private SSOUserShortCircuitingPostProcessor processor;
 	
 	public void setUp() {
-		processor = new SuperflyAuthenticationPostProcessor();
+		processor = new SSOUserShortCircuitingPostProcessor();
 	}
 	
 	public void testDoNothing() {

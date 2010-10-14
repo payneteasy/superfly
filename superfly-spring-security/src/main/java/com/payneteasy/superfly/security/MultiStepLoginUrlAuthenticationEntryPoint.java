@@ -12,6 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+
 /**
  * {@link AuthenticationEntryPoint} which is intended to be used for multi-step
  * authentication process. It redirects to URLs determined by the current
@@ -40,7 +42,14 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
 			auth = SecurityContextHolder.getContext().getAuthentication();
 		}
 		if (auth != null) {
-			url = stepInsufficientAuthenticationMapping.get(auth.getClass());
+			Authentication authToChooseUrl;
+			if (auth instanceof CompoundAuthentication) {
+				CompoundAuthentication compound = (CompoundAuthentication) auth;
+				authToChooseUrl = compound.getLatestReadyAuthentication();
+			} else {
+				authToChooseUrl = auth;
+			}
+			url = stepInsufficientAuthenticationMapping.get(authToChooseUrl.getClass());
 			if (url != null) {
 				// mapping matched, so restoring authentication...
 				// TODO: is this correct? it's explicitly cleared before...

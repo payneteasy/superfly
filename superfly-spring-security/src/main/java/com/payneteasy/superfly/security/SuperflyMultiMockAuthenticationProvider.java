@@ -14,6 +14,7 @@ import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
@@ -62,21 +63,37 @@ public class SuperflyMultiMockAuthenticationProvider extends
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
 		if (enabled) {
-			if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
-				if (username.equals(authentication.getName()) && password.equals(authentication.getCredentials())) {
-					return new UsernamePasswordCheckedToken(createSSOUser(authentication.getName()));
+			Authentication auth;
+			CompoundAuthentication compound = null;
+			if (authentication instanceof CompoundAuthentication) {
+				compound = (CompoundAuthentication) authentication;
+				auth = compound.getCurrentAuthenticationRequest();
+			} else {
+				auth = authentication;
+			}
+			if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
+				if (username.equals(auth.getName()) && password.equals(auth.getCredentials())) {
+					CompoundAuthentication newCompound = new CompoundAuthentication();
+					newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(auth.getName())));
+					return newCompound;
 				} else {
 					throw new BadCredentialsException("Bad username/password");
 				}
-			} else if (authentication instanceof CheckHOTPToken) {
-				CheckHOTPToken token = (CheckHOTPToken) authentication;
+			} else if (auth instanceof CheckHOTPToken) {
+				CheckHOTPToken token = (CheckHOTPToken) auth;
 				if (hotp.equals(token.getCredentials())) {
-					return new HOTPCheckedToken(token.getSsoUser());
+					if (token.getSsoUser().getActionsMap().size() == 1) {
+						return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
+								token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
+					}
+					CompoundAuthentication newCompound = new CompoundAuthentication(compound.getReadyAuthentications(), auth);
+					newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
+					return newCompound;
 				} else {
 					throw new BadCredentialsException("Bad HOTP");
 				}
-			} else if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
-				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
+			} else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
+				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
 				return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoRole(),
 						token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
 			}
@@ -105,7 +122,8 @@ public class SuperflyMultiMockAuthenticationProvider extends
 		}
 		return (UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
 				|| CheckHOTPToken.class.isAssignableFrom(authentication)
-				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication));
+				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication)
+				|| CompoundAuthentication.class.isAssignableFrom(authentication));
 	}
 
 }

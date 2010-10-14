@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
-import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 
@@ -40,7 +40,8 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
 				.andAnswer(new IAnswer<Authentication>() {
 					public Authentication answer() throws Throwable {
-						CheckHOTPToken token = (CheckHOTPToken) EasyMock.getCurrentArguments()[0];
+						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
+						CheckHOTPToken token = (CheckHOTPToken) compound.getCurrentAuthenticationRequest();
 						assertEquals("pete", token.getName());
 						assertEquals("123456", token.getCredentials().toString());
 						return new HOTPCheckedToken(createSSOUserWithOneRole());
@@ -73,37 +74,6 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		verify(request, response, chain, authenticationManager);
 	}
 	
-	public void testRequiredExistingAuthenticationOk() throws Exception {
-		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{UsernamePasswordCheckedToken.class});
-		
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
-				.andReturn(new HOTPCheckedToken(createSSOUserWithOneRole()));
-		// expecting a redirect to a failure page
-		expectRedirectTo("/");
-		replay(request, response, chain, authenticationManager);
-
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		
-		filter.doFilter(request, response, chain);
-	}
-	
-	public void testRequiredExistingAuthenticationFailure() throws Exception {
-		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{EmptyAuthenticationToken.class});
-		
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting a redirect to a failure page
-		expectRedirectTo("/login-failed");
-		replay(request, response, chain, authenticationManager);
-
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		
-		filter.doFilter(request, response, chain);
-	}
-
 	protected UsernamePasswordCheckedToken createInputAuthentication() {
 		return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 	}

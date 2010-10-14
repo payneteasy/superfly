@@ -82,6 +82,16 @@ public class CompoundAuthenticationProviderTest extends TestCase {
 //		provider.setFinishWithFinalAuthentication
 	}
 	
+	public void testNullDelegateAuthentication() {
+		provider.setDelegateProvider(new AbstractTestProvider() {
+			public Authentication authenticate(Authentication authentication)
+					throws AuthenticationException {
+				return null;
+			}
+		});
+		assertEquals(null, provider.authenticate(new EmptyAuthenticationToken()));
+	}
+	
 	private static abstract class AbstractTestProvider implements AuthenticationProvider {
 		public boolean supports(Class<? extends Object> authentication) {
 			return true;

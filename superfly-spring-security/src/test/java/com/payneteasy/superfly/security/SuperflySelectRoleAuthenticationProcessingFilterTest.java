@@ -12,10 +12,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
-import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
-import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 
 public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
@@ -36,7 +34,7 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 		// expecting some request examination...
 		initExpectationsForAuthentication();
 		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(SSOUserAndSelectedRoleAuthenticationToken.class)))
+		expect(authenticationManager.authenticate(anyObject(CompoundAuthentication.class)))
 				.andReturn(createResultAuthentication());
 		// expecting a redirect to a success
 		expectRedirectTo("/");
@@ -54,37 +52,6 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 				return new String[]{};
 			}
 		});
-	}
-	
-	public void testRequiredExistingAuthenticationOk() throws Exception {
-		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{HOTPCheckedToken.class});
-		
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
-				.andReturn(createResultAuthentication());
-		// expecting a redirect to a failure page
-		expectRedirectTo("/");
-		replay(request, response, session, chain, authenticationManager);
-
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		
-		filter.doFilter(request, response, chain);
-	}
-
-	public void testRequiredExistingAuthenticationFailure() throws Exception {
-		procFilter.setRequiredExistingAuthenticationClasses(new Class<?>[]{EmptyAuthenticationToken.class});
-		
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting a redirect to a failure page
-		expectRedirectTo("/login-failed");
-		replay(request, response, chain, authenticationManager);
-
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		
-		filter.doFilter(request, response, chain);
 	}
 	
 	protected HOTPCheckedToken createInputAuthentication() {

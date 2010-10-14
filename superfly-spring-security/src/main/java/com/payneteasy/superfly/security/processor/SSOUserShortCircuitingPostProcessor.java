@@ -18,7 +18,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  *
  * @author Roman Puchkovskiy
  */
-public class SuperflyAuthenticationPostProcessor implements AuthenticationPostProcessor {
+public class SSOUserShortCircuitingPostProcessor implements AuthenticationPostProcessor {
 	
 	private boolean finishWithSuperflyFinalAuthentication = false;
 	private StringTransformer[] roleNameTransformers = new StringTransformer[]{};

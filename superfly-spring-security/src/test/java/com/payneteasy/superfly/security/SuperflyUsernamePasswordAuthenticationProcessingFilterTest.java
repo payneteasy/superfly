@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 
@@ -39,7 +40,8 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		expect(authenticationManager.authenticate(anyObject(UsernamePasswordAuthRequestInfoAuthenticationToken.class)))
 				.andAnswer(new IAnswer<Authentication>() {
 					public Authentication answer() throws Throwable {
-						UsernamePasswordAuthRequestInfoAuthenticationToken token = (UsernamePasswordAuthRequestInfoAuthenticationToken) EasyMock.getCurrentArguments()[0];
+						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
+						UsernamePasswordAuthRequestInfoAuthenticationToken token = (UsernamePasswordAuthRequestInfoAuthenticationToken) compound.getCurrentAuthenticationRequest();
 						assertEquals("192.168.0.4", token.getAuthRequestInfo().getIpAddress());
 						assertEquals("my-subsystem", token.getAuthRequestInfo().getSubsystemIdentifier());
 						return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());

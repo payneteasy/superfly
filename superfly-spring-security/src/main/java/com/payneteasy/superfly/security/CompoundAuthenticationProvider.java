@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.security.validator.AuthenticationValidator;
 
 /**
@@ -15,11 +16,12 @@ import com.payneteasy.superfly.security.validator.AuthenticationValidator;
  *
  * @author Roman Puchkovskiy
  */
-public class CompoundAuthenticationProvider implements AuthenticationProvider {
+public class CompoundAuthenticationProvider extends AbstractDisableableAuthenticationProvider {
 	
 	private AuthenticationProvider delegateProvider;
 	private Class<?>[] supportedSimpleAuthenticationClasses = new Class<?>[]{};
 	private AuthenticationValidator authenticationValidator = null;
+	private AuthenticationPostProcessor authenticationPostProcessor = null;
 
 	@Required
 	public void setDelegateProvider(AuthenticationProvider authenticationProvider) {
@@ -35,7 +37,13 @@ public class CompoundAuthenticationProvider implements AuthenticationProvider {
 		this.authenticationValidator = authenticationValidator;
 	}
 
-	public Authentication authenticate(Authentication authentication)
+	public void setAuthenticationPostProcessor(
+			AuthenticationPostProcessor authenticationPostProcessor) {
+		this.authenticationPostProcessor = authenticationPostProcessor;
+	}
+
+	@Override
+	protected Authentication doAuthenticate(Authentication authentication)
 			throws AuthenticationException {
 		if (authenticationValidator != null) {
 			authenticationValidator.validate(authentication);
@@ -48,15 +56,31 @@ public class CompoundAuthenticationProvider implements AuthenticationProvider {
 		} else {
 			request = authentication;
 		}
+		
 		Authentication result = delegateProvider.authenticate(request);
+		
+		// if delegate returned null, returning null too as this means that
+		// we shouldn't handle this
+		if (result == null) {
+			return null;
+		}
+		
 		if (compoundAuthentication == null) {
 			compoundAuthentication = new CompoundAuthentication();
 		}
 		compoundAuthentication.addReadyAuthentication(result);
-		return compoundAuthentication;
+		
+		Authentication returnValue;
+		if (authenticationPostProcessor != null) {
+			returnValue = authenticationPostProcessor.postProcess(compoundAuthentication);
+		} else {
+			returnValue = compoundAuthentication;
+		}
+		return returnValue;
 	}
 
-	public boolean supports(Class<? extends Object> authentication) {
+	@Override
+	protected boolean doSupports(Class<? extends Object> authentication) {
 		if (CompoundAuthentication.class.isAssignableFrom(authentication)) {
 			return true;
 		}

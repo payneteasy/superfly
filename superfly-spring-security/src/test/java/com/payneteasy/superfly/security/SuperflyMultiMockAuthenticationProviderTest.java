@@ -9,12 +9,11 @@ import org.springframework.security.core.Authentication;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 
 public class SuperflyMultiMockAuthenticationProviderTest extends
@@ -45,13 +44,18 @@ public class SuperflyMultiMockAuthenticationProviderTest extends
 	public void testPasswordSuccess() {
 		Authentication auth = provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "password", null));
 		assertNotNull(auth);
-		assertTrue(auth instanceof UsernamePasswordCheckedToken);
+		assertTrue(auth instanceof CompoundAuthentication);
 	}
 	
 	public void testHotpSuccess() {
-		Authentication auth = provider.authenticate(new CheckHOTPToken(createSSOUserWithOneRole(), "123456"));
+		Authentication auth = provider.authenticate(new CompoundAuthentication(new CheckHOTPToken(createSSOUser(2), "123456")));
 		assertNotNull(auth);
-		assertTrue(auth instanceof HOTPCheckedToken);
+		assertTrue(auth instanceof CompoundAuthentication);
+		
+		// short-circuiting
+		auth = provider.authenticate(new CheckHOTPToken(createSSOUserWithOneRole(), "123456"));
+		assertNotNull(auth);
+		assertTrue(auth instanceof SSOUserAuthenticationToken);
 	}
 	
 	public void testSelectRoleSuccess() {
@@ -71,5 +75,9 @@ public class SuperflyMultiMockAuthenticationProviderTest extends
 
 		Authentication auth = provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "password", null));
 		assertNull(auth);
+	}
+	
+	public void testSupportsCompound() {
+		assertTrue(provider.supports(CompoundAuthentication.class));
 	}
 }

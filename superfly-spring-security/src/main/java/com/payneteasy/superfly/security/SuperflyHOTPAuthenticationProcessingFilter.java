@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
 
 /**
@@ -32,10 +33,13 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 	}
 
 	@Override
-	protected Authentication doAttemptAuthentication(HttpServletRequest request,
+	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Assert.notNull(authentication);
+		
+		CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
+		authentication = extractLatestAuthOrSimpleAuth(authentication);
 		Assert.isTrue(authentication instanceof SSOUserTransportAuthenticationToken);
 		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
 		
@@ -43,7 +47,7 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 		
 		Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
 		
-		return getAuthenticationManager().authenticate(authRequest);
+		return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
 	}
 
 	protected Authentication createCheckHotpAuthRequest(String hotp, SSOUser ssoUser) {

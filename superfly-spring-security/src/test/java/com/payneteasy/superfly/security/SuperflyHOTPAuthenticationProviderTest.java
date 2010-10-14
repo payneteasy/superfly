@@ -2,7 +2,6 @@ package com.payneteasy.superfly.security;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.reset;
 
 import org.easymock.EasyMock;
 import org.springframework.security.access.intercept.RunAsUserToken;
@@ -14,7 +13,6 @@ import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
-import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
 public class SuperflyHOTPAuthenticationProviderTest extends
@@ -47,27 +45,7 @@ public class SuperflyHOTPAuthenticationProviderTest extends
 		assertNotNull(auth);
 		assertTrue(auth instanceof HOTPCheckedToken);
 	}
-	
-	public void testSuccessAndFinalAuthentication() {
-		provider.setFinishWithSuperflyFinalAuthentication(true);
-		// this is for case when user has exactly one role
-		expect(ssoService.authenticateUsingHOTP("pete", "123456"))
-				.andReturn(true);
-		replay(ssoService);
-		Authentication auth = provider.authenticate(createBeforeHotpAuth(1, "123456"));
-		assertNotNull(auth);
-		assertTrue(auth instanceof SSOUserAuthenticationToken);
-
-		reset(ssoService);
-		// this is for case when user has more than one role
-		expect(ssoService.authenticateUsingHOTP("pete", "123456"))
-				.andReturn(true);
-		replay(ssoService);
-		auth = provider.authenticate(createBeforeHotpAuth(2, "123456"));
-		assertNotNull(auth);
-		assertTrue(auth instanceof HOTPCheckedToken);
-	}
-	
+		
 	public void testBadCredentials() {
 		expect(ssoService.authenticateUsingHOTP("pete", "123456")).andReturn(false);
 		replay(ssoService);

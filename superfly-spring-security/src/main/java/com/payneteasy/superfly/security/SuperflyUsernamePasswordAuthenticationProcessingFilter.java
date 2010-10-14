@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
 /**
@@ -38,7 +39,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
 	}
 
 	@Override
-	protected Authentication doAttemptAuthentication(HttpServletRequest request,
+	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException {
 		Authentication authRequest;
 		
@@ -47,7 +48,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
 		
 		authRequest = createUsernamePasswordAuthRequest(request, username, password);
 		
-		return getAuthenticationManager().authenticate(authRequest);
+		return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
 	}
 
 	protected String obtainUsername(HttpServletRequest request) {
