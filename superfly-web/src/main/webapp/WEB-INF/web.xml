@@ -8,7 +8,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/spring/applicationContext-security.xml
+        	/WEB-INF/spring/applicationContext-security-none.xml
         	/WEB-INF/spring/applicationContext-common.xml
         	/WEB-INF/spring/applicationContext-datasource.xml
         	/WEB-INF/spring/applicationContext-dao.xml
@@ -77,7 +77,7 @@
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
     </listener>
     
 	<filter>
