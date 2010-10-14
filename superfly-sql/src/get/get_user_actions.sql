@@ -9,13 +9,14 @@ create procedure get_user_actions(i_user_name varchar(32),
  main_sql:
   begin
     declare v_user_id   int(10);
+    declare v_temp   varchar(1);
     declare v_sess_id	int(10);
 
     set session group_concat_max_len   = 64 * 1028;
 		set v_user_id   = null;
 
-    select user_id
-      into v_user_id
+    select user_id,is_password_temp
+      into v_user_id,v_temp
       from users u
      where     u.user_name = i_user_name
            and u.user_password = i_user_password
@@ -49,6 +50,9 @@ create procedure get_user_actions(i_user_name varchar(32),
        set u.last_login_date    = now()
      where u.user_name = i_user_name
            and coalesce(u.is_account_locked, 'N') = 'N';
+
+   
+    if v_temp<>'Y' then 
 
     insert into sessions
           (
@@ -162,8 +166,44 @@ create procedure get_user_actions(i_user_name varchar(32),
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
      where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name
-
 ;
+  else 
+/* temp password, return only  one action */
+
+
+    insert into sessions
+          (
+             start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list
+          )
+      select now(),
+             v_user_id,
+             ssys_id,
+             callback_information, null,null
+        from subsystems
+       where subsystem_name = i_subsystem_name;
+       
+    set v_sess_id = last_insert_id();
+
+
+    select v_sess_id session_id,
+    	   r.role_name,
+           r.principal_name,
+           ss.callback_information,
+           'temp_password' as  action_action_name,
+           'Y' as action_log_action
+      from           user_roles ur
+                   join
+                     roles r
+                   on r.role_id = ur.role_role_id
+                 join
+                   subsystems ss
+                 on r.ssys_ssys_id = ss.ssys_id
+     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name
+;
+
+
+  end if;
+  
   end
 ;
 $$
