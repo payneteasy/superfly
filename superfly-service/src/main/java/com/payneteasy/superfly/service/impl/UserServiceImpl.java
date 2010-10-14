@@ -322,4 +322,8 @@ public class UserServiceImpl implements UserService {
 		accountPolicy.suspendUsersIfNeeded(days, this);
 	}
 
+    public void changeTempPassword(String userName, String password) {
+        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
+
 }

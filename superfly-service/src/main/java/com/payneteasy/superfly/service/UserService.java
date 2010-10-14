@@ -311,4 +311,6 @@ public interface UserService {
 	void suspendUser(long userId);
 	
 	void suspendUsers(int days);
+
+    void changeTempPassword(String userName,String password);
 }

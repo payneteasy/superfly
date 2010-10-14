@@ -1,7 +1,13 @@
 package com.payneteasy.superfly.web.wicket.page;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.payneteasy.superfly.web.security.SecurityUtils;
+import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
+import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -12,46 +18,35 @@ import com.payneteasy.superfly.model.releasenotes.Release;
 import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
 import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
 
-@Secured("ROLE_ADMIN")
+@Secured({"ROLE_ADMIN","ROLE_TEMP_PASSWORD"})
 public class HomePage extends BasePage{
-	
-	@SpringBean
-	private ReleaseNotesService releaseNotesService;
+  private static final List<Class<? extends Page>> entryPages =
+      new ArrayList<Class<? extends Page>>();
+  static {
+    entryPages.add(AdminHomePage.class); // for admin
+    entryPages.add(ChangePasswordPage.class); // for admin
+  }
 
-	public HomePage() {
+    public HomePage(PageParameters params) {
+        super(params);
+    }
 
-		List<Release> listReleases = releaseNotesService.getReleaseNotes();
-
-		final ListView<Release> listViewReBean = new ListView<Release>(
-				"releases", listReleases) {
-			@Override
-			protected void populateItem(ListItem<Release> item) {
-				Release release = item.getModelObject();
-				item.add(new Label("release-number", release.getNumber()));
-				item.add(new Label("release-date", release.getDate()));
-
-				ListView<ReleaseItem> itemsListView = new ListView<ReleaseItem>(
-						"release-items", release.getItems()) {
-					@Override
-					protected void populateItem(ListItem<ReleaseItem> item) {
-						ReleaseItem releaseItemBean = item.getModelObject();
-						item.add(new Label("release-item-name",
-								releaseItemBean.getName()));
-						item.add(new Label("release-item-description",
-								releaseItemBean.getDescription()));
-					}
-
-				};
-				item.add(itemsListView);
-			}
-
-		};
-		add(listViewReBean);
+    public HomePage() {
 	}
 
 	@Override
 	protected String getTitle() {
-		return "Superfly dashboard";
+		return "Superfly home";
 	}
 
+   @Override
+   protected void onBeforeRender() {
+    super.onBeforeRender();
+    for (Class<? extends Page> pageClass : entryPages) {
+      if (SecurityUtils.isComponentVisible(pageClass)) {
+        getRequestCycle().setRedirect(true);
+        throw new RestartResponseException(pageClass);
+      }
+    }
+  }
 }

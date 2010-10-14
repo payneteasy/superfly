@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket;
 
+import com.payneteasy.superfly.web.wicket.page.user.*;
 import org.apache.wicket.Page;
 import org.apache.wicket.Request;
 import org.apache.wicket.Response;
@@ -29,14 +30,6 @@ import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.AddSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
-import com.payneteasy.superfly.web.wicket.page.user.AddSubsystemWithRolePage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserActionsPage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
-import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
-import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 
 public class SuperflyApplication extends WebApplication{
 
@@ -81,6 +74,7 @@ public class SuperflyApplication extends WebApplication{
         mountBookmarkablePage("/users/addSubsystemWithRole", AddSubsystemWithRolePage.class);
         
         mountBookmarkablePage("/sessions", ListSessionsPage.class);
+        mountBookmarkablePage("/changepassword", ChangePasswordPage.class);
 	}
 
 	@Override
