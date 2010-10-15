@@ -11,10 +11,8 @@ main_sql:
     set v_is_account_locked = 'N';
     
      select user_id, is_account_locked, logins_failed into v_user_id, v_is_account_locked, v_logins_failed from users u where u.user_name = i_user_name;
-      if v_user_id is not null and v_is_account_locked <> 'Y' and coalesce(v_logins_failed,0) <= i_max_logins_failed 
-       then if v_logins_failed = i_max_logins_failed 
+      if v_user_id is not null and v_is_account_locked <> 'Y' and coalesce(v_logins_failed,0) >= i_max_logins_failed
             then call ui_lock_user(v_user_id);
-           end if;
       end if;
     select 'OK' status, null error_message;
   end

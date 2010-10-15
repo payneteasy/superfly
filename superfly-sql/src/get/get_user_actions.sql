@@ -47,7 +47,7 @@ create procedure get_user_actions(i_user_name varchar(32),
     end if;
 
     update users u
-       set u.last_login_date    = now()
+       set u.last_login_date = now(), u.logins_failed = null
      where u.user_name = i_user_name
            and coalesce(u.is_account_locked, 'N') = 'N';
 
