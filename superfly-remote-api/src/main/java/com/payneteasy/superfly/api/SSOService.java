@@ -74,12 +74,13 @@ public interface SSOService {
 	 *            which roles to grant
 	 * @throws UserExistsException
 	 *             if user with such a name already exists
+	 * @throws PolicyValidationException
 	 * @since 1.1
 	 * @see RoleGrantSpecification
 	 */
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException,PolicyValidationException;
+			throws UserExistsException, PolicyValidationException;
 	/**
      * 
      * @param userName user name
