@@ -2,6 +2,7 @@ package com.payneteasy.superfly.lockout.pcidss;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.LockoutType;
 
 public class PCIDSSLockoutStrategy implements LockoutStrategy {
 
@@ -14,7 +15,7 @@ public class PCIDSSLockoutStrategy implements LockoutStrategy {
     }
 	
 
-	public void checkLoginsFailed(String userName) {
-    	   userDao.loginLocked(userName, maxLoginsFailed);
+	public void checkLoginsFailed(String userName, LockoutType lockoutType) {
+		userDao.lockoutConditionnally(userName, maxLoginsFailed, lockoutType.name());
 	}
 }

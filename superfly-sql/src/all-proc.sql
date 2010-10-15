@@ -246,7 +246,7 @@ create table mysql_routines_return_arguments (
 \. ui_create/ui_add_subsystem_with_role.prc
 
 \. stub/grant_roles_to_user.prc
-\. stub/login_locked.prc
+\. stub/lockout_conditionnally.prc
 
 \. stub/get_hotp_data.prc
 
@@ -262,3 +262,5 @@ create table mysql_routines_return_arguments (
 \. save/update_user_salt_by_user_id.prc
 \. stub/reset_password.prc
 
+\. stub/clear_hotp_logins_failed.prc
+\. stub/increment_hotp_logins_failed.prc

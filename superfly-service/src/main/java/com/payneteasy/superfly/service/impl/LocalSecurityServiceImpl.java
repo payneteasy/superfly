@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LocalSecurityService;
@@ -27,6 +29,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private HOTPProvider hotpProvider;
+	private LockoutStrategy lockoutStrategy;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -61,6 +64,11 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		this.hotpProvider = hotpProvider;
 	}
 
+	@Required
+	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+		this.lockoutStrategy = lockoutStrategy;
+	}
+
 	public String[] authenticate(String username, String password) {
 		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
 		List<AuthRole> roles = userDao.authenticate(username, encPassword,
@@ -82,12 +90,22 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 				return result;
 			}
 		}
+		if (roles == null || roles.isEmpty()) {
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
+		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);
 		return null;
 	}
 
 	public boolean authenticateUsingHOTP(String username, String hotp) {
-		return hotpProvider.authenticate(username, hotp);
+		boolean ok = hotpProvider.authenticate(username, hotp);
+		if (!ok) {
+			userDao.incrementHOTPLoginsFailed(username);
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+		} else {
+			userDao.clearHOTPLoginsFailed(username);
+		}
+		return ok;
 	}
 
 }

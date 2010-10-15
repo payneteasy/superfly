@@ -26,6 +26,7 @@ import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
@@ -132,7 +133,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			ssoUser = new SSOUser(username, actionsMap, preferences);
 			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
-			lockoutStrategy.checkLoginsFailed(username);
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 			ssoUser = null;
 		}
 		return ssoUser;
@@ -224,7 +225,14 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	public boolean authenticateHOTP(String username, String hotp) {
-		return hotpProvider.authenticate(username, hotp);
+		boolean ok = hotpProvider.authenticate(username, hotp);
+		if (!ok) {
+			userDao.incrementHOTPLoginsFailed(username);
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+		} else {
+			userDao.clearHOTPLoginsFailed(username);
+		}
+		return ok;
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

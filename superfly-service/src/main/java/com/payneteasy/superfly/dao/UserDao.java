@@ -465,7 +465,7 @@ public interface UserDao {
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "login_locked")
-	RoutineResult loginLocked(String userName, long maxLoginsFailed);
+	RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType);
 
 	@AStoredProcedure(name = "get_user_salt")
 	String getUserSalt(String userName);
@@ -518,6 +518,12 @@ public interface UserDao {
     
     @AStoredProcedure(name="get_users_to_suspend")
     List<User> getUsersToSuspend(int days);
+
+    @AStoredProcedure(name="clear_hotp_logins_failed")
+    void clearHOTPLoginsFailed(String username);
+
+    @AStoredProcedure(name="increment_hotp_logins_failed")
+	void incrementHOTPLoginsFailed(String username);
   
 }
 

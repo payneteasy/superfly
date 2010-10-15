@@ -48,7 +48,7 @@
 	
 	<context-param>
 		<param-name>superfly-max-logins-failed</param-name>
-		<param-value>3</param-value>
+		<param-value>6</param-value>
 	</context-param>
 
 	<!-- Modification of ANY of HOTP-related parameters here (except for
