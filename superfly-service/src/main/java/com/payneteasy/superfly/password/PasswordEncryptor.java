@@ -31,7 +31,7 @@ import com.payneteasy.superfly.spisupport.ObjectResolver;
  */
 public class PasswordEncryptor {
 	public static void main(String[] args) throws Exception {
-		if (args.length != 6) {
+		if (args.length != 5) {
 			printUsage();
 			System.exit(1);
 		}
@@ -40,13 +40,16 @@ public class PasswordEncryptor {
 		String url = args[1];
 		String username = args[2];
 		String password = args[3];
-		String hotpMasterKey = args[4];
-		int hotpCodeDigits = Integer.parseInt(args[5]);
+		int hotpCodeDigits = Integer.parseInt(args[4]);
+		
+		System.out.println("Please enter hotp master key");
+		Scanner scanner = new Scanner(System.in);
+		String hotpMasterKey = scanner.nextLine();
 		
 		PasswordEncoder passwordEncoder = createPasswordEncoder(algorithm);
 		SaltGenerator saltGenerator = createSaltGenerator();
 		
-		HOTPProvider hotpProvider = instantiateHOTPProvider();
+		HOTPProvider hotpProvider = instantiateHOTPProvider(scanner);
 		
 		String test = passwordEncoder.encode("password", saltGenerator.generate());
 		
@@ -145,6 +148,7 @@ public class PasswordEncryptor {
 
 	private static ObjectResolver createObjectResolver(final HOTPDao hotpDao) {
 		ObjectResolver objectResolver = new ObjectResolver() {
+			@SuppressWarnings("unchecked")
 			public <T> T resolve(Class<T> clazz) {
 				if (clazz == HOTPDao.class) {
 					return (T) hotpDao;
@@ -198,13 +202,12 @@ public class PasswordEncryptor {
 		return hotpDao;
 	}
 
-	private static HOTPProvider instantiateHOTPProvider() {
+	private static HOTPProvider instantiateHOTPProvider(Scanner scanner) {
 		HOTPProvider hotpProvider = HOTPProviderUtils.instantiateProvider(false);
 		if (hotpProvider == null) {
 			System.out.println("Did not find a HOTPProvider provider on the classpath. Are you SURE you want to use null implementation? Be aware that if your Superfly server actually uses a HOTP provider and you don't supply it here, generated HOTP values will be INCORRECT and you will NOT GET ACCESS to your Superfly server!!!");
 			System.out.println("Also, be sure that the provider that you supply here is the same as the one that will be used on your Server!");
 			System.out.println("So, do you still want to use null provider? (Yes/No)");
-			Scanner scanner = new Scanner(System.in);
 			String answer = scanner.nextLine();
 			if (!"yes".equalsIgnoreCase(answer)) {
 				System.out.println("Exiting");
@@ -215,7 +218,6 @@ public class PasswordEncryptor {
 			System.out.println("Found the following implementation: " + hotpProvider.getClass().getName());
 			System.out.println("Please note that you MUST check CAREFULLY whether this is right, or you may lose control of your server as HOTP codes will be incorrect!");
 			System.out.println("Is above implementation correct?");
-			Scanner scanner = new Scanner(System.in);
 			String answer = scanner.nextLine();
 			if (!"yes".equalsIgnoreCase(answer)) {
 				System.out.println("Exiting");
@@ -240,9 +242,8 @@ public class PasswordEncryptor {
 		System.out.println("  <db_url>\t\t\tURL of the database (for instance, jdbc:mysql://localhost/sso?characterEncoding=utf8");
 		System.out.println("  <db_user>\t\t\tusername to connect to database");
 		System.out.println("  <db_password>\t\t\tpassword of the database user");
-		System.out.println("  <hotp_master_key>\t\tHOTP master key (must match the value configured in Superfly web-app)");
 		System.out.println("  <hotp_code_digits>\t\tNumber of digits in HOTP value (must match the value configured in Superfly web-app)");
-		System.out.println("Example: sha-256 jdbc:mysql://localhost/sso?characterEncoding=utf8 sso 123sso123 'your-secret-key' 6");
+		System.out.println("Example: sha-256 jdbc:mysql://localhost/sso?characterEncoding=utf8 sso 123sso123 6");
 	}
 
 	private static SHA256RandomGUIDSaltGenerator createSaltGenerator() {
