@@ -17,6 +17,7 @@ public class PolicyValidationException extends Exception {
     private final String code;
 
     public PolicyValidationException(String code) {
+    	super(code);
         this.code = code;
     }
 
