@@ -29,4 +29,8 @@ public class NullHOTPProvider implements HOTPProvider {
 	public boolean outputsSequenceForDownload() {
 		return false;
 	}
+
+	public String computeValue(String username, long counter) {
+		return "111111";
+	}
 }

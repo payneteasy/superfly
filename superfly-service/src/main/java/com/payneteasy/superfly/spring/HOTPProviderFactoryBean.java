@@ -1,8 +1,5 @@
 package com.payneteasy.superfly.spring;
 
-import java.util.Iterator;
-import java.util.ServiceLoader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
 
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
+import com.payneteasy.superfly.hotp.HOTPProviderUtils;
 import com.payneteasy.superfly.hotp.NullHOTPProvider;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPProviderContext;
@@ -82,26 +80,17 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(beanFactory);
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
-		ServiceLoader<HOTPProvider> loader = ServiceLoader.load(HOTPProvider.class);
-		Iterator<HOTPProvider> iterator = loader.iterator();
-		boolean found = false;
-		if (iterator.hasNext()) {
-			while (iterator.hasNext()) {
-				HOTPProvider provider = iterator.next();
-				if (!"com.payneteasy.superfly.spring.TestHOTPProvider".equals(provider.getClass().getName())
-						|| allowTestProvider) {
-					hotpProvider = provider;
-					found = true;
-					break;
-				}
-			}
-		}
-		if (found) {
-			logger.info("Found the following implementation via service loader: " + hotpProvider.getClass().getName());
+		
+		HOTPProvider resultProvider = HOTPProviderUtils.instantiateProvider(allowTestProvider);
+		
+		if (resultProvider != null) {
+			logger.info("Found the following implementation via service loader: " + resultProvider.getClass().getName());
 		} else {
-			hotpProvider = new NullHOTPProvider();
+			resultProvider = new NullHOTPProvider();
 			logger.info("Did not find an implementation via service loader. Falling back to a default implementation");
 		}
+		hotpProvider = resultProvider;
+		
 		ObjectResolver objectResolver = createObjectResolver();
 		HOTPProviderContext context = createHOTPProviderContext(objectResolver);
 		hotpProvider.init(context);

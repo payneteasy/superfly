@@ -28,6 +28,15 @@ public interface HOTPProvider {
 	 * @return authentication result
 	 */
 	boolean authenticate(String username, String hotp);
+	
+	/**
+	 * Computes a HOTP value for a user with the given name.
+	 * 
+	 * @param username	name of the user
+	 * @param counter	counter value
+	 * @return HOTP value
+	 */
+	String computeValue(String username, long counter);
 
 	/**
 	 * Returns true if this provider can output sequence of HOTP values as

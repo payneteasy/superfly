@@ -7,17 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.payneteasy.superfly.api.*;
-import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOAction;
+import com.payneteasy.superfly.api.SSORole;
+import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.hotp.NullHOTPProvider;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
@@ -28,6 +32,8 @@ import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -46,7 +52,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private SaltGenerator hotpSaltGenerator;
-	private HOTPProvider hotpProvider = new NullHOTPProvider();
+	private HOTPProvider hotpProvider;
 	private LockoutStrategy lockoutStrategy;
 	private RegisterUserStrategy registerUserStrategy;
 
@@ -92,6 +98,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.hotpSaltGenerator = hotpSaltGenerator;
 	}
 
+	@Required
 	public void setHotpProvider(HOTPProvider hotpProvider) {
 		this.hotpProvider = hotpProvider;
 	}

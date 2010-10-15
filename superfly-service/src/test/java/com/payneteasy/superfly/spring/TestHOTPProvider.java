@@ -32,4 +32,8 @@ public class TestHOTPProvider implements HOTPProvider {
 		return false;
 	}
 
+	public String computeValue(String username, long counter) {
+		return "111111";
+	}
+
 }

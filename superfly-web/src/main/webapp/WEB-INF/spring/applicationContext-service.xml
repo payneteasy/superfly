@@ -31,6 +31,7 @@
 		<property name="loggerSink" ref="loggerSink" />
 		<property name="passwordEncoder" ref="passwordEncoder" />
 		<property name="saltSource" ref="saltSource" />
+		<property name="hotpProvider" ref="hotpProvider" />
 	</bean>
 
 	<bean id="subsystemService"

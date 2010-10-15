@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.hotp.NullHOTPProvider;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
@@ -27,7 +26,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
-	private HOTPProvider hotpProvider = new NullHOTPProvider();
+	private HOTPProvider hotpProvider;
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -57,6 +56,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		this.saltSource = saltSource;
 	}
 
+	@Required
 	public void setHotpProvider(HOTPProvider hotpProvider) {
 		this.hotpProvider = hotpProvider;
 	}
