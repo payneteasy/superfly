@@ -10,6 +10,7 @@ import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
@@ -29,6 +30,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		service.setLocalRoleName("local");
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
+		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}
 	

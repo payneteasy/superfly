@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
@@ -21,6 +22,7 @@ public class LocalSecurityServiceImplTest extends TestCase {
 		LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
+		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}
 	
