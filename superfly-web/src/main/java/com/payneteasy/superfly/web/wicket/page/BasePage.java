@@ -24,7 +24,7 @@ public abstract class BasePage extends WebPage {
 	}
 	
 	public BasePage(){
-		add(new Label("user-name-log",SecurityUtils.getUsername()));
+		add(new Label("user-name-log", SecurityUtils.getUsername()));
 		add(new BookmarkablePageLink<HomePage>("self-link", HomePage.class));
 		
 		add(new Label("page-title", getTitle()));

@@ -21,7 +21,7 @@ public interface GroupDao {
 	RoutineResult createGroup(UIGroup group);
 
 	@AStoredProcedure(name = "ui_delete_group")
-	RoutineResult deleteGorup(long id);
+	RoutineResult deleteGroup(long id);
 
 	@AStoredProcedure(name = "ui_get_groups_list_count")
 	int getGroupsCount(String groupName, String subsystemIds);

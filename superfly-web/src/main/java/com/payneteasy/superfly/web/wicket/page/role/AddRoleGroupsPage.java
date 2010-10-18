@@ -20,7 +20,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.RoutineResult;

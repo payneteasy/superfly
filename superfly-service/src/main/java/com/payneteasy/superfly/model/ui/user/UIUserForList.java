@@ -18,6 +18,7 @@ public class UIUserForList implements Serializable {
 	private int loginsFailed;
 	private Date lastLoginDate;
 	private String email;
+	private boolean accountSuspended;
 
 	@Column(name = "user_id")
 	public long getId() {
@@ -72,6 +73,7 @@ public class UIUserForList implements Serializable {
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
 	}
+	
 	@Column(name = "email")
 	public final String getEmail() {
 		return email;
@@ -79,6 +81,15 @@ public class UIUserForList implements Serializable {
 
 	public final void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Column(name = "is_account_suspended")
+	public boolean isAccountSuspended() {
+		return accountSuspended;
+	}
+
+	public void setAccountSuspended(boolean accountSuspended) {
+		this.accountSuspended = accountSuspended;
 	}
 	
 }

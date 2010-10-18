@@ -84,4 +84,64 @@
     		</description>
     	</item>
     </release>
+    
+    <release number="1.2" date="Not released yet">
+    	<item type="task">
+    		<name>PCI-DSS requirements</name>
+    		<description>
+    			Superfly is modified to comply to PCI-DSS requirements. See
+    			further tasks for details. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Password encryption</name>
+    		<description>
+    			Passwords in database are encrypted. Salt is supported. All
+    			MesageDigest algorithms available via JRE are supported for
+    			hashing. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Password expiration</name>
+    		<description>
+    			Passwords may be configured to be expired with time. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Accounts suspension</name>
+    		<description>
+    			User accounts may be configured to be suspended after a period
+    			of inactivity. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>PCI-DSS password restrictions</name>
+    		<description>
+    			Restrictions like minimal password length, mixed letters and
+    			digits, not matching to recently used passwords may be
+    			configured to be applied. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Password reset</name>
+    		<description>
+    			Password reset may be carried out in accordance to PCI-DSS. 
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Two-factor authentication</name>
+    		<description>
+    			Two-factor authentication is supported on spring-security side
+    			by new module structure for authentication workflow.
+    			Server-side, infrastructure for One-Time Passwords is created
+    			and ready for providers to be plugged in.
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Logging</name>
+    		<description>
+    			Logging of operations with system objects.
+    		</description>
+    	</item>
+    </release>
 </news>

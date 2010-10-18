@@ -8,7 +8,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-        	/WEB-INF/spring/applicationContext-security.xml
+        	/WEB-INF/spring/applicationContext-security-!policy!.xml
         	/WEB-INF/spring/applicationContext-common.xml
         	/WEB-INF/spring/applicationContext-datasource.xml
         	/WEB-INF/spring/applicationContext-dao.xml
@@ -16,6 +16,7 @@
         	/WEB-INF/spring/applicationContext-aop.xml
         	/WEB-INF/spring/applicationContext-quartz.xml
             /WEB-INF/spring/applicationContext-remote.xml
+            /WEB-INF/spring/applicationContext-web.xml
         </param-value>
     </context-param>
     <context-param>
@@ -35,17 +36,68 @@
 		<param-value>superfly</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>superfly-policy</param-name>
+		<param-value>none</param-value>
+	</context-param>
+	<!-- This is for constant salt generator -->
+	<context-param>
+		<param-name>superfly-salt</param-name>
+		<param-value>kdjfKJ48jfjf$Etj84f>DFJ48fj4fzFJdf8jADfj84fjaijdf84jfjzdfjakjfajf8j4qaq</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>superfly-max-logins-failed</param-name>
+		<param-value>6</param-value>
+	</context-param>
+
+	<!-- Modification of ANY of HOTP-related parameters here (except for
+		lookahead window size) must be followed by regeneration of user tokens
+		as server-side HOTP sequences will be changed.
+		Table size leads to table of distinct size, but the sequence remains
+		the same. -->	
+	<context-param>
+		<param-name>superfly-hotpMasterKey</param-name>
+		<param-value>dakjf89j4f89j4faio[jf89j4fkl;mdAKDJFLAKJ4Fkdfjliajf894jfozjdf</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpCodeDigits</param-name>
+		<param-value>6</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpLookahead</param-name>
+		<param-value>10</param-value>
+	</context-param>
+	<context-param>
+		<param-name>superfly-hotpTableSize</param-name>
+		<param-value>100</param-value>
+	</context-param>
+	
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
     </listener>
+    
+	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
     
 	<filter>
 	  <filter-name>springSecurityFilterChain</filter-name>
 	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
 	</filter>
+	
+	<filter-mapping>
+	    <filter-name>characterEncodingFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 	<filter-mapping>
 	    <filter-name>springSecurityFilterChain</filter-name>

@@ -11,11 +11,15 @@ import javax.persistence.Column;
  * @author Roman Puchkovskiy
  */
 public class UICloneUserRequest implements Serializable {
+	private static final long serialVersionUID = 1305784938422515978L;
+	
 	private Long id;
 	private String username;
 	private String password;
 	private Long templateUserId;
 	private String email;
+    private String salt;
+    private String hotpSalt;
 
 	@Column(name = "user_id")
 	public Long getId() {
@@ -52,12 +56,30 @@ public class UICloneUserRequest implements Serializable {
 		this.email = email;
 	}
 
-	@Column(name = "templete_user_id")
+	@Column(name = "template_user_id")
 	public Long getTemplateUserId() {
 		return templateUserId;
 	}
 
 	public void setTemplateUserId(Long templateUserId) {
 		this.templateUserId = templateUserId;
+	}
+
+    @Column(name="new_user_salt")
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    @Column(name="new_hotp_salt")
+	public String getHotpSalt() {
+		return hotpSalt;
+	}
+
+	public void setHotpSalt(String hotpSalt) {
+		this.hotpSalt = hotpSalt;
 	}
 }

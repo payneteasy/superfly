@@ -16,9 +16,15 @@ create table mysql_routines_return_arguments (
 
 \. get/get_user_actions.sql
 
+\. get/get_user_salt.sql
+
 \. get/list_users.sql
 
+\. get/get_user_password_history.sql
+
 \. get/get_procedures_resultset.prc
+
+\. get/get_users_with_expired_passwords.prc
 
 \. create/create_collections.prc
 
@@ -105,6 +111,8 @@ create table mysql_routines_return_arguments (
 \. ui_delete/ui_delete_expired_sessions.prc
 
 \. save/save_actions.prc
+
+\. save/update_user_salt.prc
 
 \. ui_get/ui_get_groups_list.prc
 
@@ -238,3 +246,21 @@ create table mysql_routines_return_arguments (
 \. ui_create/ui_add_subsystem_with_role.prc
 
 \. stub/grant_roles_to_user.prc
+\. stub/lockout_conditionnally.prc
+
+\. stub/get_hotp_data.prc
+
+\. stub/update_hotp_counter.prc
+\. stub/get_flag_temp_password.prc
+\. stub/change_temp_password.prc
+
+\. ui_update/ui_suspend_user.prc
+\. get/get_users_to_suspend.prc
+\. ui_update/ui_unlock_suspended_user.prc
+
+\. get/get_user_salt_by_user_id.sql
+\. save/update_user_salt_by_user_id.prc
+\. stub/reset_password.prc
+
+\. stub/clear_hotp_logins_failed.prc
+\. stub/increment_hotp_logins_failed.prc

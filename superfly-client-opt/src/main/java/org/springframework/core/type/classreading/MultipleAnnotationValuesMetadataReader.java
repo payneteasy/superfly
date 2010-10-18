@@ -1,6 +1,7 @@
 package org.springframework.core.type.classreading;
 
 import org.springframework.asm.ClassReader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 
@@ -8,13 +9,15 @@ import com.payneteasy.superfly.client.classreading.MethodAnnotationMetadataSourc
 import com.payneteasy.superfly.client.classreading.MethodReadingMetadataReader;
 
 public class MultipleAnnotationValuesMetadataReader implements MethodReadingMetadataReader {
-	
+
+	private final Resource resource;
 	private final ClassReader classReader;
 
 	private final ClassLoader classLoader;
 
-	public MultipleAnnotationValuesMetadataReader(ClassReader classReader,
+	public MultipleAnnotationValuesMetadataReader(Resource resource, ClassReader classReader,
 			ClassLoader classLoader) {
+		this.resource = resource;
 		this.classReader = classReader;
 		this.classLoader = classLoader;
 	}
@@ -35,6 +38,10 @@ public class MultipleAnnotationValuesMetadataReader implements MethodReadingMeta
 		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader, true);
 		this.classReader.accept(visitor, true);
 		return visitor;
+	}
+
+	public Resource getResource() {
+		return resource;
 	}
 
 }

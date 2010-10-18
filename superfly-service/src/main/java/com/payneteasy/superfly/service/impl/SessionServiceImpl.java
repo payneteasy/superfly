@@ -56,7 +56,10 @@ public class SessionServiceImpl implements SessionService {
 
 	public List<UISession> deleteExpiredSessionsAndNotify(Date beforeWhat) {
 		List<UISession> sessions = sessionDao.deleteExpiredSessions(beforeWhat);
-		logger.debug("Deleted " + sessions.size() + " sessions, going to notify subsystems");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Deleted " + sessions.size() + " sessions"
+					+ (sessions.size() > 0 ? ", going to notify subsystems" : ""));
+		}
 		Map<String, List<String>> callbackUriToSessionIds = new HashMap<String, List<String>>();
 		for (UISession session : sessions) {
 			if (session.getCallbackInformation() != null) {

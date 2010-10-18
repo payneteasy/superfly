@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
@@ -70,9 +71,24 @@ public class SSOServiceMock implements SSOService {
 		return users;
 	}
 
+	public boolean authenticateUsingHOTP(String username, String hotp) {
+		return true;
+	}
+
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
-			throws UserExistsException {
+			String subsystemHint, RoleGrantSpecification[] roleGrants,
+			String name, String surname, String secretQuestion,
+			String secretAnswer) throws UserExistsException,
+			PolicyValidationException {
+	}
+
+	public void changeTempPassword(String userName, String password) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getFlagTempPassword(String userName) {
+		return null;
 	}
 
 }

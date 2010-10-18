@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
@@ -21,14 +22,24 @@ import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltGenerator;
+import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -38,6 +49,20 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private UserDao userDao;
 	private ActionDao actionDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
+	private PasswordEncoder passwordEncoder;
+	private SaltSource saltSource;
+	private SaltGenerator hotpSaltGenerator;
+	private HOTPProvider hotpProvider;
+	private LockoutStrategy lockoutStrategy;
+	private RegisterUserStrategy registerUserStrategy;
+
+	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+
+	@Required
+	public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
+		this.policyValidation = policyValidation;
+	}
 
 	@Required
 	public void setUserDao(UserDao userDao) {
@@ -48,20 +73,57 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
-	
+
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
 	}
 
-	public SSOUser authenticate(String username, String password,
-			String subsystemIdentifier, String userIpAddress, String sessionInfo) {
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
+	}
+
+	@Required
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Required
+	public void setSaltSource(SaltSource saltSource) {
+		this.saltSource = saltSource;
+	}
+
+	@Required
+	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
+		this.hotpSaltGenerator = hotpSaltGenerator;
+	}
+
+	@Required
+	public void setHotpProvider(HOTPProvider hotpProvider) {
+		this.hotpProvider = hotpProvider;
+	}
+
+	@Required
+	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+		this.lockoutStrategy = lockoutStrategy;
+	}
+
+	@Required
+	public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
+		this.registerUserStrategy = registerUserStrategy;
+	}
+
+	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
+			String sessionInfo) {
 		SSOUser ssoUser;
-		List<AuthRole> authRoles = userDao.authenticate(username, password,
-				subsystemIdentifier, userIpAddress, sessionInfo);
-		if (authRoles != null && !authRoles.isEmpty()) {
-			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(
-					authRoles.size());
+		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+		List<AuthRole> authRoles = userDao.authenticate(username, encPassword, subsystemIdentifier, userIpAddress,
+				sessionInfo);
+		boolean ok = authRoles != null && !authRoles.isEmpty();
+		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
+		if (ok) {
+			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
 			for (AuthRole authRole : authRoles) {
 				SSORole ssoRole = new SSORole(authRole.getRoleName());
 				SSOAction[] actions = convertToSSOActions(authRole.getActions());
@@ -69,9 +131,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			}
 			Map<String, String> preferences = Collections.emptyMap();
 			ssoUser = new SSOUser(username, actionsMap, preferences);
-			ssoUser.setSessionId(String
-					.valueOf(authRoles.get(0).getSessionId()));
+			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
 		} else {
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 			ssoUser = null;
 		}
 		return ssoUser;
@@ -81,28 +143,23 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		SSOAction[] actions = new SSOAction[authActions.size()];
 		for (int i = 0; i < authActions.size(); i++) {
 			AuthAction authAction = authActions.get(i);
-			SSOAction ssoAction = new SSOAction(authAction.getActionName(),
-					authAction.isLogAction());
+			SSOAction ssoAction = new SSOAction(authAction.getActionName(), authAction.isLogAction());
 			actions[i] = ssoAction;
 		}
 		return actions;
 	}
 
-	public void saveSystemData(String subsystemIdentifier,
-			ActionDescription[] actionDescriptions) {
+	public void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
 		actionDao.saveActions(subsystemIdentifier, actions);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Saved actions for subsystem " + subsystemIdentifier
-					+ ": " + actions.size());
+			logger.debug("Saved actions for subsystem " + subsystemIdentifier + ": " + actions.size());
 			logger.debug("Actions are: " + Arrays.asList(actionDescriptions));
 		}
 	}
 
-	private List<ActionToSave> convertActionDescriptions(
-			ActionDescription[] actionDescriptions) {
-		List<ActionToSave> actions = new ArrayList<ActionToSave>(
-				actionDescriptions.length);
+	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
+		List<ActionToSave> actions = new ArrayList<ActionToSave>(actionDescriptions.length);
 		for (ActionDescription description : actionDescriptions) {
 			ActionToSave action = new ActionToSave();
 			action.setName(description.getName());
@@ -112,51 +169,83 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return actions;
 	}
 
-	public List<SSOUserWithActions> getUsersWithActions(
-			String subsystemIdentifier) {
+	public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
 		List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
-		List<SSOUserWithActions> result = new ArrayList<SSOUserWithActions>(
-				users.size());
+		List<SSOUserWithActions> result = new ArrayList<SSOUserWithActions>(users.size());
 		for (UserWithActions user : users) {
 			result.add(convertToSSOUser(user));
 		}
 		return result;
 	}
-	
-	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
-			throws UserExistsException {
+
+	public void registerUser(String username, String password, String email, String subsystemIdentifier,
+			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
+			throws UserExistsException, PolicyValidationException {
+
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
 		registerUser.setEmail(email);
-		registerUser.setPassword(password);
+		registerUser.setSalt(saltSource.getSalt(username));
+		registerUser.setHotpSalt(hotpSaltGenerator.generate());
+		registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
 		registerUser.setPrincipalNames(null);
 		registerUser.setSubsystemName(subsystemIdentifier);
-        RoutineResult result = userDao.registerUser(registerUser);
-        if (result.isOk()) {
-        	for (RoleGrantSpecification roleGrant : roleGrants) {
-        		result = userDao.grantRolesToUser(registerUser.getUserid(),
-        				roleGrant.isDetectSubsystemIdentifier()
-        						? subsystemIdentifier
-								: roleGrant.getSubsystemIdentifier(),
-        				roleGrant.getPrincipalName());
-        		if (!result.isOk()) {
-        			throw new IllegalStateException("Status: " + result.getStatus()
-        					+ ", errorMessage: " + result.getErrorMessage());
-        		}
-        	}
-        	
-        	notificationService.notifyAboutUsersChanged();
-        } else if (result.isDuplicate()) {
-        	throw new UserExistsException(result.getErrorMessage());
-        } else {
-        	throw new IllegalStateException("Status: " + result.getStatus()
-        			+ ", errorMessage: " + result.getErrorMessage());
-        }
+		registerUser.setName(name);
+		registerUser.setSurname(surname);
+		registerUser.setSecretQuestion(secretQuestion);
+		registerUser.setSecretAnswer(secretAnswer);
+
+		// validate password policy
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+				.getUserPasswordHistory(username)));
+
+		RoutineResult result = registerUserStrategy.registerUser(registerUser);
+		if (result.isOk()) {
+			for (RoleGrantSpecification roleGrant : roleGrants) {
+				result = userDao.grantRolesToUser(
+						registerUser.getUserid(),
+						roleGrant.isDetectSubsystemIdentifier() ? subsystemIdentifier : roleGrant
+								.getSubsystemIdentifier(), roleGrant.getPrincipalName());
+				if (!result.isOk()) {
+					throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
+							+ result.getErrorMessage());
+				}
+			}
+
+			notificationService.notifyAboutUsersChanged();
+			loggerSink.info(logger, "REGISTER_USER", true, username);
+		} else if (result.isDuplicate()) {
+			loggerSink.info(logger, "REGISTER_USER", false, username);
+			throw new UserExistsException(result.getErrorMessage());
+		} else {
+			loggerSink.info(logger, "REGISTER_USER", false, username);
+			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
+					+ result.getErrorMessage());
+		}
+	}
+
+	public boolean authenticateHOTP(String username, String hotp) {
+		boolean ok = hotpProvider.authenticate(username, hotp);
+		if (!ok) {
+			userDao.incrementHOTPLoginsFailed(username);
+			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+		} else {
+			userDao.clearHOTPLoginsFailed(username);
+		}
+		return ok;
 	}
 
 	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
-		return new SSOUserWithActions(user.getUsername(), user.getEmail(),
-				convertToSSOActions(user.getActions()));
+		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
+	}
+
+	public String getFlagTempPassword(String userName) {
+		return userDao.getFlagTempPassword(userName);
+	}
+
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+                .getUserPasswordHistory(userName)));
+		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }

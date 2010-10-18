@@ -78,7 +78,7 @@ public class MultipleAnnotationValuesCachingMetadataReaderFactory implements
 	private MethodReadingMetadataReader doGetMetadataReader(Resource resource) throws IOException {
 		InputStream is = resource.getInputStream();
 		try {
-			return new MultipleAnnotationValuesMetadataReader(new ClassReader(is), this.resourceLoader.getClassLoader());
+			return new MultipleAnnotationValuesMetadataReader(resource, new ClassReader(is), this.resourceLoader.getClassLoader());
 		}
 		finally {
 			is.close();

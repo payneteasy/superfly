@@ -3,6 +3,8 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,14 +13,18 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SubsystemService;
 
 @Transactional
 public class SubsystemServiceImpl implements SubsystemService {
 	
+	private static final Logger logger = LoggerFactory.getLogger(SubsystemServiceImpl.class);
+	
 	private SubsystemDao subsystemDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
 
 	@Required
 	public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -30,8 +36,15 @@ public class SubsystemServiceImpl implements SubsystemService {
 		this.notificationService = notificationService;
 	}
 
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
+	}
+
 	public RoutineResult createSubsystem(UISubsystem subsystem) {
-		return subsystemDao.createSubsystem(subsystem);
+		RoutineResult result = subsystemDao.createSubsystem(subsystem);
+		loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
+		return result;
 	}
 
 	public RoutineResult deleteSubsystem(Long subsystemId) {
@@ -39,6 +52,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
 		return result;
 	}
 
@@ -51,6 +65,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
 		return result;
 	}
 

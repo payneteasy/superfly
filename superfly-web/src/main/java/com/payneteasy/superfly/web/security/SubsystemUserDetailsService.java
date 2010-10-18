@@ -1,13 +1,15 @@
 package com.payneteasy.superfly.web.security;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.userdetails.User;
-import org.springframework.security.userdetails.UserDetails;
-import org.springframework.security.userdetails.UserDetailsService;
-import org.springframework.security.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -41,7 +43,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
 		for (int i = 0; i < authorities.length; i++) {
 			gas[i] = new GrantedAuthorityImpl(authorities[i]);
 		}
-		return new User(username, "NOT-USED", true, true, true, true, gas);
+		return new User(username, "NOT-USED", true, true, true, true, Arrays.asList(gas));
 	}
 
 }

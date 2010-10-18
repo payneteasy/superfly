@@ -4,10 +4,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -18,16 +22,36 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltGenerator;
+import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.account.AccountPolicy;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 
 @Transactional
 public class UserServiceImpl implements UserService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private UserDao userDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
+	private PasswordEncoder passwordEncoder;
+	private SaltSource saltSource;
+    private IPolicyValidation<PasswordCheckContext> policyValidation;
+    private SaltGenerator hotpSaltGenerator;
+    private AccountPolicy accountPolicy;
 
-	@Required
+    @Required
+    public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
+        this.policyValidation = policyValidation;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -35,6 +59,31 @@ public class UserServiceImpl implements UserService {
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
+	}
+
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
+	}
+
+	@Required
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Required
+	public void setSaltSource(SaltSource saltSource) {
+		this.saltSource = saltSource;
+	}
+
+	@Required
+	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
+		this.hotpSaltGenerator = hotpSaltGenerator;
+	}
+
+	@Required
+	public void setAccountPolicy(AccountPolicy accountPolicy) {
+		this.accountPolicy = accountPolicy;
 	}
 
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
@@ -52,9 +101,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public RoutineResult createUser(UIUserForCreate user) {
-		return userDao.createUser(user);
+		UIUserForCreate userForDao = new UIUserForCreate();
+		copyUserAndEncryptPassword(user, userForDao);
+		userForDao.setHotpSalt(hotpSaltGenerator.generate());
+		RoutineResult result = userDao.createUser(userForDao);
+		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
+		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
+	}
+
+	private void copyUserAndEncryptPassword(UIUser user,
+			UIUser userForDao) {
+		BeanUtils.copyProperties(user, userForDao);
+        userForDao.setSalt(saltSource.getSalt(user.getUsername()));
+		userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
 	}
 
 	public UIUser getUser(long userId) {
@@ -62,7 +123,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public RoutineResult updateUser(UIUser user) {
-		return userDao.updateUser(user);
+		UIUserForCreate userForDao = new UIUserForCreate();
+		copyUserAndEncryptPassword(user, userForDao);
+		RoutineResult result = userDao.updateUser(userForDao);
+		loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
+		return result;
 	}
 
 	public RoutineResult deleteUser(long userId) {
@@ -70,6 +135,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "DELETE_USER", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -78,27 +144,31 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "LOCK_USER", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
-	public RoutineResult unlockUser(long userId) {
-		RoutineResult result = userDao.unlockUser(userId);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		return result;
+	public String unlockUser(long userId, boolean unlockingSuspendedUser) {
+		String newPassword = accountPolicy.unlockUser(userId, unlockingSuspendedUser);
+		notificationService.notifyAboutUsersChanged();
+		loggerSink.info(logger, "UNLOCK_USER", true, String.valueOf(userId));
+		return newPassword;
 	}
 
-	public long cloneUser(long templateUserId, String newUsername,
-			String newPassword) {
+	public Long cloneUser(long templateUserId, String newUsername,
+			String newPassword, String newEmail) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
-		request.setPassword(newPassword);
+		request.setEmail(newEmail);
+        request.setSalt(saltSource.getSalt(newUsername));
+        request.setHotpSalt(hotpSaltGenerator.generate());
+		request.setPassword(passwordEncoder.encode(newPassword,request.getSalt()));
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
 		return request.getId();
 	}
 
@@ -145,6 +215,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -194,6 +265,7 @@ public class UserServiceImpl implements UserService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -212,7 +284,15 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
+    public void validatePassword(String username,String password) throws PolicyValidationException {
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
+    }
+
+    public void expirePasswords(int days) {
+    	accountPolicy.expirePasswordsIfNeeded(days, this);
+    }
+
+    public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
 			Long subsystemId, String actionSubstring, int startFrom,
 			int recordsCount) {
 		String subsystemIds = subsystemId == null ? null : subsystemId
@@ -229,5 +309,21 @@ public class UserServiceImpl implements UserService {
 		return userDao.getMappedUserActionsCount(userId, subsystemIds,
 				actionSubstring);
 	}
+
+	public void suspendUser(long userId) {
+		RoutineResult result = userDao.suspendUser(userId);
+		if (result.isOk()) {
+			notificationService.notifyAboutUsersChanged();
+		}
+		loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
+	}
+
+	public void suspendUsers(int days) {
+		accountPolicy.suspendUsersIfNeeded(days, this);
+	}
+
+    public void changeTempPassword(String userName, String password) {
+        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
 
 }

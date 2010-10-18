@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.api;
 
-public class UserExistsException extends Exception{
+public class UserExistsException extends Exception {
 	public UserExistsException(){}
 	public UserExistsException(String message){
 		super(message);

@@ -19,6 +19,7 @@ import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Type;
 import org.springframework.asm.commons.EmptyVisitor;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.MethodMetadata;
 
 import com.payneteasy.superfly.client.classreading.AnnotationAttributesSource;
 import com.payneteasy.superfly.client.classreading.AnnotationMetadataHolder;
@@ -205,6 +206,27 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 				return holder.getAttributesMap().get(annotationClassName);
 			}
 		};
+	}
+
+	public Set<MethodMetadata> getAnnotatedMethods(String annotationType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, Object> getAnnotationAttributes(String annotationType,
+			boolean classValuesAsString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean hasAnnotatedMethods(String annotationType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isAnnotated(String annotationType) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

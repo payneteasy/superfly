@@ -17,6 +17,8 @@ import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ViewGroupPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleActionsPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRolePage;
@@ -30,6 +32,7 @@ import com.payneteasy.superfly.web.wicket.page.subsystem.AddSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.AddSubsystemWithRolePage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserActionsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
@@ -46,6 +49,9 @@ public class SuperflyApplication extends WebApplication{
         addComponentInstantiationListener(new SpringComponentInjector(this));
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         getDebugSettings().setOutputMarkupContainerClassName(false);
+        
+        mountBookmarkablePage("/login", LoginPasswordStepPage.class);
+        mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
         
         mountBookmarkablePage("/actions", ListActionsPage.class);
         mountBookmarkablePage("/actions/copyAction", CopyActionPropertiesPage.class);
@@ -81,6 +87,7 @@ public class SuperflyApplication extends WebApplication{
         mountBookmarkablePage("/users/addSubsystemWithRole", AddSubsystemWithRolePage.class);
         
         mountBookmarkablePage("/sessions", ListSessionsPage.class);
+        mountBookmarkablePage("/changepassword", ChangePasswordPage.class);
 	}
 
 	@Override

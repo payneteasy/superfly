@@ -11,6 +11,8 @@ import javax.persistence.Column;
  * @author Roman Puchkovskiy
  */
 public class RoutineResult implements Serializable {
+	private static final long serialVersionUID = -1987806557148435122L;
+	
 	private static final String OK = "OK";
 	private static final String DUPLICATE = "duplicate";
 	
@@ -41,5 +43,23 @@ public class RoutineResult implements Serializable {
 	
 	public boolean isDuplicate() {
 		return DUPLICATE.equalsIgnoreCase(status);
+	}
+	
+	public static RoutineResult forStatus(String status) {
+		RoutineResult result = new RoutineResult();
+		result.setStatus(status);
+		return result;
+	}
+	
+	public static RoutineResult okResult() {
+		return forStatus("OK");
+	}
+	
+	public static RoutineResult failureResult() {
+		return forStatus("fail");
+	}
+	
+	public static RoutineResult duplicateResult() {
+		return forStatus("duplicate");
 	}
 }
