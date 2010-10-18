@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.client.test_methods;
 
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
 public interface AnnotatedMethodsClass {
 	@Secured("method1")

@@ -1,10 +1,12 @@
 package com.payneteasy.superfly.web.security;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.annotation.Secured;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
+import java.util.Collection;
+
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class SecurityUtils {
     public static boolean isUserInRole(String aRole) {
@@ -12,7 +14,7 @@ public class SecurityUtils {
         if (null == authentication) {
             return false;
         }
-        GrantedAuthority[] authorities = authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return false;
         }
@@ -31,12 +33,12 @@ public class SecurityUtils {
         if (null == authentication) {
             return null;
         }
-        GrantedAuthority[] authorities = authentication.getAuthorities();
+        Collection<GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return null;
         }
 
-        String[] roles = new String[authorities.length];
+        String[] roles = new String[authorities.size()];
         int i = 0;
         for (GrantedAuthority authority : authorities) {
         	roles[i] = authority.getAuthority();

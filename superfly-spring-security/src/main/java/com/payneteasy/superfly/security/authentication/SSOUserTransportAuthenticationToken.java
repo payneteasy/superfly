@@ -27,4 +27,9 @@ public class SSOUserTransportAuthenticationToken extends EmptyAuthenticationToke
 		return ssoUser;
 	}
 
+	@Override
+	public String getName() {
+		return getSsoUser().getName();
+	}
+
 }

@@ -1,11 +1,8 @@
 package com.payneteasy.superfly.web.obtainer;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.ui.preauth.x509.SubjectDnX509PrincipalExtractor;
-import org.springframework.security.ui.preauth.x509.X509PreAuthenticatedProcessingFilter;
-import org.springframework.security.ui.preauth.x509.X509PrincipalExtractor;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
 

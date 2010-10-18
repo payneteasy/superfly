@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +16,18 @@ import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 import com.payneteasy.superfly.service.GroupService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class GroupServiceImpl implements GroupService {
+	
+	private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
+	
 	private GroupDao groupDao;
 	private NotificationService notificationService;
+	private LoggerSink loggerSink;
 
 	@Required
 	public void setGroupDao(GroupDao groupDao) {
@@ -30,6 +37,11 @@ public class GroupServiceImpl implements GroupService {
 	@Required
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
+	}
+
+	@Required
+	public void setLoggerSink(LoggerSink loggerSink) {
+		this.loggerSink = loggerSink;
 	}
 
 	public List<UIGroupForList> getGroups() {
@@ -42,14 +54,16 @@ public class GroupServiceImpl implements GroupService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CREATE_GROUP", result.isOk(), group.getName());
 		return result;
 	}
 
 	public RoutineResult deleteGroup(long id) {
-		RoutineResult result = groupDao.deleteGorup(id);
+		RoutineResult result = groupDao.deleteGroup(id);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
 		return result;
 	}
 
@@ -72,17 +86,20 @@ public class GroupServiceImpl implements GroupService {
 	}
 
 	public RoutineResult updateGroup(UIGroup group) {
-		return groupDao.updateGroup(group.getId(), group.getName());
+		RoutineResult result = groupDao.updateGroup(group.getId(), group.getName());
+		loggerSink.info(logger, "UPDATE_GROUP", result.isOk(), group.getName());
+		return result;
 	}
 
-	public RoutineResult changeGroupActions(long groupId, List<Long> ActionsToLink,
-			List<Long> ActionsToUnlink) {
+	public RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
+			List<Long> actionsToUnlink) {
 		RoutineResult result = groupDao.changeGroupActions(groupId,
-						StringUtils.collectionToCommaDelimitedString(ActionsToLink),
-						StringUtils.collectionToCommaDelimitedString(ActionsToUnlink));
+						StringUtils.collectionToCommaDelimitedString(actionsToLink),
+						StringUtils.collectionToCommaDelimitedString(actionsToUnlink));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
 		return result;		
 	}
 
@@ -117,6 +134,7 @@ public class GroupServiceImpl implements GroupService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
+		loggerSink.info(logger, "CLONE_GROUP", result.isOk(), String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
 		return result;
 	}
 

@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
@@ -91,9 +92,11 @@ public interface UserService {
 	/**
 	 * Unlocks a user.
 	 * 
-	 * @param userId	ID of the user to unlock
+	 * @param userId					ID of the user to unlock
+	 * @param unlockingSuspendedUser	true if we're trying to unlock a
+	 * suspended user
 	 */
-	RoutineResult unlockUser(long userId);
+	String unlockUser(long userId, boolean unlockingSuspendedUser);
 
 	/**
 	 * Clones a user.
@@ -101,9 +104,11 @@ public interface UserService {
 	 * @param templateUserId	ID of the user which will be cloned
 	 * @param newUsername		new user's name
 	 * @param newPassword		new user's password
+	 * @param newEmail			new user's email
 	 * @return new user ID
 	 */
-	long cloneUser(long templateUserId, String newUsername, String newPassword);
+	Long cloneUser(long templateUserId, String newUsername, String newPassword,
+			String newEmail);
 	
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or
@@ -298,4 +303,14 @@ public interface UserService {
 	 * @return
 	 */
 	RoutineResult addSubsystemWithRole(long userId, long roleId);
+
+    void validatePassword(String username,String password) throws PolicyValidationException;
+
+    void expirePasswords(int days);
+
+	void suspendUser(long userId);
+	
+	void suspendUsers(int days);
+
+    void changeTempPassword(String userName,String password);
 }

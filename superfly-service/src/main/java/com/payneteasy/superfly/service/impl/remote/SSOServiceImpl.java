@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl.remote;
 
 import java.util.List;
 
+import com.payneteasy.superfly.api.PolicyValidationException;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
@@ -66,14 +67,29 @@ public class SSOServiceImpl implements SSOService {
 	 * @see SSOService#registerUser(String, String, String, String, RoleGrantSpecification[])
 	 */
 	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, RoleGrantSpecification[] roleGrants)
-			throws UserExistsException {
+			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,String name, String surname, String secretQuestion, String secretAnswer)
+			throws UserExistsException, PolicyValidationException {
 		internalSSOService.registerUser(username, password, email,
-				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants);
+				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants, name, surname, secretQuestion, secretAnswer);
+	}
+
+	/**
+	 * @see SSOService#authenticateUsingHOTP(String, String)
+	 */
+	public boolean authenticateUsingHOTP(String username, String hotp) {
+		return internalSSOService.authenticateHOTP(username, hotp);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
+	}
+
+	public String getFlagTempPassword(String userName) {
+		return internalSSOService.getFlagTempPassword(userName);
+	}
+
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
+		internalSSOService.changeTempPassword(userName, password);
 	}
 
 }

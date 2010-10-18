@@ -12,16 +12,49 @@
 			</list>
 		</property>
 	</bean>
+
+    <bean id="expirePasswordJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="userService"/>
+        <property name="targetMethod" value="expirePasswords"/>
+        <property name="arguments">
+            <list>
+                <value type="int">90</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="suspendUsersJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="userService"/>
+        <property name="targetMethod" value="suspendUsers"/>
+        <property name="arguments">
+            <list>
+                <value type="int">90</value>
+            </list>
+        </property>
+    </bean>
+    
 	
 	<bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="expireSessionsJobDetail"/>
 		<property name="repeatInterval" value="60000"/>
 	</bean>
 
+    <bean id="expirePasswordsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail" ref="expirePasswordJobDetail"/>
+        <property name="repeatInterval" value="3600000"/>
+    </bean>
+    
+    <bean id="suspendUsersTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail" ref="suspendUsersJobDetail"/>
+        <property name="repeatInterval" value="3600000"/>
+    </bean>
+
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="expireSessionsTrigger"/>
+                <ref bean="expirePasswordsTrigger"/>
+                <ref bean="suspendUsersTrigger"/>
 			</list>
 		</property>
 	</bean>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+		
+    <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
+        <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
+        <sec:custom-filter ref="hotpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
+
+    	<sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+    
+        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
+        <sec:intercept-url pattern="/css*"   filters="none"/>
+        <sec:intercept-url pattern="/login*" filters="none"/>
+
+		<!--
+			If you're not planning to use client SSL auth to protect your subsystem
+			calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
+			You will also have to modify ssoService bean properties (see its
+			comments in applicationContext-service.xml).
+		-->
+		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
+		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
+        
+        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
+        
+        <sec:logout />
+        <sec:anonymous/>
+        <sec:x509 user-service-ref="subsystemUserDetailsService"/>
+
+    </sec:http>
+    
+    <sec:authentication-manager alias="authenticationManager">
+        <sec:authentication-provider ref="passwordAuthenticationProvider"/>
+        <sec:authentication-provider ref="hotpAuthenticationProvider"/>
+    </sec:authentication-manager>
+    
+    <bean id="authenticationEntryPoint" class="com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/login"/>
+        <property name="insufficientAuthenticationMapping">
+            <map>
+                <entry key="org.springframework.security.authentication.UsernamePasswordAuthenticationToken" value="/login-step2"/>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="abstractAuthenticationProcessingFilter" abstract="true">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler">
+            <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+                <constructor-arg value="/login"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="passwordAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationProcessingFilter"
+            parent="abstractAuthenticationProcessingFilter">
+    </bean>
+    
+    <bean id="hotpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProcessingFilter"
+            parent="abstractAuthenticationProcessingFilter">
+    </bean>
+
+    <bean id="insufficientAuthenticationHandlingFilter" class="com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter">
+        <property name="insufficientAuthenticationClasses">
+            <list>
+                <value>com.payneteasy.superfly.security.authentication.CompoundAuthentication</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="passwordAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
+        <property name="delegateProvider">
+		    <bean class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
+		        <property name="localSecurityService" ref="localSecurityService"/>
+		    </bean>
+        </property>
+        <property name="supportedSimpleAuthenticationClasses">
+            <list>
+                <value>org.springframework.security.authentication.UsernamePasswordAuthenticationToken</value>
+            </list>
+        </property>
+        <property name="notSupportedSimpleAuthenticationClasses">
+        	<list>
+        		<value>com.payneteasy.superfly.web.security.LocalCheckHOTPToken</value>
+        	</list>
+        </property>
+    </bean>
+    
+    <bean id="hotpAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
+        <property name="delegateProvider">
+		    <bean class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProvider">
+		        <property name="localSecurityService" ref="localSecurityService"/>
+		    </bean>
+        </property>
+        <property name="authenticationValidator">
+            <bean class="com.payneteasy.superfly.security.validator.CompoundAuthenticationValidator">
+                <property name="requiredClasses">
+                    <list>
+                        <value>org.springframework.security.authentication.UsernamePasswordAuthenticationToken</value>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="authenticationPostProcessor">
+            <bean class="com.payneteasy.superfly.security.processor.CompoundLatestAuthUnwrappingPostProcessor">
+            </bean>
+        </property>
+    </bean>
+    
+	<bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
+		<property name="subsystemService" ref="subsystemService"/>
+	</bean>
+   
+<!-- 
+	<bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
+		<property name="userMap">
+			<bean class="org.springframework.security.userdetails.memory.UserMap">
+				<property name="users">
+					<map>
+						<entry key="superfly-client">
+							<bean class="org.springframework.security.userdetails.User">
+								<constructor-arg value="superfly-client"/>
+								<constructor-arg value="not-used"/>
+								<constructor-arg value="true"/>
+								<constructor-arg>
+									<list>
+										<bean class="org.springframework.security.GrantedAuthorityImpl">
+											<constructor-arg value="ROLE_SUBSYSTEM"/>
+										</bean>
+									</list>
+								</constructor-arg>
+							</bean>
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+ -->
+
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <property name="decisionVoters">
+            <list>
+                <bean class="org.springframework.security.access.vote.RoleVoter">
+                </bean>
+                <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>

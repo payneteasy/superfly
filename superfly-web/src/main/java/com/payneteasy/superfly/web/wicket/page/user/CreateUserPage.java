@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,13 +25,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.dao.DaoConstants;
-import com.payneteasy.superfly.model.ui.role.UIRole;
-import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -40,6 +35,7 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 
 @Secured("ROLE_ADMIN")
 public class CreateUserPage extends BasePage {
@@ -90,8 +86,10 @@ public class CreateUserPage extends BasePage {
 				"form", new Model<UIUserCheckPassword>(user));
 
 		add(form);
-		form.add(new RequiredTextField<String>("username",
-				new PropertyModel<String>(user, "username")));
+
+        FormComponent<String> userName=new RequiredTextField<String>("username",new PropertyModel<String>(user, "username"));
+		form.add(userName);
+
 		TextField<String> email = new TextField<String>("email",
 				new PropertyModel<String>(user, "email"));
 		email.add(EmailAddressValidator.getInstance());
@@ -104,9 +102,13 @@ public class CreateUserPage extends BasePage {
 				"password2", new PropertyModel<String>(user, "password2"))
 				.setRequired(true);
 		form.add(password2Field);
-		form
-				.add(new EqualPasswordInputValidator(password1Field,
+		form.add(new EqualPasswordInputValidator(password1Field,
 						password2Field));
+
+
+        form.add(new PasswordInputValidator(userName,password1Field,userService));
+
+
 		// DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
 				"subsystem", new PropertyModel<UISubsystemForList>(this,
@@ -125,6 +127,18 @@ public class CreateUserPage extends BasePage {
 				target.addComponent(models);
 			}
 		});
+		form.add(new RequiredTextField<String>("name",
+				new PropertyModel<String>(user, "name")));
+		
+		form.add(new RequiredTextField<String>("surname",
+				new PropertyModel<String>(user, "surname")));
+		
+		form.add(new RequiredTextField<String>("secretQuestion",
+				new PropertyModel<String>(user, "secretQuestion")));
+		
+		form.add(new RequiredTextField<String>("secretAnswer",
+				new PropertyModel<String>(user, "secretAnswer")));
+		
 		form.add(new Button("add") {
 
 			@Override

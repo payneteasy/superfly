@@ -10,6 +10,8 @@
     <bean id="exceptionConversionAspect" class="com.payneteasy.superfly.aop.ExceptionConversionAspect">
     	<property name="nonConvertibleClasses">
     		<list>
+    			<value>com.payneteasy.superfly.api.UserExistsException</value>
+    			<value>com.payneteasy.superfly.api.PolicyValidationException</value>
     		</list>
     	</property>
     </bean>
