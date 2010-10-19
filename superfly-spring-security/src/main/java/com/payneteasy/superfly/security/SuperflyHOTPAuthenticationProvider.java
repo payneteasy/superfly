@@ -3,7 +3,6 @@ package com.payneteasy.superfly.security;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -11,6 +10,7 @@ import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 
 /**
  * {@link AuthenticationProvider} which authenticates using the Superfly HOTP.
@@ -37,11 +37,11 @@ public class SuperflyHOTPAuthenticationProvider implements AuthenticationProvide
 		if (authentication instanceof CheckHOTPToken) {
 			CheckHOTPToken authRequest = (CheckHOTPToken) authentication;
 			if (authRequest.getCredentials() == null) {
-				throw new BadCredentialsException("Null HOTP value");
+				throw new BadOTPValueException("Null HOTP value");
 			}
 			boolean ok = ssoService.authenticateUsingHOTP(authRequest.getName(), authRequest.getCredentials().toString());
 			if (!ok) {
-				throw new BadCredentialsException("Invalid HOTP value");
+				throw new BadOTPValueException("Invalid HOTP value");
 			}
 			result = createAuthentication(authRequest.getSsoUser());
 		}

@@ -2,10 +2,10 @@ package com.payneteasy.superfly.web.security;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.service.LocalSecurityService;
 
 /**
@@ -30,7 +30,7 @@ public class SuperflyLocalHOTPAuthenticationProvider implements
 		String hotp = (String) authentication.getCredentials();
 		boolean ok = localSecurityService.authenticateUsingHOTP(username, hotp);
 		if (!ok) {
-			throw new BadCredentialsException("Did not find a user with matching password");
+			throw new BadOTPValueException("Did not find a user with matching password");
 		}
 		return new FullAuthentication(username, authentication.getAuthorities());
 	}

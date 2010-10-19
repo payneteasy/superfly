@@ -5,7 +5,6 @@ import static org.easymock.EasyMock.replay;
 
 import org.easymock.EasyMock;
 import org.springframework.security.access.intercept.RunAsUserToken;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -14,6 +13,7 @@ import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 
 public class SuperflyHOTPAuthenticationProviderTest extends
 		AbstractSuperflyAuthenticationProviderTest {
@@ -52,7 +52,7 @@ public class SuperflyHOTPAuthenticationProviderTest extends
 		try {
 			provider.authenticate(createBeforeHotpAuth(1, "123456"));
 			fail();
-		} catch (BadCredentialsException e) {
+		} catch (BadOTPValueException e) {
 			// expected
 		}
 	}
@@ -65,7 +65,7 @@ public class SuperflyHOTPAuthenticationProviderTest extends
 		try {
 			provider.authenticate(createBeforeHotpAuth(1, null));
 			fail();
-		} catch (BadCredentialsException e) {
+		} catch (BadOTPValueException e) {
 			// expected
 		}
 	}

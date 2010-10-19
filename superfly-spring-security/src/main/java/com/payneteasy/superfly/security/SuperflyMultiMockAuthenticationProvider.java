@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -20,6 +19,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAut
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 
 /**
@@ -77,7 +77,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
 					newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(auth.getName())));
 					return newCompound;
 				} else {
-					throw new BadCredentialsException("Bad username/password");
+					throw new BadOTPValueException("Bad username/password");
 				}
 			} else if (auth instanceof CheckHOTPToken) {
 				CheckHOTPToken token = (CheckHOTPToken) auth;
@@ -90,7 +90,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
 					newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
 					return newCompound;
 				} else {
-					throw new BadCredentialsException("Bad HOTP");
+					throw new BadOTPValueException("Bad HOTP");
 				}
 			} else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
 				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
