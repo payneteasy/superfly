@@ -27,7 +27,7 @@ public class PCIDSSResetPasswordStrategy implements ResetPasswordStrategy {
 	}
 
 	public void resetPassword(long userId, String username, String password) {
-           RoutineResult result= userDao.resetPassword(userId, passwordEncoder.encode(password, saltSource.getSalt(username)));
+           RoutineResult result= userDao.resetPassword(userId, password==null?password:passwordEncoder.encode(password, saltSource.getSalt(username)));
            loggerSink.info(logger, "RESET_PASSWORD", result.isOk(), String.format("%s->%s", userId, password));
 	}
 

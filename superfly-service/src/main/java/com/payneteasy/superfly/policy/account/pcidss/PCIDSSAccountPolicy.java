@@ -2,6 +2,7 @@ package com.payneteasy.superfly.policy.account.pcidss;
 
 import java.util.List;
 
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,9 +28,15 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
 	private UserDao userDao;
 	private PasswordGenerator passwordGenerator;
 	private PasswordEncoder passwordEncoder;
+    private ResetPasswordStrategy resetPasswordStrategy;
 	private SaltSource saltSource;
-	
-	@Required
+
+    @Required
+    public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
+        this.resetPasswordStrategy = resetPasswordStrategy;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -79,7 +86,7 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
         List<User> users=userDao.getUsersWithExpiredPasswords(days);
         for(User u:users){
             logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
-            userService.lockUser(u.getUserid());
+            resetPasswordStrategy.resetPassword(u.getUserid(),u.getUserName(),null);
         }
 	}
 

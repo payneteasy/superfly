@@ -164,6 +164,7 @@
 		<property name="passwordEncoder" ref="passwordEncoder"/>
 		<property name="saltSource" ref="saltSource"/>
 		<property name="passwordGenerator" ref="passwordGenerator"/>
+        <property name="resetPasswordStrategy" ref="resetPasswordStrategy"/>
 	</bean>
 	
 	<bean id="resetPasswordStrategy"

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.spring;
 
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.UserDao;
@@ -24,8 +25,14 @@ public class AccountPolicyFactoryBean extends
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private PasswordGenerator passwordGenerator;
-	
-	@Required
+    private ResetPasswordStrategy resetPasswordStrategy;
+
+    @Required
+    public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
+        this.resetPasswordStrategy = resetPasswordStrategy;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -60,6 +67,7 @@ public class AccountPolicyFactoryBean extends
 				pcidssAccountPolicy.setPasswordEncoder(passwordEncoder);
 				pcidssAccountPolicy.setSaltSource(saltSource);
 				pcidssAccountPolicy.setPasswordGenerator(passwordGenerator);
+                pcidssAccountPolicy.setResetPasswordStrategy(resetPasswordStrategy);
 				accountPolicy = pcidssAccountPolicy;
 				break;
 			default:
