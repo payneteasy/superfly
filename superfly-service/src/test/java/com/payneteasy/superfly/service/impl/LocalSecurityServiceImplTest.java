@@ -12,6 +12,8 @@ import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.SyslogService;
 
 public class LocalSecurityServiceImplTest extends TestCase {
 	private UserDao userDao;
@@ -22,6 +24,7 @@ public class LocalSecurityServiceImplTest extends TestCase {
 		LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
+		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}

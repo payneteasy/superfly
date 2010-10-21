@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.service.impl;
 
-
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,15 +15,19 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.service.SyslogService;
 
 @Transactional
 public class SubsystemServiceImpl implements SubsystemService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemServiceImpl.class);
-	
+	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger
+			.getLogger(RoleServiceImpl.class);
+
 	private SubsystemDao subsystemDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
+	private SyslogService syslogService;
 
 	@Required
 	public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -41,9 +44,15 @@ public class SubsystemServiceImpl implements SubsystemService {
 		this.loggerSink = loggerSink;
 	}
 
+	@Required
+	public void setSyslogService(SyslogService syslogService) {
+		this.syslogService = syslogService;
+	}
+
 	public RoutineResult createSubsystem(UISubsystem subsystem) {
 		RoutineResult result = subsystemDao.createSubsystem(subsystem);
 		loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
+		syslogService.sendLogMessage(apacheLogger, "CREATE_SUBSYSTEM", true, subsystem.getName());
 		return result;
 	}
 
@@ -53,6 +62,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
+		syslogService.sendLogMessage(apacheLogger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
 		return result;
 	}
 
@@ -66,6 +76,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
+		syslogService.sendLogMessage(apacheLogger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
 		return result;
 	}
 

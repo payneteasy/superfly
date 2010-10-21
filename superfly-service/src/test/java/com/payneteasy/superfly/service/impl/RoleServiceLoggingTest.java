@@ -14,6 +14,7 @@ import com.payneteasy.superfly.dao.RoleDao;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.RoleService;
+import com.payneteasy.superfly.service.SyslogService;
 
 public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 	
@@ -27,6 +28,7 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setRoleDao(roleDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
+		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		roleService = service;
 	}
 	

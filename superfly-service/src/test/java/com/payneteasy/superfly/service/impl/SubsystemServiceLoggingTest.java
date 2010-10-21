@@ -11,6 +11,7 @@ import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.service.SyslogService;
 
 public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 	
@@ -24,6 +25,7 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setSubsystemDao(subsystemDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
+		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		subsystemService = service;
 	}
 	

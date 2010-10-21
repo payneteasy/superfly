@@ -26,7 +26,6 @@ public class SyslogServiceImpl implements SyslogService {
 	public void sendLogMessage(Logger logger, String eventType, boolean success, String resourceIdentity) {
 		SyslogAppender sa = new SyslogAppender();
 		sa.setSyslogHost(syslogIp);
-		sa.setFacility("MAIL");
 		sa.setLayout(new PatternLayout());
 		sa.activateOptions();
 		logger.addAppender(sa);

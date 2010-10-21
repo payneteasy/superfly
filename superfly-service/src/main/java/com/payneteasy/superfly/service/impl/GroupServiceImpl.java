@@ -18,16 +18,20 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class GroupServiceImpl implements GroupService {
-	
+
 	private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
-	
+	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger
+			.getLogger(GroupServiceImpl.class);
+
 	private GroupDao groupDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
+	private SyslogService syslogService;
 
 	@Required
 	public void setGroupDao(GroupDao groupDao) {
@@ -44,17 +48,22 @@ public class GroupServiceImpl implements GroupService {
 		this.loggerSink = loggerSink;
 	}
 
-	public List<UIGroupForList> getGroups() {
-		return this.groupDao.getGroups(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				DaoConstants.ASC, null, null);
+	@Required
+	public void setSyslogService(SyslogService syslogService) {
+		this.syslogService = syslogService;
 	}
-	
+
+	public List<UIGroupForList> getGroups() {
+		return this.groupDao.getGroups(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC, null, null);
+	}
+
 	public RoutineResult createGroup(UIGroup group) {
 		RoutineResult result = groupDao.createGroup(group);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CREATE_GROUP", result.isOk(), group.getName());
+		syslogService.sendLogMessage(apacheLogger, "CREATE_GROUP", result.isOk(), group.getName());
 		return result;
 	}
 
@@ -64,17 +73,14 @@ public class GroupServiceImpl implements GroupService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
+		syslogService.sendLogMessage(apacheLogger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
 		return result;
 	}
 
-	public List<UIGroupForList> getGroupsForSubsystems(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
-			String groupNamePrefix, List<Long> subsystemIds) {
-		return this.groupDao.getGroups(startFrom, recordsCount,
-				orderFieldNumber,
-				orderType ? DaoConstants.ASC : DaoConstants.DESC,
-				groupNamePrefix, 
-				StringUtils.collectionToCommaDelimitedString(subsystemIds));
+	public List<UIGroupForList> getGroupsForSubsystems(int startFrom, int recordsCount, int orderFieldNumber,
+			boolean orderType, String groupNamePrefix, List<Long> subsystemIds) {
+		return this.groupDao.getGroups(startFrom, recordsCount, orderFieldNumber, orderType ? DaoConstants.ASC
+				: DaoConstants.DESC, groupNamePrefix, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
 	public int getGroupsCount(String groupName, List<Long> subsystemIds) {
@@ -88,43 +94,38 @@ public class GroupServiceImpl implements GroupService {
 	public RoutineResult updateGroup(UIGroup group) {
 		RoutineResult result = groupDao.updateGroup(group.getId(), group.getName());
 		loggerSink.info(logger, "UPDATE_GROUP", result.isOk(), group.getName());
+		syslogService.sendLogMessage(apacheLogger, "UPDATE_GROUP", result.isOk(), group.getName());
 		return result;
 	}
 
-	public RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
-			List<Long> actionsToUnlink) {
+	public RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink, List<Long> actionsToUnlink) {
 		RoutineResult result = groupDao.changeGroupActions(groupId,
-						StringUtils.collectionToCommaDelimitedString(actionsToLink),
-						StringUtils.collectionToCommaDelimitedString(actionsToUnlink));
+				StringUtils.collectionToCommaDelimitedString(actionsToLink),
+				StringUtils.collectionToCommaDelimitedString(actionsToUnlink));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
-		return result;		
+		syslogService.sendLogMessage(apacheLogger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
+		return result;
 	}
 
-	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring) {
-		return groupDao.getAllGroupMappedActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
+	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom, int recordsCount,
+			int orderFieldNumber, boolean orderType, long groupId, String actionSubstring) {
+		return groupDao.getAllGroupMappedActions(startFrom, recordsCount, orderFieldNumber,
+				orderType ? DaoConstants.ASC : DaoConstants.DESC, groupId, actionSubstring);
 	}
-	
+
 	public int getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
 		return groupDao.getAllGroupMappedActionsCount(groupId, actionSubstring);
 	}
-	
-	public List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring) {
-		return groupDao.getAllGroupActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
+
+	public List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom, int recordsCount, int orderFieldNumber,
+			boolean orderType, long groupId, String actionSubstring) {
+		return groupDao.getAllGroupActions(startFrom, recordsCount, orderFieldNumber, orderType ? DaoConstants.ASC
+				: DaoConstants.DESC, groupId, actionSubstring);
 	}
-	
+
 	public int getAllGroupActionsCount(long groupId, String actionSubstring) {
 		return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
 	}
@@ -134,21 +135,20 @@ public class GroupServiceImpl implements GroupService {
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
-		loggerSink.info(logger, "CLONE_GROUP", result.isOk(), String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
+		loggerSink.info(logger, "CLONE_GROUP", result.isOk(),
+				String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
+		syslogService.sendLogMessage(apacheLogger, "CLONE_GROUP", result.isOk(),
+				String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
 		return result;
 	}
 
-	public List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(
-			int startFrom, int recordsCount, int orderFieldNumber,
-			boolean orderType, long groupId, String actionSubstring) {
-		return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
+	public List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int startFrom, int recordsCount,
+			int orderFieldNumber, boolean orderType, long groupId, String actionSubstring) {
+		return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount, orderFieldNumber,
+				orderType ? DaoConstants.ASC : DaoConstants.DESC, groupId, actionSubstring);
 	}
 
-	public int getAllGroupUnMappedActionsCount(long groupId,
-			String actionSubstring) {
+	public int getAllGroupUnMappedActionsCount(long groupId, String actionSubstring) {
 		return groupDao.getAllGroupUnMappedActionsCount(groupId, actionSubstring);
 	}
 
