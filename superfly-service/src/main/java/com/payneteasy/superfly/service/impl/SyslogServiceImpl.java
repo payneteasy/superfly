@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.net.SyslogAppender;
@@ -25,7 +26,7 @@ public class SyslogServiceImpl implements SyslogService {
 	public void sendLogMessage(Logger logger, String eventType, boolean success, String resourceIdentity) {
 		SyslogAppender sa = new SyslogAppender();
 		sa.setSyslogHost(syslogIp);
-		sa.setFacility("USER");
+		sa.setFacility("MAIL");
 		sa.setLayout(new PatternLayout());
 		sa.activateOptions();
 		logger.addAppender(sa);
