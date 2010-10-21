@@ -39,6 +39,7 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
@@ -50,6 +51,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private ActionDao actionDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
+	private SyslogService syslogService;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private SaltGenerator hotpSaltGenerator;
@@ -82,6 +84,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setLoggerSink(LoggerSink loggerSink) {
 		this.loggerSink = loggerSink;
+	}
+
+	@Required
+	public void setSyslogService(SyslogService syslogService) {
+		this.syslogService = syslogService;
 	}
 
 	@Required
@@ -243,9 +250,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return userDao.getFlagTempPassword(userName);
 	}
 
-	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-                .getUserPasswordHistory(userName)));
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+				.getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }

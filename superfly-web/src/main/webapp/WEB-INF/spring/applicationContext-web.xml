@@ -7,6 +7,10 @@
 	<bean id="userInfoService" class="com.payneteasy.superfly.web.security.UserInfoServiceAcegi">
 	</bean>
 	
+	<bean id="syslogIp" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="syslog-ip"/>
+	</bean>
+	
 	<bean id="policyName" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
 		<property name="initParamName" value="superfly-policy"/>
 	</bean>

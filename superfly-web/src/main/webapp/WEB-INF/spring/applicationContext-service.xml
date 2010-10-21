@@ -9,13 +9,17 @@
 	<bean id="loggerSink" class="com.payneteasy.superfly.service.impl.LoggerSinkImpl">
 		<property name="userInfoService" ref="userInfoService" />
 	</bean>
-
+    <bean id="syslogService" class="com.payneteasy.superfly.service.impl.SyslogServiceImpl">
+		<property name="userInfoService" ref="userInfoService" />
+		<property name="syslogIp" ref="syslogIp"></property>
+	</bean>
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="actionDao" ref="actionDao" />
 		<property name="notificationService" ref="notificationService" />
 		<property name="loggerSink" ref="loggerSink" />
+		<property name="syslogService" ref="syslogService" />
 		<property name="passwordEncoder" ref="passwordEncoder" />
 		<property name="saltSource" ref="saltSource" />
 		<property name="hotpSaltGenerator" ref="saltGenerator"/>
