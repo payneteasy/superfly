@@ -45,8 +45,7 @@ import com.payneteasy.superfly.spi.HOTPProvider;
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
-	private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger.getLogger(InternalSSOServiceImpl.class);
+	private Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
 	
 	private UserDao userDao;
 	private ActionDao actionDao;
@@ -130,7 +129,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 				sessionInfo);
 		boolean ok = authRoles != null && !authRoles.isEmpty();
 		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
-		syslogService.sendLogMessage(apacheLogger, "REMOTE_LOGIN", ok, username);
+		syslogService.sendLogMessage("REMOTE_LOGIN", ok, username);
 		if (ok) {
 			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
 			for (AuthRole authRole : authRoles) {
@@ -223,14 +222,14 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 			notificationService.notifyAboutUsersChanged();
 			loggerSink.info(logger, "REGISTER_USER", true, username);
-			syslogService.sendLogMessage(apacheLogger, "REGISTER_USER", true, username);
+			syslogService.sendLogMessage("REGISTER_USER", true, username);
 		} else if (result.isDuplicate()) {
 			loggerSink.info(logger, "REGISTER_USER", false, username);
-			syslogService.sendLogMessage(apacheLogger, "REGISTER_USER", false, username);
+			syslogService.sendLogMessage("REGISTER_USER", false, username);
 			throw new UserExistsException(result.getErrorMessage());
 		} else {
 			loggerSink.info(logger, "REGISTER_USER", false, username);
-			syslogService.sendLogMessage(apacheLogger, "REGISTER_USER", false, username);
+			syslogService.sendLogMessage("REGISTER_USER", false, username);
 			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
 					+ result.getErrorMessage());
 		}

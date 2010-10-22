@@ -37,7 +37,6 @@ import com.payneteasy.superfly.service.UserService;
 public class UserServiceImpl implements UserService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger.getLogger(UserServiceImpl.class);
 
 	private UserDao userDao;
 	private NotificationService notificationService;
@@ -110,7 +109,7 @@ public class UserServiceImpl implements UserService {
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
 		RoutineResult result = userDao.createUser(userForDao);
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
-		syslogService.sendLogMessage(apacheLogger, "CREATE_USER", result.isOk(), user.getUsername());
+		syslogService.sendLogMessage("CREATE_USER", result.isOk(), user.getUsername());
 		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
@@ -131,7 +130,7 @@ public class UserServiceImpl implements UserService {
 		copyUserAndEncryptPassword(user, userForDao);
 		RoutineResult result = userDao.updateUser(userForDao);
 		loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
-		syslogService.sendLogMessage(apacheLogger, "UPDATE_USER", result.isOk(), user.getUsername());
+		syslogService.sendLogMessage("UPDATE_USER", result.isOk(), user.getUsername());
 		return result;
 	}
 
@@ -141,7 +140,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "DELETE_USER", result.isOk(),String.valueOf(userId));
+		syslogService.sendLogMessage("DELETE_USER", result.isOk(),String.valueOf(userId));
 		return result;
 	}
 
@@ -151,7 +150,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "LOCK_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "LOCK_USER", result.isOk(),String.valueOf(userId));
+		syslogService.sendLogMessage("LOCK_USER", result.isOk(),String.valueOf(userId));
 		return result;
 	}
 
@@ -159,7 +158,7 @@ public class UserServiceImpl implements UserService {
 		String newPassword = accountPolicy.unlockUser(userId, unlockingSuspendedUser);
 		notificationService.notifyAboutUsersChanged();
 		loggerSink.info(logger, "UNLOCK_USER", true, String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "UNLOCK_USER", true,String.valueOf(userId));
+		syslogService.sendLogMessage("UNLOCK_USER", true,String.valueOf(userId));
 		return newPassword;
 	}
 
@@ -176,7 +175,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
-		syslogService.sendLogMessage(apacheLogger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
+		syslogService.sendLogMessage("CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
 		return request.getId();
 	}
 
@@ -216,7 +215,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
+		syslogService.sendLogMessage("CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -253,7 +252,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
+		syslogService.sendLogMessage("CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
@@ -297,7 +296,7 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage(apacheLogger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
+		syslogService.sendLogMessage("SUSPEND_USER", result.isOk(), String.valueOf(userId));
 	}
 
 	public void suspendUsers(int days) {

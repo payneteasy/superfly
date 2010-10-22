@@ -25,8 +25,6 @@ import com.payneteasy.superfly.utils.StringUtils;
 public class GroupServiceImpl implements GroupService {
 
 	private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger
-			.getLogger(GroupServiceImpl.class);
 
 	private GroupDao groupDao;
 	private NotificationService notificationService;
@@ -63,7 +61,7 @@ public class GroupServiceImpl implements GroupService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CREATE_GROUP", result.isOk(), group.getName());
-		syslogService.sendLogMessage(apacheLogger, "CREATE_GROUP", result.isOk(), group.getName());
+		syslogService.sendLogMessage("CREATE_GROUP", result.isOk(), group.getName());
 		return result;
 	}
 
@@ -73,7 +71,7 @@ public class GroupServiceImpl implements GroupService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
-		syslogService.sendLogMessage(apacheLogger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
+		syslogService.sendLogMessage("DELETE_GROUP", result.isOk(), String.valueOf(id));
 		return result;
 	}
 
@@ -94,7 +92,7 @@ public class GroupServiceImpl implements GroupService {
 	public RoutineResult updateGroup(UIGroup group) {
 		RoutineResult result = groupDao.updateGroup(group.getId(), group.getName());
 		loggerSink.info(logger, "UPDATE_GROUP", result.isOk(), group.getName());
-		syslogService.sendLogMessage(apacheLogger, "UPDATE_GROUP", result.isOk(), group.getName());
+		syslogService.sendLogMessage("UPDATE_GROUP", result.isOk(), group.getName());
 		return result;
 	}
 
@@ -106,7 +104,7 @@ public class GroupServiceImpl implements GroupService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
-		syslogService.sendLogMessage(apacheLogger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
+		syslogService.sendLogMessage("CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
 		return result;
 	}
 
@@ -137,7 +135,7 @@ public class GroupServiceImpl implements GroupService {
 		}
 		loggerSink.info(logger, "CLONE_GROUP", result.isOk(),
 				String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
-		syslogService.sendLogMessage(apacheLogger, "CLONE_GROUP", result.isOk(),
+		syslogService.sendLogMessage("CLONE_GROUP", result.isOk(),
 				String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
 		return result;
 	}

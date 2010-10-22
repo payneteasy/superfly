@@ -22,7 +22,6 @@ import com.payneteasy.superfly.spi.HOTPProvider;
 public class LocalSecurityServiceImpl implements LocalSecurityService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger.getLogger(LocalSecurityServiceImpl.class);
 
 	private UserDao userDao;
 	private String localSubsystemName = "superfly";
@@ -94,7 +93,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 					result[i] = role.getActions().get(i).getActionName();
 				}
 				loggerSink.info(logger, "LOCAL_LOGIN", true, username);
-				syslogService.sendLogMessage(apacheLogger, "LOCAL_LOGIN", true, username);
+				syslogService.sendLogMessage("LOCAL_LOGIN", true, username);
 				return result;
 			}
 		}
@@ -102,7 +101,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);
-		syslogService.sendLogMessage(apacheLogger, "LOCAL_LOGIN", false, username);
+		syslogService.sendLogMessage("LOCAL_LOGIN", false, username);
 		return null;
 	}
 

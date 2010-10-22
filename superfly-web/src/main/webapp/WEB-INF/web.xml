@@ -41,13 +41,8 @@
 	</context-param>
 	
 	<context-param>
-		<param-name>syslog-ip</param-name>
-		<param-value>localhost</param-value>
-	</context-param>
-	
-	<context-param>
 		<param-name>superfly-policy</param-name>
-		<param-value>none</param-value>
+		<param-value>pcidss</param-value>
 	</context-param>
 	<!-- This is for constant salt generator -->
 	<context-param>

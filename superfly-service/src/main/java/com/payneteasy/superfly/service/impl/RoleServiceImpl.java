@@ -26,8 +26,6 @@ import com.payneteasy.superfly.utils.StringUtils;
 public class RoleServiceImpl implements RoleService {
 
 	private static final Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger
-			.getLogger(RoleServiceImpl.class);
 
 	private RoleDao roleDao;
 	private NotificationService notificationService;
@@ -74,7 +72,7 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_ROLE", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage(apacheLogger, "DELETE_ROLE", result.isOk(), String.valueOf(roleId));
+		syslogService.sendLogMessage("DELETE_ROLE", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 
@@ -90,7 +88,7 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "UPDATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
-		syslogService.sendLogMessage(apacheLogger, "UPDATE_ROLE", result.isOk(),
+		syslogService.sendLogMessage("UPDATE_ROLE", result.isOk(),
 				role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
@@ -101,7 +99,7 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CREATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
-		syslogService.sendLogMessage(apacheLogger, "CREATE_ROLE", result.isOk(),
+		syslogService.sendLogMessage("CREATE_ROLE", result.isOk(),
 				role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
@@ -114,7 +112,7 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage(apacheLogger, "CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
+		syslogService.sendLogMessage("CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
 		return result;
 
 	}
@@ -127,7 +125,7 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage(apacheLogger, "CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
+		syslogService.sendLogMessage("CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 

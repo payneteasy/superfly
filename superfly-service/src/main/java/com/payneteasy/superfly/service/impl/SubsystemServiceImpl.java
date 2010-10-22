@@ -21,8 +21,6 @@ import com.payneteasy.superfly.service.SyslogService;
 public class SubsystemServiceImpl implements SubsystemService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubsystemServiceImpl.class);
-	private static final org.apache.log4j.Logger apacheLogger = org.apache.log4j.Logger
-			.getLogger(RoleServiceImpl.class);
 
 	private SubsystemDao subsystemDao;
 	private NotificationService notificationService;
@@ -52,7 +50,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 	public RoutineResult createSubsystem(UISubsystem subsystem) {
 		RoutineResult result = subsystemDao.createSubsystem(subsystem);
 		loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
-		syslogService.sendLogMessage(apacheLogger, "CREATE_SUBSYSTEM", true, subsystem.getName());
+		syslogService.sendLogMessage("CREATE_SUBSYSTEM", true, subsystem.getName());
 		return result;
 	}
 
@@ -62,7 +60,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
-		syslogService.sendLogMessage(apacheLogger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
+		syslogService.sendLogMessage("DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
 		return result;
 	}
 
@@ -76,7 +74,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
-		syslogService.sendLogMessage(apacheLogger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
+		syslogService.sendLogMessage("UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
 		return result;
 	}
 

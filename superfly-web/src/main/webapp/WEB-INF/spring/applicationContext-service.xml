@@ -9,10 +9,11 @@
 	<bean id="loggerSink" class="com.payneteasy.superfly.service.impl.LoggerSinkImpl">
 		<property name="userInfoService" ref="userInfoService" />
 	</bean>
+	
     <bean id="syslogService" class="com.payneteasy.superfly.service.impl.SyslogServiceImpl">
 		<property name="userInfoService" ref="userInfoService" />
-		<property name="syslogIp" ref="syslogIp"></property>
 	</bean>
+	
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
