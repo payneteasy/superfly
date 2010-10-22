@@ -15,8 +15,6 @@ import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
-import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 
 public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest {
 	
@@ -29,7 +27,6 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		service.setUserDao(userDao);
 		service.setLoggerSink(loggerSink);
-		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		service.setLocalRoleName("local");
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());

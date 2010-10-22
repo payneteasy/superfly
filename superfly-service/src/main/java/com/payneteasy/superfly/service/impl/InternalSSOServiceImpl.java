@@ -39,19 +39,17 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
-	private Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
-	
+	private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+
 	private UserDao userDao;
 	private ActionDao actionDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
-	private SyslogService syslogService;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private SaltGenerator hotpSaltGenerator;
@@ -84,11 +82,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	@Required
 	public void setLoggerSink(LoggerSink loggerSink) {
 		this.loggerSink = loggerSink;
-	}
-
-	@Required
-	public void setSyslogService(SyslogService syslogService) {
-		this.syslogService = syslogService;
 	}
 
 	@Required
@@ -129,7 +122,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 				sessionInfo);
 		boolean ok = authRoles != null && !authRoles.isEmpty();
 		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
-		syslogService.sendLogMessage("REMOTE_LOGIN", ok, username);
 		if (ok) {
 			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
 			for (AuthRole authRole : authRoles) {
@@ -222,14 +214,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 			notificationService.notifyAboutUsersChanged();
 			loggerSink.info(logger, "REGISTER_USER", true, username);
-			syslogService.sendLogMessage("REGISTER_USER", true, username);
 		} else if (result.isDuplicate()) {
 			loggerSink.info(logger, "REGISTER_USER", false, username);
-			syslogService.sendLogMessage("REGISTER_USER", false, username);
 			throw new UserExistsException(result.getErrorMessage());
 		} else {
 			loggerSink.info(logger, "REGISTER_USER", false, username);
-			syslogService.sendLogMessage("REGISTER_USER", false, username);
 			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
 					+ result.getErrorMessage());
 		}
@@ -254,9 +243,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return userDao.getFlagTempPassword(userName);
 	}
 
-	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
-		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistory(userName)));
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+                .getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }

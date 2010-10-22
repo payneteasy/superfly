@@ -19,7 +19,6 @@ import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.service.UserService;
 
 public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
@@ -34,7 +33,6 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setUserDao(userDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
-		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
 		service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());

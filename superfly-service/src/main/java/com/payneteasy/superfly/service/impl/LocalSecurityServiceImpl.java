@@ -15,19 +15,17 @@ import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
-
+	
 	private UserDao userDao;
 	private String localSubsystemName = "superfly";
 	private String localRoleName = "admin";
 	private LoggerSink loggerSink;
-	private SyslogService syslogService;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
 	private HOTPProvider hotpProvider;
@@ -67,18 +65,14 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	}
 
 	@Required
-	public void setSyslogService(SyslogService syslogService) {
-		this.syslogService = syslogService;
-	}
-
-	@Required
 	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
 		this.lockoutStrategy = lockoutStrategy;
 	}
 
 	public String[] authenticate(String username, String password) {
 		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-		List<AuthRole> roles = userDao.authenticate(username, encPassword, localSubsystemName, null, null);
+		List<AuthRole> roles = userDao.authenticate(username, encPassword,
+				localSubsystemName, null, null);
 		if (roles != null) {
 			AuthRole role = null;
 			for (AuthRole r : roles) {
@@ -93,7 +87,6 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 					result[i] = role.getActions().get(i).getActionName();
 				}
 				loggerSink.info(logger, "LOCAL_LOGIN", true, username);
-				syslogService.sendLogMessage("LOCAL_LOGIN", true, username);
 				return result;
 			}
 		}
@@ -101,7 +94,6 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);
-		syslogService.sendLogMessage("LOCAL_LOGIN", false, username);
 		return null;
 	}
 

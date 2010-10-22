@@ -29,7 +29,6 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 
 public class InternalSSOServiceImplTest extends TestCase {
@@ -46,7 +45,6 @@ public class InternalSSOServiceImplTest extends TestCase {
 		InternalSSOServiceImpl service = new InternalSSOServiceImpl();
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
-		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setHotpProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());

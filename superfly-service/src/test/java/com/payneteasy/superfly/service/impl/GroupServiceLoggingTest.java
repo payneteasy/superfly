@@ -15,7 +15,6 @@ import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 
 public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 	
@@ -29,7 +28,6 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setGroupDao(groupDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
-		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		groupService = service;
 	}
 	

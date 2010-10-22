@@ -23,7 +23,6 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 
 public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
@@ -37,7 +36,6 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setUserDao(userDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
-		service.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		service.setPasswordEncoder(new PlaintextPasswordEncoder());
 		service.setSaltSource(new NullSaltSource());
 		service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());

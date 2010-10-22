@@ -30,30 +30,28 @@ import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.service.UserService;
 
 @Transactional
 public class UserServiceImpl implements UserService {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private UserDao userDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
-	private SyslogService syslogService;
 	private PasswordEncoder passwordEncoder;
 	private SaltSource saltSource;
-	private IPolicyValidation<PasswordCheckContext> policyValidation;
-	private SaltGenerator hotpSaltGenerator;
-	private AccountPolicy accountPolicy;
+    private IPolicyValidation<PasswordCheckContext> policyValidation;
+    private SaltGenerator hotpSaltGenerator;
+    private AccountPolicy accountPolicy;
 
-	@Required
-	public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
-		this.policyValidation = policyValidation;
-	}
+    @Required
+    public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
+        this.policyValidation = policyValidation;
+    }
 
-	@Required
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -66,11 +64,6 @@ public class UserServiceImpl implements UserService {
 	@Required
 	public void setLoggerSink(LoggerSink loggerSink) {
 		this.loggerSink = loggerSink;
-	}
-
-	@Required
-	public void setSyslogService(SyslogService syslogService) {
-		this.syslogService = syslogService;
 	}
 
 	@Required
@@ -93,14 +86,18 @@ public class UserServiceImpl implements UserService {
 		this.accountPolicy = accountPolicy;
 	}
 
-	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId, Long complectId, Long subsystemId,
-			int startFrom, int recordsCount, int orderFieldNumber, boolean asc) {
-		return userDao.getUsers(startFrom, recordsCount, orderFieldNumber, asc ? DaoConstants.ASC : DaoConstants.DESC,
-				userNamePrefix, roleId, complectId, subsystemId);
+	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
+			Long complectId, Long subsystemId, int startFrom, int recordsCount,
+			int orderFieldNumber, boolean asc) {
+		return userDao.getUsers(startFrom, recordsCount, orderFieldNumber,
+				asc ? DaoConstants.ASC : DaoConstants.DESC, userNamePrefix,
+				roleId, complectId, subsystemId);
 	}
 
-	public int getUsersCount(String userNamePrefix, Long roleId, Long complectId, Long subsystemId) {
-		return userDao.getUsersCount(userNamePrefix, roleId, complectId, subsystemId);
+	public int getUsersCount(String userNamePrefix, Long roleId,
+			Long complectId, Long subsystemId) {
+		return userDao.getUsersCount(userNamePrefix, roleId, complectId,
+				subsystemId);
 	}
 
 	public RoutineResult createUser(UIUserForCreate user) {
@@ -109,16 +106,16 @@ public class UserServiceImpl implements UserService {
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
 		RoutineResult result = userDao.createUser(userForDao);
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
-		syslogService.sendLogMessage("CREATE_USER", result.isOk(), user.getUsername());
 		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
 	}
 
-	private void copyUserAndEncryptPassword(UIUser user, UIUser userForDao) {
+	private void copyUserAndEncryptPassword(UIUser user,
+			UIUser userForDao) {
 		BeanUtils.copyProperties(user, userForDao);
-		userForDao.setSalt(saltSource.getSalt(user.getUsername()));
-		userForDao.setPassword(passwordEncoder.encode(user.getPassword(), userForDao.getSalt()));
+        userForDao.setSalt(saltSource.getSalt(user.getUsername()));
+		userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
 	}
 
 	public UIUser getUser(long userId) {
@@ -130,7 +127,6 @@ public class UserServiceImpl implements UserService {
 		copyUserAndEncryptPassword(user, userForDao);
 		RoutineResult result = userDao.updateUser(userForDao);
 		loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
-		syslogService.sendLogMessage("UPDATE_USER", result.isOk(), user.getUsername());
 		return result;
 	}
 
@@ -140,7 +136,6 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage("DELETE_USER", result.isOk(),String.valueOf(userId));
 		return result;
 	}
 
@@ -150,7 +145,6 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "LOCK_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage("LOCK_USER", result.isOk(),String.valueOf(userId));
 		return result;
 	}
 
@@ -158,49 +152,56 @@ public class UserServiceImpl implements UserService {
 		String newPassword = accountPolicy.unlockUser(userId, unlockingSuspendedUser);
 		notificationService.notifyAboutUsersChanged();
 		loggerSink.info(logger, "UNLOCK_USER", true, String.valueOf(userId));
-		syslogService.sendLogMessage("UNLOCK_USER", true,String.valueOf(userId));
 		return newPassword;
 	}
 
-	public Long cloneUser(long templateUserId, String newUsername, String newPassword, String newEmail) {
+	public Long cloneUser(long templateUserId, String newUsername,
+			String newPassword, String newEmail) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
 		request.setEmail(newEmail);
-		request.setSalt(saltSource.getSalt(newUsername));
-		request.setHotpSalt(hotpSaltGenerator.generate());
-		request.setPassword(passwordEncoder.encode(newPassword, request.getSalt()));
+        request.setSalt(saltSource.getSalt(newUsername));
+        request.setHotpSalt(hotpSaltGenerator.generate());
+		request.setPassword(passwordEncoder.encode(newPassword,request.getSalt()));
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
-		syslogService.sendLogMessage("CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
 		return request.getId();
 	}
 
-	public List<UIRoleForCheckbox> getAllUserRoles(long userId, Long subsystemId, int startFrom, int recordsCount) {
-		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(startFrom, recordsCount, 4 /* role_id */,
-				DaoConstants.ASC, userId, subsystemId == null ? null : String.valueOf(subsystemId));
+	public List<UIRoleForCheckbox> getAllUserRoles(long userId,
+			Long subsystemId, int startFrom, int recordsCount) {
+		List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(startFrom,
+				recordsCount, 4 /* role_id */, DaoConstants.ASC, userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
 		return allRoles;
 	}
 
 	public int getAllUserRolesCount(long userId, Long subsystemId) {
-		return userDao.getAllUserRolesCount(userId, subsystemId == null ? null : String.valueOf(subsystemId));
+		return userDao.getAllUserRolesCount(userId, subsystemId == null ? null
+				: String.valueOf(subsystemId));
 	}
 
-	public List<UIRoleForCheckbox> getUnmappedUserRoles(long userId, Long subsystemId, int startFrom, int recordsCount) {
-		List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(startFrom, recordsCount, 4 /* role_id */,
-				DaoConstants.ASC, userId, subsystemId == null ? null : String.valueOf(subsystemId));
+	public List<UIRoleForCheckbox> getUnmappedUserRoles(long userId,
+			Long subsystemId, int startFrom, int recordsCount) {
+		List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(
+				startFrom, recordsCount, 4 /* role_id */, DaoConstants.ASC,
+				userId, subsystemId == null ? null : String
+						.valueOf(subsystemId));
 		return allRoles;
 	}
 
 	public int getUnmappedUserRolesCount(long userId, Long subsystemId) {
-		return userDao.getUnmappedUserRolesCount(userId, subsystemId == null ? null : String.valueOf(subsystemId));
+		return userDao.getUnmappedUserRolesCount(userId,
+				subsystemId == null ? null : String.valueOf(subsystemId));
 	}
 
-	public RoutineResult changeUserRoles(long userId, Collection<Long> rolesToAddIds,
-			Collection<Long> rolesToRemoveIds, Collection<Long> rolesToGrantActionsIds) {
+	public RoutineResult changeUserRoles(long userId,
+			Collection<Long> rolesToAddIds, Collection<Long> rolesToRemoveIds,
+			Collection<Long> rolesToGrantActionsIds) {
 		if (rolesToGrantActionsIds == null) {
 
 		} else {
@@ -215,50 +216,64 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage("CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
-	public List<UIActionForCheckboxForUser> getAllUserActions(long userId, Long subsystemId, String actionSubstring,
-			int startFrom, int recordsCount) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getAllUserActions(startFrom, recordsCount, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				DaoConstants.ASC, userId, subsystemIds, actionSubstring);
+	public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getAllUserActions(startFrom, recordsCount,
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
+				userId, subsystemIds, actionSubstring);
 	}
 
-	public int getAllUserActionsCount(long userId, Long subsystemId, String actionSubstring) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getAllUserActionsCount(userId, subsystemIds, actionSubstring);
+	public int getAllUserActionsCount(long userId, Long subsystemId,
+			String actionSubstring) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getAllUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
 
-	public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId, Long subsystemId,
-			String actionSubstring, int startFrom, int recordsCount) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getUnmappedUserActions(startFrom, recordsCount, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				DaoConstants.ASC, userId, subsystemIds, actionSubstring);
+	public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getUnmappedUserActions(startFrom, recordsCount,
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
+				userId, subsystemIds, actionSubstring);
 	}
 
-	public int getUnmappedUserActionsCount(long userId, Long subsystemId, String actionSubstring) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getUnmappedUserActionsCount(userId, subsystemIds, actionSubstring);
+	public int getUnmappedUserActionsCount(long userId, Long subsystemId,
+			String actionSubstring) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getUnmappedUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
 
-	public RoutineResult changeUserRoleActions(long userId, Collection<Long> roleActionToAddIds,
+	public RoutineResult changeUserRoleActions(long userId,
+			Collection<Long> roleActionToAddIds,
 			Collection<Long> roleActionToRemoveIds) {
-		RoutineResult result = userDao.changeUserRoleActions(userId,
+		RoutineResult result = userDao.changeUserRoleActions(
+				userId,
 				com.payneteasy.superfly.utils.StringUtils.collectionToCommaDelimitedString(roleActionToAddIds),
 				com.payneteasy.superfly.utils.StringUtils.collectionToCommaDelimitedString(roleActionToRemoveIds));
 		if (result.isOk()) {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage("CHANGE_USER_ROLE_ACTIONS", result.isOk(), String.valueOf(userId));
 		return result;
 	}
 
-	public UIUserWithRolesAndActions getUserRoleActions(long userId, String subsystemIds, String actionNameSubstring,
+	public UIUserWithRolesAndActions getUserRoleActions(long userId,
+			String subsystemIds, String actionNameSubstring,
 			String roleNameSubstring) {
-		return userDao.getUserRoleActions(userId, subsystemIds, actionNameSubstring, roleNameSubstring);
+		return userDao.getUserRoleActions(userId, subsystemIds,
+				actionNameSubstring, roleNameSubstring);
 	}
 
 	public RoutineResult addSubsystemWithRole(long userId, long roleId) {
@@ -269,25 +284,30 @@ public class UserServiceImpl implements UserService {
 		return result;
 	}
 
-	public void validatePassword(String username, String password) throws PolicyValidationException {
-		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistory(username)));
+    public void validatePassword(String username,String password) throws PolicyValidationException {
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
+    }
+
+    public void expirePasswords(int days) {
+    	accountPolicy.expirePasswordsIfNeeded(days, this);
+    }
+
+    public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
+			Long subsystemId, String actionSubstring, int startFrom,
+			int recordsCount) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getMappedUserActions(startFrom, recordsCount,
+				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
+				userId, subsystemIds, actionSubstring);
 	}
 
-	public void expirePasswords(int days) {
-		accountPolicy.expirePasswordsIfNeeded(days, this);
-	}
-
-	public List<UIActionForCheckboxForUser> getMappedUserActions(long userId, Long subsystemId, String actionSubstring,
-			int startFrom, int recordsCount) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getMappedUserActions(startFrom, recordsCount, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				DaoConstants.ASC, userId, subsystemIds, actionSubstring);
-	}
-
-	public int getMappedUserActionsCount(long userId, Long subsystemId, String actionSubstring) {
-		String subsystemIds = subsystemId == null ? null : subsystemId.toString();
-		return userDao.getMappedUserActionsCount(userId, subsystemIds, actionSubstring);
+	public int getMappedUserActionsCount(long userId, Long subsystemId,
+			String actionSubstring) {
+		String subsystemIds = subsystemId == null ? null : subsystemId
+				.toString();
+		return userDao.getMappedUserActionsCount(userId, subsystemIds,
+				actionSubstring);
 	}
 
 	public void suspendUser(long userId) {
@@ -296,15 +316,14 @@ public class UserServiceImpl implements UserService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
-		syslogService.sendLogMessage("SUSPEND_USER", result.isOk(), String.valueOf(userId));
 	}
 
 	public void suspendUsers(int days) {
 		accountPolicy.suspendUsersIfNeeded(days, this);
 	}
 
-	public void changeTempPassword(String userName, String password) {
-		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
-	}
+    public void changeTempPassword(String userName, String password) {
+        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
 
 }

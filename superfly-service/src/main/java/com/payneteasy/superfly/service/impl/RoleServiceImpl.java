@@ -19,18 +19,16 @@ import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.RoleService;
-import com.payneteasy.superfly.service.SyslogService;
 import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class RoleServiceImpl implements RoleService {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
 	private RoleDao roleDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
-	private SyslogService syslogService;
 
 	@Required
 	public void setRoleDao(RoleDao roleDao) {
@@ -47,23 +45,21 @@ public class RoleServiceImpl implements RoleService {
 		this.loggerSink = loggerSink;
 	}
 
-	@Required
-	public void setSyslogService(SyslogService syslogService) {
-		this.syslogService = syslogService;
-	}
-
 	public List<UIRoleForFilter> getRolesForFilter() {
 		return roleDao.getRolesForFilter(null, null, 0, Integer.MAX_VALUE);
 	}
 
 	public int getRoleCount(String rolesName, List<Long> subsystems) {
-		return roleDao.getRoleCount(rolesName, StringUtils.collectionToCommaDelimitedString(subsystems));
+		return roleDao.getRoleCount(rolesName, StringUtils
+				.collectionToCommaDelimitedString(subsystems));
 	}
 
-	public List<UIRoleForList> getRoles(int startFrom, int recordsCount, int orderFieldNumber, boolean asc,
-			String rolesName, List<Long> subsystems) {
-		return roleDao.getRoles(startFrom, recordsCount, orderFieldNumber, asc ? DaoConstants.ASC : DaoConstants.DESC,
-				rolesName, StringUtils.collectionToCommaDelimitedString(subsystems));
+	public List<UIRoleForList> getRoles(int startFrom, int recordsCount,
+			int orderFieldNumber, boolean asc, String rolesName,
+			List<Long> subsystems) {
+		return roleDao.getRoles(startFrom, recordsCount, orderFieldNumber,
+				asc ? DaoConstants.ASC : DaoConstants.DESC, rolesName,
+				StringUtils.collectionToCommaDelimitedString(subsystems));
 	}
 
 	public RoutineResult deleteRole(long roleId) {
@@ -72,7 +68,6 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_ROLE", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage("DELETE_ROLE", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 
@@ -88,8 +83,6 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "UPDATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
-		syslogService.sendLogMessage("UPDATE_ROLE", result.isOk(),
-				role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
 
@@ -99,12 +92,11 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CREATE_ROLE", result.isOk(), role.getRoleName() + " in " + role.getSubsystemId());
-		syslogService.sendLogMessage("CREATE_ROLE", result.isOk(),
-				role.getRoleName() + " in " + role.getSubsystemId());
 		return result;
 	}
 
-	public RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
+	public RoutineResult changeRoleGroups(long roleId,
+			List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
 		RoutineResult result = roleDao.changeRoleGroups(roleId,
 				StringUtils.collectionToCommaDelimitedString(groupToAddIds),
 				StringUtils.collectionToCommaDelimitedString(groupToRemoveIds));
@@ -112,12 +104,12 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage("CHANGE_ROLE_GROUPS", result.isOk(), String.valueOf(roleId));
 		return result;
 
 	}
 
-	public RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
+	public RoutineResult changeRoleActions(long roleId,
+			List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
 		RoutineResult result = roleDao.changeRoleActions(roleId,
 				StringUtils.collectionToCommaDelimitedString(actionToAddIds),
 				StringUtils.collectionToCommaDelimitedString(actionToRemoveIds));
@@ -125,24 +117,27 @@ public class RoleServiceImpl implements RoleService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
-		syslogService.sendLogMessage("CHANGE_ROLE_ACTIONS", result.isOk(), String.valueOf(roleId));
 		return result;
 	}
 
-	public List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom, int recordsCount, int orderFieldNumber,
-			boolean ascending, long roleId, String actionName) {
-		return roleDao.getAllRoleActions(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
-				: DaoConstants.DESC, roleId, actionName);
+	public List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId, String actionName) {
+		return roleDao.getAllRoleActions(startFrom, recordsCount,
+				orderFieldNumber, ascending ? DaoConstants.ASC
+						: DaoConstants.DESC, roleId, actionName);
 	}
 
 	public int getAllRoleActionsCount(long roleId, String actionName) {
 		return roleDao.getAllRoleActionsCount(roleId, actionName);
 	}
 
-	public List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom, int recordsCount, int orderFieldNumber,
-			boolean ascending, long roleId, String actionName) {
-		return roleDao.getMappedRoleActions(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
-				: DaoConstants.DESC, roleId, actionName);
+	public List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId, String actionName) {
+		return roleDao.getMappedRoleActions(startFrom, recordsCount,
+				orderFieldNumber, ascending ? DaoConstants.ASC
+						: DaoConstants.DESC, roleId, actionName);
 	}
 
 	public int getMappedRoleActionsCount(long roleId, String actionName) {
@@ -153,32 +148,39 @@ public class RoleServiceImpl implements RoleService {
 		return roleDao.getAllRoleGroupsCount(roleId);
 	}
 
-	public List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount, int orderFieldNumber,
-			String orderType, long roleId) {
-		return roleDao.getAllRoleGroups(startFrom, recordsCount, orderFieldNumber, orderType, roleId);
+	public List<UIGroupForCheckbox> getAllRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, String orderType,
+			long roleId) {
+		return roleDao.getAllRoleGroups(startFrom, recordsCount,
+				orderFieldNumber, orderType, roleId);
 	}
 
 	public List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId) {
 
-		return roleDao.getRolesForFilter(StringUtils.collectionToCommaDelimitedString(subId), null, 0,
+		return roleDao.getRolesForFilter(StringUtils
+				.collectionToCommaDelimitedString(subId), null, 0,
 				Integer.MAX_VALUE);
 	}
 
-	public List<UIActionForCheckboxForRole> getUnMappedRoleActions(int startFrom, int recordsCount,
-			int orderFieldNumber, boolean ascending, long roleId, String actionName) {
+	public List<UIActionForCheckboxForRole> getUnMappedRoleActions(
+			int startFrom, int recordsCount, int orderFieldNumber,
+			boolean ascending, long roleId, String actionName) {
 
-		return roleDao.getUnMappedRoleActions(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
-				: DaoConstants.DESC, roleId, actionName);
+		return roleDao.getUnMappedRoleActions(startFrom, recordsCount,
+				orderFieldNumber, ascending ? DaoConstants.ASC
+						: DaoConstants.DESC, roleId, actionName);
 	}
 
-	public List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom, int recordsCount, int orderFieldNumber,
-			boolean ascending, long roleId) {
+	public List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId) {
 		return roleDao.getMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
 				: DaoConstants.DESC, roleId);
 	}
 
-	public List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom, int recordsCount, int orderFieldNumber,
-			boolean ascending, long roleId) {
+	public List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
+			int recordsCount, int orderFieldNumber, boolean ascending,
+			long roleId) {
 		return roleDao.getUnMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
 				: DaoConstants.DESC, roleId);
 	}

@@ -17,7 +17,6 @@ import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SyslogService;
 
 public class UserServiceImplTest extends TestCase {
 	
@@ -29,7 +28,6 @@ public class UserServiceImplTest extends TestCase {
 		userService = new UserServiceImpl();
 		userService.setUserDao(userDao);
 		userService.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
-		userService.setSyslogService(TrivialProxyFactory.createProxy(SyslogService.class));
 		userService.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("sha1");
