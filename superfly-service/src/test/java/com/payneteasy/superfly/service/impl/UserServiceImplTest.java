@@ -83,7 +83,7 @@ public class UserServiceImplTest extends TestCase {
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "email");
+		userService.cloneUser(1L, "pete", "secret", "email", "new key");
 		
 		EasyMock.verify(userDao);
 	}
@@ -102,7 +102,7 @@ public class UserServiceImplTest extends TestCase {
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "new-email");
+		userService.cloneUser(1L, "pete", "secret", "new-email", "new key");
 		
 		EasyMock.verify(userDao);
 	}
