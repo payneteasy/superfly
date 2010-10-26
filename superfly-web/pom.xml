@@ -23,6 +23,11 @@
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-spring-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-crypto</artifactId>
+		</dependency>
+
 		
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -138,7 +143,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<resources>

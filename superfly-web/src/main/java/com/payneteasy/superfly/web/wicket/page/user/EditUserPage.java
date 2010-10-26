@@ -18,6 +18,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -34,7 +35,8 @@ public class EditUserPage extends BasePage {
 
 	@SpringBean
 	private UserService userService;
-
+	@SpringBean
+	private PublicKeyCrypto crypto;
 
 	public EditUserPage(PageParameters params) {
 		super(params);
@@ -79,7 +81,7 @@ public class EditUserPage extends BasePage {
         TextArea<String> publicKeyField = new TextArea<String>("public-key",
         		new PropertyModel<String>(user, "publicKey"));
         form.add(publicKeyField);
-        publicKeyField.add(new PublicKeyValidator());
+        publicKeyField.add(new PublicKeyValidator(crypto));
 
 		form.add(new RequiredTextField<String>("name",
 				new PropertyModel<String>(user, "name")));

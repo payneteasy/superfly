@@ -175,4 +175,7 @@
 		<property name="passwordEncoder" ref="passwordEncoder" />
 		<property name="loggerSink" ref="loggerSink" />
 	</bean>
+	
+	<bean id="publicKeyCrypto" class="com.payneteasy.superfly.crypto.pgp.PGPCrypto">
+	</bean>
 </beans>

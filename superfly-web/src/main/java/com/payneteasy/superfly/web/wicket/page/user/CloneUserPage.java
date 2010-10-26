@@ -17,6 +17,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
@@ -35,6 +36,8 @@ public class CloneUserPage extends BasePage {
 	
 	@SpringBean
 	private UserService userService;
+	@SpringBean
+	private PublicKeyCrypto crypto;
 
     @SpringBean
     private IPolicyValidation<PasswordCheckContext> policyValidation;
@@ -79,7 +82,7 @@ public class CloneUserPage extends BasePage {
         TextArea<String> publicKeyField = new TextArea<String>("public-key",
         		new PropertyModel<String>(user, "publicKey"));
         form.add(publicKeyField);
-        publicKeyField.add(new PublicKeyValidator());
+        publicKeyField.add(new PublicKeyValidator(crypto));
 	}
 	
 	@Override
