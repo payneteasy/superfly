@@ -84,6 +84,7 @@ public class ViewUserPage extends BasePage {
 		};
 		
 		add(new Label("user-name", userModel.getObject().getName()));
+		add(new Label("public-key", userModel.getObject().getPublicKey()));
 		
 		ListView<UIRoleWithActions> rolesListView = new ListView<UIRoleWithActions>("roles", rolesModel) {
 			@Override

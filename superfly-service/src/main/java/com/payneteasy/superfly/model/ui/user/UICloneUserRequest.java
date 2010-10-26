@@ -20,6 +20,7 @@ public class UICloneUserRequest implements Serializable {
 	private String email;
     private String salt;
     private String hotpSalt;
+    private String publicKey;
 
 	@Column(name = "user_id")
 	public Long getId() {
@@ -81,5 +82,14 @@ public class UICloneUserRequest implements Serializable {
 
 	public void setHotpSalt(String hotpSalt) {
 		this.hotpSalt = hotpSalt;
+	}
+
+	@Column(name = "public_key")
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 }

@@ -19,6 +19,7 @@ public class UIUser implements Serializable {
 	private String secretQuestion;
 	private String secretAnswer;
     private String salt;
+    private String publicKey;
 
 	@Column(name = "user_id")
 	public Long getId() {
@@ -100,4 +101,13 @@ public class UIUser implements Serializable {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    @Column(name = "public_key")
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
 }

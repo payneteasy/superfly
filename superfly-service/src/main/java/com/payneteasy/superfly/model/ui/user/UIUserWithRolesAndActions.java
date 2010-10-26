@@ -13,6 +13,7 @@ import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 public class UIUserWithRolesAndActions implements Serializable {
 	private long id;
 	private String name;
+	private String publicKey;
 	
 	private List<UIRoleWithActions> roles = new ArrayList<UIRoleWithActions>();
 
@@ -32,6 +33,15 @@ public class UIUserWithRolesAndActions implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Column(name = "public_key")
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 
 	@OneToMany

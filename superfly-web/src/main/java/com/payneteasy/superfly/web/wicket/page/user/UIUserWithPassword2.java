@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.model.ui.user.UIUser;
