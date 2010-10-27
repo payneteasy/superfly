@@ -18,6 +18,7 @@ import com.payneteasy.superfly.spisupport.HOTPDao;
 import com.payneteasy.superfly.spisupport.HOTPData;
 import com.payneteasy.superfly.spisupport.HOTPProviderContext;
 import com.payneteasy.superfly.spisupport.ObjectResolver;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 /**
  * Encrypts passwords in the database. It assumes they are not encoded yet.
@@ -197,6 +198,9 @@ public class PasswordEncryptor {
 						}
 					}
 				}
+			}
+
+			public void resetHOTP(String username, String hotpSalt) {
 			}
 		};
 		return hotpDao;

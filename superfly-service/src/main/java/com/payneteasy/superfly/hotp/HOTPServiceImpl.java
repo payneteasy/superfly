@@ -41,8 +41,20 @@ public class HOTPServiceImpl implements HOTPService {
 	}
 
 	public void sendTableIfSupported(long userId) {
+		obtainUserIfNeededAndSendTableIfSupported(userId, null);
+	}
+	
+	public void resetTableAndSendIfSupported(long userId) {
+		UIUser user = userDao.getUser(userId);
+		hotpProvider.resetSequence(user.getUsername());
+		obtainUserIfNeededAndSendTableIfSupported(userId, user);
+	}
+	
+	private void obtainUserIfNeededAndSendTableIfSupported(long userId, UIUser user) {
 		if (hotpProvider.outputsSequenceForDownload()) {
-			UIUser user = userDao.getUser(userId);
+			if (user == null) {
+				user = userDao.getUser(userId);
+			}
 			if (user.getPublicKey() != null && user.getPublicKey().trim().length() > 0) {
 				actuallySendTable(user);
 			} else {

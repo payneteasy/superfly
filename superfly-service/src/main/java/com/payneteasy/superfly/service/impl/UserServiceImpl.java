@@ -24,7 +24,6 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
@@ -32,6 +31,7 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 @Transactional
 public class UserServiceImpl implements UserService {

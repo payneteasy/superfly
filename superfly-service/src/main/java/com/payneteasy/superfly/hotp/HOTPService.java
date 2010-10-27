@@ -12,4 +12,12 @@ public interface HOTPService {
 	 * @param userId	ID of a user
 	 */
 	void sendTableIfSupported(long userId);
+
+	/**
+	 * Resets a table and sends a new table to a user if provider supports
+	 * sending.
+	 * 
+	 * @param userId	ID of a user
+	 */
+	void resetTableAndSendIfSupported(long userId);
 }

@@ -28,6 +28,7 @@ import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -59,6 +60,8 @@ public class ListUsersPage extends BasePage {
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
+	@SpringBean
+	private HOTPService hotpService;
 	@SpringBean
 	private HOTPProvider hotpProvider;
 	@SpringBean
@@ -208,6 +211,15 @@ public class ListUsersPage extends BasePage {
 				};
 				downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
 				item.add(downloadHotpTableLink);
+				
+				Link<Void> resetTableLink = new Link<Void>("reset-table-link") {
+					@Override
+					public void onClick() {
+						hotpService.resetTableAndSendIfSupported(user.getId());
+					}
+				};
+				resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
+				item.add(resetTableLink);
 			}
 		};
 		add(usersDataView);

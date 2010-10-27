@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.spisupport.SaltGenerator;
+
 /**
  * Supplies salt values. That salt is used by {@link PasswordEncoder} instances.
  * This is intended to be stable (i.e. it should return the same instance for

@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.password;
 
 import com.payneteasy.superfly.common.utils.CryptoHelper;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 import com.payneteasy.superfly.utils.RandomGUID;
 
 /**
