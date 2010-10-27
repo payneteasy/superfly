@@ -28,7 +28,6 @@ import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
 import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -38,6 +37,7 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;

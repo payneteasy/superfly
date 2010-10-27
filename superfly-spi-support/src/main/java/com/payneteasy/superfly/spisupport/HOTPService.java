@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.hotp;
+package com.payneteasy.superfly.spisupport;
 
 /**
  * Service to deal with HOTP management.

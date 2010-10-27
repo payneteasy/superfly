@@ -14,7 +14,6 @@ import org.springframework.util.StringUtils;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
@@ -31,6 +30,7 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 @Transactional

@@ -12,7 +12,6 @@ import org.easymock.IAnswer;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -23,6 +22,7 @@ import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 	

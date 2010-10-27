@@ -11,6 +11,7 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 @Transactional
 public class HOTPServiceImpl implements HOTPService {

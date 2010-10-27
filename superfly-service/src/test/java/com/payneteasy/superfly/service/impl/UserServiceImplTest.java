@@ -8,7 +8,6 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -18,6 +17,7 @@ import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class UserServiceImplTest extends TestCase {
 	
