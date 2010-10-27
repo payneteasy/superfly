@@ -23,6 +23,8 @@
 		<property name="lockoutStrategy" ref="lockoutStrategy" />
 		<property name="registerUserStrategy" ref="registerUserStrategy" />
 		<property name="hotpProvider" ref="hotpProvider" />
+		<property name="publicKeyCrypto" ref="publicKeyCrypto" />
+		<property name="hotpService" ref="hotpService" />
 	</bean>
 
 	<bean id="localSecurityService"
