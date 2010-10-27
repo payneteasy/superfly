@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private IPolicyValidation<PasswordCheckContext> policyValidation;
     private SaltGenerator hotpSaltGenerator;
     private AccountPolicy accountPolicy;
+    private HOTPService hotpService;
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -86,6 +88,11 @@ public class UserServiceImpl implements UserService {
 		this.accountPolicy = accountPolicy;
 	}
 
+	@Required
+	public void setHotpService(HOTPService hotpService) {
+		this.hotpService = hotpService;
+	}
+
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
 			Long complectId, Long subsystemId, int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc) {
@@ -105,7 +112,12 @@ public class UserServiceImpl implements UserService {
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
 		RoutineResult result = userDao.createUser(userForDao);
-		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
+		loggerSink.info(logger, "CREATE_USER", result.isOk(), userForDao.getUsername());
+		
+		if (result.isOk()) {
+			hotpService.sendTableIfSupported(userForDao.getId());
+		}
+		
 		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
@@ -167,6 +179,7 @@ public class UserServiceImpl implements UserService {
 		request.setPublicKey(newPublicKey);
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {
+			hotpService.sendTableIfSupported(request.getId());
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));

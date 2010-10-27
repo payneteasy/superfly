@@ -8,6 +8,7 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.hotp.HOTPService;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -34,6 +35,7 @@ public class UserServiceImplTest extends TestCase {
 		userService.setPasswordEncoder(encoder);
 		userService.setSaltSource(new ConstantSaltSource("c3pio"));
 		userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
+		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
 	}
 	
 	public void testCreateUserPasswordEncryption() {
@@ -42,6 +44,7 @@ public class UserServiceImplTest extends TestCase {
 				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
 				assertNotNull(user.getHotpSalt());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});
@@ -78,6 +81,7 @@ public class UserServiceImplTest extends TestCase {
 			public RoutineResult answer() throws Throwable {
 				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});
@@ -97,6 +101,7 @@ public class UserServiceImplTest extends TestCase {
 				assertEquals("new-email", user.getEmail());
 				assertNotNull(user.getSalt());
 				assertNotNull(user.getHotpSalt());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});

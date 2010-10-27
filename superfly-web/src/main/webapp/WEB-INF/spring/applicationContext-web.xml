@@ -30,4 +30,8 @@
 	<bean id="hotpLookahead" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
 		<property name="initParamName" value="superfly-hotpLookahead"/>
 	</bean>
+	
+	<bean id="fromEmail" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+		<property name="initParamName" value="superfly-fromEmail"/>
+	</bean>
 </beans>
