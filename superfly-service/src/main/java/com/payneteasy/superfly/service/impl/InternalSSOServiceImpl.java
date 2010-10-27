@@ -211,6 +211,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSurname(surname);
 		registerUser.setSecretQuestion(secretQuestion);
 		registerUser.setSecretAnswer(secretAnswer);
+		registerUser.setPublicKey(publicKey);
 
 		// validate password policy
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
