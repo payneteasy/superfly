@@ -88,8 +88,8 @@ public class SSOServiceImpl implements SSOService {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
-	public String getFlagTempPassword(String userName) {
-		return internalSSOService.getFlagTempPassword(userName);
+	public String isPasswordTemp(String userName) {
+		return internalSSOService.isPasswordTemp(userName);
 	}
 
 	public void changeTempPassword(String userName, String password) throws PolicyValidationException {

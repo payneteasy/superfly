@@ -90,7 +90,7 @@ public interface SSOService {
      * @return flag of temporary password
      * @since 1.2
      */
-    String getFlagTempPassword(String userName);
+    String isPasswordTemp(String userName);
     
     /**
      * 

@@ -267,7 +267,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
 	}
 
-	public String getFlagTempPassword(String userName) {
+	public String isPasswordTemp(String userName) {
 		return userDao.getFlagTempPassword(userName);
 	}
 

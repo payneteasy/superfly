@@ -91,7 +91,7 @@ public interface InternalSSOService {
      * @param userName user name
      * @return flag of temporary password
      */
-    String getFlagTempPassword(String userName);
+    String isPasswordTemp(String userName);
     
     /**
      * 
