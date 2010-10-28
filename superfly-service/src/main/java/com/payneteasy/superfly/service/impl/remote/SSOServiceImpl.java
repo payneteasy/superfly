@@ -88,7 +88,7 @@ public class SSOServiceImpl implements SSOService {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
-	public String isPasswordTemp(String userName) {
+	public boolean isPasswordTemp(String userName) {
 		return internalSSOService.isPasswordTemp(userName);
 	}
 

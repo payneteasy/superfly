@@ -194,10 +194,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return result;
 	}
 
-	public void registerUser(String username, String password, String email,
-			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
-			String name, String surname, String secretQuestion, String secretAnswer, String publicKey)
-			throws UserExistsException, PolicyValidationException, BadPublicKeyException {
+	public void registerUser(String username, String password, String email, String subsystemIdentifier,
+			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+			String secretAnswer, String publicKey) throws UserExistsException, PolicyValidationException,
+			BadPublicKeyException {
 
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
@@ -216,7 +216,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		// validate password policy
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
 				.getUserPasswordHistory(username)));
-		
+
 		validatePublicKey(publicKey);
 
 		RoutineResult result = registerUserStrategy.registerUser(registerUser);
@@ -231,7 +231,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 							+ result.getErrorMessage());
 				}
 			}
-			
+
 			if (result.isOk()) {
 				hotpService.sendTableIfSupported(registerUser.getUserid());
 			}
@@ -267,13 +267,17 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
 	}
 
-	public String isPasswordTemp(String userName) {
-		return userDao.getFlagTempPassword(userName);
+	public boolean isPasswordTemp(String userName) {
+		String flag = userDao.getFlagTempPassword(userName);
+		if (flag.equals("Y")) {
+			return true;
+		}
+		return false;
 	}
 
-	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-                .getUserPasswordHistory(userName)));
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+				.getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }
