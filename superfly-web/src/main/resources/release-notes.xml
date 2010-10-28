@@ -144,4 +144,26 @@
     		</description>
     	</item>
     </release>
+    
+    <release number="1.2-2" date="Not released yet">
+    	<item type="task">
+    		<name>PGP Public keys</name>
+    		<description>
+    			PGP Public keys may be stored for users and be used to sign
+    			materials which are sent by a Superfly server.
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>HOTP tables via e-mail</name>
+    		<description>
+    			Now, HOTP tables may be sent via email to their owners. Table
+    			is encrypted with user's PGP public key.
+    		</description>
+    	</item>
+    	<item type="task">
+    		<name>Various fixes</name>
+    		<description>
+    		</description>
+    	</item>
+    </release>
 </news>
