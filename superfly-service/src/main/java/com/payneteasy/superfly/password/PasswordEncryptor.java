@@ -64,7 +64,7 @@ public class PasswordEncryptor {
         
         Statement st = conn.createStatement();
         PreparedStatement updatePasswordSt = conn.prepareStatement("update users set user_password = ?, salt = ? where user_id = ?");
-        PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, (select coalesce(max(number_history), 0) + 1 from user_history where user_user_id = ?), now(), '2999-12-31')");
+        PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, (select coalesce(max(uh2.number_history), 0) + 1 from user_history uh2 where uh2.user_user_id = ?), now(), '2999-12-31')");
         
         System.out.println("Starting password encryption");
         Set<String> processedNames = new HashSet<String>();
