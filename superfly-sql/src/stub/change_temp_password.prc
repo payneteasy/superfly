@@ -35,7 +35,7 @@ main_sql:
                              update_date
                                  )
       select user_user_id,
-             v_user_id,
+             i_user_password,
              v_salt,
              uh.number_history + 1,
              v_start_date start_date,
