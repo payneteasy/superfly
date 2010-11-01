@@ -14,8 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.security.SecurityUtils;
-import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 
 /**

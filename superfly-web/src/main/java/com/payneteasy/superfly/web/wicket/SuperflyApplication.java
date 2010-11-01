@@ -2,11 +2,15 @@ package com.payneteasy.superfly.web.wicket;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestCycleProcessor;
+import org.apache.wicket.request.RequestParameters;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
+import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.CopyActionPropertiesPage;
@@ -40,6 +44,8 @@ import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
+import com.payneteasy.superfly.wicket.InterceptionDecisions;
+import com.payneteasy.superfly.wicket.PageInterceptingWebRequestCycleProcessor;
 
 public class SuperflyApplication extends WebApplication{
 
@@ -98,6 +104,46 @@ public class SuperflyApplication extends WebApplication{
 	@Override
 	public Session newSession(Request request, Response response) {
 		return new SuperflySession(request);
+	}
+
+	@Override
+	protected IRequestCycleProcessor newRequestCycleProcessor() {
+		return new PageInterceptingWebRequestCycleProcessor(ChangePasswordPage.class,
+				new InterceptionDecisions() {
+					public boolean shouldIntercept(RequestCycle requestCycle,
+							RequestParameters requestParameters) {
+						return SecurityUtils.isTempPassword();
+					}
+				});
+//		return new WebRequestCycleProcessor() {
+//			@Override
+//			public IRequestTarget resolve(RequestCycle requestCycle,
+//					RequestParameters requestParameters) {
+//				IRequestTarget target = super.resolve(requestCycle, requestParameters);
+//				if (SecurityUtils.isTempPassword()) {
+//					boolean alreadyChanging = false;
+//					if (target instanceof IBookmarkablePageRequestTarget) {
+//						IBookmarkablePageRequestTarget bpTarget = (IBookmarkablePageRequestTarget) target;
+//						if (bpTarget.getPageClass() == ChangePasswordPage.class) {
+//							alreadyChanging = true;
+//						}
+//					}
+//					if (!alreadyChanging) {
+//						if (target instanceof IListenerInterfaceRequestTarget) {
+//							IListenerInterfaceRequestTarget iTarget = (IListenerInterfaceRequestTarget) target;
+//							if (iTarget.getPage().getClass() == ChangePasswordPage.class) {
+//								alreadyChanging = true;
+//							}
+//						}
+//					}
+//					if (!alreadyChanging) {
+//						target = new BookmarkablePageRequestTarget(ChangePasswordPage.class);
+//					}
+//				}
+//				return target;
+//			}
+//			
+//		};
 	}
     
 }
