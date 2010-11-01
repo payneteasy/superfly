@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private RegisterUserStrategy registerUserStrategy;
 	private PublicKeyCrypto publicKeyCrypto;
 	private HOTPService hotpService;
+	private Set<String> notSavedActions = Collections.singleton("action_temp_password");
 
 	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
@@ -130,6 +132,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.hotpService = hotpService;
 	}
 
+	public void setNotSavedActions(Set<String> notSavedActions) {
+		this.notSavedActions = notSavedActions;
+	}
+
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
 			String sessionInfo) {
 		SSOUser ssoUser;
@@ -177,10 +183,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = new ArrayList<ActionToSave>(actionDescriptions.length);
 		for (ActionDescription description : actionDescriptions) {
-			ActionToSave action = new ActionToSave();
-			action.setName(description.getName());
-			action.setDescription(description.getDescription());
-			actions.add(action);
+			if (!notSavedActions.contains(description.getName())) {
+				ActionToSave action = new ActionToSave();
+				action.setName(description.getName());
+				action.setDescription(description.getDescription());
+				actions.add(action);
+			}
 		}
 		return actions;
 	}
