@@ -484,15 +484,6 @@ public interface UserDao {
 
 	/**
 	 * 
-	 * @param userName
-	 *            user name
-	 * @return flag of temporary password
-	 */
-	@AStoredProcedure(name = "get_flag_temp_password")
-	String getFlagTempPassword(String userName);
-
-	/**
-	 * 
 	 * @param userName user name
 	 * @param password password
 	 *            

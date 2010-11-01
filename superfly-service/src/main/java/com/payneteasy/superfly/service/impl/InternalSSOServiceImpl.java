@@ -267,14 +267,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
 	}
 
-	public boolean isPasswordTemp(String userName) {
-		String flag = userDao.getFlagTempPassword(userName);
-		if (flag.equals("Y")) {
-			return true;
-		}
-		return false;
-	}
-
 	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
 				.getUserPasswordHistory(userName)));

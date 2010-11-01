@@ -84,14 +84,6 @@ public interface SSOService {
 			String publicKey)
 			throws UserExistsException, PolicyValidationException, BadPublicKeyException;
 	
-	/**
-     * 
-     * @param userName user name
-     * @return flag of temporary password
-     * @since 1.2
-     */
-    boolean isPasswordTemp(String userName);
-    
     /**
      * 
      * @param userName user name

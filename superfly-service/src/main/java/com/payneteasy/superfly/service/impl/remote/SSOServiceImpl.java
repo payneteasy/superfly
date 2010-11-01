@@ -2,12 +2,12 @@ package com.payneteasy.superfly.service.impl.remote;
 
 import java.util.List;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
@@ -86,10 +86,6 @@ public class SSOServiceImpl implements SSOService {
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
-	}
-
-	public boolean isPasswordTemp(String userName) {
-		return internalSSOService.isPasswordTemp(userName);
 	}
 
 	public void changeTempPassword(String userName, String password) throws PolicyValidationException {

@@ -86,13 +86,6 @@ public interface InternalSSOService {
 	 */
 	boolean authenticateHOTP(String username, String hotp);
 	
-	/**
-     * 
-     * @param userName user name
-     * @return flag of temporary password
-     */
-    boolean isPasswordTemp(String userName);
-    
     /**
      * 
      * @param userName user name
