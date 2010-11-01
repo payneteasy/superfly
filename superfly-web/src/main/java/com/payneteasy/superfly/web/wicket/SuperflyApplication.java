@@ -115,35 +115,6 @@ public class SuperflyApplication extends WebApplication{
 						return SecurityUtils.isTempPassword();
 					}
 				});
-//		return new WebRequestCycleProcessor() {
-//			@Override
-//			public IRequestTarget resolve(RequestCycle requestCycle,
-//					RequestParameters requestParameters) {
-//				IRequestTarget target = super.resolve(requestCycle, requestParameters);
-//				if (SecurityUtils.isTempPassword()) {
-//					boolean alreadyChanging = false;
-//					if (target instanceof IBookmarkablePageRequestTarget) {
-//						IBookmarkablePageRequestTarget bpTarget = (IBookmarkablePageRequestTarget) target;
-//						if (bpTarget.getPageClass() == ChangePasswordPage.class) {
-//							alreadyChanging = true;
-//						}
-//					}
-//					if (!alreadyChanging) {
-//						if (target instanceof IListenerInterfaceRequestTarget) {
-//							IListenerInterfaceRequestTarget iTarget = (IListenerInterfaceRequestTarget) target;
-//							if (iTarget.getPage().getClass() == ChangePasswordPage.class) {
-//								alreadyChanging = true;
-//							}
-//						}
-//					}
-//					if (!alreadyChanging) {
-//						target = new BookmarkablePageRequestTarget(ChangePasswordPage.class);
-//					}
-//				}
-//				return target;
-//			}
-//			
-//		};
 	}
     
 }
