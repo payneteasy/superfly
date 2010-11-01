@@ -32,6 +32,7 @@ public class ScanningActionDescriptionCollectorTest extends TestCase {
 		assertTrue(names.contains("multiple2"));
 		assertTrue(names.contains("nested"));
 		assertTrue(names.contains("method"));
+		assertFalse(names.contains("action_temp_password"));
 	}
 	
 	public void testCollectSameParametersMethods() throws CollectionException {

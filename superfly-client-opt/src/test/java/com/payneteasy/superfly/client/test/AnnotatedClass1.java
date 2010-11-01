@@ -8,4 +8,9 @@ public class AnnotatedClass1 {
 	public void annotatedMethod() {
 		
 	}
+	
+	@Secured("action_temp_password")
+	public void with_temp_password() {
+		
+	}
 }

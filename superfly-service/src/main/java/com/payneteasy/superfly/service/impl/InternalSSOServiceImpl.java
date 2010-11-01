@@ -183,7 +183,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = new ArrayList<ActionToSave>(actionDescriptions.length);
 		for (ActionDescription description : actionDescriptions) {
-			if (!notSavedActions.contains(description.getName())) {
+			if (!notSavedActions.contains(description.getName().toLowerCase())) {
 				ActionToSave action = new ActionToSave();
 				action.setName(description.getName());
 				action.setDescription(description.getDescription());
