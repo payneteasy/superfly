@@ -3,12 +3,12 @@ package com.payneteasy.superfly.spring;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.PasswordGenerator;
-import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.policy.account.pcidss.PCIDSSAccountPolicy;
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 
 /**
  * Factory bean for {@link AccountPolicy}.
@@ -21,23 +21,23 @@ public class AccountPolicyFactoryBean extends
 	private UserDao userDao;
 	
 	private AccountPolicy accountPolicy;
-	private PasswordEncoder passwordEncoder;
-	private SaltSource saltSource;
+	private UserPasswordEncoder userPasswordEncoder;
 	private PasswordGenerator passwordGenerator;
-	
-	@Required
+    private ResetPasswordStrategy resetPasswordStrategy;
+
+    @Required
+    public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
+        this.resetPasswordStrategy = resetPasswordStrategy;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
 
-	@Required
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
-
-	@Required
-	public void setSaltSource(SaltSource saltSource) {
-		this.saltSource = saltSource;
+    @Required
+	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+		this.userPasswordEncoder = userPasswordEncoder;
 	}
 
 	@Required
@@ -57,9 +57,9 @@ public class AccountPolicyFactoryBean extends
 			case PCIDSS:
 				PCIDSSAccountPolicy pcidssAccountPolicy = new PCIDSSAccountPolicy();
 				pcidssAccountPolicy.setUserDao(userDao);
-				pcidssAccountPolicy.setPasswordEncoder(passwordEncoder);
-				pcidssAccountPolicy.setSaltSource(saltSource);
+				pcidssAccountPolicy.setUserPasswordEncoder(userPasswordEncoder);
 				pcidssAccountPolicy.setPasswordGenerator(passwordGenerator);
+                pcidssAccountPolicy.setResetPasswordStrategy(resetPasswordStrategy);
 				accountPolicy = pcidssAccountPolicy;
 				break;
 			default:

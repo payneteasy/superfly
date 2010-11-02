@@ -20,6 +20,7 @@ public class UserRegisterRequest implements Serializable {
 	private String salt;
 	private String isPasswordTemp;
     private String hotpSalt;
+    private String publicKey;
 
 	@Column(name = "user_id")
 	public long getUserid() {
@@ -135,5 +136,14 @@ public class UserRegisterRequest implements Serializable {
 
 	public void setHotpSalt(String hotpSalt) {
 		this.hotpSalt = hotpSalt;
+	}
+
+	@Column(name="public_key")
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 }

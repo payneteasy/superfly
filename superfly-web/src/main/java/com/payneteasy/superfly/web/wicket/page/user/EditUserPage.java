@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -17,10 +18,12 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
+import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 
 /**
  * Page used to edit a user.
@@ -32,7 +35,8 @@ public class EditUserPage extends BasePage {
 
 	@SpringBean
 	private UserService userService;
-
+	@SpringBean
+	private PublicKeyCrypto crypto;
 
 	public EditUserPage(PageParameters params) {
 		super(params);
@@ -73,6 +77,11 @@ public class EditUserPage extends BasePage {
 		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
 
         form.add(new PasswordInputValidator(user.getUsername(),password1Field,userService));
+        
+        TextArea<String> publicKeyField = new TextArea<String>("public-key",
+        		new PropertyModel<String>(user, "publicKey"));
+        form.add(publicKeyField);
+        publicKeyField.add(new PublicKeyValidator(crypto));
 
 		form.add(new RequiredTextField<String>("name",
 				new PropertyModel<String>(user, "name")));

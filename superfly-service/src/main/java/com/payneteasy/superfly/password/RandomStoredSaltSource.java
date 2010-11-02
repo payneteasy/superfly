@@ -3,6 +3,7 @@ package com.payneteasy.superfly.password;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 /**
  * Kuccyp

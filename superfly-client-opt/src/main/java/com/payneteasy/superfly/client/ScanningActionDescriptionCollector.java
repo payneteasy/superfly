@@ -3,6 +3,7 @@ package com.payneteasy.superfly.client;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class ScanningActionDescriptionCollector implements
 	private MethodReadingMetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
 	private Class<? extends Annotation> annotationClass;
 	private ValuesExtractor valuesExtractor = new DefaultValuesExtractor();
+	private Set<String> notCollectedActions = Collections.singleton("action_temp_password");
 
 	@Required
 	public void setBasePackages(String[] basePackages) {
@@ -70,6 +72,10 @@ public class ScanningActionDescriptionCollector implements
 
 	public void setValuesExtractor(ValuesExtractor valuesExtractor) {
 		this.valuesExtractor = valuesExtractor;
+	}
+
+	public void setNotCollectedActions(Set<String> notCollectedActions) {
+		this.notCollectedActions = notCollectedActions;
 	}
 
 	public List<ActionDescription> collect() throws CollectionException {
@@ -134,7 +140,9 @@ public class ScanningActionDescriptionCollector implements
 	protected List<ActionDescription> buildDescriptions(Set<String> names) {
 		List<ActionDescription> descriptions = new ArrayList<ActionDescription>(names.size());
 		for (String name : names) {
-			descriptions.add(new ActionDescription(name));
+			if (!notCollectedActions.contains(name.toLowerCase())) {
+				descriptions.add(new ActionDescription(name));
+			}
 		}
 		return descriptions;
 	}

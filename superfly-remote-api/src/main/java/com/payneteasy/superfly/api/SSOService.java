@@ -79,19 +79,16 @@ public interface SSOService {
 	 * @see RoleGrantSpecification
 	 */
 	void registerUser(String username, String password, String email, String subsystemHint,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException, PolicyValidationException;
-	/**
-     * 
-     * @param userName user name
-     * @return flag of temporary password
-     */
-    String getFlagTempPassword(String userName);
-    
+			RoleGrantSpecification[] roleGrants,
+			String name, String surname, String secretQuestion, String secretAnswer,
+			String publicKey)
+			throws UserExistsException, PolicyValidationException, BadPublicKeyException;
+	
     /**
      * 
      * @param userName user name
      * @param password password
+     * @since 1.2
      */
     void changeTempPassword(String userName, String password) throws PolicyValidationException;
 }

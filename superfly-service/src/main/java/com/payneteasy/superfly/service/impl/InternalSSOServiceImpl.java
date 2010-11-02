@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.BadPublicKeyException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
@@ -20,6 +22,7 @@ import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -31,7 +34,6 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
@@ -40,6 +42,9 @@ import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
+import com.payneteasy.superfly.utils.PGPKeyValidator;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -56,6 +61,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private HOTPProvider hotpProvider;
 	private LockoutStrategy lockoutStrategy;
 	private RegisterUserStrategy registerUserStrategy;
+	private PublicKeyCrypto publicKeyCrypto;
+	private HOTPService hotpService;
+	private Set<String> notSavedActions = Collections.singleton("action_temp_password");
 
 	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
@@ -114,6 +122,20 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.registerUserStrategy = registerUserStrategy;
 	}
 
+	@Required
+	public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
+		this.publicKeyCrypto = publicKeyCrypto;
+	}
+
+	@Required
+	public void setHotpService(HOTPService hotpService) {
+		this.hotpService = hotpService;
+	}
+
+	public void setNotSavedActions(Set<String> notSavedActions) {
+		this.notSavedActions = notSavedActions;
+	}
+
 	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
 			String sessionInfo) {
 		SSOUser ssoUser;
@@ -161,10 +183,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
 		List<ActionToSave> actions = new ArrayList<ActionToSave>(actionDescriptions.length);
 		for (ActionDescription description : actionDescriptions) {
-			ActionToSave action = new ActionToSave();
-			action.setName(description.getName());
-			action.setDescription(description.getDescription());
-			actions.add(action);
+			if (!notSavedActions.contains(description.getName().toLowerCase())) {
+				ActionToSave action = new ActionToSave();
+				action.setName(description.getName());
+				action.setDescription(description.getDescription());
+				actions.add(action);
+			}
 		}
 		return actions;
 	}
@@ -179,8 +203,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	public void registerUser(String username, String password, String email, String subsystemIdentifier,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException, PolicyValidationException {
+			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+			String secretAnswer, String publicKey) throws UserExistsException, PolicyValidationException,
+			BadPublicKeyException {
 
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);
@@ -194,10 +219,13 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSurname(surname);
 		registerUser.setSecretQuestion(secretQuestion);
 		registerUser.setSecretAnswer(secretAnswer);
+		registerUser.setPublicKey(publicKey);
 
 		// validate password policy
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
 				.getUserPasswordHistory(username)));
+
+		validatePublicKey(publicKey);
 
 		RoutineResult result = registerUserStrategy.registerUser(registerUser);
 		if (result.isOk()) {
@@ -212,6 +240,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 				}
 			}
 
+			if (result.isOk()) {
+				hotpService.sendTableIfSupported(registerUser.getUserid());
+			}
+
 			notificationService.notifyAboutUsersChanged();
 			loggerSink.info(logger, "REGISTER_USER", true, username);
 		} else if (result.isDuplicate()) {
@@ -222,6 +254,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
 					+ result.getErrorMessage());
 		}
+	}
+
+	private void validatePublicKey(String publicKey) throws BadPublicKeyException {
+		PGPKeyValidator.validatePublicKey(publicKey, publicKeyCrypto);
 	}
 
 	public boolean authenticateHOTP(String username, String hotp) {
@@ -239,13 +275,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
 	}
 
-	public String getFlagTempPassword(String userName) {
-		return userDao.getFlagTempPassword(userName);
-	}
-
-	public void changeTempPassword(String userName, String password) throws PolicyValidationException{
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-                .getUserPasswordHistory(userName)));
+	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
+		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+				.getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 }

@@ -5,13 +5,14 @@ create procedure register_user(i_user_name         varchar(32),
                                i_user_email        varchar(255),
                                i_subsystem_name    varchar(32),
                                i_principal_list    text,
-                               i_name 		   varchar(32),   
-                               i_surname	   varchar(32),
+                               i_name 		       varchar(32),   
+                               i_surname	       varchar(32),
                                i_secret_question   varchar(255),
                                i_secret_answer     varchar(255),
                                i_salt              varchar(128),
                                i_is_password_temp  varchar(1),
-                               i_hotp_salt		   varchar(128), 			 
+                               i_hotp_salt		   varchar(128),
+                               i_public_key		   text, 			 
                                out o_user_id       int(10)
                               )
  main_sql:
@@ -23,8 +24,8 @@ create procedure register_user(i_user_name         varchar(32),
 		leave main_sql;
 	end if;
   
-    insert into users(user_name, user_password, email, is_account_locked, `name`, surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt, create_date)
-         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now());
+    insert into users(user_name, user_password, email, is_account_locked, `name`, surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt, create_date, public_key)
+         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key);
 
     set o_user_id   = last_insert_id();
 

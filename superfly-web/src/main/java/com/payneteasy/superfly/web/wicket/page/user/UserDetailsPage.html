@@ -23,6 +23,11 @@
 	<div class="name">
 		User name : <span wicket:id="user-name">bond</span>&nbsp;|&nbsp;<a href="#" wicket:id="add-sub">add subsystem with role</a>
 	</div>
+	<div>
+		<a href="#" onclick="var e = document.getElementById('public_key_holder'); e.style.display = (e.style.display == 'none' ? 'block' : 'none'); return false;">Public key</a>
+		<div id="public_key_holder" wicket:id="public-key" style="white-space: pre; font-family: monospace; display: none;">
+		</div>
+	</div>
 <table class="dataSubRoles">
 <thead>
    <tr>

@@ -1,11 +1,11 @@
 package com.payneteasy.superfly.password;
 
+import junit.framework.TestCase;
+
 import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.policy.IPolicyContext;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValidation;
-import junit.framework.TestCase;
 
 
 public class PasswordPolicyTest extends TestCase {

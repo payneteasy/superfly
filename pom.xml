@@ -25,6 +25,8 @@
         <module>superfly-spring-security</module>
         <module>superfly-jira-integration</module>
         <module>superfly-spi-support</module>
+        <module>superfly-crypto</module>
+        <module>superfly-wicket</module>
 	</modules>
 	
 	<url>http://code.google.com/p/superfly/</url>
@@ -165,6 +167,16 @@
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-spi</artifactId>
+				<version>1.2-2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.payneteasy.superfly</groupId>
+				<artifactId>superfly-crypto</artifactId>
+				<version>1.2-2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.payneteasy.superfly</groupId>
+				<artifactId>superfly-wicket</artifactId>
 				<version>1.2-2-SNAPSHOT</version>
 			</dependency>
 			
@@ -400,6 +412,17 @@
 		        <version>1.1.1</version>
 		    </dependency>
 		    
+	        <dependency>
+	        	<groupId>org.apache.velocity</groupId>
+	        	<artifactId>velocity</artifactId>
+	        	<version>1.6.4</version>
+	        </dependency>
+	        <dependency>
+	        	<groupId>javax.mail</groupId>
+	        	<artifactId>mail</artifactId>
+	        	<version>1.4</version>
+	        </dependency>
+		    
 			<!-- WICKET DEPENDENCIES -->
 			<dependency>
 				<groupId>org.apache.wicket</groupId>
@@ -523,6 +546,13 @@
 					</exclusion>
 	      	    </exclusions>
 	    	</dependency>
+	    	
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpg-jdk15</artifactId>
+				<version>1.45</version>
+			</dependency>
+	    	
 	        <dependency>
 	        	<groupId>org.easymock</groupId>
 	        	<artifactId>easymock</artifactId>

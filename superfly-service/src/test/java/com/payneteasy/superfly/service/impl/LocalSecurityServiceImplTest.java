@@ -11,6 +11,7 @@ import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 import com.payneteasy.superfly.service.LoggerSink;
 
 public class LocalSecurityServiceImplTest extends TestCase {
@@ -27,8 +28,10 @@ public class LocalSecurityServiceImplTest extends TestCase {
 	}
 	
 	public void testPasswordEncodingWithPlainTextAndNullSalt() {
-		localSecurityService.setPasswordEncoder(new PlaintextPasswordEncoder());
-		localSecurityService.setSaltSource(new NullSaltSource());
+		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+		userPasswordEncoder.setSaltSource(new NullSaltSource());
+		localSecurityService.setUserPasswordEncoder(userPasswordEncoder);
 		userDao.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(null);
 		EasyMock.replay(userDao);
@@ -37,8 +40,10 @@ public class LocalSecurityServiceImplTest extends TestCase {
 	}
 	
 	public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
-		localSecurityService.setPasswordEncoder(new PlaintextPasswordEncoder());
-		localSecurityService.setSaltSource(new ConstantSaltSource("salt"));
+		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+		userPasswordEncoder.setSaltSource(new ConstantSaltSource("salt"));
+		localSecurityService.setUserPasswordEncoder(userPasswordEncoder);
 		userDao.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(null);
 		EasyMock.replay(userDao);

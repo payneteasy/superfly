@@ -1,11 +1,10 @@
 package com.payneteasy.superfly.policy.password;
 
-import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltSource;
-import com.payneteasy.superfly.policy.IPolicyContext;
-
 import java.util.Collections;
 import java.util.List;
+
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.policy.IPolicyContext;
 
 /**
  * Kuccyp
@@ -14,15 +13,15 @@ import java.util.List;
  * (C) 2010
  * Skype: kuccyp
  */
-public class PasswordCheckContext implements IPolicyContext{
+public class PasswordCheckContext implements IPolicyContext {
     public PasswordCheckContext(String aPassword) {
         this(aPassword,null,Collections.<PasswordSaltPair>emptyList());
     }
 
-    public PasswordCheckContext(String aPassword,PasswordEncoder aPasswordEncoder,List<PasswordSaltPair> aPasswordHistory) {
+    public PasswordCheckContext(String aPassword, PasswordEncoder aPasswordEncoder, List<PasswordSaltPair> aPasswordHistory) {
         thePassword = aPassword;
         thePasswordEncoder = aPasswordEncoder;
-        thePasswordHistory=aPasswordHistory;
+        thePasswordHistory = aPasswordHistory;
     }
 
     /** Password */

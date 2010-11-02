@@ -3,6 +3,7 @@ package com.payneteasy.superfly.model.ui.user;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 
 /**
  * User object to be used in the UI (create/update).
@@ -19,8 +20,10 @@ public class UIUser implements Serializable {
 	private String secretQuestion;
 	private String secretAnswer;
     private String salt;
+    private String publicKey;
 
 	@Column(name = "user_id")
+	@Id
 	public Long getId() {
 		return id;
 	}
@@ -100,4 +103,13 @@ public class UIUser implements Serializable {
     public void setSalt(String salt) {
         this.salt = salt;
     }
+
+    @Column(name = "public_key")
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+	}
 }

@@ -2,14 +2,13 @@ package com.payneteasy.superfly.service;
 
 import java.util.List;
 
-import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.api.UserExistsException;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.model.RoutineResult;
 
 /**
  * Internal service used to implement SSOService.
@@ -69,11 +68,14 @@ public interface InternalSSOService {
 	 *            identifier of a subsystem to which he's to be given a role
 	 * @param roleGrants
 	 *            which roles to grant
+	 * @param publicKey
+	 * 			  user's public key
 	 * @throws UserExistsException
+	 * @throws BadPublicKeyException 
 	 */
 	void registerUser(String username, String password, String email, String subsystemIdentifier,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer)
-			throws UserExistsException, PolicyValidationException;
+			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey)
+			throws UserExistsException, PolicyValidationException, BadPublicKeyException;
 
 	/**
 	 * Authenticates using HOTP (HMAC-based One Time Password).
@@ -84,13 +86,6 @@ public interface InternalSSOService {
 	 */
 	boolean authenticateHOTP(String username, String hotp);
 	
-	/**
-     * 
-     * @param userName user name
-     * @return flag of temporary password
-     */
-    String getFlagTempPassword(String userName);
-    
     /**
      * 
      * @param userName user name

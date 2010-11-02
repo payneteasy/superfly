@@ -17,6 +17,7 @@ import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class UserServiceImplTest extends TestCase {
 	
@@ -34,6 +35,7 @@ public class UserServiceImplTest extends TestCase {
 		userService.setPasswordEncoder(encoder);
 		userService.setSaltSource(new ConstantSaltSource("c3pio"));
 		userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
+		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
 	}
 	
 	public void testCreateUserPasswordEncryption() {
@@ -42,6 +44,7 @@ public class UserServiceImplTest extends TestCase {
 				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
 				assertNotNull(user.getHotpSalt());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});
@@ -78,12 +81,13 @@ public class UserServiceImplTest extends TestCase {
 			public RoutineResult answer() throws Throwable {
 				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "email");
+		userService.cloneUser(1L, "pete", "secret", "email", "new key");
 		
 		EasyMock.verify(userDao);
 	}
@@ -97,12 +101,13 @@ public class UserServiceImplTest extends TestCase {
 				assertEquals("new-email", user.getEmail());
 				assertNotNull(user.getSalt());
 				assertNotNull(user.getHotpSalt());
+				user.setId(1L);
 				return RoutineResult.okResult();
 			}
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "new-email");
+		userService.cloneUser(1L, "pete", "secret", "new-email", "new key");
 		
 		EasyMock.verify(userDao);
 	}

@@ -23,14 +23,15 @@
 		<property name="lockoutStrategy" ref="lockoutStrategy" />
 		<property name="registerUserStrategy" ref="registerUserStrategy" />
 		<property name="hotpProvider" ref="hotpProvider" />
+		<property name="publicKeyCrypto" ref="publicKeyCrypto" />
+		<property name="hotpService" ref="hotpService" />
 	</bean>
 
 	<bean id="localSecurityService"
 		class="com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl">
 		<property name="userDao" ref="userDao" />
 		<property name="loggerSink" ref="loggerSink" />
-		<property name="passwordEncoder" ref="passwordEncoder" />
-		<property name="saltSource" ref="saltSource" />
+		<property name="userPasswordEncoder" ref="userPasswordEncoder" />
 		<property name="hotpProvider" ref="hotpProvider" />
 		<property name="lockoutStrategy" ref="lockoutStrategy" />
 	</bean>
@@ -57,6 +58,7 @@
 		<property name="hotpSaltGenerator" ref="saltGenerator"/>
 		<property name="policyValidation" ref="passwordPolicyValidation" />
 		<property name="accountPolicy" ref="accountPolicy" />
+		<property name="hotpService" ref="hotpService" />
 	</bean>
 
 	<bean id="roleService" class="com.payneteasy.superfly.service.impl.RoleServiceImpl">
@@ -120,6 +122,11 @@
 		<property name="userDao" ref="userDao" />
 		<property name="saltGenerator" ref="saltGenerator"/>
 	</bean>
+	
+	<bean id="userPasswordEncoder" class="com.payneteasy.superfly.password.UserPasswordEncoderImpl">
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
+	</bean>
 
 
 	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
@@ -161,17 +168,45 @@
 	<bean id="accountPolicy" class="com.payneteasy.superfly.spring.AccountPolicyFactoryBean">
 		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao"/>
-		<property name="passwordEncoder" ref="passwordEncoder"/>
-		<property name="saltSource" ref="saltSource"/>
+		<property name="userPasswordEncoder" ref="userPasswordEncoder"/>
 		<property name="passwordGenerator" ref="passwordGenerator"/>
+        <property name="resetPasswordStrategy" ref="resetPasswordStrategy"/>
 	</bean>
 	
 	<bean id="resetPasswordStrategy"
 		class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
 		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao" />
-		<property name="saltSource" ref="saltSource" />
-		<property name="passwordEncoder" ref="passwordEncoder" />
+		<property name="userPasswordEncoder" ref="userPasswordEncoder" />
 		<property name="loggerSink" ref="loggerSink" />
+	</bean>
+	
+	<bean id="publicKeyCrypto" class="com.payneteasy.superfly.crypto.pgp.PGPCrypto">
+	</bean>
+	
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    	<property name="velocityPropertiesMap">
+    		<map>
+    			<entry key="resource.loader" value="file"/>
+    			<entry key="file.resource.loader.class" value="org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"/>
+    		</map>
+    	</property>
+    </bean>
+        	
+	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="session" ref="mailSession"/>
+	</bean>
+	
+	<bean id="emailService" class="com.payneteasy.superfly.email.impl.EmailServiceImpl">
+		<property name="javaMailSender" ref="javaMailSender"/>
+		<property name="velocityEngine" ref="velocityEngine"/>
+		<property name="from" ref="fromEmail"/>
+	</bean>
+	
+	<bean id="hotpService" class="com.payneteasy.superfly.hotp.HOTPServiceImpl">
+		<property name="emailService" ref="emailService"/>
+		<property name="hotpProvider" ref="hotpProvider"/>
+		<property name="publicKeyCrypto" ref="publicKeyCrypto"/>
+		<property name="userDao" ref="userDao"/>
 	</bean>
 </beans>

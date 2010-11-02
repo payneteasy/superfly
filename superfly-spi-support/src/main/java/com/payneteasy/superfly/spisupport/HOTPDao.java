@@ -25,4 +25,13 @@ public interface HOTPDao {
 	 */
 	@AStoredProcedure(name = "update_hotp_counter")
 	void updateCounter(String username, long newValue);
+	
+	/**
+	 * Resets HOTP sequence for the given user.
+	 * 
+	 * @param username	name of the user
+	 * @param hotpSalt	new salt for HOTP
+	 */
+    @AStoredProcedure(name="reset_hotp")
+    void resetHOTP(String username, String hotpSalt);
 }

@@ -62,7 +62,7 @@ insert into user_role_actions
 */
 
 update users set hotp_counter = 0 where hotp_counter is null;
-update users set hotp_salt = sha1(concat(user_name, user_password, unix_timestamp()));
+update users set hotp_salt = sha1(concat(user_name, user_password, unix_timestamp())) where hotp_salt is null;
 
 update users set create_date = now() where create_date is null;
 

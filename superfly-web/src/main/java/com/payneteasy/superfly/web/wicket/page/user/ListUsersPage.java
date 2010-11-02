@@ -37,6 +37,7 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
@@ -59,6 +60,8 @@ public class ListUsersPage extends BasePage {
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
+	@SpringBean
+	private HOTPService hotpService;
 	@SpringBean
 	private HOTPProvider hotpProvider;
 	@SpringBean
@@ -208,6 +211,15 @@ public class ListUsersPage extends BasePage {
 				};
 				downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
 				item.add(downloadHotpTableLink);
+				
+				Link<Void> resetTableLink = new Link<Void>("reset-table-link") {
+					@Override
+					public void onClick() {
+						hotpService.resetTableAndSendIfSupported(user.getId());
+					}
+				};
+				resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
+				item.add(resetTableLink);
 			}
 		};
 		add(usersDataView);

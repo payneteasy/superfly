@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -27,6 +28,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.RoleService;
@@ -36,6 +38,7 @@ import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender
 import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
+import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 
 @Secured("ROLE_ADMIN")
 public class CreateUserPage extends BasePage {
@@ -45,6 +48,8 @@ public class CreateUserPage extends BasePage {
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
+	@SpringBean
+	private PublicKeyCrypto crypto;
 
 	public CreateUserPage() {
 		super();
@@ -90,10 +95,10 @@ public class CreateUserPage extends BasePage {
         FormComponent<String> userName=new RequiredTextField<String>("username",new PropertyModel<String>(user, "username"));
 		form.add(userName);
 
-		TextField<String> email = new TextField<String>("email",
+		TextField<String> emailField = new TextField<String>("email",
 				new PropertyModel<String>(user, "email"));
-		email.add(EmailAddressValidator.getInstance());
-		form.add(email.setRequired(true));
+		emailField.add(EmailAddressValidator.getInstance());
+		form.add(emailField.setRequired(true));
 		FormComponent<String> password1Field = new PasswordTextField(
 				"password", new PropertyModel<String>(user, "password"))
 				.setRequired(true);
@@ -104,10 +109,13 @@ public class CreateUserPage extends BasePage {
 		form.add(password2Field);
 		form.add(new EqualPasswordInputValidator(password1Field,
 						password2Field));
+		
+        TextArea<String> publicKeyField = new TextArea<String>("public-key",
+        		new PropertyModel<String>(user, "publicKey"));
+        form.add(publicKeyField);
+        publicKeyField.add(new PublicKeyValidator(crypto));
 
-
-        form.add(new PasswordInputValidator(userName,password1Field,userService));
-
+        form.add(new PasswordInputValidator(userName, password1Field, userService));
 
 		// DropDownChoice
 		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(

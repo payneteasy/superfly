@@ -60,7 +60,7 @@ public class SecurityUtils {
         return username;
     }
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static boolean isComponentVisible(Class aComponentClass) {
         if (aComponentClass.isAnnotationPresent(Secured.class)) {
             Secured securedAnnotation = (Secured) aComponentClass.getAnnotation(Secured.class);
@@ -79,5 +79,9 @@ public class SecurityUtils {
         } else {
             throw new RuntimeException("Page " + aComponentClass.getName() + " has no Secured annotation");
         }
+    }
+    
+    public static boolean isTempPassword() {
+    	return isUserInRole("ROLE_ACTION_TEMP_PASSWORD");
     }
 }

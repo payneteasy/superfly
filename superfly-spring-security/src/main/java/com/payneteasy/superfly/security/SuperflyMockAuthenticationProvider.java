@@ -74,7 +74,7 @@ public class SuperflyMockAuthenticationProvider extends AbstractSuperflyAuthenti
 		return Collections.emptyMap();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class authentication) {
 		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
 				|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)

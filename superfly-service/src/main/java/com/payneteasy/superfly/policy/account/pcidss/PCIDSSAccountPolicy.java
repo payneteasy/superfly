@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Required;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.User;
-import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.PasswordGenerator;
-import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.UserService;
 
 /**
@@ -26,10 +26,15 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
 	
 	private UserDao userDao;
 	private PasswordGenerator passwordGenerator;
-	private PasswordEncoder passwordEncoder;
-	private SaltSource saltSource;
-	
-	@Required
+	private UserPasswordEncoder userPasswordEncoder;
+    private ResetPasswordStrategy resetPasswordStrategy;
+
+    @Required
+    public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
+        this.resetPasswordStrategy = resetPasswordStrategy;
+    }
+
+    @Required
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
@@ -40,19 +45,14 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
 	}
 
 	@Required
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
-
-	@Required
-	public void setSaltSource(SaltSource saltSource) {
-		this.saltSource = saltSource;
+	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+		this.userPasswordEncoder = userPasswordEncoder;
 	}
 
 	public String unlockUser(long userId, boolean unlockingSuspendedUser) {
 		if (unlockingSuspendedUser) {
 			String password = passwordGenerator.generate();
-			String encPassword = passwordEncoder.encode(password, saltSource.getSalt(userId));
+			String encPassword = userPasswordEncoder.encode(password, userId);
 			RoutineResult result = userDao.unlockSuspendedUser(userId, encPassword);
 			if (!result.isOk()) {
 				throw new IllegalStateException(result.getErrorMessage());
@@ -79,7 +79,7 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
         List<User> users=userDao.getUsersWithExpiredPasswords(days);
         for(User u:users){
             logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
-            userService.lockUser(u.getUserid());
+            resetPasswordStrategy.resetPassword(u.getUserid(),u.getUserName(),null);
         }
 	}
 

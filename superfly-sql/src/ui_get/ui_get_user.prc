@@ -12,6 +12,7 @@ create procedure ui_get_user(i_user_id int(10))
          , secret_question
          , secret_answer 
          , salt
+         , public_key
     from users 
       where user_id = i_user_id;
   end                                                    
@@ -27,6 +28,7 @@ call save_routine_information('ui_get_user',
                                         'surname varchar',
                                         'secret_question varchar',
                                         'secret_answer varchar',
-					'salt varchar'
+										'salt varchar',
+										'public_key varchar'
                               )
      );

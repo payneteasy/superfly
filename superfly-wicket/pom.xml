@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>superfly-parent</artifactId>
+		<groupId>com.payneteasy.superfly</groupId>
+		<version>1.2-2-SNAPSHOT</version>
+	</parent>
+	<groupId>com.payneteasy.superfly</groupId>
+	<artifactId>superfly-wicket</artifactId>
+	<version>1.2-2-SNAPSHOT</version>
+	<name>Superfly wicket extensions</name>
+	<description>Classes that allow to integrate Superfly and Wicket</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket</artifactId>
+		</dependency>
+	</dependencies>
+</project>

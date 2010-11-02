@@ -36,4 +36,7 @@ public class TestHOTPProvider implements HOTPProvider {
 		return "111111";
 	}
 
+	public void resetSequence(String username) {
+	}
+
 }

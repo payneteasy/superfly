@@ -58,8 +58,16 @@ public interface HOTPProvider {
 	/**
 	 * Returns a name of file in which sequence is downloaded.
 	 * 
-	 * @param name of the user
+	 * @param username	name of the user
 	 * @return file name
 	 */
 	String getSequenceForDownloadFileName(String username);
+
+	/**
+	 * Resets a HOTP sequence for the given user. This means that a new
+	 * sequence will be generated and its counter will be reset to 0.
+	 * 
+	 * @param username	name of the user
+	 */
+	void resetSequence(String username);
 }

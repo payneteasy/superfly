@@ -23,7 +23,6 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltGenerator;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
@@ -31,6 +30,8 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private IPolicyValidation<PasswordCheckContext> policyValidation;
     private SaltGenerator hotpSaltGenerator;
     private AccountPolicy accountPolicy;
+    private HOTPService hotpService;
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -86,6 +88,11 @@ public class UserServiceImpl implements UserService {
 		this.accountPolicy = accountPolicy;
 	}
 
+	@Required
+	public void setHotpService(HOTPService hotpService) {
+		this.hotpService = hotpService;
+	}
+
 	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
 			Long complectId, Long subsystemId, int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc) {
@@ -105,7 +112,12 @@ public class UserServiceImpl implements UserService {
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
 		RoutineResult result = userDao.createUser(userForDao);
-		loggerSink.info(logger, "CREATE_USER", result.isOk(), user.getUsername());
+		loggerSink.info(logger, "CREATE_USER", result.isOk(), userForDao.getUsername());
+		
+		if (result.isOk()) {
+			hotpService.sendTableIfSupported(userForDao.getId());
+		}
+		
 		return result;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
@@ -156,16 +168,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public Long cloneUser(long templateUserId, String newUsername,
-			String newPassword, String newEmail) {
+			String newPassword, String newEmail, String newPublicKey) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
 		request.setEmail(newEmail);
         request.setSalt(saltSource.getSalt(newUsername));
         request.setHotpSalt(hotpSaltGenerator.generate());
-		request.setPassword(passwordEncoder.encode(newPassword,request.getSalt()));
+		request.setPassword(passwordEncoder.encode(newPassword, request.getSalt()));
+		request.setPublicKey(newPublicKey);
 		RoutineResult result = userDao.cloneUser(request);
 		if (result.isOk()) {
+			hotpService.sendTableIfSupported(request.getId());
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));

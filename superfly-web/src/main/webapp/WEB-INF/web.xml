@@ -5,6 +5,10 @@
     
     <display-name>Superfly</display-name>
     
+    <session-config>
+    	<session-timeout>15</session-timeout>
+    </session-config>
+    
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -12,6 +16,7 @@
         	/WEB-INF/spring/applicationContext-common.xml
         	/WEB-INF/spring/applicationContext-datasource.xml
         	/WEB-INF/spring/applicationContext-dao.xml
+        	/WEB-INF/spring/applicationContext-mailSession.xml
         	/WEB-INF/spring/applicationContext-service.xml
         	/WEB-INF/spring/applicationContext-aop.xml
         	/WEB-INF/spring/applicationContext-quartz.xml
@@ -71,6 +76,11 @@
 	<context-param>
 		<param-name>superfly-hotpTableSize</param-name>
 		<param-value>100</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>superfly-fromEmail</param-name>
+		<param-value>dummy@no.such.address.df</param-value>
 	</context-param>
 	
     <listener>

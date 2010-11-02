@@ -17,7 +17,9 @@ import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPDao;
 import com.payneteasy.superfly.spisupport.HOTPData;
 import com.payneteasy.superfly.spisupport.HOTPProviderContext;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spisupport.ObjectResolver;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 
 /**
  * Encrypts passwords in the database. It assumes they are not encoded yet.
@@ -62,7 +64,7 @@ public class PasswordEncryptor {
         
         Statement st = conn.createStatement();
         PreparedStatement updatePasswordSt = conn.prepareStatement("update users set user_password = ?, salt = ? where user_id = ?");
-        PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, 1, now(), '2999-12-31')");
+        PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, (select coalesce(max(uh2.number_history), 0) + 1 from user_history uh2 where uh2.user_user_id = ?), now(), '2999-12-31')");
         
         System.out.println("Starting password encryption");
         Set<String> processedNames = new HashSet<String>();
@@ -83,6 +85,7 @@ public class PasswordEncryptor {
         	insertHistorySt.setLong(1, id);
         	insertHistorySt.setString(2, newPassword);
         	insertHistorySt.setString(3, salt);
+        	insertHistorySt.setLong(4, id);
         	insertHistorySt.addBatch();
         	
         	processedNames.add(username);
@@ -141,17 +144,35 @@ public class PasswordEncryptor {
 	private static HOTPProviderContext createHOTPProviderContext(
 			String hotpMasterKey, int hotpCodeDigits, final Connection conn) {
 		final HOTPDao hotpDao = createHOTPDao(conn);
-		ObjectResolver objectResolver = createObjectResolver(hotpDao);
+		SaltGenerator saltGenerator = createSaltGenerator();
+		HOTPService hotpService = createHOTPService();
+		ObjectResolver objectResolver = createObjectResolver(hotpDao, saltGenerator, hotpService);
 		HOTPProviderContext hotpProviderContext = new HOTPProviderContextImpl(objectResolver, hotpMasterKey, hotpCodeDigits, 10, 100);
 		return hotpProviderContext;
 	}
 
-	private static ObjectResolver createObjectResolver(final HOTPDao hotpDao) {
+	private static HOTPService createHOTPService() {
+		return new HOTPService() {
+			public void sendTableIfSupported(long userId) {
+			}
+
+			public void resetTableAndSendIfSupported(long userId) {
+			}
+		};
+	}
+
+	private static ObjectResolver createObjectResolver(final HOTPDao hotpDao, final SaltGenerator saltGenerator, final HOTPService hotpService) {
 		ObjectResolver objectResolver = new ObjectResolver() {
 			@SuppressWarnings("unchecked")
 			public <T> T resolve(Class<T> clazz) {
 				if (clazz == HOTPDao.class) {
 					return (T) hotpDao;
+				}
+				if (clazz == SaltGenerator.class) {
+					return (T) saltGenerator;
+				}
+				if (clazz == HOTPService.class) {
+					return (T) hotpService;
 				}
 				throw new IllegalStateException("Unexpected class requested: " + clazz);
 			}
@@ -197,6 +218,9 @@ public class PasswordEncryptor {
 						}
 					}
 				}
+			}
+
+			public void resetHOTP(String username, String hotpSalt) {
 			}
 		};
 		return hotpDao;

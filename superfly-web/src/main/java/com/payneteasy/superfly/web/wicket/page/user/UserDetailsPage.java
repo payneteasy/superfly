@@ -9,6 +9,8 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
@@ -30,8 +32,24 @@ public class UserDetailsPage extends BasePage {
 	public UserDetailsPage(PageParameters params) {
 		super(params);
 		final long userId = params.getAsLong("userId");
-		UIUser thisuser = userService.getUser(userId);
+		final UIUser thisuser = userService.getUser(userId);
 		add(new Label("user-name", thisuser.getUsername()));
+		
+		IModel<String> publicKeyDisplayModel = new AbstractReadOnlyModel<String>() {
+			@Override
+			public String getObject() {
+				if (thisuser.getPublicKey() == null || thisuser.getPublicKey().trim().length() == 0) {
+					return "No key saved";
+				} else {
+					return thisuser.getPublicKey();
+				}
+			}
+		};
+		Label publicKeyLabel = new Label("public-key", publicKeyDisplayModel);
+		add(publicKeyLabel);
+		publicKeyLabel.setMarkupId("public_key_holder");
+		publicKeyLabel.setOutputMarkupId(true);
+		
 		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId,
 				null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();

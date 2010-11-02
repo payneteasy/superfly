@@ -8,9 +8,11 @@ import static org.easymock.EasyMock.eq;
 import java.util.Collections;
 
 import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
@@ -20,6 +22,7 @@ import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 	
@@ -39,12 +42,19 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		SimpleAccountPolicy accountPolicy = new SimpleAccountPolicy();
 		accountPolicy.setUserDao(userDao);
 		service.setAccountPolicy(accountPolicy);
+		service.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
 		userService = service;
 	}
 	
 	public void testCreateUser() throws Exception {
 		userDao.createUser(anyObject(UIUserForCreate.class));
-		EasyMock.expectLastCall().andReturn(okResult());
+		EasyMock.expectLastCall().andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
+				user.setId(1L);
+				return okResult();
+			}
+		});
 		loggerSink.info(anyObject(Logger.class), eq("CREATE_USER"), eq(true), eq("test-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
@@ -57,7 +67,13 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 	
 	public void testCreateUserFail() throws Exception {
 		userDao.createUser(anyObject(UIUserForCreate.class));
-		EasyMock.expectLastCall().andReturn(failureResult());
+		EasyMock.expectLastCall().andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
+				user.setId(1L);
+				return failureResult();
+			}
+		});
 		loggerSink.info(anyObject(Logger.class), eq("CREATE_USER"), eq(false), eq("test-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
@@ -150,11 +166,17 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 	
 	public void testCloneUser() throws Exception {
-		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andReturn(okResult());
+		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
+				user.setId(1L);
+				return okResult();
+			}
+		});
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(true), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password", "new-email");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key");
 		
 		EasyMock.verify(loggerSink);
 	}
@@ -164,7 +186,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(false), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password", "new-email");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key");
 		
 		EasyMock.verify(loggerSink);
 	}

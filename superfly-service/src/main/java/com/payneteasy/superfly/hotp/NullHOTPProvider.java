@@ -33,4 +33,7 @@ public class NullHOTPProvider implements HOTPProvider {
 	public String computeValue(String username, long counter) {
 		return "111111";
 	}
+
+	public void resetSequence(String username) {
+	}
 }

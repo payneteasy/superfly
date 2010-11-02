@@ -12,9 +12,19 @@ import javax.persistence.Column;
 public class HOTPData implements Serializable {
 	private static final long serialVersionUID = -1255491475933927511L;
 	
+	private long userId;
 	private String username;
 	private String salt;
 	private long counter;
+
+	@Column(name = "user_id")
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
 
 	@Column(name = "username")
 	public String getUsername() {

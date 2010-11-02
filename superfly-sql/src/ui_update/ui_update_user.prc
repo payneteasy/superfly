@@ -8,8 +8,8 @@ create procedure ui_update_user(i_user_id int(10),
                                 i_surname varchar(32),
                                 i_secret_question varchar(255),
                                 i_secret_answer varchar(255),
-                                i_salt varchar(64)
-                                
+                                i_salt varchar(64),
+                                i_public_key text
 )
  main_sql:
   begin
@@ -22,7 +22,8 @@ create procedure ui_update_user(i_user_id int(10),
            name = i_name, 
            surname = i_surname, 
            secret_question = i_secret_question, 
-           secret_answer = i_secret_answer
+           secret_answer = i_secret_answer,
+           public_key = i_public_key
      where user_id = i_user_id;
 
     if i_user_password is not null then 

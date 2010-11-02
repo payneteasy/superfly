@@ -20,6 +20,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAut
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 
 /**
@@ -90,7 +91,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
 					newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
 					return newCompound;
 				} else {
-					throw new BadCredentialsException("Bad HOTP");
+					throw new BadOTPValueException("Bad HOTP");
 				}
 			} else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
 				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;

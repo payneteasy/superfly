@@ -19,10 +19,10 @@ import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
-import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
@@ -42,6 +42,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));
+        service.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
 		internalSSOService = service;
 	}
 
@@ -52,7 +53,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(true), eq("new-user"));
 		EasyMock.replay(loggerSink, userDao);
 
-		internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer");
+		internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
 
 		EasyMock.verify(loggerSink);
 	}
@@ -66,7 +67,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
 		try {
 			internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-					new RoleGrantSpecification[] {}, "user", "user", "question", "answer");
+					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
 		} catch (UserExistsException e) {
 			// expected
 		}
@@ -83,7 +84,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
 		try {
 			internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-					new RoleGrantSpecification[] {}, "user", "user", "question", "answer");
+					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
 		} catch (IllegalStateException e) {
 			// expected
 		}

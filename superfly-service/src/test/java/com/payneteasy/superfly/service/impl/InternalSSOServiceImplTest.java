@@ -5,9 +5,6 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.policy.password.PasswordSaltPair;
-import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -15,7 +12,6 @@ import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
 import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -25,23 +21,25 @@ import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
-import com.payneteasy.superfly.register.RegisterUserStrategy;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
+import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
 
 public class InternalSSOServiceImplTest extends TestCase {
 	
 	private UserDao userDao;
 	private InternalSSOServiceImpl internalSSOService;
 	private HOTPProvider hotpProvider;
-	private RegisterUserStrategy registerUserStrategy;
+	private HOTPService hotpService;
 	
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		hotpProvider = EasyMock.createMock(HOTPProvider.class);
-		registerUserStrategy = EasyMock.createMock(RegisterUserStrategy.class);
+		hotpService = EasyMock.createMock(HOTPService.class);
 		InternalSSOServiceImpl service = new InternalSSOServiceImpl();
 		service.setUserDao(userDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
@@ -51,6 +49,7 @@ public class InternalSSOServiceImplTest extends TestCase {
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
+        service.setHotpService(hotpService);
 		internalSSOService = service;
 	}
 	
@@ -74,7 +73,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		EasyMock.verify(userDao);
 	}
 	
-	public void testRegisterUserPasswordEncoding() throws UserExistsException, PolicyValidationException {
+	public void testRegisterUserPasswordEncoding() throws Exception {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("md5");
 		internalSSOService.setPasswordEncoder(encoder);
@@ -85,12 +84,15 @@ public class InternalSSOServiceImplTest extends TestCase {
 				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.md5Hex("secret{e2e4}"), user.getPassword());
 				assertNotNull(user.getHotpSalt());
+				user.setUserid(1L);
 				return RoutineResult.okResult();
 			}
 		});
-		EasyMock.replay(userDao);
-		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{},"user", "user", "question", "answer");
-		EasyMock.verify(userDao);
+		hotpService.sendTableIfSupported(1L);
+		EasyMock.expectLastCall();
+		EasyMock.replay(userDao, hotpService);
+		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{},"user", "user", "question", "answer", null);
+		EasyMock.verify(userDao, hotpService);
 	}
 	
 	public void testAuthenticateHOTP() {
