@@ -11,8 +11,7 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.LockoutType;
-import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.spi.HOTPProvider;
@@ -26,8 +25,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	private String localSubsystemName = "superfly";
 	private String localRoleName = "admin";
 	private LoggerSink loggerSink;
-	private PasswordEncoder passwordEncoder;
-	private SaltSource saltSource;
+	private UserPasswordEncoder userPasswordEncoder;
 	private HOTPProvider hotpProvider;
 	private LockoutStrategy lockoutStrategy;
 
@@ -50,13 +48,8 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	}
 
 	@Required
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
-
-	@Required
-	public void setSaltSource(SaltSource saltSource) {
-		this.saltSource = saltSource;
+	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+		this.userPasswordEncoder = userPasswordEncoder;
 	}
 
 	@Required
@@ -70,7 +63,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	}
 
 	public String[] authenticate(String username, String password) {
-		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+		String encPassword = userPasswordEncoder.encode(password, username);
 		List<AuthRole> roles = userDao.authenticate(username, encPassword,
 				localSubsystemName, null, null);
 		if (roles != null) {

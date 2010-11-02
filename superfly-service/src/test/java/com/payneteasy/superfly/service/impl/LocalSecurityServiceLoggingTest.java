@@ -14,6 +14,7 @@ import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 
 public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest {
@@ -28,8 +29,10 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		service.setUserDao(userDao);
 		service.setLoggerSink(loggerSink);
 		service.setLocalRoleName("local");
-		service.setPasswordEncoder(new PlaintextPasswordEncoder());
-		service.setSaltSource(new NullSaltSource());
+		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+		userPasswordEncoder.setSaltSource(new NullSaltSource());
+		service.setUserPasswordEncoder(userPasswordEncoder);
 		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}

@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.policy.account.pcidss;
 
+import junit.framework.TestCase;
+
 import org.easymock.EasyMock;
 
 import com.payneteasy.superfly.dao.UserDao;
@@ -7,8 +9,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PasswordGeneratorImpl;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
-
-import junit.framework.TestCase;
+import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 
 public class PCIDSSAccountPolicyTest extends TestCase {
 	private PCIDSSAccountPolicy policy;
@@ -19,8 +20,10 @@ public class PCIDSSAccountPolicyTest extends TestCase {
 		PasswordGeneratorImpl passwordGenerator = new PasswordGeneratorImpl();
 		policy = new PCIDSSAccountPolicy();
 		policy.setPasswordGenerator(passwordGenerator);
-		policy.setPasswordEncoder(new PlaintextPasswordEncoder());
-		policy.setSaltSource(new NullSaltSource());
+		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+		userPasswordEncoder.setSaltSource(new NullSaltSource());
+		policy.setUserPasswordEncoder(userPasswordEncoder);
 		policy.setUserDao(userDao);
 	}
 	
