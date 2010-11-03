@@ -46,6 +46,7 @@
 				<th><a wicket:id="order-by-locked">Locked</a></th>
 				<th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
 				<th><a wicket:id="order-by-last-login-date">Last login date</a></th>
+				<th>NC</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -66,13 +67,16 @@
 				<td>
 					<span wicket:id="last-login-date">2008-01-01 03:33:44</span>
 				</td>
+				<td align="center">
+					<span wicket:id="next-otp-counter">3</span>
+				</td>
 				<td>
 					<a href="#" wicket:id="edit-user">Edit</a>
 					<!--<a href="#" wicket:id="change-user-roles">Roles</a>
 					<a href="#" wicket:id="change-user-actions">Actions</a>
 					--><a href="#" wicket:id="clone-user">Clone</a>
 					<a href="#" wicket:id="reset-password-link">Reset password</a>
-					<a href="#" wicket:id="download-hotp-table">Dl table</a>
+					<a href="#" wicket:id="download-hotp-table">OTP table</a>
 					<a href="#" wicket:id="reset-table-link">Reset table</a>
 				</td>
 			</tr>

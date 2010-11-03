@@ -29,7 +29,8 @@ create procedure ui_get_users_list(i_start_from int(10),
                  '       u.logins_failed, ',
                  '       u.last_login_date, ',
                  '       u.email, ',
-                 '       u.is_account_suspended ',
+                 '       u.is_account_suspended, ',
+                 '       u.hotp_counter ',
                  '  from users u ',
                  ' where true ',
                  coalesce(v_search_conditions, '')
@@ -63,6 +64,7 @@ call save_routine_information('ui_get_users_list',
                                         'logins_failed int',
                                         'last_login_date datetime',
                                         'email varchar',
-                                        'is_account_suspended varchar'
+                                        'is_account_suspended varchar',
+                                        'hotp_counter int'
                               )
      );

@@ -19,6 +19,7 @@ public class UIUserForList implements Serializable {
 	private Date lastLoginDate;
 	private String email;
 	private boolean accountSuspended;
+	private long nextOtpCounter;
 
 	@Column(name = "user_id")
 	public long getId() {
@@ -90,6 +91,15 @@ public class UIUserForList implements Serializable {
 
 	public void setAccountSuspended(boolean accountSuspended) {
 		this.accountSuspended = accountSuspended;
+	}
+
+	@Column(name = "hotp_counter")
+	public long getNextOtpCounter() {
+		return nextOtpCounter;
+	}
+
+	public void setNextOtpCounter(long nextOtpCounter) {
+		this.nextOtpCounter = nextOtpCounter;
 	}
 	
 }

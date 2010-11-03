@@ -146,6 +146,7 @@ public class ListUsersPage extends BasePage {
 				item.add(switchLockedStatusLink);
 				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
+				item.add(new Label("next-otp-counter", String.valueOf(user.getNextOtpCounter())));
 				item.add(new Label("email",user.getEmail()));
 				
 				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
