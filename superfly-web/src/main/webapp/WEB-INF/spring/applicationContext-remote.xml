@@ -6,6 +6,7 @@
 	<bean id="ssoService"
 		class="com.payneteasy.superfly.service.impl.remote.SSOServiceImpl">
 		<property name="internalSSOService" ref="internalSsoService" />
+		<property name="hotpService" ref="hotpService" />
 		<!-- Comment the following property out if you don't plan using
 			SSL client auth for subsystem calls. In this case you will also
 			have to modify applicationContext-security.xml (see its comments on

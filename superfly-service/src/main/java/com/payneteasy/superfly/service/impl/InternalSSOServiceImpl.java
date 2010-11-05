@@ -33,6 +33,7 @@ import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
@@ -279,5 +280,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
 				.getUserPasswordHistory(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+	}
+
+	public UserForDescription getUserDescription(String username) {
+		return userDao.getUserForDescription(username);
 	}
 }

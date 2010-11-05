@@ -8,7 +8,9 @@ import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 
 /**
  * Internal service used to implement SSOService.
@@ -92,4 +94,12 @@ public interface InternalSSOService {
      * @param password password
      */
     void changeTempPassword(String userName, String password) throws PolicyValidationException;
+
+    /**
+     * Returns a user description.
+     * 
+     * @param username	username
+     * @return description
+     */
+	UserForDescription getUserDescription(String username);
 }

@@ -264,3 +264,5 @@ create table mysql_routines_return_arguments (
 \. stub/clear_hotp_logins_failed.prc
 \. stub/increment_hotp_logins_failed.prc
 \. stub/reset_hotp.prc
+
+\. get/get_user_for_description.prc

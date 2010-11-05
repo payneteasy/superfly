@@ -11,6 +11,7 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 
 /**
@@ -515,6 +516,9 @@ public interface UserDao {
 
     @AStoredProcedure(name="increment_hotp_logins_failed")
 	void incrementHOTPLoginsFailed(String username);
+
+    @AStoredProcedure(name="get_user_for_description")
+	UserForDescription getUserForDescription(String username);
   
 }
 

@@ -91,4 +91,23 @@ public interface SSOService {
      * @since 1.2
      */
     void changeTempPassword(String userName, String password) throws PolicyValidationException;
+
+    /**
+     * Returns a description of the given user.
+     * 
+     * @param username	username
+     * @return description or null if user is not found
+     * @since 1.2-4
+     */
+    UserDescription getUserDescription(String username);
+
+    /**
+     * Resets an OTP table and sends it to the user via email in encrypted form
+     * (if HOTPProvider supports exporting in binary form).
+     * 
+     * @param username	name of the user
+     * @throws UserNotFoundException 
+     * @since 1.2-4
+     */
+    void resetAndSendOTPTable(String username) throws UserNotFoundException;
 }
