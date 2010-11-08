@@ -16,6 +16,7 @@ import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 
@@ -28,6 +29,7 @@ public class SSOServiceImpl implements SSOService {
 	
 	private InternalSSOService internalSSOService;
 	private HOTPService hotpService;
+	private ResetPasswordStrategy resetPasswordStrategy;
 	private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();
 
 	@Required
@@ -38,6 +40,11 @@ public class SSOServiceImpl implements SSOService {
 	@Required
 	public void setHotpService(HOTPService hotpService) {
 		this.hotpService = hotpService;
+	}
+
+	@Required
+	public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
+		this.resetPasswordStrategy = resetPasswordStrategy;
 	}
 
 	public void setSubsystemIdentifierObtainer(
@@ -123,6 +130,32 @@ public class SSOServiceImpl implements SSOService {
 			throw new UserNotFoundException(username);
 		}
 		hotpService.sendTableIfSupported(user.getUserId());
+	}
+
+	/**
+	 * @see SSOService#updateUserDescription(UserDescription)
+	 */
+	public void updateUserDescription(UserDescription user)
+			throws UserNotFoundException, BadPublicKeyException {
+		UserForDescription userForDescription = internalSSOService.getUserDescription(user.getUsername());
+		if (userForDescription == null) {
+			throw new UserNotFoundException(user.getUsername());
+		}
+		userForDescription.setEmail(user.getEmail());
+		userForDescription.setPublicKey(user.getPublicKey());
+		internalSSOService.updateUserForDescription(userForDescription);
+	}
+
+	/**
+	 * @see SSOService#resetPassword(String, String)
+	 */
+	public void resetPassword(String username, String newPassword)
+			throws UserNotFoundException, PolicyValidationException {
+		UserForDescription user = internalSSOService.getUserDescription(username);
+		if (user == null) {
+			throw new UserNotFoundException(username);
+		}
+		resetPasswordStrategy.resetPassword(user.getUserId(), username, newPassword);
 	}
 
 }

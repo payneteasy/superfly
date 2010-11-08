@@ -519,6 +519,9 @@ public interface UserDao {
 
     @AStoredProcedure(name="get_user_for_description")
 	UserForDescription getUserForDescription(String username);
+
+    @AStoredProcedure(name="update_user_for_description")
+	void updateUserForDescription(UserForDescription user);
   
 }
 

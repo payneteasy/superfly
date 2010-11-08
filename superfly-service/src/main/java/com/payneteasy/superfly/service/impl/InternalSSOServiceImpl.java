@@ -285,4 +285,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	public UserForDescription getUserDescription(String username) {
 		return userDao.getUserForDescription(username);
 	}
+
+	public void updateUserForDescription(UserForDescription user) {
+		userDao.updateUserForDescription(user);
+	}
 }

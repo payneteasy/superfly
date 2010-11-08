@@ -110,4 +110,25 @@ public interface SSOService {
      * @since 1.2-4
      */
     void resetAndSendOTPTable(String username) throws UserNotFoundException;
+
+    /**
+     * Updates user's fields.
+     * 
+     * @param user	user fields
+     * @throws UserNotFoundException	if user with such a name is not found
+     * @throws BadPublicKeyException	if public key is not valid
+     * @since 1.2-4
+     */
+    void updateUserDescription(UserDescription user) throws UserNotFoundException, BadPublicKeyException;
+
+    /**
+     * Resets user's password if policy requires this.
+     * 
+     * @param username		name of the user
+     * @param newPassword	new password
+     * @throws UserNotFoundException		if not such user exists
+     * @throws PolicyValidationException	if password is bad
+     * @since 1.2-4
+     */
+    void resetPassword(String username, String newPassword) throws UserNotFoundException, PolicyValidationException;
 }

@@ -8,7 +8,6 @@ import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 
@@ -102,4 +101,11 @@ public interface InternalSSOService {
      * @return description
      */
 	UserForDescription getUserDescription(String username);
+
+	/**
+	 * Updates user's fields.
+	 * 
+	 * @param user	user's fields
+	 */
+	void updateUserForDescription(UserForDescription user);
 }
