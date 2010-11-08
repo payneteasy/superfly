@@ -166,4 +166,14 @@
     		</description>
     	</item>
     </release>
+    
+    <release number="1.2-4" date="2010.11.08">
+    	<item type="task">
+    		<name>Remote editing and password/OTP table resetting</name>
+    		<description>
+    			It's now possible to edit a user and reset their password and
+    			OTP table via an SSOService.
+    		</description>
+    	</item>
+    </release>
 </news>
