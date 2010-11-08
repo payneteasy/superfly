@@ -17,6 +17,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.policy.IPolicyValidation;
@@ -52,7 +53,11 @@ public class CloneUserPage extends BasePage {
 		Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
 			@Override
 			protected void onSubmit() {
-				userService.cloneUser(userId, user.getUsername(), user.getPassword(), user.getEmail(), user.getPublicKey());
+				try {
+					userService.cloneUser(userId, user.getUsername(), user.getPassword(), user.getEmail(), user.getPublicKey());
+				} catch (MessageSendException e) {
+					error("Could not send a message: " + e.getMessage());
+				}
 				getRequestCycle().setResponsePage(ListUsersPage.class);
 				getRequestCycle().setRedirect(true);
 				info("User cloned: " + oldUser.getUsername() + " to " + user.getUsername());

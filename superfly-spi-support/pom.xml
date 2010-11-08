@@ -15,6 +15,10 @@
 			<groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
 			<artifactId>jdbc-proc-daofactory</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-remote-api</artifactId>
+		</dependency>
 	</dependencies>
 
 </project>

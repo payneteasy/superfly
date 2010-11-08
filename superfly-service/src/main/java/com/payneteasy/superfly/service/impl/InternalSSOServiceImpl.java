@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
@@ -206,7 +207,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	public void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
 			String secretAnswer, String publicKey) throws UserExistsException, PolicyValidationException,
-			BadPublicKeyException {
+			BadPublicKeyException, MessageSendException {
 
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername(username);

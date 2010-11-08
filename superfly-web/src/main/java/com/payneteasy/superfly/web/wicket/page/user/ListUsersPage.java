@@ -28,6 +28,7 @@ import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -216,7 +217,11 @@ public class ListUsersPage extends BasePage {
 				Link<Void> resetTableLink = new Link<Void>("reset-table-link") {
 					@Override
 					public void onClick() {
-						hotpService.resetTableAndSendIfSupported(user.getId());
+						try {
+							hotpService.resetTableAndSendIfSupported(user.getId());
+						} catch (MessageSendException e) {
+							error("Could not send a message: " + e.getMessage());
+						}
 					}
 				};
 				resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());

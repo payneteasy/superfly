@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
@@ -65,8 +66,9 @@ public interface UserService {
 	 * Creates a user.
 	 * 
 	 * @param user	user to create
+	 * @throws MessageSendException 
 	 */
-	RoutineResult createUser(UIUserForCreate user);
+	RoutineResult createUser(UIUserForCreate user) throws MessageSendException;
 
 	/**
 	 * Updates a user.
@@ -107,9 +109,10 @@ public interface UserService {
 	 * @param newEmail			new user's email
 	 * @param newPublicKey		new user's public key
 	 * @return new user ID
+	 * @throws MessageSendException 
 	 */
 	Long cloneUser(long templateUserId, String newUsername, String newPassword,
-			String newEmail, String newPublicKey);
+			String newEmail, String newPublicKey) throws MessageSendException;
 	
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or

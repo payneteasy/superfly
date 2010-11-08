@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
@@ -73,10 +74,11 @@ public interface InternalSSOService {
 	 * 			  user's public key
 	 * @throws UserExistsException
 	 * @throws BadPublicKeyException 
+	 * @throws MessageSendException 
 	 */
 	void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey)
-			throws UserExistsException, PolicyValidationException, BadPublicKeyException;
+			throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
 
 	/**
 	 * Authenticates using HOTP (HMAC-based One Time Password).

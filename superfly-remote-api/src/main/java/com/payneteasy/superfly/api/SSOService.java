@@ -75,6 +75,8 @@ public interface SSOService {
 	 * @throws UserExistsException
 	 *             if user with such a name already exists
 	 * @throws PolicyValidationException
+	 * @throws BadPublicKeyException
+	 * @throws MessageSendException
 	 * @since 1.1
 	 * @see RoleGrantSpecification
 	 */
@@ -82,7 +84,8 @@ public interface SSOService {
 			RoleGrantSpecification[] roleGrants,
 			String name, String surname, String secretQuestion, String secretAnswer,
 			String publicKey)
-			throws UserExistsException, PolicyValidationException, BadPublicKeyException;
+			throws UserExistsException, PolicyValidationException,
+			BadPublicKeyException, MessageSendException;
 	
     /**
      * 
@@ -107,9 +110,10 @@ public interface SSOService {
      * 
      * @param username	name of the user
      * @throws UserNotFoundException 
+     * @throws MessageSendException 
      * @since 1.2-4
      */
-    void resetAndSendOTPTable(String username) throws UserNotFoundException;
+    void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException;
 
     /**
      * Updates user's fields.

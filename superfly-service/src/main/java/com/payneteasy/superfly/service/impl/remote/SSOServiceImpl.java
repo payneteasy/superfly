@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOService;
@@ -88,7 +89,7 @@ public class SSOServiceImpl implements SSOService {
 			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
 			String name, String surname, String secretQuestion, String secretAnswer,
 			String publicKey)
-			throws UserExistsException, PolicyValidationException, BadPublicKeyException {
+			throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
 		internalSSOService.registerUser(username, password, email,
 				obtainSubsystemIdentifier(subsystemIdentifier), roleGrants,
 				name, surname, secretQuestion, secretAnswer, publicKey);
@@ -126,7 +127,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#resetAndSendOTPTable(String)
 	 */
-	public void resetAndSendOTPTable(String username) throws UserNotFoundException {
+	public void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException {
 		UserForDescription user = internalSSOService.getUserDescription(username);
 		if (user == null) {
 			throw new UserNotFoundException(username);

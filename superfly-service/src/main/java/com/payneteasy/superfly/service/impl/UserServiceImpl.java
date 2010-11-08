@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
@@ -107,7 +108,7 @@ public class UserServiceImpl implements UserService {
 				subsystemId);
 	}
 
-	public RoutineResult createUser(UIUserForCreate user) {
+	public RoutineResult createUser(UIUserForCreate user) throws MessageSendException {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
@@ -168,7 +169,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public Long cloneUser(long templateUserId, String newUsername,
-			String newPassword, String newEmail, String newPublicKey) {
+			String newPassword, String newEmail, String newPublicKey) throws MessageSendException {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);

@@ -28,6 +28,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -153,7 +154,11 @@ public class CreateUserPage extends BasePage {
 			public void onSubmit() {
 				UIRoleForList role = models.getModelObject();
 				user.setRoleId(role.getId());
-				userService.createUser(user);
+				try {
+					userService.createUser(user);
+				} catch (MessageSendException e) {
+					error("Could not send a message: " + e.getMessage());
+				}
 				getRequestCycle().setResponsePage(ListUsersPage.class);
 				getRequestCycle().setRedirect(true);
 				info("User created: " + user.getUsername());

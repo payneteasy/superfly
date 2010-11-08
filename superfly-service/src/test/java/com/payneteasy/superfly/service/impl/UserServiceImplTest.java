@@ -7,6 +7,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -38,7 +39,7 @@ public class UserServiceImplTest extends TestCase {
 		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
 	}
 	
-	public void testCreateUserPasswordEncryption() {
+	public void testCreateUserPasswordEncryption() throws MessageSendException {
 		EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
 				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
@@ -76,7 +77,7 @@ public class UserServiceImplTest extends TestCase {
 		EasyMock.verify(userDao);
 	}
 	
-	public void testCloneUserPasswordEncryption() {
+	public void testCloneUserPasswordEncryption() throws MessageSendException {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
 				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
@@ -92,7 +93,7 @@ public class UserServiceImplTest extends TestCase {
 		EasyMock.verify(userDao);
 	}
 	
-	public void testCloneUser() {
+	public void testCloneUser() throws MessageSendException {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
 				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];

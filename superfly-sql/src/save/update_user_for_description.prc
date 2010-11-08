@@ -5,7 +5,8 @@ create procedure update_user_for_description(i_user_id		int(11),
 											 i_email		varchar(255),
 											 i_name			varchar(255),
 											 i_surname		varchar(255),
-											 i_public_key text)
+											 i_public_key 	text
+)
  main_sql:
   begin
     update users set

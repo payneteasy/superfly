@@ -3,18 +3,24 @@ package com.payneteasy.superfly.hotp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.email.EmailService;
+import com.payneteasy.superfly.email.RuntimeMessagingException;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
 
 @Transactional
 public class HOTPServiceImpl implements HOTPService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(HOTPServiceImpl.class);
 	
 	private EmailService emailService;
 	private HOTPProvider hotpProvider;
@@ -41,17 +47,17 @@ public class HOTPServiceImpl implements HOTPService {
 		this.userDao = userDao;
 	}
 
-	public void sendTableIfSupported(long userId) {
+	public void sendTableIfSupported(long userId) throws MessageSendException {
 		obtainUserIfNeededAndSendTableIfSupported(userId, null);
 	}
 	
-	public void resetTableAndSendIfSupported(long userId) {
+	public void resetTableAndSendIfSupported(long userId) throws MessageSendException {
 		UIUser user = userDao.getUser(userId);
 		hotpProvider.resetSequence(user.getUsername());
 		obtainUserIfNeededAndSendTableIfSupported(userId, user);
 	}
 	
-	private void obtainUserIfNeededAndSendTableIfSupported(long userId, UIUser user) {
+	private void obtainUserIfNeededAndSendTableIfSupported(long userId, UIUser user) throws MessageSendException {
 		if (hotpProvider.outputsSequenceForDownload()) {
 			if (user == null) {
 				user = userDao.getUser(userId);
@@ -64,11 +70,16 @@ public class HOTPServiceImpl implements HOTPService {
 		}
 	}
 
-	protected void sendNoPublicKey(String email) {
-		emailService.sendNoPublicKeyMessage(email);
+	protected void sendNoPublicKey(String email) throws MessageSendException {
+		try {
+			emailService.sendNoPublicKeyMessage(email);
+		} catch (RuntimeMessagingException e) {
+			logger.error("Could not send a message to " + email, e);
+			throw new MessageSendException(e);
+		}
 	}
 
-	protected void actuallySendTable(UIUser user) {
+	protected void actuallySendTable(UIUser user) throws MessageSendException {
 		String filename = hotpProvider.getSequenceForDownloadFileName(user.getUsername());
 		// TODO: use streams, not buffers
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -83,7 +94,12 @@ public class HOTPServiceImpl implements HOTPService {
 			throw new IllegalStateException(e);
 		}
 		
-		emailService.sendHOTPTable(user.getEmail(), filename, baos.toByteArray());
+		try {
+			emailService.sendHOTPTable(user.getEmail(), filename, baos.toByteArray());
+		} catch (RuntimeMessagingException e) {
+			logger.error("Could not send a message to " + user.getEmail(), e);
+			throw new MessageSendException(e);
+		}
 	}
 
 }
