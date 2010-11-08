@@ -117,6 +117,8 @@ public class SSOServiceImpl implements SSOService {
 		UserDescription result = new UserDescription();
 		result.setUsername(user.getUsername());
 		result.setEmail(user.getEmail());
+		result.setFirstName(user.getName());
+		result.setLastName(user.getSurname());
 		result.setPublicKey(user.getPublicKey());
 		return result;
 	}
@@ -142,6 +144,8 @@ public class SSOServiceImpl implements SSOService {
 			throw new UserNotFoundException(user.getUsername());
 		}
 		userForDescription.setEmail(user.getEmail());
+		userForDescription.setName(user.getFirstName());
+		userForDescription.setSurname(user.getLastName());
 		userForDescription.setPublicKey(user.getPublicKey());
 		internalSSOService.updateUserForDescription(userForDescription);
 	}

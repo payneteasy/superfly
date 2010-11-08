@@ -6,6 +6,8 @@ create procedure get_user_for_description(i_username varchar(32))
     select user_id
          , user_name username
          , email
+         , name
+         , surname
          , public_key
     from users 
       where user_name = i_username;
@@ -17,6 +19,8 @@ call save_routine_information('get_user_for_description',
                                         'user_id int',
                                         'username varchar',
                                         'email varchar',
+                                        'name varchar',
+                                        'surname varchar',
 										'public_key varchar'
                               )
      );

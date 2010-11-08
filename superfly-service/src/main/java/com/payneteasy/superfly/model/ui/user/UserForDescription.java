@@ -8,6 +8,8 @@ public class UserForDescription implements Serializable {
 	private long userId;
 	private String username;
 	private String email;
+	private String name;
+	private String surname;
 	private String publicKey;
 
 	@Column(name = "user_id")
@@ -35,6 +37,24 @@ public class UserForDescription implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Column(name = "name")
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "surname")
+	public String getSurname() {
+		return surname;
+	}
+
+	public void setSurname(String surname) {
+		this.surname = surname;
 	}
 
 	@Column(name = "public_key")

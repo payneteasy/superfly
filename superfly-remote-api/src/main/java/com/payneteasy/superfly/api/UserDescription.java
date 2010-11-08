@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class UserDescription implements Serializable {
 	private String username;
 	private String email;
+	private String firstName;
+	private String lastName;
 	private String publicKey;
 
 	/**
@@ -47,6 +49,42 @@ public class UserDescription implements Serializable {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	/**
+	 * Returns user's first name.
+	 * 
+	 * @return first name
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+
+	/**
+	 * Sets user's first name.
+	 * 
+	 * @param firstName	name to set
+	 */
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	/**
+	 * Returns user's last name.
+	 * 
+	 * @return last name
+	 */
+	public String getLastName() {
+		return lastName;
+	}
+
+	/**
+	 * Sets user's last name.
+	 * 
+	 * @param lastName	last name to set
+	 */
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	/**
