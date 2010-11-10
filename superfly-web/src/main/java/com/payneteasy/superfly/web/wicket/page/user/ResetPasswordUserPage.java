@@ -57,7 +57,7 @@ public class ResetPasswordUserPage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				resetPasswordStrategy.resetPassword(userId, user.getName(), newPassword);
+				resetPasswordStrategy.resetPassword(userId, user.getUsername(), newPassword);
 				setResponsePage(ListUsersPage.class);
 			}
         	
