@@ -2,12 +2,12 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-		<version>1.2-4</version>
+		<version>1.2-5-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-remote-api</artifactId>
 	<name>Superfly Remote API</name>
-	<version>1.2-4</version>
+	<version>1.2-5-SNAPSHOT</version>
 	<description>API classes for Superfly server which can be used by clients</description>
 </project>
