@@ -19,9 +19,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 
 /**
- * Page used to edit a user.
- *
- * @author Roman Puchkovskiy
+ * Page used to reset a password.
  */
 @Secured("ROLE_ACTION_TEMP_PASSWORD")
 public class ChangePasswordPage extends BasePage {
@@ -31,8 +29,6 @@ public class ChangePasswordPage extends BasePage {
 
 	public ChangePasswordPage(PageParameters params) {
 		super(params);
-        //SecurityContextHolder.clearContext();
-
         
         final UIUserCheckPassword user = new UIUserCheckPassword();
 
@@ -57,7 +53,7 @@ public class ChangePasswordPage extends BasePage {
                         password2Field));
 
 
-        form.add(new PasswordInputValidator(SecurityUtils.getUsername(),password1Field,userService));
+        form.add(new PasswordInputValidator(SecurityUtils.getUsername(), password1Field, userService));
 
 
 

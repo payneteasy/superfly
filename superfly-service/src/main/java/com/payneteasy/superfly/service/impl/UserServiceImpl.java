@@ -300,7 +300,7 @@ public class UserServiceImpl implements UserService {
 	}
 
     public void validatePassword(String username,String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder,userDao.getUserPasswordHistory(username)));
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
     }
 
     public void expirePasswords(int days) {

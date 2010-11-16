@@ -29,9 +29,9 @@ public class PasswordInputValidator extends AbstractFormValidator {
 
     public PasswordInputValidator(String aUserName,FormComponent<?> aFormComponentPassword, UserService aUserService) {
         theFormComponentUserName = null;
-        theFormComponentPassword=aFormComponentPassword;
-        theUserService= aUserService;
-        theUserName=aUserName;
+        theFormComponentPassword = aFormComponentPassword;
+        theUserService = aUserService;
+        theUserName = aUserName;
     }
     
     public FormComponent<?>[] getDependentFormComponents() {
@@ -44,7 +44,7 @@ public class PasswordInputValidator extends AbstractFormValidator {
 
     public void validate(Form<?> form) {
         try {
-            theUserService.validatePassword(getUserName(),theFormComponentPassword.getInput());
+            theUserService.validatePassword(getUserName(), theFormComponentPassword.getInput());
         } catch (PolicyValidationException e) {
             error(theFormComponentPassword, e.getCode());
         }

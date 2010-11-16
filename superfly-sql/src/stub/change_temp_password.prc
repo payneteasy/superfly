@@ -34,18 +34,18 @@ main_sql:
                              end_date,
                              update_date
                                  )
-      select user_user_id,
+      select u.user_id,
              i_user_password,
              v_salt,
-             uh.number_history + 1,
+             coalesce(uh.number_history, 0) + 1,
              v_start_date start_date,
              '2999-12-31' end_date,
              null update_date
-        from user_history uh
-       where uh.user_user_id = v_user_id
-             and uh.number_history = (select max(uhl.number_history)
+        from users u left join user_history uh on uh.user_user_id = u.user_id
+       where u.user_id = v_user_id
+             and (uh.user_user_id is null or uh.number_history = (select max(uhl.number_history)
                                          from user_history uhl
-                                        where uhl.user_user_id = v_user_id);
+                                        where uhl.user_user_id = v_user_id));
  
     end if;
 

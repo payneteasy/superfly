@@ -27,11 +27,13 @@ public class PasswordCheckContext implements IPolicyContext {
     /** Password */
       public String getPassword() { return thePassword; }
 
-      public boolean isPasswordExit(String aPassword,int aHistoryLength){
+      public boolean isPasswordExist(String aPassword,int aHistoryLength){
 
           int length=0;
           for(PasswordSaltPair pwd:thePasswordHistory){
-              if(length<aHistoryLength && thePasswordEncoder.encode(aPassword,pwd.getSalt()).equals(pwd.getPassword())){
+        	  // +1 in the following line is because the current password is
+        	  // first in the list (as it must not be present in the history)
+              if(length<aHistoryLength + 1 && thePasswordEncoder.encode(aPassword,pwd.getSalt()).equals(pwd.getPassword())){
                   return true;
               }
               length++;

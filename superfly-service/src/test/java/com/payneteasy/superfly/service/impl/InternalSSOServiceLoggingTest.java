@@ -47,7 +47,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 
 	public void testRegisterUser() throws Exception {
-        EasyMock.expect(userDao.getUserPasswordHistory("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
+        EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
 		EasyMock.expectLastCall().andReturn(okResult());
 		loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(true), eq("new-user"));
@@ -59,7 +59,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 
 	public void testRegisterUserDuplicate() throws Exception {
-        EasyMock.expect(userDao.getUserPasswordHistory("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
+        EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
 		EasyMock.expectLastCall().andReturn(duplicateResult());
 		loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(false), eq("new-user"));
@@ -76,7 +76,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 
 	public void testRegisterUserFail() throws Exception {
-        EasyMock.expect(userDao.getUserPasswordHistory("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
+        EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
 		loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(false), eq("new-user"));

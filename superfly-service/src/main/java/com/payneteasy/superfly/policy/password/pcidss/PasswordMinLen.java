@@ -11,9 +11,9 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
  * (C) 2010
  * Skype: kuccyp
  */
-public class PasswordMaxLen implements IPolicy<PasswordCheckContext> {
+public class PasswordMinLen implements IPolicy<PasswordCheckContext> {
 
-    public PasswordMaxLen(int aMaxPasswordLen) {
+    public PasswordMinLen(int aMaxPasswordLen) {
         theMaxPasswordLen = aMaxPasswordLen;
     }
 

@@ -477,8 +477,8 @@ public interface UserDao {
     @AStoredProcedure(name = "get_user_salt_by_user_id")
     String getUserSaltByUserId(long userId);
 
-	@AStoredProcedure(name = "get_user_password_history")
-	List<PasswordSaltPair> getUserPasswordHistory(String username);
+	@AStoredProcedure(name = "get_user_password_history_and_current_password")
+	List<PasswordSaltPair> getUserPasswordHistoryAndCurrentPassword(String username);
     
     @AStoredProcedure(name = "update_user_salt_by_user_id")
     void updateUserSaltByUserId(long userId, String salt);

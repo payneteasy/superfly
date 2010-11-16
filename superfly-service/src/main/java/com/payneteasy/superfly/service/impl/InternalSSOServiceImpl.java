@@ -225,7 +225,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 		// validate password policy
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistory(username)));
+				.getUserPasswordHistoryAndCurrentPassword(username)));
 
 		validatePublicKey(publicKey);
 
@@ -279,7 +279,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistory(userName)));
+				.getUserPasswordHistoryAndCurrentPassword(userName)));
 		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
 	}
 

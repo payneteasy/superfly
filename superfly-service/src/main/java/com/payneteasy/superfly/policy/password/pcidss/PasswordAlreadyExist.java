@@ -23,7 +23,7 @@ public class PasswordAlreadyExist implements IPolicy<PasswordCheckContext> {
     }
 
     public void apply(PasswordCheckContext aContext) throws PolicyValidationException {
-        if(aContext.isPasswordExit(aContext.getPassword(),theHistoryLength))
+        if (aContext.isPasswordExist(aContext.getPassword(), theHistoryLength))
             throw new PolicyValidationException(PolicyValidationException.EXISTING_PASSWORD);
     }
 
