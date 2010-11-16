@@ -3,6 +3,9 @@ package com.payneteasy.superfly.security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +24,8 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  */
 public class SuperflyHOTPAuthenticationProcessingFilter extends
 		AbstractSingleStepAuthenticationProcessingFilter {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SuperflyHOTPAuthenticationProcessingFilter.class);
 	
 	private String hotpParameter = "j_hotp";
 	
@@ -51,7 +56,11 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
 
 	protected Authentication createSimpleAuthRequest(
 			Authentication authentication, String hotp) {
-		Assert.isTrue(authentication instanceof SSOUserTransportAuthenticationToken);
+		if (!(authentication instanceof SSOUserTransportAuthenticationToken)) {
+			String msg = "Unexpected authentication of class " + authentication.getClass() + ": " + authentication;
+			logger.error(msg);
+			throw new AuthenticationServiceException(msg);
+		}
 		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
 		Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
 		return authRequest;
