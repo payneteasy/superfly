@@ -13,6 +13,8 @@ public class UserDescription implements Serializable {
 	private String email;
 	private String firstName;
 	private String lastName;
+	private String secretQuestion;
+	private String secretAnswer;
 	private String publicKey;
 
 	/**
@@ -85,6 +87,42 @@ public class UserDescription implements Serializable {
 	 */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	} 
+
+	/**
+	 * Returns a secret question.
+	 * 
+	 * @return question
+	 */
+	public String getSecretQuestion() {
+		return secretQuestion;
+	}
+
+	/**
+	 * Sets a secret question.
+	 * 
+	 * @param secretQuestion	question to set
+	 */
+	public void setSecretQuestion(String secretQuestion) {
+		this.secretQuestion = secretQuestion;
+	}
+
+	/**
+	 * Returns a secret answer.
+	 * 
+	 * @return answer
+	 */
+	public String getSecretAnswer() {
+		return secretAnswer;
+	}
+
+	/**
+	 * Sets a secret answer.
+	 * 
+	 * @param secretAnswer	answer to set
+	 */
+	public void setSecretAnswer(String secretAnswer) {
+		this.secretAnswer = secretAnswer;
 	}
 
 	/**

@@ -10,6 +10,8 @@ public class UserForDescription implements Serializable {
 	private String email;
 	private String name;
 	private String surname;
+	private String secretQuestion;
+	private String secretAnswer;
 	private String publicKey;
 
 	@Column(name = "user_id")
@@ -55,6 +57,24 @@ public class UserForDescription implements Serializable {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	@Column(name = "secret_question")
+	public String getSecretQuestion() {
+		return secretQuestion;
+	}
+
+	public void setSecretQuestion(String secretQuestion) {
+		this.secretQuestion = secretQuestion;
+	}
+
+	@Column(name = "secret_answer")
+	public String getSecretAnswer() {
+		return secretAnswer;
+	}
+
+	public void setSecretAnswer(String secretAnswer) {
+		this.secretAnswer = secretAnswer;
 	}
 
 	@Column(name = "public_key")

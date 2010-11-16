@@ -120,6 +120,8 @@ public class SSOServiceImpl implements SSOService {
 		result.setEmail(user.getEmail());
 		result.setFirstName(user.getName());
 		result.setLastName(user.getSurname());
+		result.setSecretQuestion(user.getSecretQuestion());
+		result.setSecretAnswer(user.getSecretAnswer());
 		result.setPublicKey(user.getPublicKey());
 		return result;
 	}
@@ -147,6 +149,8 @@ public class SSOServiceImpl implements SSOService {
 		userForDescription.setEmail(user.getEmail());
 		userForDescription.setName(user.getFirstName());
 		userForDescription.setSurname(user.getLastName());
+		userForDescription.setSecretQuestion(user.getSecretQuestion());
+		userForDescription.setSecretAnswer(user.getSecretAnswer());
 		userForDescription.setPublicKey(user.getPublicKey());
 		internalSSOService.updateUserForDescription(userForDescription);
 	}
