@@ -8,3 +8,5 @@ delete ura from user_role_actions ura join role_actions ra on ura.ract_ract_id =
 delete ra from role_actions ra join actions a on a.actn_id = ra.actn_actn_id where a.action_name='action_temp_password';
 
 delete from actions where action_name='action_temp_password';
+
+commit;

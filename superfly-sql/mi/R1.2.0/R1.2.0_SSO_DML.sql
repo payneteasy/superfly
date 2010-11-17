@@ -67,3 +67,5 @@ update users set hotp_salt = sha1(concat(user_name, user_password, unix_timestam
 update users set create_date = now() where create_date is null;
 
 update users set logins_failed = 0;
+
+commit;
