@@ -10,6 +10,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -58,6 +59,8 @@ public class EmailServiceImpl implements EmailService {
 			javaMailSender.send(message);
 		} catch (MessagingException e) {
 			throw new RuntimeMessagingException(e);
+		} catch (MailException e) {
+			throw new RuntimeMessagingException(e);
 		}
 	}
 
@@ -76,6 +79,8 @@ public class EmailServiceImpl implements EmailService {
 			helper.setTo(new InternetAddress(email));
 			javaMailSender.send(message);
 		} catch (MessagingException e) {
+			throw new RuntimeMessagingException(e);
+		} catch (MailException e) {
 			throw new RuntimeMessagingException(e);
 		}
 	}
