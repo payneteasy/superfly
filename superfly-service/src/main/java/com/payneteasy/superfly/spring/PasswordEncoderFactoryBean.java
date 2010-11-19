@@ -21,12 +21,10 @@ public class PasswordEncoderFactoryBean extends AbstractPolicyDependingFactoryBe
 			Policy p = findPolicyByIdentifier();
 			switch (p) {
 			case NONE:
-				encoder = new PlaintextPasswordEncoder();
-				break;
 			case PCIDSS:
-				MessageDigestPasswordEncoder enc = new MessageDigestPasswordEncoder();
-				enc.setAlgorithm("SHA-256");
-				encoder = enc;
+				MessageDigestPasswordEncoder encPCIDSS = new MessageDigestPasswordEncoder();
+				encPCIDSS.setAlgorithm("SHA-256");
+				encoder = encPCIDSS;
 				break;
 			default:
 				throw new IllegalArgumentException();
