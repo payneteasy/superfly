@@ -75,9 +75,9 @@
 					<!--<a href="#" wicket:id="change-user-roles">Roles</a>
 					<a href="#" wicket:id="change-user-actions">Actions</a>
 					--><a href="#" wicket:id="clone-user">Clone</a>
-					<a href="#" wicket:id="reset-password-link">Reset password</a>
+					<a href="#" wicket:id="reset-password-link" onclick="return confirm('Are you sure you want to reset OTP table?');">Reset password</a>
 					<a href="#" wicket:id="download-hotp-table">OTP table</a>
-					<a href="#" wicket:id="reset-table-link">Reset table</a>
+					<a href="#" wicket:id="reset-table-link" onclick="return confirm('Are you sure you want to reset password?');">Reset table</a>
 				</td>
 			</tr>
 		</tbody>
