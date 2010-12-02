@@ -33,7 +33,7 @@ public abstract class AbstractSuperflyAuthenticationProvider implements Authenti
 		return enabled;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class authentication) {
 		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
 				|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)

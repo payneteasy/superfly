@@ -4,14 +4,13 @@ import junit.framework.TestCase;
 
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 
 public class PasswordEncoderFactoryBeanTest extends TestCase {
 	public void testPlaintext() throws Exception {
 		PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
 		factoryBean.setPolicyName("none");
 		PasswordEncoder encoder = (PasswordEncoder) factoryBean.getObject();
-		assertEquals(encoder.getClass(), PlaintextPasswordEncoder.class);
+		assertEquals(encoder.getClass(), MessageDigestPasswordEncoder.class);
 	}
 	
 	public void testPciDss() throws Exception {

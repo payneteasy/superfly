@@ -4,7 +4,6 @@ import org.springframework.beans.factory.FactoryBean;
 
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 
 /**
  * {@link FactoryBean} for {@link PasswordEncoder}. Produces a value in
