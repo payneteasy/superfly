@@ -2,13 +2,13 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-		<version>1.2-7</version>
+		<version>1.2-8-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-common</artifactId>
 	<name>Common classes</name>
-	<version>1.2-7</version>
+	<version>1.2-8-SNAPSHOT</version>
 	<description>Common classes used by other Superfly libraries</description>
 	<dependencies>
 		<dependency>
