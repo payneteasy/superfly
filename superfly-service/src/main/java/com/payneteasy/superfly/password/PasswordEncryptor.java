@@ -261,7 +261,7 @@ public class PasswordEncryptor {
 	}
 
 	private static void printUsage() {
-		System.out.println("Parameters: <algorithm> <db_url> <db_user> <db_password> <hotp_master_key> <hotp_code_digits>");
+		System.out.println("Parameters: <algorithm> <db_url> <db_user> <db_password> <hotp_code_digits>");
 		System.out.println("  <algorithm>\t\t\thash algorithm (for instance, md-5, sha1, sha-256)");
 		System.out.println("  <db_url>\t\t\tURL of the database (for instance, jdbc:mysql://localhost/sso?characterEncoding=utf8");
 		System.out.println("  <db_user>\t\t\tusername to connect to database");
