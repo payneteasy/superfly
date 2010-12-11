@@ -32,7 +32,7 @@ public class ListSessionsPage extends BasePage {
 	private SessionService sessionService;
 
 	public ListSessionsPage() {
-		super();
+		super(ListSessionsPage.class);
 		
 		final IModel<List<UISession>> invalidSessionsModel = new LoadableDetachableModel<List<UISession>>() {
 			@Override

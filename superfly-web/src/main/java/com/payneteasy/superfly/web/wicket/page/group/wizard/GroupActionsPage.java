@@ -54,19 +54,11 @@ public class GroupActionsPage extends BasePage {
 	protected String getTitle() {
 		return "Group actions";
 	}
-	
-	public GroupActionsPage() {
-		this((Long)null);
-	}
-	
-	public GroupActionsPage(PageParameters param){
-		this(param.getAsLong("gid"));		
-	}
 
-	@SuppressWarnings({ "serial", "unchecked" })
-	public GroupActionsPage(final Long groupId) {
+	public GroupActionsPage(PageParameters param) {
+		super(ListGroupsPage.class, param);
 		
-		
+		final Long groupId = param.getAsLong("gid");
 		
 		// current Group
 		final UIGroup curGroup = groupService.getGroupById(groupId);

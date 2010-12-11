@@ -39,7 +39,7 @@ public class CopyActionPropertiesPage extends BasePage {
 	private ActionService actionService;
 
 	public CopyActionPropertiesPage(final PageParameters parameters) {
-		super(parameters);
+		super(ListActionsPage.class, parameters);
 		final long actionId = parameters.getAsLong("id", -1);
 
 		// modalWindow

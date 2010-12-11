@@ -28,7 +28,7 @@ public class ChangePasswordPage extends BasePage {
 	private UserService userService;
 
 	public ChangePasswordPage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
         
         final UIUserCheckPassword user = new UIUserCheckPassword();
 

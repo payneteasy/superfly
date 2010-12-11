@@ -27,7 +27,8 @@ public class AddRolePage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public AddRolePage() {
-		super();
+		super(ListRolesPage.class);
+		
 		final UIRole role = new UIRole();
 		setDefaultModel(new CompoundPropertyModel<UIRole>(role));
 		final RoleFilter roleFilter = new RoleFilter();

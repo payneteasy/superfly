@@ -64,11 +64,9 @@ div.line {
 	text-decoration: none;
 	display: block;
 	font-weight: bold;
-	display: block;
 }
 
 .p-nav li a:link,.p-nav li a:visited {
-	color: #3366CC;
 	text-decoration: none;
 	display: block;
 }
@@ -78,18 +76,13 @@ div.line {
 	margin-right: 1em;
 }
 
-/*used in javascript to highlight selected menu option*/
 .p-nav-selected {
-	-moz-border-radius-bottomleft: 4px;
-	-moz-border-radius-topleft: 4px;
 	background-color: #E5ECF9;
-	color: #000000;
-	display: block;
 	font-weight: bold;
-	display: block;
+	color: #000000;
 }
 
-a:link,a:visited {
+a:link,a {
 	color: #0000CC;
 }
 

@@ -30,7 +30,8 @@ public class UserDetailsPage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public UserDetailsPage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
+		
 		final long userId = params.getAsLong("userId");
 		final UIUser thisuser = userService.getUser(userId);
 		add(new Label("user-name", thisuser.getUsername()));

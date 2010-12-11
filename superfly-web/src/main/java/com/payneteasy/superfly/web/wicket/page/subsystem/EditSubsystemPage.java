@@ -20,10 +20,10 @@ public class EditSubsystemPage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public EditSubsystemPage(PageParameters parameters) {
-		super(parameters);
+		super(ListSubsystemsPage.class, parameters);
+		
 		long subsystemId = parameters.getAsLong("id", -1L);
-		final UISubsystem subsystem = subsystemService
-				.getSubsystem(subsystemId);
+		final UISubsystem subsystem = subsystemService.getSubsystem(subsystemId);
 		setDefaultModel(new CompoundPropertyModel<UISubsystem>(subsystem));
 		Form<UISubsystem> form = new Form<UISubsystem>("form") {
 
@@ -36,8 +36,7 @@ public class EditSubsystemPage extends BasePage {
 		};
 		add(form);
 		form.add(new RequiredTextField<String>("name"));
-		form.add(new RequiredTextField<String>("callbackInformation")
-				.add(new UrlValidator(new String[] { "http", "https" })));
+		form.add(new RequiredTextField<String>("callbackInformation").add(new UrlValidator(new String[] { "http", "https" })));
 		form.add(new CheckBox("allowListUsers"));
 		form.add(new Button("form-submit"));
 		form.add(new Button("form-cancel") {

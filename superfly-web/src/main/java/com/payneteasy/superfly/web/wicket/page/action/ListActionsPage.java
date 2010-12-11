@@ -50,7 +50,8 @@ public class ListActionsPage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public ListActionsPage() {
-		super();
+		super(ListActionsPage.class);
+		
 		final StickyFilters stickyFilters = getSession().getStickyFilters();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);	

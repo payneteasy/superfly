@@ -46,7 +46,7 @@ public class AddSubsystemWithRolePage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public AddSubsystemWithRolePage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
 		final long userId = params.getAsLong("userId");
 		UIUser user = userService.getUser(userId);
 		add(new Label("user-name", user.getUsername()));

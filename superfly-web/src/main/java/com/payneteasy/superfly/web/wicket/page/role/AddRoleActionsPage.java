@@ -42,7 +42,8 @@ public class AddRoleActionsPage extends BasePage {
 	private RoleService roleService;
 
 	public AddRoleActionsPage(PageParameters params) {
-		super(params);
+		super(ListRolesPage.class, params);
+		
 		final long roleId = params.getAsLong("id", -1);
 		final boolean isWizard = params.getAsBoolean("wizard", false);
 		

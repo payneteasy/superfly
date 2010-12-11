@@ -69,7 +69,7 @@ public class ListUsersPage extends BasePage {
 	private ResetPasswordStrategy resetPasswordStrategy;
 
 	public ListUsersPage() {
-		super();
+		super(ListUsersPage.class);
 		
 		// filters
 		final UserFilters userFilters = new UserFilters();

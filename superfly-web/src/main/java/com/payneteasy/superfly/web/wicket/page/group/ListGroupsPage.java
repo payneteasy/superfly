@@ -46,6 +46,8 @@ public class ListGroupsPage extends BasePage {
 	
 	@SuppressWarnings({ "unchecked", "serial" })
 	public ListGroupsPage() {
+		super(ListGroupsPage.class);
+		
 		// CONFIRM PANEL
 		add(new EmptyPanel("confirmPanel"));
 		

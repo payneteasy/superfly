@@ -27,13 +27,11 @@ public class CloneGroupPage extends BasePage {
 		return "Clone group";
 	}
 
-	public CloneGroupPage(PageParameters param){
-		this(param.getAsLong("sid"));		
-	}
-
-	
 	@SuppressWarnings("serial")
-	public CloneGroupPage(Long sourceId) {
+	public CloneGroupPage(PageParameters param) {
+		super(ListGroupsPage.class, param);
+		
+		final Long sourceId = param.getAsLong("sid");
 		
 		final UIGroup sourceGroup = groupService.getGroupById(sourceId);
 		GroupModel groupModel = new GroupModel();

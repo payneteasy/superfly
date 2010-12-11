@@ -34,6 +34,7 @@ public class ListSubsystemsPage extends BasePage {
 
 	@SuppressWarnings("unchecked")
 	public ListSubsystemsPage() {
+		super(ListSubsystemsPage.class);
 		add(new EmptyPanel("confirmPanel"));
 
 		List<UISubsystemForList> subsystems = subsystemService.getSubsystems();

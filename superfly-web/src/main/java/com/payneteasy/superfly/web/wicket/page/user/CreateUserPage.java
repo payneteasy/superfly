@@ -53,7 +53,7 @@ public class CreateUserPage extends BasePage {
 	private PublicKeyCrypto crypto;
 
 	public CreateUserPage() {
-		super();
+		super(ListUsersPage.class);
 		final UIUserCheckPassword user = new UIUserCheckPassword();
 
 		List<UISubsystemForList> listSub = subsystemService.getSubsystems();

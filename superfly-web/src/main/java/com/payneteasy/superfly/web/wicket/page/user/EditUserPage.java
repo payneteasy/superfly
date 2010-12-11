@@ -39,7 +39,7 @@ public class EditUserPage extends BasePage {
 	private PublicKeyCrypto crypto;
 
 	public EditUserPage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
 
 		long userId = params.getAsLong("userId");
 

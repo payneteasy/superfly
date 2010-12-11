@@ -21,7 +21,8 @@ public class HomePage extends BasePage{
 
 
 	public HomePage() {
-
+        super(HomePage.class);
+        
 		List<Release> listReleases = releaseNotesService.getReleaseNotes();
 
 		final ListView<Release> listViewReBean = new ListView<Release>(

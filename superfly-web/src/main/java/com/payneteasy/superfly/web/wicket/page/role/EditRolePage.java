@@ -19,7 +19,7 @@ public class EditRolePage extends BasePage {
 	private RoleService roleService;
 
 	public EditRolePage(PageParameters parameters) {
-		super(parameters);
+		super(ListRolesPage.class, parameters);
 		 long roleId = parameters.getAsLong("id", -1L);
 		 final UIRole role  = roleService.getRole(roleId);
 		 setDefaultModel(new CompoundPropertyModel<UIRole>(role));

@@ -31,6 +31,8 @@ public class ChangeRoleGroupsPage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
 	public ChangeRoleGroupsPage(PageParameters parameters) {
+	  super(ListRolesPage.class, parameters);
+	  
       final long roleId = parameters.getAsLong("id");
       UIRole role = roleService.getRole(roleId);
       add(new Label("role-name",role.getRoleName()));

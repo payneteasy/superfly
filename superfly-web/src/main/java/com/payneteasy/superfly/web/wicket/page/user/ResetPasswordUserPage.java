@@ -29,6 +29,8 @@ public class ResetPasswordUserPage extends BasePage {
 	private PasswordGenerator passwordGenerator;
 	
 	public ResetPasswordUserPage(final PageParameters parameters) {
+		super(ListUsersPage.class, parameters);
+		
 		final long userId = parameters.getAsLong("userId");
 		final UIUser user = userService.getUser(userId);
 //		System.out.println("POLICY NAME "+resetPasswordStrategy.getPolicyName());

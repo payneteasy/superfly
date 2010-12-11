@@ -39,7 +39,7 @@ public class AddRoleGroupsPage extends BasePage {
 	private boolean isWizard;
 
 	public AddRoleGroupsPage(PageParameters params) {
-		super(params);
+		super(ListRolesPage.class, params);
 		final long roleId = params.getAsLong("id", -1);
 		isWizard = params.getAsBoolean("wizard", false);
 		

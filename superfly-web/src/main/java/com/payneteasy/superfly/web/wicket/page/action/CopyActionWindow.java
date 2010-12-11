@@ -21,9 +21,8 @@ public class CopyActionWindow extends WebPage {
 	private ActionService actionService;
 
 	@SuppressWarnings("deprecation")
-	public CopyActionWindow(
-			final CopyActionPropertiesPage actionPropertiesPage,
-			final ModalWindow modalWindow, final PageParameters parameters) {
+	public CopyActionWindow(final CopyActionPropertiesPage actionPropertiesPage, final ModalWindow modalWindow,
+			final PageParameters parameters) {
 		super(parameters);
 		final Long actionId = parameters.getAsLong("id");
 		final Long actionIdForCopy = parameters.getAsLong("copyId");
@@ -34,37 +33,35 @@ public class CopyActionWindow extends WebPage {
 
 		};
 		add(form);
-		form.add(new Label("action-name-for-copy",actionForCopy.getActionName()));
-		form.add(new Label("action-desc-for-copy",actionForCopy.getActionDescription()));
-		form.add(new Label("action-subname-for-copy",actionForCopy.getSubsystemName()));
-		
+		form.add(new Label("action-name-for-copy", actionForCopy.getActionName()));
+		form.add(new Label("action-desc-for-copy", actionForCopy.getActionDescription()));
+		form.add(new Label("action-subname-for-copy", actionForCopy.getSubsystemName()));
+
 		form.add(new Label("action-name", action.getActionName()));
 		form.add(new Label("action-desc", action.getActionDescription()));
 		form.add(new Label("action-subname", action.getSubsystemName()));
-		form.add(new CheckBox("selected", new PropertyModel<Boolean>(
-				check, "selected")));
-		form.add(new AjaxSubmitButton("copy"){
+		form.add(new CheckBox("selected", new PropertyModel<Boolean>(check, "selected")));
+		form.add(new AjaxSubmitButton("copy") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				
-				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected()?true:false);
+
+				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected() ? true : false);
 				info("properties are copied");
-			     parameters.put("copy", "copy");
+				parameters.put("copy", "copy");
 				modalWindow.close(target);
 			}
-			
+
 		});
-		form.add(new AjaxSubmitButton("cancel"){
+		form.add(new AjaxSubmitButton("cancel") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				modalWindow.close(target);
-				
+
 			}
-			
+
 		});
-		
 
 	}
 
@@ -79,6 +76,6 @@ public class CopyActionWindow extends WebPage {
 		public void setSelected(boolean selected) {
 			this.selected = selected;
 		}
-		
+
 	}
 }

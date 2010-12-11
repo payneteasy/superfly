@@ -53,7 +53,7 @@ public class ChangeUserActionsPage extends BasePage {
 	private RoleService roleService;
 
 	public ChangeUserActionsPage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
 
 		final long userId = params.getAsLong("userId");
 		final long subId = params.getAsLong("subId");

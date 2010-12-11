@@ -34,15 +34,11 @@ public class GroupPropertiesPage extends BasePage {
 		return "Group properties";
 	}
 
-	public GroupPropertiesPage() {
-		this((Long)null);
-	}
-
-	public GroupPropertiesPage(PageParameters param){
-		this(param.getAsLong("gid"));		
-	}
-
-	public GroupPropertiesPage(final Long groupId) {		
+	public GroupPropertiesPage(PageParameters param) {
+		super(ListGroupsPage.class, param);
+		
+		final Long groupId = param.getAsLong("gid");
+		
 		String msg_text="Please, provide new Group name and Subsystem";
 		GroupWizardModel groupModel = new GroupWizardModel();
 		

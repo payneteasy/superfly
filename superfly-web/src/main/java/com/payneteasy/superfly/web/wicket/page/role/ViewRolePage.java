@@ -35,13 +35,11 @@ public class ViewRolePage extends BasePage {
 	protected String getTitle() {
 		return "Role details";
 	}
-	
-	public ViewRolePage(PageParameters param){
-		this(param.getAsLong("roleid"));		
-	}
 
-	public ViewRolePage(final Long roleId) {
+	public ViewRolePage(PageParameters param) {
+		super(ListRolesPage.class, param);
 		
+		final Long roleId = param.getAsLong("roleid");
 		//BACK
 		Form<Void> formBack = new Form<Void>("back-form");
 		formBack.add(new Button("btn-back"){

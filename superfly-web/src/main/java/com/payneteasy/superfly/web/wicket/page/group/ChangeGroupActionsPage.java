@@ -33,6 +33,8 @@ public class ChangeGroupActionsPage extends BasePage {
 	private GroupService groupService;
 
 	public ChangeGroupActionsPage(PageParameters parameters) {
+		super(ListGroupsPage.class, parameters);
+		
 		final long groupId = parameters.getAsLong("gid");
 		UIGroup group = groupService.getGroupById(groupId);
 		add(new Label("group-name", group.getName()));

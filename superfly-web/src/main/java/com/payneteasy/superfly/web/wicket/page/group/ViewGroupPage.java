@@ -36,12 +36,10 @@ public class ViewGroupPage extends BasePage {
 		return "Group details";
 	}
 	
-	public ViewGroupPage(PageParameters param){
-		this(param.getAsLong("gid"));		
-	}
-
-	
-	public ViewGroupPage(final Long groupId) {
+	public ViewGroupPage(PageParameters param) {
+		super(ListGroupsPage.class, param);
+		
+		final Long groupId = param.getAsLong("gid");
 		
 		//BACK
 		Form<Object> formBack = new Form<Object>("back-form");

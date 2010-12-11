@@ -44,7 +44,7 @@ public class CloneUserPage extends BasePage {
     private IPolicyValidation<PasswordCheckContext> policyValidation;
 
 	public CloneUserPage(PageParameters params) {
-		super(params);
+		super(ListUsersPage.class, params);
 		
 		final long userId = params.getAsLong("userId");
 		final UIUser oldUser = userService.getUser(userId);

@@ -33,6 +33,8 @@ public class ChangeRoleActionsPage extends BasePage {
 	private RoleService roleService;
 
 	public ChangeRoleActionsPage(PageParameters parameters) {
+		super(ListRolesPage.class, parameters);
+		
 		final long roleId = parameters.getAsLong("id");
 		UIRole role = roleService.getRole(roleId);
 		add(new Label("role-name",role.getRoleName()));

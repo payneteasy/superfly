@@ -50,7 +50,8 @@ public class ListRolesPage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public ListRolesPage() {
-		super();
+		super(ListRolesPage.class);
+		
 		add(new EmptyPanel("confirmPanel"));
 		
 		final StickyFilters stickyFilters = getSession().getStickyFilters();

@@ -19,6 +19,7 @@ public class AddSubsystemPage extends BasePage {
 	private SubsystemService subsystemService;
 
 	public AddSubsystemPage() {
+		super(ListSubsystemsPage.class);
 		final UISubsystem subsystem = new UISubsystem();
 		setDefaultModel(new CompoundPropertyModel<UISubsystem>(subsystem));
 		Form<UISubsystem> form = new Form<UISubsystem>("form") {
