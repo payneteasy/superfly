@@ -11,15 +11,16 @@
 	</script>
 </wicket:head>
 </head>
-<body onload="startup();">
+<body>
+<wicket:extend>
         <h2>Authentication</h2>
         
 
 		<form wicket:id="form" action="/j_superfly_hotp_security_check" method="POST">
 
-            <div class="row">
-                <label class='form-label' for="j_hotp">One-time password value</label>
-                <input class='form-input-text' name="j_hotp" id="j_hotp" type="password" autocomplete="off" value="" maxlength="6">
+            <div>
+                <label class='form-htop-label' for="j_hotp">One-time password value</label>
+                <input class='form-htop-input-text' name="j_hotp" id="j_hotp" type="password" autocomplete="off" value="" maxlength="6">
             </div>
 
             <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>
@@ -28,5 +29,6 @@
                 <input type="submit" class="button" value="Login">
             </div>
 		</form>
+</wicket:extend>		
 </body>
 </html>

@@ -8,7 +8,7 @@
     <sec:http auto-config="false">
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
         <sec:intercept-url pattern="/css*"   filters="none"/>
-        <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <sec:intercept-url pattern="/login*" filters="none"/>
 
 		<!--
 			If you're not planning to use client SSL auth to protect your subsystem
@@ -22,7 +22,7 @@
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
         
         <sec:logout />
-        <sec:form-login default-target-url="/"/>
+        <sec:form-login login-page="/loginbase"/>
         <sec:anonymous/>
         <sec:x509 user-service-ref="subsystemUserDetailsService"/>
 

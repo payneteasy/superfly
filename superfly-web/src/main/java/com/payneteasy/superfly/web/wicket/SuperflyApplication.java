@@ -22,6 +22,7 @@ import com.payneteasy.superfly.web.wicket.page.group.ViewGroupPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleActionsPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleGroupsPage;
@@ -56,6 +57,7 @@ public class SuperflyApplication extends WebApplication{
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
+        mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePage("/login", LoginPasswordStepPage.class);
         mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
         
