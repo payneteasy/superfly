@@ -218,7 +218,7 @@ public class ListActionsPage extends BasePage {
 				actionDataProvider));
 		group.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
 		group.add(new OrderByLink("order-by-actionLog","actionLog",actionDataProvider));
-		form.add(new PagingNavigator("paging-navigator", actionsDataView));
+		group.add(new PagingNavigator("paging-navigator", actionsDataView));
 
 	}
 

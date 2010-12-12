@@ -15,8 +15,23 @@ body {
 	border-top: 1px solid #3366CC;
 	margin: 0em;
 	padding: 0.5em;
+	height: 40px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-bottom-right-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
 }
-
+.superfly-logo{
+  font-weight: bold;
+  font-size: x-large;
+  cursor: pointer;
+}
+.service-logo{
+  font-size: x-large;
+  cursor: pointer;
+}
 div.line {
 	display: inline;
 }
@@ -27,9 +42,9 @@ div.line {
 
 #userinfo {
 	text-align: right;
-	margin: 0.5em 1em;
 	font-size: 13pt;
 	font-weight: 500;
+	margin-top: -20px;
 }
 
 .p-unit {
@@ -124,10 +139,11 @@ table.data thead th {
 	font-weight: bold;
 	vertical-align: bottom;
 	text-align: center;
+	height: 20px;
 }
 
 table.data td {
-	margin: 0;
+	
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
 }
@@ -136,24 +152,26 @@ table.data td a {
 	margin-left: 0.5em;
 	margin-right: 0.5em;
 }
-
-.feedbackPanel li {
+.paging-navigator{
+    background: #C5D7EF;
+    height: 5px;
+    rowspan:2;
+}
+/*.feedbackPanel li {
 	text-align: center;
 	color: black;
 	list-style: none;
 	font-weight: bold;
-}
-
-/*.feedbackPanel li {	
-	position: absolute;
-	left:50px;
-	color: white;
-	background-color: #FF6F6F;
+}*/
+.feedbackPanel {	
+	color: black;
+	background-color: #dee0a6;
 	-moz-border-radius: 4px;
 	list-style: none;
-	padding: 10px;
 	font-weight: bold;
-}*/
+	padding-left: 30px;
+	margin-right: 20px;
+}
 button,input[type='button'],input[type='submit'] {
 	padding: 0.1em .7em;
 }
@@ -197,6 +215,11 @@ div.release-date {
 .filters {
 	margin-top: 5px;
 	margin-bottom: 5px;
+	border: 3px solid #E5ECF9;
+	margin-right: 16px;
+	height: 30px;
+	padding-left: 10px;
+	padding-top: 10px;
 }
 
 table.data td.checkbox-cell,table.data th.checkbox-cell {
@@ -259,24 +282,39 @@ table.dataSubRoles td a {
 	background-color: rgb(238, 249, 249);
 }
 
-table.dataAction {
-	border: 1px solid #C5D7EF;
-	empty-cells: show;
-	margin-bottom: 0.5em;
-	width: 30em;
+.table-header-action{
+    background-color: #C5D7EF;
+    font-weight: bold;
+    height: 30px;
+    padding-top: 10px;
+    width: 400px;
 }
-
-table.dataAction thead th {
-	background: #C5D7EF none repeat scroll 0 0;
-	font-weight: bold;
-	vertical-align: bottom;
-	text-align: center;
+.table-header-action-checkbox-cell{
+    padding-left: 0.35em;
 }
-
-table.dataAction td {
-	margin: 0;
-	border: 1px solid #C5D7EF;
-	padding: 0.35em 1em 0.25em 0.35em;
+.table-header-action-name{
+    padding-left: 30px;
+}
+.table-header-action-sub-name{
+    padding-left: 210px;
+}
+.table-row-action{
+    height: 30px;
+    padding-top: 10px;
+    border-bottom: 1px solid #C5D7EF;
+    width: 400px;
+}
+.table-row-action:HOVER{
+    background-color: rgb(238, 249, 249);
+}
+.table-row-action-name{
+    padding-left: 10px;
+    font-size: small;
+}
+.table-row-action-sub{
+    font-size: small;
+    float: right;
+    margin-right: 30px;
 }
 
 .hide {
@@ -299,5 +337,7 @@ h4.tableHeading {
 
 div.scroll {
 	overflow: -moz-scrollbars-vertical;
-	overflow: auto; height: 30em;
+	overflow-y: auto; height:340px;
+	overflow-x: hidden;
+	
 }

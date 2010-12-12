@@ -5,84 +5,55 @@
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Change user actions</title>
 <wicket:head>
-	
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
+   <script type="text/javascript"></script> 
 </wicket:head>
 </head>
 <body>
 <wicket:extend>
-	<div class="name">Role name:<span wicket:id="role-name">role</span></div>
-	<form wicket:id="form">
-	<table>
-	<tr>
-	<td valign="top">
-	<h4 class="tableHeading">Prohibited Group</h4>
-	<div class="scroll">
-	<div wicket:id="group-unmap">
-	<table class="dataAction">
-		<thead>
-			<tr>
-				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-unmap" /></th>
-				<th>Group Name</th>
-				<th>Subsystem Name</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="list-group-unmap" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-				<td class="checkbox-cell"><input type="checkbox"
-					wicket:id="selected" /></td>
-				<td><span wicket:id="group-name">Group 1</span></td>
-				<td><span wicket:id="group-sub">sub 1</span></td>
-			</tr>
-		</tbody>
-	</table>
-	</div>
-	</div>
-	</td>
-
-	<td align="center" style="padding: 1em; padding-top: 5em;" valign="top">
-	<div class="button"><input class="buttonAction" type="submit" value="Grant &gt;"
-		wicket:id="group1-map" /></div>
-	<div class="button"><input class="buttonAction" type="submit" value="&lt; Prohibit"
-		wicket:id="group1-unmap" /></div>
-	</td>
-	<td valign="top">
-	<h4 class="tableHeading">Granted Group</h4>
-	<div wicket:id="group-map">
-	<div class="scroll">
-	<table class="dataAction">
-		<thead>
-			<tr>
-				<th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-map" /></th>
-				<th>Group Name</th>
-				<th>Subsystem Name</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="list-group-map" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-				<td class="checkbox-cell"><input type="checkbox"
-					wicket:id="selected" /></td>
-				<td><span wicket:id="group-name">Group 1</span></td>
-				<td><span wicket:id="group-sub">sub 1</span></td>
-			</tr>
-		</tbody>
-	</table>
-	</div>
-	</div>
-	</td>
-	</tr>
-	</table>
-	</form>
+	<div class="name">Role name:<span wicket:id="role-name">role</span>&nbsp;&nbsp;|&nbsp; <a href="#" wicket:id="back">Back to list actions</a></div>
 	
-	<div class="button"><input type="submit" value="Back" wicket:id="back" /></div>
+<form wicket:id="form">
+<table>
+  <tr>
+   <td valign="top">
+	<h4 class="tableHeading">Prohibited Groups</h4>
+	<div wicket:id="group-unmap">
+   	  <div class="table-header-action"><span class="table-header-action-checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-unmap"/></span>
+	        <span class="table-header-action-name">Group</span>
+	        <span class="table-header-action-sub-name">Subsystem</span>
+	  </div>
+	 <div class="scroll">
+	 <div wicket:id="list-group-unmap" class="table-row-action">
+	    <span class="table-header-action-checkbox-cell"><input type="checkbox" wicket:id="selected" /></span>
+	    <span class="table-row-action-name" wicket:id="group-name"></span>
+	    <span class="table-row-action-sub" wicket:id="group-sub"></span>
+	 </div>
+	</div>
+	</div>
+  </td>
+   <td align="center" style="padding: 2em; padding-top: 5em;" valign="top">
+	<div class="button"><input class="buttonAction" type="submit" value="Grant &gt;" wicket:id="group1-map" /></div>
+	<div class="button"><input class="buttonAction" type="submit" value="&lt; Prohibit" wicket:id="group1-unmap" /></div>
+   </td>
+   <td valign="top">
+	<h4 class="tableHeading">Granted Groups</h4>
+	<div wicket:id="group-map">	
+	  <div class="table-header-action"><span class="table-header-action-checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-map"/></span>
+	        <span class="table-header-action-name">Group</span>
+	        <span class="table-header-action-sub-name">Subsystem</span>
+	  </div>  
+	  <div class="scroll">
+	   <div wicket:id="list-group-map" class="table-row-action">
+	     <span class="table-header-action-checkbox-cell"><input type="checkbox" wicket:id="selected" /></span>
+	     <span class="table-row-action-name" wicket:id="group-name"></span>
+	     <span class="table-row-action-sub" wicket:id="group-sub"></span>
+	   </div>
+	  </div>
+	</div>
+   </td>
+  </tr>
+</table>
+</form>
 </wicket:extend>
 </body>
 </html>

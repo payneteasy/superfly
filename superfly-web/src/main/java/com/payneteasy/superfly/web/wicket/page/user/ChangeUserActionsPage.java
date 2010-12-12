@@ -218,7 +218,7 @@ public class ChangeUserActionsPage extends BasePage {
 
 	@Override
 	protected String getTitle() {
-		return "User actions";
+		return "User change grant actions";
 	}
 
 	@SuppressWarnings("unused")

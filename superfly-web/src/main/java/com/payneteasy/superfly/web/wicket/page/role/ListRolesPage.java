@@ -183,7 +183,7 @@ public class ListRolesPage extends BasePage {
 		group.add(new OrderByLink("order-by-principalName", "principalName", rolesDataProvider));
 		group.add(new OrderByLink("order-by-subsystemName", "subsystemName",
 				rolesDataProvider));
-		form.add(new PagingNavigator("paging-navigator", rolesDateView));
+		group.add(new PagingNavigator("paging-navigator", rolesDateView));
 		form.add(new Button("delete-role"){
 
 			@Override

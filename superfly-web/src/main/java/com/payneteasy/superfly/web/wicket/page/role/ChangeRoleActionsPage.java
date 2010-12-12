@@ -187,7 +187,7 @@ public class ChangeRoleActionsPage extends BasePage {
 	}
 	@Override
 	protected String getTitle() {
-		return "change actions";
+		return "Change grant actions";
 	}
 
 }
