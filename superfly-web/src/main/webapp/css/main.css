@@ -1,36 +1,39 @@
 body {
-	font-size: 100%;
-	line-height: 1.125em;
-	font-family: 'Arial';
+	font: normal normal normal 100%/normal arial, sans-serif;
 }
 
 * {
 	margin: 0;
 	padding: 0;
 }
-
 .cp-bar {
 	text-align: left;
 	background-color: #E5ECF9;
-	border-top: 1px solid #3366CC;
+	/*border-top: 1px solid #3366CC;*/
 	margin: 0em;
 	padding: 0.5em;
-	height: 40px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-moz-border-bottom-left-radius: 5px;
-    -webkit-border-bottom-left-radius: 5px;
-    -moz-border-bottom-right-radius: 5px;
-    -webkit-border-bottom-right-radius: 5px;
+	height: 10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
 }
 .superfly-logo{
-  font-weight: bold;
-  font-size: x-large;
+  font-size: 250%;
+  margin: 0px;
+  padding: 0px;
   cursor: pointer;
+  color: #444;
+  text-decoration: none;
 }
-.service-logo{
-  font-size: x-large;
-  cursor: pointer;
+.superfly-info-logo{
+   font-size: small;
+}
+.superfly-header-logo ul{
+  margin-left: 2em;
+  margin-bottom: 1em;
+  list-style-type: none;
 }
 div.line {
 	display: inline;
@@ -44,7 +47,10 @@ div.line {
 	text-align: right;
 	font-size: 13pt;
 	font-weight: 500;
-	margin-top: -20px;
+	border-bottom: 1px solid #aebedc;
+	margin-left: 1em;
+	margin-right: 1em;
+	
 }
 
 .p-unit {
@@ -156,6 +162,7 @@ table.data td a {
     background: #C5D7EF;
     height: 5px;
     rowspan:2;
+    border-top: 1px solid black;
 }
 /*.feedbackPanel li {
 	text-align: center;
@@ -163,6 +170,7 @@ table.data td a {
 	list-style: none;
 	font-weight: bold;
 }*/
+
 .feedbackPanel {	
 	color: black;
 	background-color: #dee0a6;
@@ -225,11 +233,6 @@ div.release-date {
 table.data td.checkbox-cell,table.data th.checkbox-cell {
 	padding: 0.35em 0.35em 0.25em 0.35em;
 	text-align: center;
-}
-
-.button {
-	padding-top: 1em;
-	padding-bottom: 1em;
 }
 
 .name {

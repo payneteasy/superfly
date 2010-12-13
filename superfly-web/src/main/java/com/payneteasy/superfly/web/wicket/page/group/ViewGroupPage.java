@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -42,17 +43,7 @@ public class ViewGroupPage extends BasePage {
 		final Long groupId = param.getAsLong("gid");
 		
 		//BACK
-		Form<Object> formBack = new Form<Object>("back-form");
-		formBack.add(new Button("btn-back"){
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListGroupsPage.class);
-			}
-		}.setDefaultFormProcessing(false));
-		add(formBack);
-		
+		add(new BookmarkablePageLink<ListGroupsPage>("back-to-groups",ListGroupsPage.class));
 		
 		//FILTER
 		final Filter filter = new Filter();

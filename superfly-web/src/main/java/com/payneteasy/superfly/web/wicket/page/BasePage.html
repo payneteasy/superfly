@@ -6,15 +6,23 @@
  <link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body>
-<div class="cp-bar">
-    <a href="#" wicket:id="self-link" class=""><label class="superfly-logo">Superfly</label>&nbsp;<span class="service-logo">service</span></a>
-    <div id="userinfo">
+  <div id="userinfo">
        <ul>
           <li><span wicket:id="user-name-log"></span> |</li>
           <li><a href="j_spring_security_logout">Sign out</a></li>
        </ul>
-   </div>
-</div>
+  </div>
+  <div class="superfly-header-logo">
+     <ul>
+        <li>
+          <a href="#" wicket:id="self-link" class="superfly-logo">superfly</a>
+        </li>
+        <li>
+          <span class="superfly-info-logo">Centralized web authentication system for Java</span>
+        </li>
+     </ul> 
+  </div>
+<div class="cp-bar"></div>
 <table width=100% height=100%>
 	<tr valign="top" >
 		<td class="p-nav p-unit">

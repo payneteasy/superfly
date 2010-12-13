@@ -7,15 +7,14 @@
 </head>
 <body>
 <wicket:extend>
-
-	<form wicket:id="filter-form">
-	&nbsp;&nbsp; Action name contains: <input wicket:id="action-name-substr" /> &nbsp;
-	<input type="submit" value="Filter" />
+    <div class="filters">
+	  <form wicket:id="filter-form">Action name contains: <input wicket:id="action-name-substr" /> &nbsp;
+	  <input type="submit" value="Filter" />
 	</form>
-	
+	</div>
 <p>
 <b>Group name:</b> &nbsp;<span wicket:id="groupName"></span>&nbsp;&nbsp;&nbsp;<b>Subsystem:</b> &nbsp;
-<span wicket:id="groupSubsystem"></span>
+<span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;|&nbsp;<a href="#" wicket:id="back-to-groups">Back to list groupss</a>
 <br/>
 </p>
 	<table class="data">
@@ -30,11 +29,11 @@
 				<td><span wicket:id="action-id">[Name]</span></td>
 				<td><span wicket:id="action-name">[Subsystem]</span></td>
 			</tr>
+			<tr>
+			   <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+			</tr>
 		</tbody>
 	</table>
-<div wicket:id="paging-navigator"></div>
-
-<form wicket:id="back-form"><input type="submit" wicket:id="btn-back" value="&lt; Back"/></form>
 </wicket:extend>
 </body>
 </html>
