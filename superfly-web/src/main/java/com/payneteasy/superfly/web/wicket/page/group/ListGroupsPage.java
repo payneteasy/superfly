@@ -32,6 +32,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
@@ -150,7 +151,8 @@ public class ListGroupsPage extends BasePage {
 		checkGroup.add(groupDataView);
 		checkGroup.add(new OrderByLink("order-by-groupName", "groupName", groupDataProvider));
 		checkGroup.add(new OrderByLink("order-by-subsystemName", "groupSubsystem", groupDataProvider));
-		checkGroup.add(new PagingNavigator("paging-navigator", groupDataView));
+		//checkGroup.add(new PagingNavigator("paging-navigator", groupDataView));
+		checkGroup.add(new SuperflyPagingNavigator("paging-navigator", groupDataView));
 		
 		checkGroup.add(new CheckGroupSelector("groupselector"));
 		checkGroup.add(new Button("add-group"){

@@ -36,6 +36,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.ConfirmPanel;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -183,7 +184,9 @@ public class ListRolesPage extends BasePage {
 		group.add(new OrderByLink("order-by-principalName", "principalName", rolesDataProvider));
 		group.add(new OrderByLink("order-by-subsystemName", "subsystemName",
 				rolesDataProvider));
-		group.add(new PagingNavigator("paging-navigator", rolesDateView));
+		//group.add(new PagingNavigator("paging-navigator", rolesDateView));
+		group.add(new SuperflyPagingNavigator("paging-navigator", rolesDateView));
+		
 		form.add(new Button("delete-role"){
 
 			@Override

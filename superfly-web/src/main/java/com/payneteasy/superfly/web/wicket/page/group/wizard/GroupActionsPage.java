@@ -33,6 +33,7 @@ import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
@@ -133,7 +134,8 @@ public class GroupActionsPage extends BasePage {
 		
 		checkGroup.add(actionDataView);
 		checkGroup.add(new OrderByLink("order-by-name", "actionName", actionDataProvider));
-		checkGroup.add(new PagingNavigator("paging-navigator", actionDataView));
+		//checkGroup.add(new PagingNavigator("paging-navigator", actionDataView));
+		checkGroup.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
 		checkGroup.add(new CheckGroupSelector("groupselector",checkGroup));
 		
 		// FORM

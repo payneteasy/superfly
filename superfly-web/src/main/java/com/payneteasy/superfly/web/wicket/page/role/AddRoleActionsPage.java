@@ -31,6 +31,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
@@ -116,7 +117,8 @@ public class AddRoleActionsPage extends BasePage {
 		};
 		group.add(actionsDataView);
 
-		form.add(new PagingNavigator("paging-navigator", actionsDataView));
+		//form.add(new PagingNavigator("paging-navigator", actionsDataView));
+		form.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
 
 		form.add(new SubmitLink("save-actions-link"));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));

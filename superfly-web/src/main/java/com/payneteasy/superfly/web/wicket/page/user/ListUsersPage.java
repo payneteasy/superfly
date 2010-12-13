@@ -43,6 +43,7 @@ import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.label.DateLabels;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
@@ -236,7 +237,8 @@ public class ListUsersPage extends BasePage {
 		add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
 		add(new OrderByLink("order-by-last-login-date", "lastLoginDate", usersDataProvider));
 		
-		add(new PagingNavigator("paging-navigator", usersDataView));
+		//add(new PagingNavigator("paging-navigator", usersDataView));
+		add(new SuperflyPagingNavigator("paging-navigator", usersDataView));
 		
 		add(new BookmarkablePageLink<CreateUserPage>("add-user", CreateUserPage.class));
 	}

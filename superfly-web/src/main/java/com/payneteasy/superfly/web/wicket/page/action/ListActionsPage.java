@@ -36,6 +36,7 @@ import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -218,7 +219,8 @@ public class ListActionsPage extends BasePage {
 				actionDataProvider));
 		group.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
 		group.add(new OrderByLink("order-by-actionLog","actionLog",actionDataProvider));
-		group.add(new PagingNavigator("paging-navigator", actionsDataView));
+		//group.add(new PagingNavigator("paging-navigator", actionsDataView));
+		group.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
 
 	}
 

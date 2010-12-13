@@ -24,6 +24,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
@@ -97,7 +98,8 @@ public class ViewGroupPage extends BasePage {
 		add(actionDataView);
 		add(new OrderByLink("order-by-ActionID", "actionId", actionDataProvider));
 		add(new OrderByLink("order-by-ActionName", "actionName", actionDataProvider));
-		add(new PagingNavigator("paging-navigator", actionDataView));
+		//add(new PagingNavigator("paging-navigator", actionDataView));
+		add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
 		
 	}
 	
