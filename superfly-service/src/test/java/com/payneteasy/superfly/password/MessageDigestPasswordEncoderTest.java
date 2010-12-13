@@ -47,6 +47,8 @@ public class MessageDigestPasswordEncoderTest extends TestCase {
         encoder.setAlgorithm("SHA-256");
         String password = encoder.encode("123admin123", salt);
         System.out.println(password);
+        
+        System.out.println(encoder.encode("123admin123", "3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f"));
     }
 
 }

@@ -123,21 +123,20 @@
 		<property name="saltGenerator" ref="saltGenerator"/>
 	</bean>
 	
-	<bean id="userPasswordEncoder" class="com.payneteasy.superfly.password.UserPasswordEncoderImpl">
-		<property name="passwordEncoder" ref="passwordEncoder"/>
-		<property name="saltSource" ref="saltSource"/>
-	</bean>
-
-
 	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
 		<property name="policyName" ref="policyName" />
 		<property name="data" ref="salt" />
 		<property name="salts">
 			<map>
-				<entry key="none" value-ref="nullSaltSouce" />
+				<entry key="none" value-ref="randomStoredSaltSouce" />
 				<entry key="pcidss" value-ref="randomStoredSaltSouce" />
 			</map>
 		</property>
+	</bean>
+	
+	<bean id="userPasswordEncoder" class="com.payneteasy.superfly.password.UserPasswordEncoderImpl">
+		<property name="passwordEncoder" ref="passwordEncoder"/>
+		<property name="saltSource" ref="saltSource"/>
 	</bean>
 
 	<bean id="passwordPolicyValidation"
