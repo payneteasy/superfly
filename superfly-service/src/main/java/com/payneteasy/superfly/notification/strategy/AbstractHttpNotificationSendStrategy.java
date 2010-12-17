@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.notification.strategy;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -30,6 +31,9 @@ public abstract class AbstractHttpNotificationSendStrategy implements
 		parameterSetter.setParameters(httpMethod);
 		try {
 			httpClient.executeMethod(httpMethod);
+			if (logger.isInfoEnabled()) {
+				logger.info("Successfully notified " + uri + " with params " + Arrays.asList(httpMethod.getParameters()));
+			}
 		} catch (HttpException e) {
 			throw new NotificationException(e);
 		} catch (IOException e) {

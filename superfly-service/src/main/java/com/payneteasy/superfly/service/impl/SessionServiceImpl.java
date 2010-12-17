@@ -60,26 +60,28 @@ public class SessionServiceImpl implements SessionService {
 			logger.debug("Deleted " + sessions.size() + " sessions"
 					+ (sessions.size() > 0 ? ", going to notify subsystems" : ""));
 		}
-		Map<String, List<String>> callbackUriToSessionIds = new HashMap<String, List<String>>();
-		for (UISession session : sessions) {
-			if (session.getCallbackInformation() != null) {
-				String uri = session.getCallbackInformation();
-				List<String> sessionIds = callbackUriToSessionIds.get(uri);
-				if (sessionIds == null) {
-					sessionIds = new ArrayList<String>();
-					callbackUriToSessionIds.put(uri, sessionIds);
+		if (!sessions.isEmpty()) {
+			Map<String, List<String>> callbackUriToSessionIds = new HashMap<String, List<String>>();
+			for (UISession session : sessions) {
+				if (session.getCallbackInformation() != null) {
+					String uri = session.getCallbackInformation();
+					List<String> sessionIds = callbackUriToSessionIds.get(uri);
+					if (sessionIds == null) {
+						sessionIds = new ArrayList<String>();
+						callbackUriToSessionIds.put(uri, sessionIds);
+					}
+					sessionIds.add(String.valueOf(session.getId()));
 				}
-				sessionIds.add(String.valueOf(session.getId()));
 			}
+			List<LogoutNotification> notifications = new ArrayList<LogoutNotification>(callbackUriToSessionIds.size());
+			for (Entry<String, List<String>> entry : callbackUriToSessionIds.entrySet()) {
+				LogoutNotification notification = new LogoutNotification();
+				notification.setCallbackUri(entry.getKey());
+				notification.setSessionIds(entry.getValue());
+				notifications.add(notification);
+			}
+			notifier.notifyAboutLogout(notifications);
 		}
-		List<LogoutNotification> notifications = new ArrayList<LogoutNotification>(callbackUriToSessionIds.size());
-		for (Entry<String, List<String>> entry : callbackUriToSessionIds.entrySet()) {
-			LogoutNotification notification = new LogoutNotification();
-			notification.setCallbackUri(entry.getKey());
-			notification.setSessionIds(entry.getValue());
-			notifications.add(notification);
-		}
-		notifier.notifyAboutLogout(notifications);
 		return sessions;
 	}
 

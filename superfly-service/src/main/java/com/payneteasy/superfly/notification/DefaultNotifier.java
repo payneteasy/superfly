@@ -41,12 +41,14 @@ public class DefaultNotifier implements Notifier {
 	}
 
 	public void notifyAboutLogout(List<LogoutNotification> notifications) {
+		logger.info("Notifying about logout: " + notifications);
 		for (LogoutNotification notification : notifications) {
 			createJob(notification);
 		}
 	}
 
 	public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
+		logger.info("Notifying about users changed: " + notifications);
 		for (UsersChangedNotification notification : notifications) {
 			createJob(notification);
 		}
