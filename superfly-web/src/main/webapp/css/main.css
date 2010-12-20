@@ -260,7 +260,7 @@ table.dataSubRoles {
 	border: 1px solid #C5D7EF;
 	empty-cells: show;
 	margin-bottom: 0.5em;
-	width: 50%
+	width: 40%
 }
 
 table.dataSubRoles thead th {
@@ -274,11 +274,11 @@ table.dataSubRoles td {
 	margin: 0;
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
+	width: 200px;
 }
 
 table.dataSubRoles td a {
 	margin-left: 2em;
-	margin-right: 2em;
 }
 
 .highlight {
@@ -349,7 +349,16 @@ div.mapping-scroll {
 }
 
 .button{
-  width: 90px;
+  border: 1px solid #464646;
+  background-color: #e5e5e5;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#cccccc));
+  background: -moz-linear-gradient(top,#fefefe,#cccccc);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#fefefe,endColorstr=#cccccc,GradientType=0); zoom: 1;
+}
+.button:HOVER{
+ -moz-box-shadow: 0 0 8px #84c1c0;
+ -webkit-box-shadow: 0 0 8px #84c1c0;
+  box-shadow: 0 0 8px #84c1c0;
 }
 .hide {
 	display: none;
@@ -381,4 +390,18 @@ div.wicket-aa ul li.selected {
 	background-color: #C5D7EF;
 	padding: 2px;
 	margin: 0;
+}
+.add-role-img{
+  width: 10px;
+  height:10px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-image: url(../img/add.png);
+}
+.remove-role-img{
+  width: 10px;
+  height:10px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-image: url(../img/remove.png);
 }

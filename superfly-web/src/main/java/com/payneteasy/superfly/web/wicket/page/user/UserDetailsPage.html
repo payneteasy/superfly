@@ -38,11 +38,11 @@
   <tbody wicket:id="sub-list">
        <tr onMouseOver="highlight(this);" onMouseOut="rollback(this);">
         <td><span wicket:id="sub-name">subsystem</span></td>
-        <td><a href="#" wicket:id="add-role">add role</a></td> 
+        <td><a href="#" wicket:id="add-role"><span class="add-role-img"></span>add role</a></td> 
        </tr>
        <tr wicket:id="role-list" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
           <td><a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a></td>
-          <td><a href="#" wicket:id="delete-role">remove</a></td>
+          <td><a href="#" wicket:id="delete-role" class="remove-role-img" title="remove role"></a></td>
        </tr>
   </tbody>
 </table>

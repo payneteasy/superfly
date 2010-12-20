@@ -6,31 +6,7 @@
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Copy action</title>
 <wicket:head>
-	<style>
-div.wicket-aa {
-	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
-	font-size: 12px;
-	background-color: white;
-	border-width: 1px;
-	border-color: #cccccc;
-	border-style: solid;
-	padding: 2px;
-	margin: 1px 0 0 0;
-	text-align: left;
-}
-
-div.wicket-aa ul {
-	list-style: none;
-	padding: 2px;
-	margin: 0;
-}
-
-div.wicket-aa ul li.selected {
-	background-color: #FFFF00;
-	padding: 2px;
-	margin: 0;
-}
-</style>
+<style></style>
 <script type="text/javascript">
    function highlight(obj) {
       obj.prevClassName = obj.className;
@@ -44,42 +20,40 @@ div.wicket-aa ul li.selected {
 </head>
 <body>
 <wicket:extend>
-	<div class="filters">
-	<form wicket:id="filters-form">
+<form wicket:id="filters-form">
 	<div class="namecopy">
-			Action Name: <span wicket:id="name-action"></span>
+			Action Name: &nbsp;<span wicket:id="name-action"></span>&nbsp;|&nbsp;&nbsp;<a href="#" wicket:id="back">back to list actions</a>
 	</div>
 		<div class="namecopy">
-			Description: <span wicket:id="name-description"></span>
+			Description: &nbsp;<span wicket:id="name-description"></span>
 		
 		</div>
 		<div class="namecopy">
-			Subsystem Name: <span wicket:id="subname-action"></span>
+			Subsystem Name: &nbsp;<span wicket:id="subname-action"></span>
 		</div>
 		
 	
-	<span>Action Name: <input type="text" wicket:id="auto" size="20" /></span>
-	<input type="submit" value="Filter" />
+	<span>Action Name: &nbsp;<input type="text" wicket:id="auto" size="33" /></span>
+	<input type="submit" value="Filter" class="button"/>
+
 	<table class="data">
 		<thead>
 			<tr>
 				<th><a wicket:id="order-by-actionName">Action Name</a></th>
 				<th><a wicket:id="order-by-actionDescription">Desciption</a></th>
-				<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="actionList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
 				<td><a href="#" wicket:id="select-action"><span wicket:id="action-name">Yes</span></a></td>
 				<td><span wicket:id="action-description">bond</span></td>
-				<td><span wicket:id="subsystem-name">bond</span></td>
+			</tr>
+			<tr>
+			   <td wicket:id="paging-navigator" class="paging-navigator" colspan="2"></td>
 			</tr>
 		</tbody>
 	</table>
-	<div wicket:id="paging-navigator"></div>
-	<input type="submit" value="Cancel" wicket:id="cancel" />
-	</form>
-	</div>
+</form>
 	<div wicket:id="modalWindow"></div>
 </wicket:extend>
 </body>

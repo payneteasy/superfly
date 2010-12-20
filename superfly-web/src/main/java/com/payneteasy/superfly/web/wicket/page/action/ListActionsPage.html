@@ -5,31 +5,7 @@
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Actions</title>
 <wicket:head>
-	<style>
-div.wicket-aa {
-	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
-	font-size: 12px;
-	background-color: white;
-	border-width: 1px;
-	border-color: #C5D7EF;
-	border-style: solid;
-	padding: 2px;
-	margin: 1px 0 0 0;
-	text-align: left;
-}
-
-div.wicket-aa ul {
-	list-style: none;
-	padding: 2px;
-	margin: 0;
-}
-
-div.wicket-aa ul li.selected {
-	background-color: #C5D7EF;
-	padding: 2px;
-	margin: 0;
-}
-</style>
+<style></style>
 <script type="text/javascript">
    function highlight(obj) {
       obj.prevClassName = obj.className;
@@ -52,8 +28,8 @@ div.wicket-aa ul li.selected {
 					<option>Subsystem 3</option>
 				</select>
 			</span>&nbsp;&nbsp;&nbsp;
-			<span>Action Name: <input type="text" wicket:id="auto" size="20" /></span>
-			<input type="submit" value="Filter" />
+			<span>Action Name: <input type="text" wicket:id="auto" size="33" /></span>
+			<input type="submit" value="Filter" class="button"/>
 		</form>
 	</div>
 	<form wicket:id="form">
@@ -88,7 +64,7 @@ div.wicket-aa ul li.selected {
 		</div>
 		
 		<div>
-			<input type="submit" value="Log On/Off" wicket:id="log-action" />
+			<input type="submit" value="Log On/Off" wicket:id="log-action"  class="button"/>
 		</div>
 		
 	</form>

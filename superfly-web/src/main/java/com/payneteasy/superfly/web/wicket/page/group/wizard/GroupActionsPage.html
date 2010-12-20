@@ -21,7 +21,7 @@
 	<div>
 	<form wicket:id="filters-form"><span>Action name
 	contains: <input wicket:id="action-name-substr" /></span> &nbsp;<input
-		type="submit" value="Filter" /></form>
+		type="submit" value="Filter" class="button"/></form>
 	</div>
 	<form wicket:id="form"><span wicket:id="group">
 	<table class="data">
@@ -38,13 +38,14 @@
 				<td><span wicket:id="name"></span></td>
 				<td><span wicket:id="ssys-name"></span></td>
 			</tr>
+			<tr>
+			  <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+			</tr>
 		</tbody>
 	</table>
-	<div wicket:id="paging-navigator"></div>
 	</span> 
-<!--	<input type=submit wicket:id="btn-back" value="&lt; Group properties" />&nbsp;&nbsp;-->
-	<input type=submit wicket:id="btn-cancel" value="Cancel" />&nbsp;&nbsp;
-	<input type=submit value="Apply" /></form>
+	<input type=submit wicket:id="btn-cancel" value="Cancel" class="button"/>&nbsp;&nbsp;
+	<input type=submit value="Apply" class="button"/></form>
 
 </wicket:extend>
 </body>

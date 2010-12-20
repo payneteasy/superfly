@@ -17,6 +17,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -30,6 +31,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
+import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 
@@ -49,31 +51,27 @@ public class CopyActionPropertiesPage extends BasePage {
 		modalWindow.setCookieName("modal-cookie");
 		modalWindow.setPageCreator(new ModalWindow.PageCreator() {
 			public Page createPage() {
-				return new CopyActionWindow(CopyActionPropertiesPage.this,
-						modalWindow, parameters);
+				return new CopyActionWindow(CopyActionPropertiesPage.this, modalWindow, parameters);
 			}
 		});
-		modalWindow
-				.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
-					public void onClose(AjaxRequestTarget target) {
-						if (parameters.containsKey("copy")) {
-							setResponsePage(ListActionsPage.class);
-						}
+		modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+			public void onClose(AjaxRequestTarget target) {
+				if (parameters.containsKey("copy")) {
+					setResponsePage(ListActionsPage.class);
+				}
 
-					}
-				});
-		modalWindow
-				.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
-					public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-						return true;
-					}
-				});
+			}
+		});
+		modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+			public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+				return true;
+			}
+		});
 
 		final ActionFilter actionFilter = new ActionFilter();
 		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
 		add(filtersForm);
-		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>(
-				"auto", new Model("")) {
+		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model("")) {
 
 			@Override
 			protected Iterator getChoices(String input) {
@@ -81,8 +79,7 @@ public class CopyActionPropertiesPage extends BasePage {
 					return Collections.EMPTY_LIST.iterator();
 				}
 				List choices = new ArrayList(20);
-				List<UIActionForFilter> action = actionService
-						.getActionForFilter();
+				List<UIActionForFilter> action = actionService.getActionForFilter();
 				for (UIActionForFilter uia : action) {
 					final String name = uia.getActionName();
 					if (name.toUpperCase().startsWith(input.toUpperCase())) {
@@ -100,27 +97,19 @@ public class CopyActionPropertiesPage extends BasePage {
 
 		UIAction action = actionService.getAction(actionId);
 		final long subId = action.getSubsystemId();
-		filtersForm.add(new Label("name-action", action == null ? null : action
-				.getActionName()));
-		filtersForm.add(new Label("name-description", action == null ? null
-				: action.getActionDescription()));
-		filtersForm.add(new Label("subname-action", action == null ? null
-				: action.getSubsystemName()));
+		filtersForm.add(new Label("name-action", action == null ? null : action.getActionName()));
+		filtersForm.add(new Label("name-description", action == null ? null : action.getActionDescription()));
+		filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));
 
-		String[] fieldName = { "actionId", "actionName", "actionDescription",
-				"subsystemName" };
-		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
-				fieldName) {
+		String[] fieldName = { "actionId", "actionName", "actionDescription" };
+		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
 
-			public Iterator<? extends UIActionForList> iterator(int first,
-					int count) {
+			public Iterator<? extends UIActionForList> iterator(int first, int count) {
 				String actionForFilter = autoTextNameAction.getModelObject();
 				List<Long> subsystemId = new ArrayList<Long>();
 				subsystemId.add(subId);
-				List<UIActionForList> actions = actionService.getActions(first,
-						count, getSortFieldIndex(), isAscending(),
-						actionForFilter == null ? null : actionForFilter, null,
-						subsystemId);
+				List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(),
+						actionForFilter == null ? null : actionForFilter, null, subsystemId);
 				return actions.iterator();
 			}
 
@@ -132,8 +121,7 @@ public class CopyActionPropertiesPage extends BasePage {
 			}
 
 		};
-		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>(
-				"actionList", actionDataProvider) {
+		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList", actionDataProvider) {
 
 			@Override
 			protected void populateItem(Item<UIActionForList> item) {
@@ -147,34 +135,17 @@ public class CopyActionPropertiesPage extends BasePage {
 					}
 
 				};
-				selectActionForCopy.add(new Label("action-name", action
-						.getName()));
+				selectActionForCopy.add(new Label("action-name", action.getName()));
 				item.add(selectActionForCopy);
-				item.add(new Label("action-description", action
-						.getDescroption()));
-				item
-						.add(new Label("subsystem-name", action
-								.getSubsystemName()));
+				item.add(new Label("action-description", action.getDescroption()));
 			}
 
 		};
 		filtersForm.add(actionDataView);
-		filtersForm.add(new OrderByLink("order-by-actionName", "actionName",
-				actionDataProvider));
-		filtersForm.add(new OrderByLink("order-by-actionDescription",
-				"actionDescription", actionDataProvider));
-		filtersForm.add(new OrderByLink("order-by-subsystemName",
-				"subsystemName", actionDataProvider));
-		filtersForm
-				.add(new PagingNavigator("paging-navigator", actionDataView));
-		filtersForm.add(new Button("cancel") {
-
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListActionsPage.class);
-			}
-
-		});
+		filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
+		filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
+		filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
+		filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
 
 	}
 
