@@ -4,12 +4,14 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
+import com.payneteasy.superfly.service.mapping.MappingService;
+
 /**
  * Action representation for a check-box used to assign it to a user.
  * 
  * @author Roman Puchkovskiy
  */
-public class UIActionForCheckboxForUser implements Serializable {
+public class UIActionForCheckboxForUser implements Serializable, MappingService {
 	private String subsystemName;
 	private long actionId;
 	private String actionName;
@@ -109,5 +111,13 @@ public class UIActionForCheckboxForUser implements Serializable {
 		if (roleId != other.roleId)
 			return false;
 		return true;
+	}
+
+	public long getItemId() {
+		return actionId;
+	}
+
+	public String getItemName() {
+		return actionName;
 	}
 }

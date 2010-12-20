@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
-public class UIGroupForCheckbox implements Serializable {
+import com.payneteasy.superfly.service.mapping.MappingService;
+
+public class UIGroupForCheckbox implements Serializable, MappingService {
 	private long groupId;
 	private String subsystemName;
 	private String groupName;
@@ -76,6 +78,14 @@ public class UIGroupForCheckbox implements Serializable {
 		if (groupId != other.groupId)
 			return false;
 		return true;
+	}
+
+	public long getItemId() {
+		return groupId;
+	}
+
+	public String getItemName() {
+		return groupName;
 	}
 	
 

@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 
-public class UIActionForCheckboxForRole implements Serializable {
+import com.payneteasy.superfly.service.mapping.MappingService;
+
+public class UIActionForCheckboxForRole implements Serializable, MappingService {
 	private long actionId;
 	private long roleId;
 	private String subsystemName;
@@ -58,15 +60,25 @@ public class UIActionForCheckboxForRole implements Serializable {
 	public boolean isMapped() {
 		return "M".equalsIgnoreCase(mappingStatus);
 	}
+	
+	public long getItemId() {
+		return actionId;
+	}
+	public String getItemName() {
+		return actionName;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (actionId ^ (actionId >>> 32));
+		result = prime * result + ((actionName == null) ? 0 : actionName.hashCode());
+		result = prime * result + ((mappingStatus == null) ? 0 : mappingStatus.hashCode());
 		result = prime * result + (int) (roleId ^ (roleId >>> 32));
+		result = prime * result + ((roleName == null) ? 0 : roleName.hashCode());
+		result = prime * result + ((subsystemName == null) ? 0 : subsystemName.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -78,8 +90,29 @@ public class UIActionForCheckboxForRole implements Serializable {
 		UIActionForCheckboxForRole other = (UIActionForCheckboxForRole) obj;
 		if (actionId != other.actionId)
 			return false;
+		if (actionName == null) {
+			if (other.actionName != null)
+				return false;
+		} else if (!actionName.equals(other.actionName))
+			return false;
+		if (mappingStatus == null) {
+			if (other.mappingStatus != null)
+				return false;
+		} else if (!mappingStatus.equals(other.mappingStatus))
+			return false;
 		if (roleId != other.roleId)
+			return false;
+		if (roleName == null) {
+			if (other.roleName != null)
+				return false;
+		} else if (!roleName.equals(other.roleName))
+			return false;
+		if (subsystemName == null) {
+			if (other.subsystemName != null)
+				return false;
+		} else if (!subsystemName.equals(other.subsystemName))
 			return false;
 		return true;
 	}
+	
 }

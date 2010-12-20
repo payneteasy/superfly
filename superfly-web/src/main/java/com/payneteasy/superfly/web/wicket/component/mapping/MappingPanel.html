@@ -1,0 +1,64 @@
+<html xmlns:wicket>
+<head>
+<wicket:head>
+  <style type="text/css"></style>
+</wicket:head>
+</head>
+<body>
+<wicket:panel>
+ <form wicket:id="form-mapping">
+ <table>
+    <tr>
+       <td>
+    <div class="mapping-search" wicket:id="search-unmapped-container">
+           <div class="mapping-search-text">
+             <input type="text" wicket:id="unmapped-str" class="mapping-search-input"/>        
+           </div>
+           <input type="submit" value="Search" class="mapping-search-button"/>        
+    </div>
+    
+	<div wicket:id="checkgroup-unmapped">
+   	  <div class="mapping-hader">
+   	     <span class="mapping-header-checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-unmap"/></span>
+	     <span class="mapping-header-item-name">Prohibited <span wicket:id="unmapped-item-name"></span></span>
+     </div>
+     <div class="mapping-scroll">
+	   <div wicket:id="unmapped-list" class="mapping-row">
+	     <span class="mapping-header-checkbox-cell"><input type="checkbox" wicket:id="selected" /></span>
+	     <span class="mapping-row-item-name" wicket:id="mapped-name"></span>
+	    </div>
+	   </div>
+     </div>
+       </td>
+       <td>
+           <div class="mapping-buttons">
+       		  <div style="padding-bottom: 1em;"><input type="submit" value="Grant &gt;"wicket:id="add-items" class="button"/></div>
+	          <input type="submit" value="&lt; Prohibit"wicket:id="remove-items" class="button"/>
+	        </div>
+       </td>
+       <td>
+         <div class="mapping-search" wicket:id="search-mapped-container">
+           <div class="mapping-search-text">
+             <input type="text" wicket:id="mapped-str" class="mapping-search-input"/>        
+           </div>
+            <input type="submit" value="Search" class="mapping-search-button"/>        
+         </div>
+	    <div wicket:id="checkgroup-mapped">	
+	     <div class="mapping-hader">
+	        <span class="mapping-header-checkbox-cell"><input type="checkbox" wicket:id="master-checkbox-map"/></span>
+	        <span class="mapping-header-item-name">Granted <span wicket:id="mapped-item-name"></span></span>
+	     </div>  
+	        <div class="mapping-scroll">
+	           <div wicket:id="mapped-list" class="mapping-row">
+	            <span class="mapping-header-checkbox-cell"><input type="checkbox" wicket:id="selected" /></span>
+	            <span class="mapping-row-item-name" wicket:id="mapped-name"></span>
+	          </div>
+	       </div>
+	     </div>
+       </td>
+    </tr>
+ </table>
+</form>
+</wicket:panel>
+</body>
+</html>

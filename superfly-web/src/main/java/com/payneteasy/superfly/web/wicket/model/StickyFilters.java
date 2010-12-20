@@ -13,7 +13,7 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 public class StickyFilters implements Serializable {
 	private UISubsystemForFilter subsystem;
 	private String actionNameSubstring = "";
-
+	
 	public UISubsystemForFilter getSubsystem() {
 		return subsystem;
 	}

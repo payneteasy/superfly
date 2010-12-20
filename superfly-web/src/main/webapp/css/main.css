@@ -285,41 +285,72 @@ table.dataSubRoles td a {
 	background-color: rgb(238, 249, 249);
 }
 
-.table-header-action{
+.mapping-hader{
     background-color: #C5D7EF;
     font-weight: bold;
-    height: 30px;
+    height: 17px;
     padding-top: 10px;
-    width: 400px;
+    width: 300px;
 }
-.table-header-action-checkbox-cell{
+.mapping-header-checkbox-cell{
     padding-left: 0.35em;
 }
-.table-header-action-name{
+.mapping-header-item-name{
     padding-left: 30px;
 }
-.table-header-action-sub-name{
-    padding-left: 210px;
-}
-.table-row-action{
-    height: 30px;
+.mapping-row{
+    height: 20px;
     padding-top: 10px;
     border-bottom: 1px solid #C5D7EF;
-    width: 400px;
+    width: 300px;
 }
-.table-row-action:HOVER{
+.mapping-row:HOVER{
     background-color: rgb(238, 249, 249);
 }
-.table-row-action-name{
+.mapping-row-item-name{
     padding-left: 10px;
-    font-size: small;
-}
-.table-row-action-sub{
-    font-size: small;
-    float: right;
-    margin-right: 30px;
+    font-size: 12px;
 }
 
+.mapping-search{
+   margin: 0 0 1em 0;
+}
+.mapping-search-text{
+	display: inline-block;
+    height: 25px;
+    padding: 0 13 0 0px;
+    margin: 0;
+    border-top:1px solid #d0dddd;
+    border-left:1px solid #d0dddd;
+    border-bottom:1px solid #d0dddd;
+}
+.mapping-search-input{
+	background: none;
+    border: none;
+    outline: none;
+    height: 25px;
+    font-size:12px;
+    padding: 0 0 0 5px;
+    width:  230px;
+}
+.mapping-search-button{
+   margin: 0 0 0 -3px;
+   height:27px;
+}
+.mapping-buttons{
+  margin: 1em 1em 10em 1em;
+}
+
+div.mapping-scroll {
+	overflow: -moz-scrollbars-vertical;
+	overflow-y: auto; height:260px;
+	overflow-x: hidden;
+	
+}
+
+.button{
+  width: 90px;
+}
 .hide {
 	display: none;
 }
@@ -328,19 +359,26 @@ table.dataAction td.checkbox-cell,table.dataAction th.checkbox-cell {
 	padding: 0.35em 0.35em 0.25em 0.35em;
 	text-align: center;
 }
-
-.buttonAction {
-	width: 6em;
-	padding-bottom: 1em;
+div.wicket-aa {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
+	font-size: 12px;
+	background-color: white;
+	border-width: 1px;
+	border-color: #C5D7EF;
+	border-style: solid;
+	padding: 2px;
+	margin: 1px 0 0 0;
+	text-align: left;
 }
 
-h4.tableHeading {
-	padding-bottom: 1em;
+div.wicket-aa ul {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
 }
 
-div.scroll {
-	overflow: -moz-scrollbars-vertical;
-	overflow-y: auto; height:340px;
-	overflow-x: hidden;
-	
+div.wicket-aa ul li.selected {
+	background-color: #C5D7EF;
+	padding: 2px;
+	margin: 0;
 }
