@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -17,6 +18,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -53,7 +55,7 @@ public class GroupActionsPage extends BasePage {
 	
 	@Override
 	protected String getTitle() {
-		return "Group actions";
+		return "Create group";
 	}
 
 	public GroupActionsPage(PageParameters param) {
@@ -121,7 +123,7 @@ public class GroupActionsPage extends BasePage {
 		final CheckGroup<UIActionForCheckboxForGroup> checkGroup = new CheckGroup<UIActionForCheckboxForGroup>("group",actionsCheckGroupModel);
 
 		// DATAVIEW
-		final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider){
+		final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider, 15){
 			@Override
 			protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
 				final UIActionForCheckboxForGroup action = item.getModelObject();
@@ -161,13 +163,7 @@ public class GroupActionsPage extends BasePage {
 				}
 			}
 		};
-		
-		form.add(new Button("btn-cancel"){
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListGroupsPage.class);
-			}
-		}.setDefaultFormProcessing(false));
+		form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
 		
 		form.add(checkGroup);
 		add(form);

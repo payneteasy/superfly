@@ -17,13 +17,16 @@
 </head>
 <body>
 <wicket:extend>
-
-	<div>
-	<form wicket:id="filters-form"><span>Action name
-	contains: <input wicket:id="action-name-substr" /></span> &nbsp;<input
-		type="submit" value="Filter" class="button"/></form>
+<div class="cont-box">
+    <h4>Add to the group of actions</h4>
+	<div class="filters">
+	<form wicket:id="filters-form"><span>Action name: 
+	    <input wicket:id="action-name-substr" /></span> &nbsp;
+	    <input type="submit" value="Filter" class="button"/>
+	 </form>
 	</div>
-	<form wicket:id="form"><span wicket:id="group">
+	<form wicket:id="form">
+   <div wicket:id="group">
 	<table class="data">
 		<thead>
 			<tr>
@@ -43,10 +46,10 @@
 			</tr>
 		</tbody>
 	</table>
-	</span> 
+</div> 
 	<input type=submit wicket:id="btn-cancel" value="Cancel" class="button"/>&nbsp;&nbsp;
 	<input type=submit value="Apply" class="button"/></form>
-
+</div>
 </wicket:extend>
 </body>
 </html>

@@ -104,7 +104,7 @@ public class AddRoleGroupsPage extends BasePage {
 		group.add(rolesDataView);
 
 		//form.add(new PagingNavigator("paging-navigator", rolesDataView));
-        form.add(new SuperflyPagingNavigator("paging-navigator", rolesDataView));
+		group.add(new SuperflyPagingNavigator("paging-navigator", rolesDataView));
 		form.add(new SubmitLink("save-actions-link"));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
 		
@@ -140,7 +140,7 @@ public class AddRoleGroupsPage extends BasePage {
 
 	@Override
 	protected String getTitle() {
-		return "Role Groups";
+		return "Create role";
 	}
 
 }

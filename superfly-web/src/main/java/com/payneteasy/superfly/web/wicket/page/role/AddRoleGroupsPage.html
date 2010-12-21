@@ -18,6 +18,8 @@
 </head>
 <body>
 <wicket:extend>
+<div class="cont-box">
+<h4>Add to the role of groups</h4>
 	<form wicket:id="form">
 		<div wicket:id="group">
 		    <table class="data">
@@ -34,18 +36,20 @@
 		    			<td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
 		    			<td><span wicket:id="group-name">Role 1</span></td>
 		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-		    			
 		    		</tr>
+		    		<tr>
+			          <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+			        </tr>
 				</tbody>
 			</table>
 		</div>
-		<div wicket:id="paging-navigator">Paging navigation goes here</div>
 		<div>
 		  <input type="submit" value="Apply" wicket:id="save-actions-link" class="button"/>
 		  <input type="submit" value="Next" wicket:id="next-link" class="button"/>
 		  <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
 		</div>
 	</form>
+</div>
 </wicket:extend>
 </body>
 </html>

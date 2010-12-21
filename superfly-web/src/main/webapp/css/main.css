@@ -149,7 +149,6 @@ table.data thead th {
 }
 
 table.data td {
-	
 	border: 1px solid #C5D7EF;
 	padding: 0.35em 1em 0.25em 0.35em;
 }
@@ -158,12 +157,18 @@ table.data td a {
 	margin-left: 0.5em;
 	margin-right: 0.5em;
 }
+table.data td.checkbox-cell,table.data th.checkbox-cell {
+	padding: 0.35em 0.35em 0.25em 0.35em;
+	text-align: center;
+}
+
 .paging-navigator{
     background: #C5D7EF;
     height: 5px;
     rowspan:2;
     border-top: 1px solid black;
 }
+
 /*.feedbackPanel li {
 	text-align: center;
 	color: black;
@@ -230,10 +235,6 @@ div.release-date {
 	padding-top: 10px;
 }
 
-table.data td.checkbox-cell,table.data th.checkbox-cell {
-	padding: 0.35em 0.35em 0.25em 0.35em;
-	text-align: center;
-}
 
 .name {
 	font-weight: 600;
@@ -337,10 +338,18 @@ table.dataSubRoles td a {
    margin: 0 0 0 -3px;
    height:27px;
 }
+.mapping-search-button:HOVER{
+  -moz-box-shadow: 0 0 1px #black;
+  -webkit-box-shadow: 0 0 1px #black;
+   box-shadow: 0 0 1px #black;
+}
 .mapping-buttons{
   margin: 1em 1em 10em 1em;
 }
-
+.mapping-button{
+  height:20px;
+  width: 90px;
+}
 div.mapping-scroll {
 	overflow: -moz-scrollbars-vertical;
 	overflow-y: auto; height:260px;
@@ -349,16 +358,12 @@ div.mapping-scroll {
 }
 
 .button{
-  border: 1px solid #464646;
-  background-color: #e5e5e5;
-  background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#cccccc));
-  background: -moz-linear-gradient(top,#fefefe,#cccccc);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#fefefe,endColorstr=#cccccc,GradientType=0); zoom: 1;
+  height: 22px;
 }
-.button:HOVER{
- -moz-box-shadow: 0 0 8px #84c1c0;
- -webkit-box-shadow: 0 0 8px #84c1c0;
-  box-shadow: 0 0 8px #84c1c0;
+.button:HOVER, .mapping-button:HOVER{
+ -moz-box-shadow: 0 0 1px #black;
+ -webkit-box-shadow: 0 0 1px #black;
+  box-shadow: 0 0 1px #black;
 }
 .hide {
 	display: none;
@@ -404,4 +409,13 @@ div.wicket-aa ul li.selected {
   display: inline-block;
   background-repeat: no-repeat;
   background-image: url(../img/remove.png);
+}
+.cont-box {
+	border:2px solid #d0dddd;
+	padding:29px 0 18px 36px;
+	margin:0 100px 30px 0;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+    position: relative;
 }

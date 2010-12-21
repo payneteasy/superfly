@@ -118,7 +118,7 @@ public class AddRoleActionsPage extends BasePage {
 		group.add(actionsDataView);
 
 		//form.add(new PagingNavigator("paging-navigator", actionsDataView));
-		form.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
+		group.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
 
 		form.add(new SubmitLink("save-actions-link"));
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
@@ -156,7 +156,7 @@ public class AddRoleActionsPage extends BasePage {
 
 	@Override
 	protected String getTitle() {
-		return "Role GrantActions";
+		return "Create role";
 	}
 
 	private static class Filters implements Serializable {

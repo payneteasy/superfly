@@ -18,10 +18,13 @@
 </head>
 <body>
 <wicket:extend>
+<div class="cont-box">
+<h4>Add to the role grant actions</h4>
 	<div class="filters">
-	<form wicket:id="filters-form"><span>Action name
-	substring: <input wicket:id="action-name-substring" /></span> <input
-		type="submit" value="Filter" /></form>
+	  <form wicket:id="filters-form">
+	   <span>Action name substring: <input wicket:id="action-name-substring" /></span> 
+	   <input type="submit" value="Filter" />
+	  </form>
 	</div>
 	<form wicket:id="form">
 	<div wicket:id="group">
@@ -42,14 +45,19 @@
 				<td><span wicket:id="role-name">Role 1</span></td>
 				<td><span wicket:id="action-name">Action 1</span></td>
 			</tr>
+			<tr>
+			  <td wicket:id="paging-navigator" class="paging-navigator" colspan="4"></td>
+			</tr>
 		</tbody>
 	</table>
 	</div>
-	<div wicket:id="paging-navigator">Paging navigation goes here</div>
-	<div><input type="submit" value="Apply" wicket:id="save-actions-link" />
-	<input type="submit" value="Back" wicket:id="back-link" />
-	<input type="submit" value="Cancel" wicket:id="cancel" /></div>
-	</form>
+	<div>
+	 <input type="submit" value="Apply" wicket:id="save-actions-link" class="button"/>
+	 <input type="submit" value="Back" wicket:id="back-link" class="button"/>
+	 <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
+	</div>
+</form>
+</div>	
 </wicket:extend>
 </body>
 </html>

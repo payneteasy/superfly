@@ -7,6 +7,8 @@
 </head>
 <body>
 <wicket:extend>
+<div class="cont-box">
+  <h4>Please, provide new Role name, Principal name and Subsystem</h4>
 	<form wicket:id="form">
 	<table class="form">
 		<tr>
@@ -18,11 +20,8 @@
 			<td><input type="text" wicket:id="principalName" /></td>
 		</tr>
 		<tr>
-			<span>Subsystem: <select wicket:id="subsystem-filter">
-				<option>Subsystem 1</option>
-				<option>Subsystem 2</option>
-				<option>Subsystem 3</option>
-			</select> </span>
+			<td>Subsystem:</td> 
+			<td><select wicket:id="subsystem-filter"></select></td>
 		</tr>
 	</table>
 	<div>
@@ -30,6 +29,7 @@
 	  <input type="submit"value="Cancel" wicket:id="cancel" class="button"/>
 	</div>
 	</form>
+</div>	
 </wicket:extend>
 </body>
 </html>
