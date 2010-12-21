@@ -9,20 +9,9 @@
 <wicket:extend>
 <div class="cont-box">
 <form wicket:id="form">
-   <table class="form">
-		<tr>
-			<td>Name:</td>
-			<td><input type="text" wicket:id="name" /></td>
-		</tr>
-		<tr>
-			<td>Callback Info:</td>
-			<td><input type="text" wicket:id="callbackInformation" /></td>
-		</tr>
-		<tr>
-			<td>Allow list users:</td>
-			<td><input type="checkbox" wicket:id="allowListUsers" /></td>
-		</tr>
-	</table>
+   <div wicket:id="name"></div>
+   <div wicket:id="callbackInformation"></div>
+   <div wicket:id="allowListUsers"></div>	
 	<div>
 	   <input type="submit" value="Add"  class="button"/> 
 	   <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>

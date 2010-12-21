@@ -352,7 +352,7 @@ table.dataSubRoles td a {
 }
 div.mapping-scroll {
 	overflow: -moz-scrollbars-vertical;
-	overflow-y: auto; height:260px;
+	overflow-y: auto; height:250px;
 	overflow-x: hidden;
 	
 }
@@ -418,4 +418,97 @@ div.wicket-aa ul li.selected {
 	-webkit-border-radius:5px;
 	border-radius:5px;
     position: relative;
+}
+/*FIELD COMPONENTS*/
+.text-field, .text-field-required {
+	margin: 10px 0;
+	list-style: none;
+}
+
+.text-field-required label.field-label-text {
+    font-weight: bold;
+}
+.field-label-text {
+    font-size: 14px;
+    line-height: 25px;
+    width: 160px;
+	display: inline-block;
+	white-space: nowrap;
+}
+.field-label-text-area{
+    font-size: 14px;
+    line-height: 25px;
+    width: 160px;
+	display: inline-block;
+	white-space: nowrap;
+	vertical-align: top;
+}
+.field-input-text-area{
+    width: 400px;
+    height: 150px;
+	border: 1px solid gray;
+	padding: 3px;
+	-moz-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	outline: none;
+	transition: border linear .2 s, box-shadow linear .2 s;
+	-moz-transition: border linear .2 s, -moz-box-shadow linear .2 s;
+	-webkit-transition: border linear .2 s, -webkit-box-shadow linear .2 s;
+}
+.field-input-text-area:FOCUS{
+    -moz-box-shadow: 0 0 8px rgba(82, 168, 236, 0.5);
+	-webkit-box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	border-color: rgba(82, 168, 236, 0.75) !important;
+}
+.field-input-text:focus {
+	-moz-box-shadow: 0 0 8px rgba(82, 168, 236, 0.5);
+	-webkit-box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	border-color: rgba(82, 168, 236, 0.75) !important;
+}
+
+.field-input-text {
+	width: 300px;
+	border: 1px solid gray;
+	padding: 3px;
+	-moz-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	outline: none;
+	transition: border linear .2 s, box-shadow linear .2 s;
+	-moz-transition: border linear .2 s, -moz-box-shadow linear .2 s;
+	-webkit-transition: border linear .2 s, -webkit-box-shadow linear .2 s;
+}
+.field-checkbox-span {
+	margin-left: 225px;
+	display: inline-block;
+	text-align: right;
+}
+.field-select:focus {
+	-moz-box-shadow: 0 0 8px rgba(82, 168, 236, 0.5);
+	-webkit-box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	box-shadow: 0 0 8px rgba(82, 168, 236, .5);
+	border-color: rgba(82, 168, 236, 0.75) !important;
+}
+
+.field-select {
+	width: 308px;
+	border: 1px solid gray;
+	padding: 3px;
+	-moz-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	outline: none;
+	transition: border linear .2 s, box-shadow linear .2 s;
+	-moz-transition: border linear .2 s, -moz-box-shadow linear .2 s;
+	-webkit-transition: border linear .2 s, -webkit-box-shadow linear .2 s;
+}
+.field-value-text {
+	display: inline-block;
+	white-space: nowrap;
+    padding-left: 4px;
+    width: 300px;
+    font-size: 13px;
 }

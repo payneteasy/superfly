@@ -23,6 +23,10 @@ import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
@@ -64,30 +68,30 @@ public class CloneUserPage extends BasePage {
 			}
 		};
 		add(form);
-		form.add(new Label("old-userid", String.valueOf(oldUser.getId())));
-		form.add(new Label("old-username", oldUser.getUsername()));
+		form.add(new LabelValueRow<String>("old-username", new Model(oldUser.getUsername()),"user.clone.template-name"));
 
-        FormComponent<String> userName=new RequiredTextField<String>("username",
-				new PropertyModel<String>(user, "username"));
-
+		LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
 		form.add(userName);
-		TextField<String> email = new TextField<String>("email",new PropertyModel<String>(user, "email"));
-		email.add(EmailAddressValidator.getInstance());
-		form.add(email.setRequired(true));
-		FormComponent<String> password1Field = new PasswordTextField("password",
-				new PropertyModel<String>(user, "password")).setRequired(true);
+
+		LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);
+		email.getTextField().add(EmailAddressValidator.getInstance());
+		form.add(email);
+		
+		LabelPasswordTextFieldRow password1Field = new LabelPasswordTextFieldRow(user, "password", "user.create.password", true);
 		form.add(password1Field);
-		FormComponent<String> password2Field = new PasswordTextField("password2",
-				new PropertyModel<String>(user, "password2")).setRequired(true);
+		
+		LabelPasswordTextFieldRow password2Field = new LabelPasswordTextFieldRow(user, "password2", "user.create.password2", true);
 		form.add(password2Field);
-		form.add(new EqualPasswordInputValidator(password1Field, password2Field));
+		
+		form.add(new EqualPasswordInputValidator(password1Field.getPasswordTextField(), password2Field.getPasswordTextField()));
+		
+		form.add(new PasswordInputValidator(userName.getTextField(), password1Field.getPasswordTextField(), userService));
+		
+		LabelTextAreaRow<String> publicKeyField = new LabelTextAreaRow<String>(user, "publicKey", "user.create.publicKey");
+		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
+		form.add(publicKeyField);
+		
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
-        form.add(new PasswordInputValidator(userName,password1Field,userService));
-        
-        TextArea<String> publicKeyField = new TextArea<String>("public-key",
-        		new PropertyModel<String>(user, "publicKey"));
-        form.add(publicKeyField);
-        publicKeyField.add(new PublicKeyValidator(crypto));
 	}
 	
 	@Override

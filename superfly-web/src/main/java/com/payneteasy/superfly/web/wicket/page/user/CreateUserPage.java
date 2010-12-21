@@ -37,6 +37,10 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
+import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
@@ -60,8 +64,7 @@ public class CreateUserPage extends BasePage {
 		for (UISubsystemForList sub : listSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
 			listIdsub.add(sub.getId());
-			List<UIRoleForList> listRole = roleService.getRoles(0,
-					Integer.MAX_VALUE, 1, true, null, listIdsub);
+			List<UIRoleForList> listRole = roleService.getRoles(0, Integer.MAX_VALUE, 1, true, null, listIdsub);
 			modelsMap.put(sub, listRole);
 		}
 
@@ -70,8 +73,7 @@ public class CreateUserPage extends BasePage {
 			@Override
 			public List<UISubsystemForList> getObject() {
 				Set<UISubsystemForList> keys = modelsMap.keySet();
-				List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(
-						keys);
+				List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(keys);
 				return list;
 			}
 
@@ -88,71 +90,61 @@ public class CreateUserPage extends BasePage {
 
 		};
 
-		final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>(
-				"form", new Model<UIUserCheckPassword>(user));
-
+		final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>("form", new Model<UIUserCheckPassword>(user));
 		add(form);
 
-        FormComponent<String> userName=new RequiredTextField<String>("username",new PropertyModel<String>(user, "username"));
+		LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
 		form.add(userName);
 
-		TextField<String> emailField = new TextField<String>("email",
-				new PropertyModel<String>(user, "email"));
-		emailField.add(EmailAddressValidator.getInstance());
-		form.add(emailField.setRequired(true));
-		FormComponent<String> password1Field = new PasswordTextField(
-				"password", new PropertyModel<String>(user, "password"))
-				.setRequired(true);
-		form.add(password1Field);
-		FormComponent<String> password2Field = new PasswordTextField(
-				"password2", new PropertyModel<String>(user, "password2"))
-				.setRequired(true);
-		form.add(password2Field);
-		form.add(new EqualPasswordInputValidator(password1Field,
-						password2Field));
+		LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);
+		email.getTextField().add(EmailAddressValidator.getInstance());
+		form.add(email);
 		
-        TextArea<String> publicKeyField = new TextArea<String>("public-key",
-        		new PropertyModel<String>(user, "publicKey"));
-        form.add(publicKeyField);
-        publicKeyField.add(new PublicKeyValidator(crypto));
+		LabelPasswordTextFieldRow password1Field = new LabelPasswordTextFieldRow(user, "password", "user.create.password", true);
+		form.add(password1Field);
+		
+		LabelPasswordTextFieldRow password2Field = new LabelPasswordTextFieldRow(user, "password2", "user.create.password2", true);
+		form.add(password2Field);
+		
+		form.add(new EqualPasswordInputValidator(password1Field.getPasswordTextField(), password2Field.getPasswordTextField()));
+		
+		form.add(new PasswordInputValidator(userName.getTextField(), password1Field.getPasswordTextField(), userService));
+		
+		LabelTextAreaRow<String> publicKeyField = new LabelTextAreaRow<String>(user, "publicKey", "user.create.publicKey");
+		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
+		form.add(publicKeyField);
 
-        form.add(new PasswordInputValidator(userName, password1Field, userService));
-
-		// DropDownChoice
-		final DropDownChoice<UISubsystemForList> makes = (DropDownChoice<UISubsystemForList>) new DropDownChoice<UISubsystemForList>(
-				"subsystem", new PropertyModel<UISubsystemForList>(this,
-						"subsystem"), makeChoices,new SubsystemInCreateUserChoiceRender()).setRequired(true);
-
-		final DropDownChoice<UIRoleForList> models = (DropDownChoice<UIRoleForList>) new DropDownChoice<UIRoleForList>(
-				"role", new Model<UIRoleForList>(), modelChoices, new RoleInCreateUserChoiceRender()).setRequired(true);
+		LabelDropDownChoiceRow<UISubsystemForList> makes = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", makeChoices, new SubsystemInCreateUserChoiceRender());
+		makes.getDropDownChoice().setRequired(true);
+		
+		final LabelDropDownChoiceRow<UIRoleForList> models = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", modelChoices, new RoleInCreateUserChoiceRender());
+		models.getDropDownChoice().setRequired(true);
 		models.setOutputMarkupId(true);
-
+		
 		form.add(makes);
 		form.add(models);
+		makes.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
 
-		makes.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 				target.addComponent(models);
 			}
+			
 		});
-		form.add(new RequiredTextField<String>("name",
-				new PropertyModel<String>(user, "name")));
 		
-		form.add(new RequiredTextField<String>("surname",
-				new PropertyModel<String>(user, "surname")));
-		
-		form.add(new RequiredTextField<String>("secretQuestion",
-				new PropertyModel<String>(user, "secretQuestion")));
-		
-		form.add(new RequiredTextField<String>("secretAnswer",
-				new PropertyModel<String>(user, "secretAnswer")));
-		
+		form.add(new LabelTextFieldRow<String>(user,"name","user.create.name", true));
+
+		form.add(new LabelTextFieldRow<String>(user,"surname","user.create.surname", true));
+
+		form.add(new LabelTextFieldRow<String>(user,"secretQuestion","user.create.secret-question", true));
+
+		form.add(new LabelTextFieldRow<String>(user,"secretAnswer","user.create.secret-answer", true));
+
 		form.add(new Button("add") {
 
 			@Override
 			public void onSubmit() {
-				UIRoleForList role = models.getModelObject();
+				UIRoleForList role = models.getDropDownChoice().getModelObject();
 				user.setRoleId(role.getId());
 				try {
 					userService.createUser(user);

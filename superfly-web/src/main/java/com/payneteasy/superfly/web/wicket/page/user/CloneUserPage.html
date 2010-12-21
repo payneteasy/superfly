@@ -7,38 +7,19 @@
 </head>
 <body>
 <wicket:extend>
+<div class="cont-box">
 <form wicket:id="form">
-   <table class="form">
-		<tr>
-			<td>Template user:</td>
-			<td><span wicket:id="old-username">Bond</span> (<span wicket:id="old-userid">007</span>)</td>
-		</tr>
-		<tr>
-			<td>New username:</td>
-			<td><input type="text" wicket:id="username" /></td>
-		</tr>
-		<tr>
-			<td>New email:</td>
-			<td><input type="text" wicket:id="email" /></td>
-		</tr>
-		<tr>
-			<td>New password:</td>
-			<td><input type="password" wicket:id="password" /></td>
-		</tr>
-		<tr>
-			<td>Password confirmation:</td>
-			<td><input type="password" wicket:id="password2" /></td>
-		</tr>
-		<tr>
-			<td>Public key:</td>
-			<td>
-				<textarea rows="10" cols="80" wicket:id="public-key"></textarea>
-			</td>
-		</tr>
-	</table>
-	<div><input type="submit" value="Add" class="button"/> <input
-		type="submit" value="Cancel" wicket:id="cancel" class="button"/></div>
+   <div wicket:id="old-username"></div>
+   <div wicket:id="username"></div>
+   <div wicket:id="email"></div>
+   <div wicket:id="password"></div>
+   <div wicket:id="password2"></div>
+   <div wicket:id="publicKey"></div>
+	<div>
+	    <input type="submit" value="Add" class="button"/> 
+	    <input type="submit" value="Cancel" wicket:id="cancel" class="button"/></div>
 </form>
+</div>
 </wicket:extend>
 </body>
 </html>

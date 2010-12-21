@@ -9,20 +9,12 @@
 <div class="cont-box">
 	<form wicket:id="form">
 	<h4 wicket:id="msg"></h4>
-	<table class="form">
-		<tr>
-			<td>Group name:</td>
-			<td><input type="text" wicket:id="groupName"></td>
-		</tr>
-		<tr>
-			<td>Subsystem:</td>
-			<td><select wicket:id="groupSubsystem"/></td>
-		</tr>
-		<tr><td colspan=2>
-			<input type="submit" value="Edit" class="button"/>
-			<input type="submit" wicket:id="btn-cancel" value="Cancel" class="button"/>
-		</td></tr>
-	</table>
+	<div wicket:id="groupName"></div>
+	<div wicket:id="groupSubsystem"></div>
+	<div>
+	   <input type="submit" value="Edit" class="button"/>
+	   <input type="submit" wicket:id="btn-cancel" value="Cancel" class="button"/>
+	</div>		
 	</form>
 </div>	
 </wicket:extend>

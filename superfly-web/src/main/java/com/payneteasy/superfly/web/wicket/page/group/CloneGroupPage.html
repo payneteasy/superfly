@@ -7,23 +7,16 @@
 </head>
 <body>
 <wicket:extend>
-
-	<form wicket:id="form">
-	<table class="form">
-		<tr>
-			<td><b>Source:</b></td>
-			<td><span wicket:id="source-label"></span></td>
-		</tr>
-		<tr>
-			<td>New Group Name:</td>
-			<td><input type="text" wicket:id="group-name" /></td>
-		</tr>
-	</table>
+<div class="cont-box">
+<form wicket:id="form">
+    <div wicket:id="source"></div>
+	<div wicket:id="name"></div>
 	<div>
 	  <input type="submit" value="Clone" class="button"/>
 	  <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
 	</div>
-	</form>
+</form>
+</div>
 </wicket:extend>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -31,11 +32,11 @@ public class UserDetailsPage extends BasePage {
 
 	public UserDetailsPage(PageParameters params) {
 		super(ListUsersPage.class, params);
-		
+
 		final long userId = params.getAsLong("userId");
 		final UIUser thisuser = userService.getUser(userId);
 		add(new Label("user-name", thisuser.getUsername()));
-		
+
 		IModel<String> publicKeyDisplayModel = new AbstractReadOnlyModel<String>() {
 			@Override
 			public String getObject() {
@@ -50,32 +51,28 @@ public class UserDetailsPage extends BasePage {
 		add(publicKeyLabel);
 		publicKeyLabel.setMarkupId("public_key_holder");
 		publicKeyLabel.setOutputMarkupId(true);
-		
-		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId,
-				null, null, null);
+
+		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId, null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();
 		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
 		sort.setRoleWithAction(roleWithAction);
-		
-		ListView<String> subRolesList = new ListView<String>("sub-list",
-				sort.getSubsystemsName()) {
+
+		ListView<String> subRolesList = new ListView<String>("sub-list", sort.getSubsystemsName()) {
 
 			@Override
 			protected void populateItem(ListItem<String> item) {
 				final String rfc = item.getModelObject();
 				item.add(new Label("sub-name", rfc.toString()));
+				
 				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(userId));
-				final UISubsystem subsystem = subsystemService
-						.getSubsystemByName(rfc);
-				actionsParameters.add("subId", String
-						.valueOf(subsystem.getId()));
-				item.add(new BookmarkablePageLink<ChangeUserActionsPage>("add-role",
-						ChangeUserRolesPage.class, actionsParameters));
 				
+				final UISubsystem subsystem = subsystemService.getSubsystemByName(rfc);
+				actionsParameters.add("subId", String.valueOf(subsystem.getId()));
+				item.add(new BookmarkablePageLink<Page>("add-role", ChangeUserRolesPage.class, actionsParameters));
+
 				List<UIRoleWithActions> roles = sort.getRoles(rfc);
-				item.add(new ListView<UIRoleWithActions>("role-list",
-						roles) {
+				item.add(new ListView<UIRoleWithActions>("role-list", roles) {
 
 					@Override
 					protected void populateItem(ListItem<UIRoleWithActions> it) {
@@ -84,22 +81,22 @@ public class UserDetailsPage extends BasePage {
 						params.add("userId", String.valueOf(userId));
 						params.add("subId", String.valueOf(subsystem.getId()));
 						params.add("roleId", String.valueOf(role.getId()));
-						BookmarkablePageLink<ChangeUserActionsPage> userAction = new BookmarkablePageLink<ChangeUserActionsPage>(
-								"user-action", ChangeUserActionsPage.class,params);
+						BookmarkablePageLink<ChangeUserGrantActionsPage> userAction = new BookmarkablePageLink<ChangeUserGrantActionsPage>(
+								"user-action", ChangeUserGrantActionsPage.class, params);
 						it.add(userAction);
 						userAction.add(new Label("role-name", role.getName()));
-						it.add(new Link<Void>("delete-role"){
+						it.add(new Link<Void>("delete-role") {
 
 							@Override
 							public void onClick() {
 								List<Long> rolesId = new ArrayList<Long>();
 								rolesId.add(role.getId());
 								userService.changeUserRoles(userId, null, rolesId, null);
-								PageParameters parameters =new PageParameters();
+								PageParameters parameters = new PageParameters();
 								parameters.add("userId", String.valueOf(userId));
 								setResponsePage(UserDetailsPage.class, parameters);
 							}
-							
+
 						});
 					}
 
@@ -109,11 +106,10 @@ public class UserDetailsPage extends BasePage {
 
 		};
 		add(subRolesList);
-		
+
 		PageParameters param = new PageParameters();
-		param.add("userId",String.valueOf(userId));
-		add(new BookmarkablePageLink<AddSubsystemWithRolePage>("add-sub",
-				AddSubsystemWithRolePage.class,param));
+		param.add("userId", String.valueOf(userId));
+		add(new BookmarkablePageLink<AddSubsystemWithRolePage>("add-sub", AddSubsystemWithRolePage.class, param));
 	}
 
 	@Override

@@ -10,20 +10,9 @@
 <div class="cont-box">
   <h4>Please, provide new Role name, Principal name and Subsystem</h4>
 	<form wicket:id="form">
-	<table class="form">
-		<tr>
-			<td>Role Name:</td>
-			<td><input type="text" wicket:id="roleName" /></td>
-		</tr>
-		<tr>
-			<td>Principal Name:</td>
-			<td><input type="text" wicket:id="principalName" /></td>
-		</tr>
-		<tr>
-			<td>Subsystem:</td> 
-			<td><select wicket:id="subsystem-filter"></select></td>
-		</tr>
-	</table>
+	 <div wicket:id="subsystem"></div>
+	 <div wicket:id="roleName"></div>
+	 <div wicket:id="principalName"></div>
 	<div>
 	  <input type="submit" wicket:id="add-role"value="Add" class="button"/> 
 	  <input type="submit"value="Cancel" wicket:id="cancel" class="button"/>

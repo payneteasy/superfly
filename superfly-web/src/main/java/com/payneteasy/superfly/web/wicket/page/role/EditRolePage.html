@@ -9,16 +9,8 @@
 <wicket:extend>
 <div class="cont-box">
 	<form wicket:id="form">
-	<table class="form">
-	<tr>
-	    <td>Role Name:</td> 
-	    <td wicket:id="role-name"></td>
-	</tr>
-		<tr>
-			<td>Principal Name:</td>
-			<td><input type="text" wicket:id="principalName" /></td>
-		</tr>
-	</table>
+	<div wicket:id="role-name"></div>
+	<div wicket:id="principalName"></div>
 	<div>
 	   <input type="submit" value="Save" wicket:id="form-submit"  class="button"/> 
 	   <input type="submit" value="Cancel" wicket:id="form-cancel" class="button"/>

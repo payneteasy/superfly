@@ -7,21 +7,22 @@
 </head>
 <body>
 <wicket:extend>
-	<div class="name">Username:<span wicket:id="user-name">Vasja</span> Subsystem:<span
-		wicket:id="sub-name">superlfy</span>
-    </div>
-	<form wicket:id="form"><span>Role: <select
-		wicket:id="role-filter">
-		<option>Role 1</option>
-		<option>Role 2</option>
-		<option>Role 3</option>
-	</select> </span>
-
+<div class="cont-box">
+	<div wicket:id="user-name"></div>
+	<div wicket:id="sub-name"></div>
+<div wicket:id="container">	
+<form wicket:id="form">
+	<div wicket:id="role"></div>
 	<div>
 	  <input type="submit" wicket:id="add-role" value="Add" class="button"> 
 	  <input type="submit" wicket:id="cancel"value="Cancel" class="button">  
 	</div>
-	</form>
+</form>
+</div>
+<div wicket:id="no-more-roles-container">
+ <wicket:message key="user.no-more-roles"></wicket:message>&nbsp;<a href="#" wicket:id="back">back to user details</a>
+</div>
+</div>
 </wicket:extend>
 </body>
 </html>

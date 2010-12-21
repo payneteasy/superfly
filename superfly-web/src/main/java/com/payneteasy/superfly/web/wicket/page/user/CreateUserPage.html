@@ -8,60 +8,23 @@
 <body>
 <wicket:extend>
 <div class="cont-box">
-	<form wicket:id="form">
-	<table class="form">
-		<tr>
-			<td>Username:</td>
-			<td><input type="text" wicket:id="username" /></td>
-		</tr>
-		<tr>
-			<td>Email:</td>
-			<td><input type="text" wicket:id="email" /></td>
-		</tr>
-		<tr>
-			<td>Password:</td>
-			<td><input type="password" wicket:id="password" /></td>
-		</tr>
-		<tr>
-			<td>Password confirmation:</td>
-			<td><input type="password" wicket:id="password2" /></td>
-		</tr>
-		<tr>
-			<td>Subsystem:</td>
-			<td><select wicket:id="subsystem"></select></td>
-		</tr>
-		<tr>
-			<td>Roles:</td>
-			<td><select wicket:id="role"></select></td>
-		</tr>
-		<tr>
-			<td>Name:</td>
-			<td><input type="text" wicket:id="name" /></td>
-		</tr>
-		<tr>
-			<td>Surname:</td>
-			<td><input type="text" wicket:id="surname" /></td>
-		</tr>
-		<tr>
-			<td>Secret question:</td>
-			<td><input type="text" wicket:id="secretQuestion" /></td>
-		</tr>
-		<tr>
-			<td>Secret answer:</td>
-			<td><input type="text" wicket:id="secretAnswer" /></td>
-		</tr>
-		<tr>
-			<td>Public key:</td>
-			<td>
-				<textarea rows="10" cols="80" wicket:id="public-key"></textarea>
-			</td>
-		</tr>
-	</table>
+<form wicket:id="form">
+   <div wicket:id="username"></div>
+   <div wicket:id="email"></div>
+   <div wicket:id="password"></div>
+   <div wicket:id="password2"></div>
+   <div wicket:id="subsystem"></div>
+   <div wicket:id="role"></div>
+   <div wicket:id="name"></div>
+   <div wicket:id="surname"></div>
+   <div wicket:id="secretQuestion"></div>
+   <div wicket:id="secretAnswer"></div>
+   <div wicket:id="publicKey"></div>
 	<div>
 	   <input wicket:id="add" type="submit" value="Add" class="button"/> 
 	   <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
 	</div>
-	</form>
+</form>
 </div>	
 </wicket:extend>
 </body>

@@ -38,7 +38,7 @@ import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.AddSubsystemWithRolePage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserActionsPage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangeUserGrantActionsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
 import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
 import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
@@ -90,7 +90,7 @@ public class SuperflyApplication extends WebApplication{
         mountBookmarkablePage("/users/update", EditUserPage.class);
         mountBookmarkablePage("/users/clone", CloneUserPage.class);
         mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
-        mountBookmarkablePage("/users/changeActions", ChangeUserActionsPage.class);
+        mountBookmarkablePage("/users/changeActions", ChangeUserGrantActionsPage.class);
         mountBookmarkablePage("/users/view", UserDetailsPage.class);
         mountBookmarkablePage("/users/addSubsystemWithRole", AddSubsystemWithRolePage.class);
         

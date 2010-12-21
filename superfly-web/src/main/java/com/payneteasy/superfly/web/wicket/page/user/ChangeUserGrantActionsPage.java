@@ -44,7 +44,7 @@ import com.payneteasy.superfly.web.wicket.page.group.ChangeGroupActionsPage;
  * @author Roman Puchkovskiy
  */
 @Secured("ROLE_ADMIN")
-public class ChangeUserActionsPage extends BasePage {
+public class ChangeUserGrantActionsPage extends BasePage {
 
 	@SpringBean
 	private UserService userService;
@@ -55,7 +55,7 @@ public class ChangeUserActionsPage extends BasePage {
 	@SpringBean
 	private RoleService roleService;
 
-	public ChangeUserActionsPage(final PageParameters params) {
+	public ChangeUserGrantActionsPage(final PageParameters params) {
 		super(ListUsersPage.class, params);
 
 		final long userId = params.getAsLong("userId");
@@ -84,7 +84,7 @@ public class ChangeUserActionsPage extends BasePage {
 			@Override
 			protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
 				userService.changeUserRoleActions(userId, mappedId, unmappedId);
-				setResponsePage(ChangeUserActionsPage.class, params);
+				setResponsePage(ChangeUserGrantActionsPage.class, params);
 			}
 
 			@Override

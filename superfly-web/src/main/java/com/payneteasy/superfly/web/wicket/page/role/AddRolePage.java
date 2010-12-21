@@ -2,11 +2,13 @@ package com.payneteasy.superfly.web.wicket.page.role;
 
 import java.io.Serializable;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -17,6 +19,8 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
@@ -36,13 +40,13 @@ public class AddRolePage extends BasePage {
 
 		};
 		add(form);
-		form.add(new DropDownChoice<UISubsystemForFilter>(
-				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						roleFilter, "subsystem"), subsystemService
-						.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer()).setNullValid(true).setRequired(true));
-		form.add(new RequiredTextField<String>("roleName"));
-		form.add(new RequiredTextField<String>("principalName"));
+		LabelDropDownChoiceRow<UISubsystemForFilter> subsystem =new LabelDropDownChoiceRow<UISubsystemForFilter>("subsystem", roleFilter, "role.create.subsystem", subsystemService
+				.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+		subsystem.getDropDownChoice().setRequired(true);
+		form.add(subsystem);
+		
+		form.add(new LabelTextFieldRow<String>(role, "roleName", "role.create.name", true));
+		form.add(new LabelTextFieldRow<String>(role, "principalName", "role.create.principal-name", true));
 		form.add(new Button("add-role") {
 
 			@Override
@@ -61,14 +65,7 @@ public class AddRolePage extends BasePage {
 			}
 
 		});
-		form.add(new Button("cancel") {
-
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListRolesPage.class);
-			}
-
-		}.setDefaultFormProcessing(false));
+		form.add(new BookmarkablePageLink<Page>("cancel",ListRolesPage.class));
 	}
 
 	@Override

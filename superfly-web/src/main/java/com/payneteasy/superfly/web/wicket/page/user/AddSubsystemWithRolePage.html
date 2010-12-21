@@ -7,25 +7,23 @@
 </head>
 <body>
 <wicket:extend>
-    <div class="name">
-		User name is: <span wicket:id="user-name">bond</span>
-	</div>
-	<form wicket:id="form">
-	<table class="form">
-		<tr>
-			<td>Subsystem:</td>
-			<td><select wicket:id="subsystem"></select></td>
-		</tr>
-		<tr>
-			<td>Roles:</td>
-			<td><select wicket:id="role"></select></td>
-		</tr>
-	</table>
+<div class="cont-box">
+<div wicket:id="user-name"></div>
+
+<div wicket:id="container">
+<form wicket:id="form">
+	  <div wicket:id="subsystem"></div>
+      <div wicket:id="role"></div>
 	<div>
 	  <input wicket:id="add-sub" type="submit" value="Add" class="button"/>
 	  <input type="submit" value="Cancel" wicket:id="cancel" class="button" />
 	</div>
-	</form>
+</form>
+</div>
+<div wicket:id="no-more-sub-container">
+  <wicket:message key="user.no-more-sub"></wicket:message>&nbsp;<a href="#" wicket:id="back">back to user details</a>
+</div>
+</div>
 </wicket:extend>
 </body>
 </html>

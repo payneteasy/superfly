@@ -2,14 +2,12 @@ package com.payneteasy.superfly.web.wicket.page.group;
 
 import java.util.List;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
@@ -18,8 +16,9 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupWizardModel;
 
 @Secured("ROLE_ADMIN")
@@ -54,42 +53,24 @@ public class EditGroupPage extends BasePage {
 				UIGroup group = new UIGroup();
 				group.setName(grModel.getGroupName());
 				group.setSubsystemId(grModel.getGroupSubsystem().getId());
-				if (groupId == null) {
-					groupService.createGroup(group);
-					PageParameters params = new PageParameters();
-					params.add("gid", String.valueOf(groupId == null ? group.getId() : groupId));
-					setResponsePage(GroupActionsPage.class, params);
-				} else {
-					group.setId(groupId);
-					groupService.updateGroup(group);
-					setResponsePage(ListGroupsPage.class);
-				}
+				group.setId(groupId);
+				groupService.updateGroup(group);
+				setResponsePage(ListGroupsPage.class);
 
 			}
 		};
+		add(form);
 
 		form.add(new Label("msg", msg_text));
-		form.add(new RequiredTextField<GroupWizardModel>("groupName", new PropertyModel<GroupWizardModel>(groupModel, "groupName")));
-		form.add(new Button("btn-cancel") {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListGroupsPage.class);
-			}
-		}.setDefaultFormProcessing(false));
-
-		// get subsystems and render them
-		DropDownChoice<UISubsystemForFilter> subsystemsList = new DropDownChoice<UISubsystemForFilter>("groupSubsystem",
-				new PropertyModel<UISubsystemForFilter>(groupModel, "groupSubsystem"), ssysService.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer());
-
-		subsystemsList.setNullValid(false).setRequired(true);
-
-		if (groupId != null)
-			subsystemsList.setEnabled(false);
-		form.add(subsystemsList);
-		add(form);
+		form.add(new LabelTextFieldRow<String>(groupModel, "groupName", "group.create.name", true));
+		
+		form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
+		
+		LabelDropDownChoiceRow<UISubsystemForFilter> subsystem = new LabelDropDownChoiceRow<UISubsystemForFilter>("groupSubsystem",
+				groupModel, "group.create.choice-subsystem", ssysService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+		subsystem.getDropDownChoice().setRequired(true);
+		subsystem.getDropDownChoice().setEnabled(false);
+		form.add(subsystem);
 	}
 
 	@Override
