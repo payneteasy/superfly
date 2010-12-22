@@ -52,7 +52,7 @@ public abstract class MappingPanel extends Panel {
 				List<? extends MappingService> list = getMappedItems(null);
 				for(MappingService ms: list){
 					final String name = ms.getItemName();
-					if(name.toUpperCase().startsWith(input.toUpperCase())){
+					if(name.toUpperCase().contains(input.toUpperCase())){
 						choices.add(name);
 						if(choices.size()==10){
 							break;
@@ -76,7 +76,7 @@ public abstract class MappingPanel extends Panel {
 				List<? extends MappingService> list = getUnMappedItems(null);
 				for(MappingService ms: list){
 					final String name = ms.getItemName();
-					if(name.toUpperCase().startsWith(input.toUpperCase())){
+					if(name.toUpperCase().contains(input.toUpperCase())){
 						choices.add(name);
 						if(choices.size()==10){
 							break;

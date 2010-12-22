@@ -285,94 +285,6 @@ table.dataSubRoles td a {
 .highlight {
 	background-color: rgb(238, 249, 249);
 }
-
-.mapping-hader{
-    background-color: #C5D7EF;
-    font-weight: bold;
-    height: 17px;
-    padding-top: 10px;
-    width: 300px;
-}
-.mapping-header-checkbox-cell{
-    padding-left: 0.35em;
-}
-.mapping-header-item-name{
-    padding-left: 30px;
-}
-.mapping-row{
-    height: 20px;
-    padding-top: 10px;
-    border-bottom: 1px solid #C5D7EF;
-    width: 300px;
-}
-.mapping-row:HOVER{
-    background-color: rgb(238, 249, 249);
-}
-.mapping-row-item-name{
-    padding-left: 10px;
-    font-size: 12px;
-}
-
-.mapping-search{
-   margin: 0 0 1em 0;
-}
-.mapping-search-text{
-	display: inline-block;
-    height: 25px;
-    padding: 0 13 0 0px;
-    margin: 0;
-    border-top:1px solid #d0dddd;
-    border-left:1px solid #d0dddd;
-    border-bottom:1px solid #d0dddd;
-}
-.mapping-search-input{
-	background: none;
-    border: none;
-    outline: none;
-    height: 25px;
-    font-size:12px;
-    padding: 0 0 0 5px;
-    width:  230px;
-}
-.mapping-search-button{
-   margin: 0 0 0 -3px;
-   height:27px;
-}
-.mapping-search-button:HOVER{
-  -moz-box-shadow: 0 0 1px #black;
-  -webkit-box-shadow: 0 0 1px #black;
-   box-shadow: 0 0 1px #black;
-}
-.mapping-buttons{
-  margin: 1em 1em 10em 1em;
-}
-.mapping-button{
-  height:20px;
-  width: 90px;
-}
-div.mapping-scroll {
-	overflow: -moz-scrollbars-vertical;
-	overflow-y: auto; height:250px;
-	overflow-x: hidden;
-	
-}
-
-.button{
-  height: 22px;
-}
-.button:HOVER, .mapping-button:HOVER{
- -moz-box-shadow: 0 0 1px #black;
- -webkit-box-shadow: 0 0 1px #black;
-  box-shadow: 0 0 1px #black;
-}
-.hide {
-	display: none;
-}
-
-table.dataAction td.checkbox-cell,table.dataAction th.checkbox-cell {
-	padding: 0.35em 0.35em 0.25em 0.35em;
-	text-align: center;
-}
 div.wicket-aa {
 	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
 	font-size: 12px;
@@ -396,6 +308,103 @@ div.wicket-aa ul li.selected {
 	padding: 2px;
 	margin: 0;
 }
+/*mapping containers*/
+.mapping-wrap-container{
+  width: 100%;
+  overflow: auto;
+}
+.mapping-left-container{
+    width: 35%;
+	float: left;
+}
+.mapping-right-container{
+	width: 35%;
+	float: left;
+}
+.mapping-buttons-container{
+    padding: 5em 1em 1em 1em;
+    float: left;
+}
+.mapping-hader{
+    background-color: #C5D7EF;
+    font-weight: bold;
+    height: 17px;
+    padding-top: 10px;
+}
+.mapping-header-checkbox-cell{
+    padding-left: 0.35em;
+}
+.mapping-header-item-name{
+    padding-left: 30px;
+}
+.mapping-row{
+    height: 20px;
+    padding-top: 10px;
+    border-bottom: 1px solid #C5D7EF;
+}
+.mapping-row:HOVER{
+    background-color: rgb(238, 249, 249);
+}
+.mapping-row-item-name{
+    padding-left: 10px;
+    font-size: 12px;
+}
+
+.mapping-search{
+    margin: 0 0 1em 0;
+}
+.mapping-search-text{
+    height: 25px;
+    border-top:1px solid #d0dddd;
+    border-left:1px solid #d0dddd;
+    border-bottom:1px solid #d0dddd;
+    width: 100%;
+}
+.mapping-search-input{
+	background: none;
+    border: none;
+    outline: none;
+    height: 25px;
+    font-size:12px;
+    padding: 0 0 0 5px;
+    width: 100%;
+}
+.mapping-search-button{
+   height:27px;
+}
+.mapping-search-button:HOVER{
+  -moz-box-shadow: 0 0 1px #black;
+  -webkit-box-shadow: 0 0 1px #black;
+   box-shadow: 0 0 1px #black;
+}
+
+.mapping-button{
+  height:20px;
+  width: 90px;
+}
+div.mapping-scroll {
+	overflow: -moz-scrollbars-vertical;
+	overflow-y: auto; height:250px;
+	overflow-x: hidden;
+}
+
+.button{
+  height: 22px;
+}
+.button:HOVER, .mapping-button:HOVER{
+ -moz-box-shadow: 0 0 1px #black;
+ -webkit-box-shadow: 0 0 1px #black;
+  box-shadow: 0 0 1px #black;
+}
+.hide {
+	display: none;
+}
+
+table.dataAction td.checkbox-cell,table.dataAction th.checkbox-cell {
+	padding: 0.35em 0.35em 0.25em 0.35em;
+	text-align: center;
+}
+
 .add-role-img{
   width: 10px;
   height:10px;
