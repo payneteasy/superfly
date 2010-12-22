@@ -611,7 +611,7 @@
 		<spring.security_2.version>2.0.4</spring.security_2.version>
 		<aspectj.version>1.6.5</aspectj.version>
 		
-		<wicket.version>1.4.5</wicket.version>
+		<wicket.version>1.4.8</wicket.version>
 		<jetty.version>6.1.21</jetty.version>
 	</properties>
 	
