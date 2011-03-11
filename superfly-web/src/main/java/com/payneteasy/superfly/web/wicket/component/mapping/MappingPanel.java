@@ -14,20 +14,21 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 
-import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.service.mapping.MappingService;
 
 public abstract class MappingPanel extends Panel {
+
+	private ListView<MappingService> mappedListView;
+	private ListView<MappingService> unmappedListView;
 
 	public MappingPanel(String id, final long entityId) {
 		super(id);
@@ -88,20 +89,29 @@ public abstract class MappingPanel extends Panel {
 			
 		};
 		searchUnMappedContainer.add(acUnMapped);
+		searchMappedContainer.add(new SubmitLink("mapped-search-button") {
+			public void onSubmit() {
+				mappedListView.removeAll();
+			}
+		});
+		searchUnMappedContainer.add(new SubmitLink("unmapped-search-button") {
+			public void onSubmit() {
+				unmappedListView.removeAll();
+			}
+		});
 
 		final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<MappingService>("checkgroup-mapped",
 				mappingModel.getSelectedInMapped());
 		form.add(checkGroupMapped);
 		checkGroupMapped.add(new CheckGroupSelector("master-checkbox-map", checkGroupMapped));
 		checkGroupMapped.add(new Label("mapped-item-name", getHeaderItemName()));
-		ListView<MappingService> mappedListView = new ListView<MappingService>("mapped-list", new AbstractReadOnlyModel<List<? extends MappingService>>() {
-
+		IModel<List<? extends MappingService>> mappedListModel = new LoadableDetachableModel<List<? extends MappingService>>() {
 			@Override
-			public List<? extends MappingService> getObject() {
+			public List<? extends MappingService> load() {
 				return getMappedItems(mappingModel.getSearchMappedString());
 			}
-			
-		}) {
+		};
+		mappedListView = new ListView<MappingService>("mapped-list", mappedListModel) {
 
 			@Override
 			protected void populateItem(ListItem<MappingService> item) {
@@ -127,14 +137,15 @@ public abstract class MappingPanel extends Panel {
 		form.add(checkGroupUnMapped);
 		checkGroupUnMapped.add(new CheckGroupSelector("master-checkbox-unmap", checkGroupUnMapped));
 		checkGroupUnMapped.add(new Label("unmapped-item-name", getHeaderItemName()));
-		ListView<MappingService> unmappedListView = new ListView<MappingService>("unmapped-list", new AbstractReadOnlyModel<List<? extends MappingService>>() {
+		IModel<List<? extends MappingService>> unmappedListModel = new LoadableDetachableModel<List<? extends MappingService>>() {
 
 			@Override
-			public List<? extends MappingService> getObject() {
+			public List<? extends MappingService> load() {
 				return getUnMappedItems(mappingModel.getSearchUnMappedString());
 			}
 			
-		}) {
+		};
+		unmappedListView = new ListView<MappingService>("unmapped-list", unmappedListModel) {
 
 			@Override
 			protected void populateItem(ListItem<MappingService> item) {

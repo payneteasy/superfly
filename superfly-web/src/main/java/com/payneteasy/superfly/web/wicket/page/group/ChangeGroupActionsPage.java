@@ -1,33 +1,19 @@
 package com.payneteasy.superfly.web.wicket.page.group;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.mapping.MappingService;
 import com.payneteasy.superfly.web.wicket.component.mapping.MappingPanel;
-import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
 @Secured("ROLE_ADMIN")
 public class ChangeGroupActionsPage extends BasePage {
