@@ -98,6 +98,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		} else {
 			userDao.clearHOTPLoginsFailed(username);
 		}
+		loggerSink.info(logger, "LOCAL_HOTP_CHECK", false, username);
 		return ok;
 	}
 

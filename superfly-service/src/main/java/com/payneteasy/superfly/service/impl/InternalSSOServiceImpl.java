@@ -270,6 +270,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		} else {
 			userDao.clearHOTPLoginsFailed(username);
 		}
+		loggerSink.info(logger, "REMOTE_HOTP_CHECK", ok, username);
 		return ok;
 	}
 
