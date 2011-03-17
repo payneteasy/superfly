@@ -3,18 +3,18 @@
   <parent>
     <artifactId>superfly-parent</artifactId>
     <groupId>com.payneteasy.superfly</groupId>
-    <version>1.2-9</version>
+    <version>1.2-10-SNAPSHOT</version>
   </parent>
   <groupId>com.payneteasy.superfly</groupId>
   <artifactId>superfly-spi</artifactId>
-  <version>1.2-9</version>
+  <version>1.2-10-SNAPSHOT</version>
   <name>SPI for Superfly</name>
   <description>Interfaces for implementations of internal matters like HOTP processing</description>
   <dependencies>
   	<dependency>
   		<groupId>com.payneteasy.superfly</groupId>
   		<artifactId>superfly-spi-support</artifactId>
-  		<version>1.2-9</version>
+  		<version>1.2-10-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>
