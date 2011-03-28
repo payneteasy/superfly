@@ -8,7 +8,8 @@ main_sql:
     update users u 
       set 
            u.user_password = coalesce(i_user_password,user_password), 
-           u.is_password_temp = 'Y', 
+           u.is_password_temp = 'Y',
+	   u.is_account_locked = 'N', 
            u.logins_failed = null,
            u.hotp_logins_failed=null  
            where u.user_id = i_user_id;
