@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-spring-security-2.0</artifactId>
-			<version>1.2-1-SNAPSHOT</version>
+			<version>${superfly.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -79,12 +79,12 @@
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-client</artifactId>
-			<version>1.2-1-SNAPSHOT</version>
+			<version>${superfly.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-client-opt</artifactId>
-			<version>1.2-1-SNAPSHOT</version>
+			<version>${superfly.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -165,4 +165,10 @@
 			</plugin>
 		</plugins>
 	</build>
+
+    <properties>
+        <superfly.version>1.2-4</superfly.version>
+    </properties>
+
+
 </project>

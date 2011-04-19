@@ -7,16 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.AuthenticationRequestInfo;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.SSOAction;
-import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.api.SSOService;
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.*;
 
 /**
  * Mock SSOService implementation.
@@ -75,11 +66,7 @@ public class SSOServiceMock implements SSOService {
 		return true;
 	}
 
-	public void registerUser(String username, String password, String email,
-			String subsystemHint, RoleGrantSpecification[] roleGrants,
-			String name, String surname, String secretQuestion,
-			String secretAnswer) throws UserExistsException,
-			PolicyValidationException {
+    public void registerUser(String s, String s1, String s2, String s3, RoleGrantSpecification[] roleGrantSpecifications, String s4, String s5, String s6, String s7, String s8) throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
 	}
 
 	public void changeTempPassword(String userName, String password) {
@@ -87,7 +74,23 @@ public class SSOServiceMock implements SSOService {
 		
 	}
 
-	public String getFlagTempPassword(String userName) {
+    public UserDescription getUserDescription(String s) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void resetAndSendOTPTable(String s) throws UserNotFoundException, MessageSendException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void updateUserDescription(UserDescription userDescription) throws UserNotFoundException, BadPublicKeyException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void resetPassword(String s, String s1) throws UserNotFoundException, PolicyValidationException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public String getFlagTempPassword(String userName) {
 		return null;
 	}
 
