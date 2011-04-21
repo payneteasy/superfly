@@ -30,6 +30,12 @@
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>atlassian-jira</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>ofbcore</groupId>
+					<artifactId>ofbcore-xerces</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	    <dependency>
 	        <groupId>com.googlecode.xremoting</groupId>
