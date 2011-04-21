@@ -32,6 +32,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.payneteasy.superfly</groupId>
+			<artifactId>superfly-remote-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.payneteasy.superfly</groupId>
 			<artifactId>superfly-client</artifactId>
 		</dependency>
 		<dependency>
