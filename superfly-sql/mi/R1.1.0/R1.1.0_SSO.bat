@@ -13,4 +13,10 @@
 @echo Current DML warnings:
 @find /N " warning" target\R1.1.0_SSO_DML.log 
 @find /N "Note" target\R1.1.0_SSO_DML.log
+
+@mysql -b -vv -u sso -p123sso123 sso --comments --show-warnings < quartz-tables.sql > target\R1.1.0_SSO_DML.log
+@echo Current DML warnings:
+@find /N " warning" target\R1.1.0_SSO_DML.log 
+@find /N "Note" target\R1.1.0_SSO_DML.log
+
 @pause
