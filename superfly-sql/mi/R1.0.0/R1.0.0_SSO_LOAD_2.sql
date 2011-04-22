@@ -37,12 +37,18 @@ insert into role_actions
     ((select role_id from roles where role_name = 'user' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly-demo')), (select actn_id from actions where action_name = 'userpage2' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly-demo')))
 ;
 
+/*
+   user 
+   123user123
+*/
+
 insert into users
       (
          comp_comp_id, user_name, user_password, is_account_locked, logins_failed, last_login_date
       ) values 
-    (null, 'user', 'password', 'N', 0, null)
+    (null, 'user', '6f3973197ac19cb1f6e6366817f215bbeb33ab83ee4623a807fe5b3500d1c138', 'N', 0, null)
 ;
+
 
 insert into user_roles
       (
