@@ -41,7 +41,7 @@
 	</context-param>
 	<context-param>
 		<param-name>superfly-sso-service-secure-port</param-name>
-		<param-value>8443</param-value>
+		<param-value>8446</param-value>
 	</context-param>
 
 	<listener>
