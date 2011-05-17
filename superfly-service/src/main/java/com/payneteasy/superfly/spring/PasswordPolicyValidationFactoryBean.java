@@ -12,11 +12,11 @@ import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValida
  * (C) 2010
  * Skype: kuccyp
  */
-public class PasswordPolicyValidationFactoryBean extends AbstractPolicyDependingFactoryBean{
+public class PasswordPolicyValidationFactoryBean extends AbstractPolicyDependingFactoryBean<IPolicyValidation<?>> {
 
-    AbstractPolicyValidation policyValidation;
+    AbstractPolicyValidation<?> policyValidation;
 
-    public Object getObject() throws Exception {
+    public IPolicyValidation<?> getObject() throws Exception {
         if (policyValidation == null) {
             Policy p = findPolicyByIdentifier();
             switch (p) {
@@ -33,7 +33,7 @@ public class PasswordPolicyValidationFactoryBean extends AbstractPolicyDepending
         return policyValidation;
     }
 
-    public Class getObjectType() {
+    public Class<?> getObjectType() {
         return IPolicyValidation.class;
     }
 

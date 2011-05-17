@@ -125,7 +125,6 @@
 	
 	<bean id="saltSource" class="com.payneteasy.superfly.spring.SaltSourceFactoryBean">
 		<property name="policyName" ref="policyName" />
-		<property name="data" ref="salt" />
 		<property name="salts">
 			<map>
 				<entry key="none" value-ref="randomStoredSaltSouce" />
@@ -174,7 +173,6 @@
 	
 	<bean id="resetPasswordStrategy"
 		class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
-		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao" />
 		<property name="userPasswordEncoder" ref="userPasswordEncoder" />
 		<property name="loggerSink" ref="loggerSink" />

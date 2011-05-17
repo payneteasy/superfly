@@ -16,7 +16,7 @@ import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
  * @author Roman Puchkovskiy
  */
 public class AccountPolicyFactoryBean extends
-		AbstractPolicyDependingFactoryBean {
+		AbstractPolicyDependingFactoryBean<AccountPolicy> {
 	
 	private UserDao userDao;
 	
@@ -45,7 +45,7 @@ public class AccountPolicyFactoryBean extends
 		this.passwordGenerator = passwordGenerator;
 	}
 
-	public Object getObject() throws Exception {
+	public AccountPolicy getObject() throws Exception {
 		if (accountPolicy == null) {
 			Policy policy = findPolicyByIdentifier();
 			switch (policy) {

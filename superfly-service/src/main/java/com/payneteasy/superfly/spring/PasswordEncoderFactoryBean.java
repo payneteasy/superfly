@@ -11,11 +11,11 @@ import com.payneteasy.superfly.password.PasswordEncoder;
  * 
  * @author Roman Puchkovskiy
  */
-public class PasswordEncoderFactoryBean extends AbstractPolicyDependingFactoryBean {
+public class PasswordEncoderFactoryBean extends AbstractPolicyDependingFactoryBean<PasswordEncoder> {
 	
 	private PasswordEncoder encoder;
 
-	public Object getObject() throws Exception {
+	public PasswordEncoder getObject() throws Exception {
 		if (encoder == null) {
 			Policy p = findPolicyByIdentifier();
 			switch (p) {

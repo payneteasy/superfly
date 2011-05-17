@@ -12,10 +12,9 @@ import com.payneteasy.superfly.password.SaltSource;
  * 
  * @author Roman Puchkovskiy
  */
-public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean {
+public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean<SaltSource> {
 	
 	private SaltSource source;
-	private String data = "data";
 
     private Map<String,SaltSource> salts;
 
@@ -23,11 +22,7 @@ public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean {
         this.salts = salts;
     }
 
-    public void setData(String data) {
-		this.data = data;
-	}
-
-	public Object getObject() throws Exception {
+	public SaltSource getObject() throws Exception {
 		if (source == null) {
 			Policy p = findPolicyByIdentifier();
             if(salts.containsKey(p.name().toLowerCase())){

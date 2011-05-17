@@ -5,7 +5,7 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.register.pcidss.PCIDSSRegisterUserStrategy;
 
-public class RegisterUserStrategyFactoryBean extends AbstractPolicyDependingFactoryBean {
+public class RegisterUserStrategyFactoryBean extends AbstractPolicyDependingFactoryBean<RegisterUserStrategy> {
 	private RegisterUserStrategy registerUserStrategy;
 	private UserDao userDao;
 
@@ -13,7 +13,7 @@ public class RegisterUserStrategyFactoryBean extends AbstractPolicyDependingFact
 		this.userDao = userDao;
 	}
 
-	public Object getObject() throws Exception {
+	public RegisterUserStrategy getObject() throws Exception {
 		if (registerUserStrategy == null) {
 			Policy p = findPolicyByIdentifier();
 			switch (p) {
@@ -30,7 +30,7 @@ public class RegisterUserStrategyFactoryBean extends AbstractPolicyDependingFact
 		return registerUserStrategy;
 	}
 
-	public Class getObjectType() {
+	public Class<?> getObjectType() {
 		return RegisterUserStrategy.class;
 	}
 

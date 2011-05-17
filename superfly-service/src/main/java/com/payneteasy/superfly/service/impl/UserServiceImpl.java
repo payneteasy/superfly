@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
 	public RoutineResult updateUser(UIUser user) {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
+		// password and salt are not updated here
 		RoutineResult result = userDao.updateUser(userForDao);
 		loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
 		return result;

@@ -5,7 +5,7 @@ import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.lockout.pcidss.PCIDSSLockoutStrategy;
 
-public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBean {
+public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBean<LockoutStrategy> {
 	private LockoutStrategy lockoutStrategy;
 	private Long maxLoginsFailed;
 	private UserDao userDao;
@@ -18,7 +18,7 @@ public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBe
 		this.userDao = userDao;
 	}
 
-	public Object getObject() throws Exception {
+	public LockoutStrategy getObject() throws Exception {
 		if (lockoutStrategy == null) {
 			Policy p = findPolicyByIdentifier();
 			switch (p) {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.FactoryBean;
  * 
  * @author Roman Puchkovskiy
  */
-public abstract class AbstractPolicyDependingFactoryBean implements FactoryBean {
+public abstract class AbstractPolicyDependingFactoryBean<T> implements FactoryBean<T> {
 	
 	private String policyName;
 	
