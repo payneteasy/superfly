@@ -115,7 +115,7 @@ public interface UserDao {
 	 * Updates a user.
 	 * 
 	 * @param user
-	 *            user to update (username is not changed)
+	 *            user to update (username, password, salt are not changed)
 	 * @return routine result
 	 */
 	@AStoredProcedure(name = "ui_update_user")
