@@ -189,7 +189,9 @@ public class UserServiceImpl implements UserService {
         request.setHotpSalt(hotpSaltGenerator.generate());
 		request.setPassword(passwordEncoder.encode(newPassword, request.getSalt()));
 		request.setPublicKey(newPublicKey);
-		RoutineResult result = userDao.cloneUser(request);
+
+		RoutineResult result = createUserStrategy.cloneUser(request);
+
 		if (result.isOk()) {
 			hotpService.sendTableIfSupported(request.getId());
 			notificationService.notifyAboutUsersChanged();
