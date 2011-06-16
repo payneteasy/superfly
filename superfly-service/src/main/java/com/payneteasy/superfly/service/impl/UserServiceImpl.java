@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -48,6 +49,13 @@ public class UserServiceImpl implements UserService {
     private SaltGenerator hotpSaltGenerator;
     private AccountPolicy accountPolicy;
     private HOTPService hotpService;
+    private CreateUserStrategy createUserStrategy;
+
+
+    @Required
+    public void setCreateUserStrategy(CreateUserStrategy createUserStrategy) {
+        this.createUserStrategy = createUserStrategy;
+    }
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -112,7 +120,9 @@ public class UserServiceImpl implements UserService {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
-		RoutineResult result = userDao.createUser(userForDao);
+
+		RoutineResult result = createUserStrategy.createUser(userForDao);
+
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), userForDao.getUsername());
 		
 		if (result.isOk()) {

@@ -57,6 +57,7 @@
 		<property name="saltSource" ref="saltSource" />
 		<property name="hotpSaltGenerator" ref="saltGenerator"/>
 		<property name="policyValidation" ref="passwordPolicyValidation" />
+        <property name="createUserStrategy" ref="createUserStrategy"/>
 		<property name="accountPolicy" ref="accountPolicy" />
 		<property name="hotpService" ref="hotpService" />
 	</bean>
@@ -162,6 +163,14 @@
 		<property name="policyName" ref="policyName" />
 		<property name="userDao" ref="userDao" />
 	</bean>
+
+
+    <bean id="createUserStrategy"
+        class="com.payneteasy.superfly.spring.CreateUserStrategyFactoryBean">
+        <property name="policyName" ref="policyName" />
+        <property name="userDao" ref="userDao" />
+    </bean>
+
 	
 	<bean id="accountPolicy" class="com.payneteasy.superfly.spring.AccountPolicyFactoryBean">
 		<property name="policyName" ref="policyName" />
