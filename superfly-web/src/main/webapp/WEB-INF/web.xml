@@ -85,7 +85,7 @@
 	
 	<context-param>
 		<param-name>disable-hotp</param-name>
-		<param-value>false</param-value>
+		<param-value>true</param-value>
 	</context-param>
 	
     <listener>

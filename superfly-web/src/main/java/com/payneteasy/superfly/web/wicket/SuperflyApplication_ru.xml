@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+
+<entry key="PublicKeyValidator.noBeginBlock">Begin block is expected in the public key, i.e. the following: -----BEGIN PGP PUBLIC KEY BLOCK-----</entry>
+<entry key="PublicKeyValidator.noEndBlock">End block is expected in the public key, i.e. the following: -----END PGP PUBLIC KEY BLOCK-----</entry>
+<entry key="PublicKeyValidator.wrongBlockOrder">End block cannot precede begin block in the public key</entry>
+<entry key="PublicKeyValidator.invalidKey">The key is invalid</entry>
+
+<!--
+#SUBSYSTEM
+-->
+
+<entry key="subsystem.add.name">Name</entry>
+<entry key="subsystem.add.name.Required">Name is required</entry>
+<entry key="subsystem.add.callback">Callback Info</entry>
+<entry key="subsystem.add.callback.Required">Callback Info is required</entry>
+<entry key="subsystem.add.allow-list-users">Allow list users</entry>
+<entry key="subsystem.edit.name">Name</entry>
+<entry key="subsystem.edit.name.Required">Name is required</entry>
+<entry key="subsystem.edit.callback">Callback Info</entry>
+<entry key="subsystem.edit.callback.Required">Callback Info is required</entry>
+<entry key="subsystem.edit.allow-list-users">Allow list users</entry>
+
+<!--
+#USER
+-->
+
+<entry key="user.clone.template-name">Template user</entry>
+<entry key="user.no-more-sub">No more subsystems</entry>
+<entry key="user.no-more-roles">No more roles</entry>
+<entry key="user.name">User name</entry>
+<entry key="user.subsystem">Subsystem</entry>
+<entry key="user.role">Role</entry>
+<entry key="user.role.Required">Role is required</entry>
+<entry key="user.create.username">User name</entry>
+<entry key="user.create.username.Required">User name is required</entry>
+<entry key="user.create.email">Email</entry>
+<entry key="user.create.email.Required">Email is required</entry>
+<entry key="user.create.password">Password</entry>
+<entry key="user.create.password.Required">Password is required</entry>
+<entry key="user.create.password2">Password confirmation</entry>
+<entry key="user.create.password2.EqualPasswordInputValidator">Password and confirmation must match</entry>
+<entry key="user.create.password2.Required">Password confirmation is required</entry>
+<entry key="user.create.publicKey">Public key</entry>
+<entry key="user.create.name">Name</entry>
+<entry key="user.create.name.Required">Name is required</entry>
+<entry key="user.create.surname">Surname</entry>
+<entry key="user.create.surname.Required">Surname is required</entry>
+<entry key="user.create.secret-question">Secret question</entry>
+<entry key="user.create.secret-question.Required">Secret question is required</entry>
+<entry key="user.create.secret-answer">Secret answer</entry>
+<entry key="user.create.secret-answer.Required">Secret answer is required</entry>
+<entry key="user.create.choice-subsystem">Subsystem</entry>
+<entry key="user.create.choice-subsystem.Required">Subsystem is required</entry>
+<entry key="user.create.choice-roles">Role</entry>
+<entry key="user.create.choice-roles.Required">Role is required</entry>
+
+<!--
+#GROUP
+-->
+
+<entry key="group.create.choice-subsystem">Subsystem</entry>
+<entry key="group.create.choice-subsystem.Required">Subsystem is required</entry>
+<entry key="group.create.name">Group name</entry>
+<entry key="group.create.name.Required">Group name is required</entry>
+<entry key="group.clone.name">New Group Name</entry>
+<entry key="group.clone.name.Required">New Group Name is required</entry>
+<entry key="group.clone.source">Source</entry>
+
+<!--
+#ROLE
+-->
+
+<entry key="role.create.subsystem">Подсистема</entry>
+<entry key="role.create.subsystem.Required">Требуется заполнить название подсистемы</entry>
+<entry key="role.create.name">Имя роли</entry>
+<entry key="role.create.name.Required">Требуется ввести имя роли</entry>
+<entry key="role.create.principal-name">Principal name</entry>
+<entry key="role.create.principal-name.Required">Principal name is required</entry>
+</properties>
