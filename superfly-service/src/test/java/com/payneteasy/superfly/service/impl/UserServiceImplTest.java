@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.service.impl;
 
 import static org.easymock.EasyMock.anyObject;
+
+import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -37,6 +39,7 @@ public class UserServiceImplTest extends TestCase {
 		userService.setSaltSource(new ConstantSaltSource("c3pio"));
 		userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
 		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
+        userService.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
 	}
 	
 	public void testCreateUserPasswordEncryption() throws MessageSendException {

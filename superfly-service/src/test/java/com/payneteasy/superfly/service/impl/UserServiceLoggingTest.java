@@ -7,6 +7,7 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		accountPolicy.setUserDao(userDao);
 		service.setAccountPolicy(accountPolicy);
 		service.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
+        service.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
 		userService = service;
 	}
 	
