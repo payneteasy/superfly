@@ -18,7 +18,7 @@ public class PGPKeyValidator {
 	 * contains error code
 	 */
 	public static void validatePublicKey(String value, PublicKeyCrypto crypto) throws BadPublicKeyException {
-		if (value != null) {
+		if (org.springframework.util.StringUtils.hasText(value)) {
 			int open = value.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----");
 			int close = value.indexOf("-----END PGP PUBLIC KEY BLOCK-----");
 			if (open < 0) {
