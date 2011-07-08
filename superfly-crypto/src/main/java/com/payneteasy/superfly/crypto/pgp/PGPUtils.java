@@ -69,6 +69,9 @@ public class PGPUtils {
 			ok = false;
 		} catch (PGPException e) {
 			ok = false;
+		} catch (IllegalArgumentException e) {
+			// this happens if some junk is supplied as a key
+			ok = false;
 		}
 		return ok;
 	}

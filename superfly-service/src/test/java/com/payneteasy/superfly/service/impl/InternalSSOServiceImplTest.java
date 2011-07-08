@@ -11,7 +11,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
+import com.payneteasy.superfly.api.BadPublicKeyException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.crypto.pgp.PGPCrypto;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -50,6 +52,7 @@ public class InternalSSOServiceImplTest extends TestCase {
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         service.setHotpService(hotpService);
+        service.setSaltSource(new ConstantSaltSource("abc"));
 		internalSSOService = service;
 	}
 	
@@ -107,4 +110,69 @@ public class InternalSSOServiceImplTest extends TestCase {
 		assertFalse(internalSSOService.authenticateHOTP("pete", "123456"));
 		EasyMock.verify(hotpProvider);
 	}
+	
+	public void testRegisterUserWithBadPublicKey() throws Exception {
+		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
+		try {
+			internalSSOService.registerUser("username", "password", "email.domain.com",
+					"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
+					"secretQuestion", "secretAnswer",
+					"not a key, just junk!");
+			fail();
+		} catch (BadPublicKeyException e) {
+			// expected
+		}
+	}
+	
+	public void testRegisterUserWithPrefixedAndPostfixedBadPublicKey() throws Exception {
+		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
+		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
+		try {
+			internalSSOService.registerUser("username", "password", "email.domain.com",
+					"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
+					"secretQuestion", "secretAnswer",
+					"-----BEGIN PGP PUBLIC KEY BLOCK-----not a key, just junk!-----END PGP PUBLIC KEY BLOCK-----");
+			fail();
+		} catch (BadPublicKeyException e) {
+			// expected
+		}
+	}
+	
+	public void testRegisterUserWithNullOrEmptyPublicKey() throws Exception {
+		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
+		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
+		
+		EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(Collections.<PasswordSaltPair>emptyList());
+		EasyMock.expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
+				assertEquals(null, user.getPublicKey());
+				return RoutineResult.okResult();
+			}
+		});
+		EasyMock.replay(userDao);
+		internalSSOService.registerUser("username", "password", "email.domain.com",
+				"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
+				"secretQuestion", "secretAnswer",
+				null);
+		EasyMock.verify(userDao);
+		
+		EasyMock.reset(userDao);
+		
+		EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(Collections.<PasswordSaltPair>emptyList());
+		EasyMock.expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+			public RoutineResult answer() throws Throwable {
+				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
+				assertEquals("", user.getPublicKey());
+				return RoutineResult.okResult();
+			}
+		});
+		EasyMock.replay(userDao);
+		internalSSOService.registerUser("username", "password", "email.domain.com",
+				"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
+				"secretQuestion", "secretAnswer",
+				"");
+		EasyMock.verify(userDao);
+	}
+
 }

@@ -38,6 +38,10 @@ public class PGPUtilsTest extends TestCase {
 			// expected
 		}
 	}
+	
+	public void testIsPublicKeyValid() {
+		assertFalse(PGPUtils.isPublicKeyValid("lalala, i'm not a key!"));
+	}
 
 	private String readArmoredPublicKey(String fileName) throws UnsupportedEncodingException,
 			IOException {

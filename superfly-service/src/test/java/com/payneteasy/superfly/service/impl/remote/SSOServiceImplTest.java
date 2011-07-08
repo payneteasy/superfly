@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.service.impl.remote;
 
-import org.easymock.EasyMock;
-
 import junit.framework.TestCase;
+
+import org.easymock.EasyMock;
 
 import com.payneteasy.superfly.service.InternalSSOService;
 
