@@ -18,6 +18,7 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
 import com.payneteasy.superfly.password.NullSaltSource;
@@ -174,5 +175,40 @@ public class InternalSSOServiceImplTest extends TestCase {
 				"");
 		EasyMock.verify(userDao);
 	}
-
+	
+	public void testUpdateUserDescriptionWithBadPublicKey() throws Exception {
+		UserForDescription user = new UserForDescription();
+		user.setUsername("user");
+		user.setPublicKey("not a key, just junk!");
+		try {
+			internalSSOService.updateUserForDescription(user);
+			fail();
+		} catch (BadPublicKeyException e) {
+			// expected
+		}
+	}
+	
+	public void testUpdateUserDescriptionWithPrefixedAndPostfixedBadPublicKey() throws Exception {
+		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
+		UserForDescription user = new UserForDescription();
+		user.setUsername("user");
+		user.setPublicKey("-----BEGIN PGP PUBLIC KEY BLOCK-----not a key, just junk!-----END PGP PUBLIC KEY BLOCK-----");
+		try {
+			internalSSOService.updateUserForDescription(user);
+			fail();
+		} catch (BadPublicKeyException e) {
+			// expected
+		}
+	}
+	
+	public void testUpdateUserDescriptionWithNullOrEmptyPublicKey() throws Exception {
+		UserForDescription user = new UserForDescription();
+		user.setUsername("user");
+		user.setPublicKey(null);
+		internalSSOService.updateUserForDescription(user);
+		
+		user.setPublicKey("");
+		internalSSOService.updateUserForDescription(user);
+	}
+	
 }

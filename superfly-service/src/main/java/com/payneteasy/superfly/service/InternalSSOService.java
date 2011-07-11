@@ -109,5 +109,5 @@ public interface InternalSSOService {
 	 * 
 	 * @param user	user's fields
 	 */
-	void updateUserForDescription(UserForDescription user);
+	void updateUserForDescription(UserForDescription user) throws BadPublicKeyException;
 }

@@ -288,7 +288,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return userDao.getUserForDescription(username);
 	}
 
-	public void updateUserForDescription(UserForDescription user) {
+	public void updateUserForDescription(UserForDescription user) throws BadPublicKeyException {
+		validatePublicKey(user.getPublicKey());
 		userDao.updateUserForDescription(user);
 	}
 }
