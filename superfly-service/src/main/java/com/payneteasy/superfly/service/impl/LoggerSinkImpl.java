@@ -19,13 +19,20 @@ public class LoggerSinkImpl implements LoggerSink {
 		String username = userInfoService.getUsername();
 		String usernameFormatted;
 		if (username == null) {
-			usernameFormatted = "<null>";
+			usernameFormatted = "<SYSTEM>";
 		} else {
 			usernameFormatted = username;
 		}
-		String message = String.format("%s:%s:%s:%s", usernameFormatted,
-				eventType, resourceIdentity, success ? "success" : "failure");
-		logger.info(message);
+
+        // for easy log parsing
+        // user:paynet-local, event:REMOTE_LOGIN, resource:admin, result:success
+		String message = String.format("user:%s, event:%s, resource:%s, result:%s"
+                , usernameFormatted, eventType, resourceIdentity, success ? "success" : "failure");
+        if(success) {
+            logger.info(message);
+        } else {
+            logger.error(message);
+        }
 	}
 
 }
