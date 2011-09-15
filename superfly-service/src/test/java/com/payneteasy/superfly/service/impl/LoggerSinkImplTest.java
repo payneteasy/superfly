@@ -26,7 +26,7 @@ public class LoggerSinkImplTest extends TestCase {
 	
 	public void testInfo() {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
-		assertEquals("test-user:create_user:new-user:success", appender.getLastMessage());
+		assertEquals("user:test-user, event:create_user, resource:new-user, result:success", appender.getLastMessage());
 	}
 	
 	public void testInfoWithNullUser() {
@@ -37,11 +37,11 @@ public class LoggerSinkImplTest extends TestCase {
 			}
 		});
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
-		assertEquals("<null>:create_user:new-user:success", appender.getLastMessage());
+		assertEquals("user:<SYSTEM>, event:create_user, resource:new-user, result:success", appender.getLastMessage());
 	}
 	
 	public void testInfoFailure() {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", false, "new-user");
-		assertEquals("test-user:create_user:new-user:failure", appender.getLastMessage());
+		assertEquals("user:test-user, event:create_user, resource:new-user, result:failure", appender.getLastMessage());
 	}
 }
