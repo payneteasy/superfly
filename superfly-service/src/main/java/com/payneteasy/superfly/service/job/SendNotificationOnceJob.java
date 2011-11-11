@@ -37,17 +37,23 @@ public class SendNotificationOnceJob extends BaseJob {
 	@Override
 	protected void doExecute(JobExecutionContext context) throws SchedulerException {
 		NotificationSendStrategy sendStrategy = getNotificationSendStrategy(context, beanName);
-		try {
-			if (notification instanceof LogoutNotification) {
-				sendStrategy.send((LogoutNotification) notification);
-			} else if (notification instanceof UsersChangedNotification) {
-				sendStrategy.send((UsersChangedNotification) notification);
-			} else {
-				throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
-			}
-		} catch (NotificationException e) {
+
+        if(sendStrategy==null) {
+            logger.info("Notification strategy is null");
+            return ;
+        }
+
+        try {
+            if (notification instanceof LogoutNotification) {
+                sendStrategy.send((LogoutNotification) notification);
+            } else if (notification instanceof UsersChangedNotification) {
+                sendStrategy.send((UsersChangedNotification) notification);
+            } else {
+                throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
+            }
+        } catch (NotificationException e) {
             logger.error("Error while trying to send a notification, no more retries, dropping: " + notification.toString(), e);
-		}
+        }
 	}
 
 }

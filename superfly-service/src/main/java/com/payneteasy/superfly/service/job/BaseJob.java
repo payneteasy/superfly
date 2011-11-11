@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.job;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +32,31 @@ public abstract class BaseJob extends QuartzJobBean {
 	 */
 	protected ApplicationContext getApplicationContext(JobExecutionContext context)
 			throws SchedulerException {
-		return (ApplicationContext) context.getScheduler().getContext()
-				.get(APPLICATION_CONTEXT_KEY);
+
+        final SchedulerContext schedulerContext = context.getScheduler().getContext();
+        ApplicationContext applicationContext =  (ApplicationContext) schedulerContext.get(APPLICATION_CONTEXT_KEY);
+
+        // show keys in context
+        if(applicationContext==null) {
+            logger.error(APPLICATION_CONTEXT_KEY+" is empty in "+ schedulerContext+":");
+            if(schedulerContext.getKeys()!=null) {
+                for (String key : schedulerContext.getKeys()) {
+                    Object value = schedulerContext.get(key);
+                    String valueText = value!=null ? value.toString() : "<NULL>";
+                    logger.info("    {} = {}", key, valueText);
+                }
+            }
+        }
+
+        return applicationContext;
 	}
 	
 	protected NotificationSendStrategy getNotificationSendStrategy(JobExecutionContext context, String beanName)
 			throws BeansException, SchedulerException {
-		return (NotificationSendStrategy) getApplicationContext(context).getBean(beanName);
+
+        ApplicationContext applicationContext = getApplicationContext(context);
+        return applicationContext!=null ? (NotificationSendStrategy) applicationContext.getBean(beanName) : null;
+
 	}
 	
 	/**

@@ -61,6 +61,7 @@
 
     <!-- Disable persistent scheduler, due to fix many (over 100 0000) events in database -->
     <bean id="persistentScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
 
 	<!--<bean id="persistentScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
