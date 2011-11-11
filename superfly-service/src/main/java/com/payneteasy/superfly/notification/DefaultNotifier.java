@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.payneteasy.superfly.service.job.SendNotificationOnceJob;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -58,9 +59,11 @@ public class DefaultNotifier implements Notifier {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("beanName", sendStrategyBeanName);
 		dataMap.put("notification", notification);
-		dataMap.put("retriesLeft", maxRetries);
+
+        dataMap.put("retriesLeft", maxRetries); // deprecated
+
 		try {
-			SchedulerUtils.scheduleJob(scheduler, TryToSendNotificationJob.class, dataMap);
+			SchedulerUtils.scheduleJob(scheduler, SendNotificationOnceJob.class, dataMap);
 		} catch (SchedulerException e) {
 			logger.error(e.getMessage(), e);
 		}
