@@ -47,39 +47,39 @@ public class HOTPServiceImpl implements HOTPService {
 		this.userDao = userDao;
 	}
 
-	public void sendTableIfSupported(long userId) throws MessageSendException {
-		obtainUserIfNeededAndSendTableIfSupported(userId, null);
+	public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException {
+		obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, null);
 	}
 	
-	public void resetTableAndSendIfSupported(long userId) throws MessageSendException {
+	public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException {
 		UIUser user = userDao.getUser(userId);
 		hotpProvider.resetSequence(user.getUsername());
-		obtainUserIfNeededAndSendTableIfSupported(userId, user);
+		obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, user);
 	}
 	
-	private void obtainUserIfNeededAndSendTableIfSupported(long userId, UIUser user) throws MessageSendException {
+	private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException {
 		if (hotpProvider.outputsSequenceForDownload()) {
 			if (user == null) {
 				user = userDao.getUser(userId);
 			}
 			if (user.getPublicKey() != null && user.getPublicKey().trim().length() > 0) {
-				actuallySendTable(user);
+				actuallySendTable(subsystemIdentifier, user);
 			} else {
-				sendNoPublicKey(user.getEmail());
+				sendNoPublicKey(subsystemIdentifier, user.getEmail());
 			}
 		}
 	}
 
-	protected void sendNoPublicKey(String email) throws MessageSendException {
+	protected void sendNoPublicKey(String subsystemIdentifier, String email) throws MessageSendException {
 		try {
-			emailService.sendNoPublicKeyMessage(email);
+			emailService.sendNoPublicKeyMessage(subsystemIdentifier, email);
 		} catch (RuntimeMessagingException e) {
 			logger.error("Could not send a message to " + email, e);
 			throw new MessageSendException(e);
 		}
 	}
 
-	protected void actuallySendTable(UIUser user) throws MessageSendException {
+	protected void actuallySendTable(String subsystemIdentifier, UIUser user) throws MessageSendException {
 		String filename = hotpProvider.getSequenceForDownloadFileName(user.getUsername());
 		// TODO: use streams, not buffers
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -95,7 +95,7 @@ public class HOTPServiceImpl implements HOTPService {
 		}
 		
 		try {
-			emailService.sendHOTPTable(user.getEmail(), filename, baos.toByteArray());
+			emailService.sendHOTPTable(subsystemIdentifier, user.getEmail(), filename, baos.toByteArray());
 		} catch (RuntimeMessagingException e) {
 			logger.error("Could not send a message to " + user.getEmail(), e);
 			throw new MessageSendException(e);

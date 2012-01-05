@@ -59,4 +59,8 @@
 		<property name="interface" value="com.payneteasy.superfly.spisupport.HOTPDao"/>
 	</bean>
 
+	<bean id="smtpServerDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+		<property name="interface" value="com.payneteasy.superfly.dao.SmtpServerDao"/>
+	</bean>
+
 </beans>

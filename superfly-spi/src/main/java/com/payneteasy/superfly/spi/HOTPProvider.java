@@ -27,7 +27,7 @@ public interface HOTPProvider {
 	 * @param hotp		HOTP
 	 * @return authentication result
 	 */
-	boolean authenticate(String username, String hotp);
+	boolean authenticate(String subsystemIdentifier, String username, String hotp);
 	
 	/**
 	 * Computes a HOTP value for a user with the given name.

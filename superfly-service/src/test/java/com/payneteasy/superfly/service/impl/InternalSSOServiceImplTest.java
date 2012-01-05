@@ -92,23 +92,23 @@ public class InternalSSOServiceImplTest extends TestCase {
 				return RoutineResult.okResult();
 			}
 		});
-		hotpService.sendTableIfSupported(1L);
+		hotpService.sendTableIfSupported("subsystem", 1L);
 		EasyMock.expectLastCall();
 		EasyMock.replay(userDao, hotpService);
-		internalSSOService.registerUser("user", "secret", "email", null, new RoleGrantSpecification[]{},"user", "user", "question", "answer", null);
+		internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{},"user", "user", "question", "answer", null);
 		EasyMock.verify(userDao, hotpService);
 	}
 	
 	public void testAuthenticateHOTP() {
-		EasyMock.expect(hotpProvider.authenticate("pete", "123456")).andReturn(true);
+		EasyMock.expect(hotpProvider.authenticate(null, "pete", "123456")).andReturn(true);
 		EasyMock.replay(hotpProvider);
-		assertTrue(internalSSOService.authenticateHOTP("pete", "123456"));
+		assertTrue(internalSSOService.authenticateHOTP(null, "pete", "123456"));
 		EasyMock.verify(hotpProvider);
 		
 		EasyMock.reset(hotpProvider);
-		EasyMock.expect(hotpProvider.authenticate("pete", "123456")).andReturn(false);
+		EasyMock.expect(hotpProvider.authenticate(null, "pete", "123456")).andReturn(false);
 		EasyMock.replay(hotpProvider);
-		assertFalse(internalSSOService.authenticateHOTP("pete", "123456"));
+		assertFalse(internalSSOService.authenticateHOTP(null, "pete", "123456"));
 		EasyMock.verify(hotpProvider);
 	}
 	

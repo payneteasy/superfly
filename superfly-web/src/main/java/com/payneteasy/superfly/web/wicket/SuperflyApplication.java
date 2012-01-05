@@ -1,5 +1,9 @@
 package com.payneteasy.superfly.web.wicket;
 
+import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.UpdateSmtpServerPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.ViewSmtpServerPage;
 import org.apache.wicket.Page;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -96,6 +100,11 @@ public class SuperflyApplication extends WebApplication{
         
         mountBookmarkablePage("/sessions", ListSessionsPage.class);
         mountBookmarkablePage("/changepassword", ChangePasswordPage.class);
+
+        mountBookmarkablePage("smtp-servers", ListSmtpServersPage.class);
+        mountBookmarkablePage("smtp-servers/create", CreateSmtpServerPage.class);
+        mountBookmarkablePage("smtp-servers/update", UpdateSmtpServerPage.class);
+        mountBookmarkablePage("smtp-servers/view", ViewSmtpServerPage.class);
 	}
 
 	@Override

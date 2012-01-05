@@ -68,7 +68,7 @@ public interface UserService {
 	 * @param user	user to create
 	 * @throws MessageSendException 
 	 */
-	RoutineResult createUser(UIUserForCreate user) throws MessageSendException;
+	RoutineResult createUser(UIUserForCreate user, String subsystemIdentifier) throws MessageSendException;
 
 	/**
 	 * Updates a user.
@@ -112,7 +112,7 @@ public interface UserService {
 	 * @throws MessageSendException 
 	 */
 	Long cloneUser(long templateUserId, String newUsername, String newPassword,
-			String newEmail, String newPublicKey) throws MessageSendException;
+			String newEmail, String newPublicKey, String subsystemForEmailIdentifier) throws MessageSendException;
 	
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or

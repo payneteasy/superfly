@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page;
 
+import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
@@ -23,13 +24,17 @@ import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
  */
 public abstract class BasePage extends WebPage {
 	private Class<? extends Page> pageClass;
+	
+	private FeedbackPanel feedbackPanel;
 
 	public BasePage(Class<? extends Page> pageClass) {
+        super();
 		this.pageClass = pageClass;
 		init();
 	}
 
 	public BasePage(Class<? extends Page> pageClass, PageParameters params) {
+        super(params);
 		this.pageClass = pageClass;
 		init();
 	}
@@ -41,7 +46,8 @@ public abstract class BasePage extends WebPage {
 		add(new Label("page-title", getTitle()));
 		add(new Label("page-head-title", getHeadTitle()));
 		
-		FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
+		feedbackPanel = new FeedbackPanel("feedback");
+		feedbackPanel.setOutputMarkupId(true);
 		add(feedbackPanel);
 		
 		addLink("subsystems-main-menu-item", ListSubsystemsPage.class);
@@ -50,6 +56,7 @@ public abstract class BasePage extends WebPage {
 		addLink("users-main-menu-item", ListUsersPage.class);
 		addLink("roles-main-menu-item", ListRolesPage.class);
 		addLink("sessions-main-menu-item", ListSessionsPage.class);
+        addLink("smtp-servers-main-menu-item", ListSmtpServersPage.class);
 	}
 
 	protected abstract String getTitle();
@@ -81,6 +88,10 @@ public abstract class BasePage extends WebPage {
 				}));
 			}
 		}
+	}
+
+	protected FeedbackPanel getFeedbackPanel() {
+		return feedbackPanel;
 	}
 
 }

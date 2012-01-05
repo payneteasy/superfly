@@ -1,22 +1,53 @@
 package com.payneteasy.superfly.dao;
 
-import java.util.List;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 public class GroupDaoTest extends AbstractDaoTest {
 	private GroupDao groupDao;
+    private SubsystemDao subsystemDao;
+    
+    private static boolean created = false;
+    private static long subsystemId;
 
+    @Autowired
 	public void setGroupDao(GroupDao groupDao) {
 		this.groupDao = groupDao;
 	}
 
+    @Autowired
+    public void setSubsystemDao(SubsystemDao subsystemDao) {
+        this.subsystemDao = subsystemDao;
+    }
+
+    public void setUp() throws Exception {
+        super.setUp();
+
+        if (!created) {
+	        UISubsystem subsystem = new UISubsystem();
+	        subsystem.setName("system-for-groups-1");
+	        subsystem.setCallbackInformation("http://localhost");
+	        subsystemDao.createSubsystem(subsystem);
+	        subsystemId = subsystem.getId();
 	
-	public void testGetGroupsForSubsystems(){
-		List<UIGroupForList> groupList = groupDao.getGroups(0, 10, 1, "asc", null, "1,2");
+	        UIGroup group = new UIGroup();
+	        group.setName("group1");
+	        group.setSubsystemId(subsystemId);
+	        groupDao.createGroup(group);
+	        
+	        created = true;
+        }
+    }
+
+	
+	public void testGetGroupsForSubsystems() {
+		List<UIGroupForList> groupList = groupDao.getGroups(0, 10, 1, "asc", null, "1,2," + subsystemId);
 		assertTrue("Group list should not be empty", groupList.size() > 0);
 	}
 	

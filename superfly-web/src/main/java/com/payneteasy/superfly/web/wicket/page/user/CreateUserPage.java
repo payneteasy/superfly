@@ -11,19 +11,12 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
@@ -31,12 +24,12 @@ import org.springframework.security.access.annotation.Secured;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
-import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
+import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
@@ -60,28 +53,28 @@ public class CreateUserPage extends BasePage {
 		super(ListUsersPage.class);
 		final UIUserCheckPassword user = new UIUserCheckPassword();
 
-		List<UISubsystemForList> listSub = subsystemService.getSubsystems();
-		for (UISubsystemForList sub : listSub) {
+		List<UISubsystemForFilter> listSub = subsystemService.getSubsystemsForFilter();
+		for (UISubsystemForFilter sub : listSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
 			listIdsub.add(sub.getId());
 			List<UIRoleForList> listRole = roleService.getRoles(0, Integer.MAX_VALUE, 1, true, null, listIdsub);
-			modelsMap.put(sub, listRole);
+			subsystemsToRoles.put(sub, listRole);
 		}
 
 		// models for DropDrownChoice
-		IModel<List<? extends UISubsystemForList>> makeChoices = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
+		IModel<List<? extends UISubsystemForFilter>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForFilter>>() {
 			@Override
-			public List<UISubsystemForList> getObject() {
-				Set<UISubsystemForList> keys = modelsMap.keySet();
-				List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(keys);
+			public List<UISubsystemForFilter> getObject() {
+				Set<UISubsystemForFilter> keys = subsystemsToRoles.keySet();
+				List<UISubsystemForFilter> list = new ArrayList<UISubsystemForFilter>(keys);
 				return list;
 			}
 
 		};
-		final IModel<List<? extends UIRoleForList>> modelChoices = new AbstractReadOnlyModel<List<? extends UIRoleForList>>() {
+		final IModel<List<? extends UIRoleForList>> rolesModel = new AbstractReadOnlyModel<List<? extends UIRoleForList>>() {
 			@Override
 			public List<UIRoleForList> getObject() {
-				List<UIRoleForList> models = modelsMap.get(subsystem);
+				List<UIRoleForList> models = subsystemsToRoles.get(subsystem);
 				if (models == null) {
 					models = Collections.emptyList();
 				}
@@ -114,10 +107,12 @@ public class CreateUserPage extends BasePage {
 		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
 		form.add(publicKeyField);
 
-		LabelDropDownChoiceRow<UISubsystemForList> makes = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", makeChoices, new SubsystemInCreateUserChoiceRender());
+		LabelDropDownChoiceRow<UISubsystemForFilter> makes = new LabelDropDownChoiceRow<UISubsystemForFilter>(
+				"subsystem", this, "user.create.choice-subsystem",
+				subsystemsModel, new SubsystemChoiceRenderer());
 		makes.getDropDownChoice().setRequired(true);
 		
-		final LabelDropDownChoiceRow<UIRoleForList> models = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", modelChoices, new RoleInCreateUserChoiceRender());
+		final LabelDropDownChoiceRow<UIRoleForList> models = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
 		models.getDropDownChoice().setRequired(true);
 		models.setOutputMarkupId(true);
 		
@@ -147,7 +142,7 @@ public class CreateUserPage extends BasePage {
 				UIRoleForList role = models.getDropDownChoice().getModelObject();
 				user.setRoleId(role.getId());
 				try {
-					userService.createUser(user);
+					userService.createUser(user, subsystem == null ? null : subsystem.getName());
 				} catch (MessageSendException e) {
 					error("Could not send a message: " + e.getMessage());
 				}
@@ -166,9 +161,9 @@ public class CreateUserPage extends BasePage {
 	}
 
 	// DropDrownChoice
-	private final Map<UISubsystemForList, List<UIRoleForList>> modelsMap = new HashMap<UISubsystemForList, List<UIRoleForList>>(); // map:company->model
+	private final Map<UISubsystemForFilter, List<UIRoleForList>> subsystemsToRoles = new HashMap<UISubsystemForFilter, List<UIRoleForList>>(); // map:company->model
 	private UIRoleForList role;
-	private UISubsystemForList subsystem;
+	private UISubsystemForFilter subsystem;
 
 	public UIRoleForList getRole() {
 		return role;
@@ -178,11 +173,11 @@ public class CreateUserPage extends BasePage {
 		this.role = role;
 	}
 
-	public UISubsystemForList getSubsystem() {
+	public UISubsystemForFilter getSubsystem() {
 		return subsystem;
 	}
 
-	public void setSubsystem(UISubsystemForList subsystem) {
+	public void setSubsystem(UISubsystemForFilter subsystem) {
 		this.subsystem = subsystem;
 	}
 

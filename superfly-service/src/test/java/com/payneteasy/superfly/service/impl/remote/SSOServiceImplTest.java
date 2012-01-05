@@ -18,7 +18,7 @@ public class SSOServiceImplTest extends TestCase {
 	
 	public void testAuthenticateHOTP() {
 		// success
-		EasyMock.expect(internalSSOService.authenticateHOTP("pete", "123456")).andReturn(true);
+		EasyMock.expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(true);
 		EasyMock.replay(internalSSOService);
 		assertTrue(ssoService.authenticateUsingHOTP("pete", "123456"));
 		EasyMock.verify(internalSSOService);
@@ -26,7 +26,7 @@ public class SSOServiceImplTest extends TestCase {
 		EasyMock.reset(internalSSOService);
 		
 		// failure
-		EasyMock.expect(internalSSOService.authenticateHOTP("pete", "123456")).andReturn(false);
+		EasyMock.expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(false);
 		EasyMock.replay(internalSSOService);
 		assertFalse(ssoService.authenticateUsingHOTP("pete", "123456"));
 		EasyMock.verify(internalSSOService);

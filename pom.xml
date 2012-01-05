@@ -9,7 +9,7 @@
 	<artifactId>superfly-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>Superfly parent project</name>
-	<version>1.2-16-SNAPSHOT</version>
+	<version>1.3-2-SNAPSHOT</version>
 	<description>Parent POM of the Superfly project</description>
 	<modules>
 		<module>superfly-remote-api</module>
@@ -27,6 +27,7 @@
         <module>superfly-spi-support</module>
         <module>superfly-crypto</module>
         <module>superfly-wicket</module>
+        <module>superfly-integration-test</module>
 	</modules>
 	
 	<url>http://code.google.com/p/superfly/</url>
@@ -127,57 +128,62 @@
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-remote-api</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-service</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-httpclient-ssl</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-common</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-client</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-client-opt</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-spring-security-common</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-spring-security</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-spi</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.payneteasy.superfly</groupId>
+				<artifactId>superfly-spi-support</artifactId>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-crypto</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.payneteasy.superfly</groupId>
 				<artifactId>superfly-wicket</artifactId>
-				<version>1.2-16-SNAPSHOT</version>
+				<version>1.3-2-SNAPSHOT</version>
 			</dependency>
 			
 			<dependency>
@@ -581,8 +587,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
@@ -604,7 +610,7 @@
 	</build>
 	
 	<properties>
-		<jdbcproc.version>1.0-27</jdbcproc.version>
+		<jdbcproc.version>1.1-1</jdbcproc.version>
 		<slf4j.version>1.4.2</slf4j.version>
 		<spring.version>3.0.2.RELEASE</spring.version>
 		<spring.security.version>3.0.2.RELEASE</spring.security.version>

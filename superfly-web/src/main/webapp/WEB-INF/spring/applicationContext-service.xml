@@ -36,11 +36,11 @@
 		<property name="lockoutStrategy" ref="lockoutStrategy" />
 	</bean>
 
-	<bean id="subsystemService"
-		class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
+	<bean id="subsystemService" class="com.payneteasy.superfly.service.impl.SubsystemServiceImpl">
 		<property name="subsystemDao" ref="subsystemDao" />
 		<property name="notificationService" ref="notificationService" />
 		<property name="loggerSink" ref="loggerSink" />
+        <property name="javaMailSenderPool" ref="javaMailSenderPool"/>
 	</bean>
 
 	<bean id="groupService" class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
@@ -78,6 +78,12 @@
 	<bean id="sessionService" class="com.payneteasy.superfly.service.impl.SessionServiceImpl">
 		<property name="sessionDao" ref="sessionDao" />
 		<property name="notifier" ref="notifier" />
+	</bean>
+
+	<bean id="smtpServerService" class="com.payneteasy.superfly.service.impl.SmtpServerServiceImpl">
+		<property name="smtpServerDao" ref="smtpServerDao" />
+		<property name="loggerSink" ref="loggerSink" />
+        <property name="javaMailSenderPool" ref="javaMailSenderPool"/>
 	</bean>
 
 	<bean id="notifier" class="com.payneteasy.superfly.notification.DefaultNotifier">
@@ -199,14 +205,13 @@
     	</property>
     </bean>
         	
-	<bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="session" ref="mailSession"/>
-	</bean>
-	
 	<bean id="emailService" class="com.payneteasy.superfly.email.impl.EmailServiceImpl">
-		<property name="javaMailSender" ref="javaMailSender"/>
 		<property name="velocityEngine" ref="velocityEngine"/>
-		<property name="from" ref="fromEmail"/>
+        <property name="javaMailSenderPool" ref="javaMailSenderPool"/>
+	</bean>
+
+	<bean id="javaMailSenderPool" class="com.payneteasy.superfly.service.impl.JavaMailSenderPoolImpl">
+		<property name="smtpServerService" ref="smtpServerService"/>
 	</bean>
 	
 	<bean id="hotpService" class="com.payneteasy.superfly.hotp.HOTPServiceImpl">

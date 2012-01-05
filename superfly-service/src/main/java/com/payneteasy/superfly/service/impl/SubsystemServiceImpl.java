@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import com.payneteasy.superfly.service.JavaMailSenderPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -25,6 +26,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 	private SubsystemDao subsystemDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
+    private JavaMailSenderPool javaMailSenderPool;
 
 	@Required
 	public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -41,9 +43,15 @@ public class SubsystemServiceImpl implements SubsystemService {
 		this.loggerSink = loggerSink;
 	}
 
-	public RoutineResult createSubsystem(UISubsystem subsystem) {
+    @Required
+    public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
+        this.javaMailSenderPool = javaMailSenderPool;
+    }
+
+    public RoutineResult createSubsystem(UISubsystem subsystem) {
 		RoutineResult result = subsystemDao.createSubsystem(subsystem);
 		loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
+        javaMailSenderPool.flushAll(); // clearing pool so changes are applied
 		return result;
 	}
 
@@ -53,6 +61,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
+        javaMailSenderPool.flushAll(); // clearing pool so changes are applied
 		return result;
 	}
 
@@ -66,6 +75,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
+        javaMailSenderPool.flushAll(); // clearing pool so changes are applied
 		return result;
 	}
 

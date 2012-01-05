@@ -58,11 +58,10 @@ public class UserDetailsPage extends BasePage {
 		sort.setRoleWithAction(roleWithAction);
 
 		ListView<String> subRolesList = new ListView<String>("sub-list", sort.getSubsystemsName()) {
-
 			@Override
 			protected void populateItem(ListItem<String> item) {
 				final String rfc = item.getModelObject();
-				item.add(new Label("sub-name", rfc.toString()));
+				item.add(new Label("sub-name", rfc));
 				
 				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.add("userId", String.valueOf(userId));

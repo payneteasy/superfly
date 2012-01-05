@@ -62,7 +62,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		UIUserForCreate user = new UIUserForCreate();
 		user.setUsername("test-user");
-		userService.createUser(user);
+		userService.createUser(user, "subsystem");
 		
 		EasyMock.verify(loggerSink);
 	}
@@ -81,7 +81,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		UIUserForCreate user = new UIUserForCreate();
 		user.setUsername("test-user");
-		userService.createUser(user);
+		userService.createUser(user, "subsystem");
 		
 		EasyMock.verify(loggerSink);
 	}
@@ -178,7 +178,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(true), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key", null);
 		
 		EasyMock.verify(loggerSink);
 	}
@@ -188,7 +188,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(false), eq("1->new-user"));
 		EasyMock.replay(loggerSink, userDao);
 		
-		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key");
+		userService.cloneUser(1L, "new-user", "new-password", "new-email", "new key", null);
 		
 		EasyMock.verify(loggerSink);
 	}

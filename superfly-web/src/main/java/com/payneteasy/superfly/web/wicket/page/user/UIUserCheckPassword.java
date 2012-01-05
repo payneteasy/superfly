@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 
-public class UIUserCheckPassword extends UIUserForCreate{
+public class UIUserCheckPassword extends UIUserForCreate {
 	private String password2;
 
 	public String getPassword2() {

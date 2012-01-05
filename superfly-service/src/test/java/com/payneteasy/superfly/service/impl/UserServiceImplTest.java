@@ -57,7 +57,7 @@ public class UserServiceImplTest extends TestCase {
 		UIUserForCreate user = new UIUserForCreate();
 		user.setUsername("pete");
 		user.setPassword("secret");
-		userService.createUser(user);
+		userService.createUser(user, "subsystem");
 		
 		EasyMock.verify(userDao);
 	}
@@ -91,7 +91,7 @@ public class UserServiceImplTest extends TestCase {
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "email", "new key");
+		userService.cloneUser(1L, "pete", "secret", "email", "new key", null);
 		
 		EasyMock.verify(userDao);
 	}
@@ -111,7 +111,7 @@ public class UserServiceImplTest extends TestCase {
 		});
 		EasyMock.replay(userDao);
 		
-		userService.cloneUser(1L, "pete", "secret", "new-email", "new key");
+		userService.cloneUser(1L, "pete", "secret", "new-email", "new key", null);
 		
 		EasyMock.verify(userDao);
 	}

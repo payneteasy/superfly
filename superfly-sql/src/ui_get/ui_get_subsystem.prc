@@ -7,8 +7,12 @@ create procedure ui_get_subsystem(i_ssys_id int(10))
            ss.subsystem_name,
            ss.callback_information,
            ss.fixed,
-           ss.allow_list_users
+           ss.allow_list_users,
+           smtp.ssrv_id smtp_server_ssrv_id,
+           smtp.server_name smtp_server_server_name
       from subsystems ss
+        left join smtp_servers smtp
+          on smtp.ssrv_id = ss.ssrv_ssrv_id
      where ss.ssys_id = i_ssys_id;
   end
 $$
@@ -19,6 +23,8 @@ call save_routine_information('ui_get_subsystem',
                                         'subsystem_name varchar',
                                         'callback_information varchar',
                                         'fixed varchar',
-                                        'allow_list_users varchar'
+                                        'allow_list_users varchar',
+                                        'smtp_server_ssrv_id int',
+                                        'smtp_server_server_name varchar'
                               )
      );

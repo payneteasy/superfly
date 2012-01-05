@@ -5,7 +5,7 @@ import javax.persistence.Column;
 public class UIUserForCreate extends UIUser {
 	private Long roleId;
 	private String hotpSalt;
-    private String isPasswordTemp;
+    private boolean isPasswordTemp;
 
 	@Column(name = "role_id")
 	public Long getRoleId() {
@@ -27,11 +27,11 @@ public class UIUserForCreate extends UIUser {
 
 
     @Column(name="is_password_temp")
-    public String getIsPasswordTemp() {
+    public boolean getIsPasswordTemp() {
         return isPasswordTemp;
     }
 
-    public void setIsPasswordTemp(String isPasswordTemp) {
+    public void setIsPasswordTemp(boolean isPasswordTemp) {
         this.isPasswordTemp = isPasswordTemp;
     }
 }

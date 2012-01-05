@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -27,7 +30,6 @@ import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
 import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -36,7 +38,6 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
-import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.RoleChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
@@ -59,13 +60,14 @@ public class ListUsersPage extends BasePage {
 	@SpringBean
 	private SubsystemService subsystemService;
 	@SpringBean
-	private HOTPService hotpService;
-	@SpringBean
 	private HOTPProvider hotpProvider;
 
 	public ListUsersPage() {
 		super(ListUsersPage.class);
-		
+
+        final ModalWindow resetHotpWindow = new ModalWindow("reset-hotp-window");
+        add(resetHotpWindow);
+
 		// filters
 		final UserFilters userFilters = new UserFilters();
 		Form<UserFilters> filtersForm = new Form<UserFilters>("filters-form");
@@ -209,14 +211,12 @@ public class ListUsersPage extends BasePage {
 				downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
 				item.add(downloadHotpTableLink);
 				
-				Link<Void> resetTableLink = new Link<Void>("reset-table-link") {
+				AjaxLink<Void> resetTableLink = new AjaxLink<Void>("reset-table-link") {
 					@Override
-					public void onClick() {
-						try {
-							hotpService.resetTableAndSendIfSupported(user.getId());
-						} catch (MessageSendException e) {
-							error("Could not send a message: " + e.getMessage());
-						}
+					public void onClick(AjaxRequestTarget target) {
+                        resetHotpWindow.setContent(new ResetOtpTablePanel(resetHotpWindow.getContentId(),
+                                user.getId(), resetHotpWindow, getFeedbackPanel()));
+                        resetHotpWindow.show(target);
 					}
 				};
 				resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());

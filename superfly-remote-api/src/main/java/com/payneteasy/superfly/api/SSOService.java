@@ -107,13 +107,28 @@ public interface SSOService {
     /**
      * Resets an OTP table and sends it to the user via email in encrypted form
      * (if HOTPProvider supports exporting in binary form).
-     * 
-     * @param username	name of the user
-     * @throws UserNotFoundException 
-     * @throws MessageSendException 
+     * Subsystem to use when sending is determined automatically (for instance,
+     * by certificate of a calling subsystem).
+     *
+     * @param username	            name of the user
+     * @throws UserNotFoundException    if no such user
+     * @throws MessageSendException     if error while sending message occurs
      * @since 1.2-4
      */
     void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException;
+    
+    /**
+     * Resets an OTP table and sends it to the user via email in encrypted form
+     * (if HOTPProvider supports exporting in binary form).
+     *
+     * @param subsystemIdentifier   identifier of subsystem
+     * which smtp server to user when sending message
+     * @param username	            name of the user
+     * @throws UserNotFoundException    if no such user
+     * @throws MessageSendException     if error while sending message occurs
+     * @since 1.3-1
+     */
+    void resetAndSendOTPTable(String subsystemIdentifier, String username) throws UserNotFoundException, MessageSendException;
 
     /**
      * Updates user's fields.

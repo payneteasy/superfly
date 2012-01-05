@@ -8,19 +8,33 @@ package com.payneteasy.superfly.email;
 public interface EmailService {
 	/**
 	 * Sends a message containing an HOTP table.
-	 * 
-	 * @param to		to address
-	 * @param fileName	file name
-	 * @param table		table content
-	 * @throws RuntimeMessagingException
+	 *
+     * @param subsystemIdentifier   identifier of subsystem
+     * through which smtp-server to send message
+	 * @param to		            to address
+	 * @param fileName	            file name
+	 * @param table		            table content
+	 * @throws RuntimeMessagingException if something is wrong
 	 */
-	void sendHOTPTable(String to, String fileName, byte[] table) throws RuntimeMessagingException;
+	void sendHOTPTable(String subsystemIdentifier, String to,
+            String fileName, byte[] table) throws RuntimeMessagingException;
 
 	/**
 	 * Sends a message which complains that there's no public key for the user.
-	 * 
+	 *
+     * @param subsystemIdentifier   identifier of subsystem
+     * through which smtp-server to send message
 	 * @param email		to address
+	 * @throws RuntimeMessagingException if something is wrong
+	 */
+	void sendNoPublicKeyMessage(String subsystemIdentifier,
+            String email) throws RuntimeMessagingException;
+
+	/**
+	 * Sends a test message.
+	 * 
+	 * @param serverId	id of the server to test
 	 * @throws RuntimeMessagingException
 	 */
-	void sendNoPublicKeyMessage(String email) throws RuntimeMessagingException;
+	void sendTestMesage(long serverId, String email) throws RuntimeMessagingException;
 }

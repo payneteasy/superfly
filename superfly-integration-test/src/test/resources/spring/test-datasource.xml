@@ -7,10 +7,10 @@
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url"
-                  value="jdbc:mysql://localhost/superflytest?autoReconnect=true&amp;characterEncoding=utf8"/>
+                  value="jdbc:mysql://localhost/ssotest?autoReconnect=true&amp;characterEncoding=utf8"/>
         <!--&amp;profileSQL=true-->
-        <property name="username"  value="superfly"     />
-        <property name="password"  value="123superfly123" />
+        <property name="username"  value="sso"     />
+        <property name="password"  value="123sso123" />
         <property name="maxActive" value="-1"      />
         <property name="maxIdle"   value="2"       />
         <property name="maxWait"   value="5000"    />

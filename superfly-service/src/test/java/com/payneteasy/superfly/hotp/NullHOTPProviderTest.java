@@ -10,6 +10,6 @@ public class NullHOTPProviderTest extends TestCase {
 	}
 	
 	public void testAuthenticate() {
-		assertTrue(provider.authenticate("user", "123456"));
+		assertTrue(provider.authenticate(null, "user", "123456"));
 	}
 }

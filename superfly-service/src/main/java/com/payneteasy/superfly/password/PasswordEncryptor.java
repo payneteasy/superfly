@@ -153,10 +153,10 @@ public class PasswordEncryptor {
 
 	private static HOTPService createHOTPService() {
 		return new HOTPService() {
-			public void sendTableIfSupported(long userId) {
+			public void sendTableIfSupported(String subsystemIdentifier, long userId) {
 			}
 
-			public void resetTableAndSendIfSupported(long userId) {
+			public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) {
 			}
 		};
 	}

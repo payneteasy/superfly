@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 				subsystemId);
 	}
 
-	public RoutineResult createUser(UIUserForCreate user) throws MessageSendException {
+	public RoutineResult createUser(UIUserForCreate user, String subsystemIdentifier) throws MessageSendException {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
@@ -126,7 +126,9 @@ public class UserServiceImpl implements UserService {
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), userForDao.getUsername());
 		
 		if (result.isOk()) {
-			hotpService.sendTableIfSupported(userForDao.getId());
+			hotpService.sendTableIfSupported(
+                    subsystemIdentifier,
+                    userForDao.getId());
 		}
 		
 		return result;
@@ -180,7 +182,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public Long cloneUser(long templateUserId, String newUsername,
-			String newPassword, String newEmail, String newPublicKey) throws MessageSendException {
+			String newPassword, String newEmail, String newPublicKey,
+            String subsystemForEmailIdentifier) throws MessageSendException {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
@@ -193,7 +196,7 @@ public class UserServiceImpl implements UserService {
 		RoutineResult result = createUserStrategy.cloneUser(request);
 
 		if (result.isOk()) {
-			hotpService.sendTableIfSupported(request.getId());
+			hotpService.sendTableIfSupported(subsystemForEmailIdentifier, request.getId());
 			notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));

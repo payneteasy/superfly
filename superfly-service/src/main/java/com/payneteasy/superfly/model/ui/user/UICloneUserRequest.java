@@ -22,7 +22,7 @@ public class UICloneUserRequest implements Serializable {
     private String salt;
     private String hotpSalt;
     private String publicKey;
-    private String isPasswordTemp;
+    private boolean isPasswordTemp;
 
 	@Column(name = "user_id")
 	@Id
@@ -98,11 +98,11 @@ public class UICloneUserRequest implements Serializable {
 
 
     @Column(name="is_password_temp")
-    public String getIsPasswordTemp() {
+    public boolean getIsPasswordTemp() {
         return isPasswordTemp;
     }
 
-    public void setIsPasswordTemp(String isPasswordTemp) {
+    public void setIsPasswordTemp(boolean isPasswordTemp) {
         this.isPasswordTemp = isPasswordTemp;
     }
 }

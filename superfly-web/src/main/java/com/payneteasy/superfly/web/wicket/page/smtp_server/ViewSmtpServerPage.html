@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<title>SMTP server details</title>
+</head>
+<body>
+<wicket:extend>
+	<table class="data">
+		<tr>
+			<td><b>Name:</b></td>
+			<td><span wicket:id="name">name</span></td>
+		</tr>
+		<tr>
+			<td><b>Host:</b></td>
+			<td><span wicket:id="host">host</span></td>
+		</tr>
+		<tr>
+			<td><b>Port:</b></td>
+			<td><span wicket:id="port">port</span></td>
+		</tr>
+		<tr>
+			<td><b>Username:</b></td>
+			<td><span wicket:id="username">username</span></td>
+		</tr>
+		<tr>
+			<td><b>Password:</b></td>
+			<td><span wicket:id="password">password</span></td>
+		</tr>
+	</table>
+
+    <button wicket:id="back-link" class="button">&lt; Back</button>
+
+</wicket:extend>
+</body>
+</html>

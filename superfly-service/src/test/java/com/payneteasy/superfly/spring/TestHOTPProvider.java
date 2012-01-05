@@ -13,7 +13,7 @@ public class TestHOTPProvider implements HOTPProvider {
 		initialized = true;
 	}
 
-	public boolean authenticate(String username, String hotp) {
+	public boolean authenticate(String subsystemIdentifier, String username, String hotp) {
 		return false;
 	}
 

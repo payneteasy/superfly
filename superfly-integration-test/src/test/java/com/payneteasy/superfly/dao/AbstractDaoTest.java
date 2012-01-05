@@ -1,19 +1,80 @@
 package com.payneteasy.superfly.dao;
 
-import org.springframework.test.AbstractTransactionalSpringContextTests;
-
 import com.payneteasy.superfly.model.RoutineResult;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
 
-public abstract class AbstractDaoTest extends AbstractTransactionalSpringContextTests {
-    protected String[] getConfigLocations() {
-        return new String[]{
-                   "/spring/test-datasource.xml",
-                   "/spring/test-dao.xml"
-        };
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+
+@ContextConfiguration({"/spring/test-datasource.xml", "/spring/test-dao.xml"})
+public abstract class AbstractDaoTest extends AbstractJUnit38SpringContextTests {
+    private static boolean alreadyRunCreateDb = false;
+
+    static {
+        if (!alreadyRunCreateDb) {
+            try {
+                createDb();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            } finally {
+                // to prevent rerunning
+                alreadyRunCreateDb = true;
+            }
+        }
     }
-    
+
+    private static void createDb() throws IOException, InterruptedException {
+        Process proc = Runtime.getRuntime().exec("src/test/sh/create_test_database.sh");
+        Thread stdout = new LoggerThread(proc.getInputStream(), new PrintingLoggerSink("STD: "));
+        Thread stderr = new LoggerThread(proc.getErrorStream(), new PrintingLoggerSink("ERR: "));
+        stdout.start();
+        stderr.start();
+        stdout.join();
+        stderr.join();
+        int returnCode = proc.waitFor();
+        if (returnCode != 0) {
+            throw new IllegalStateException("Return code from create_test_database.sh is not 0 but " + returnCode);
+        }
+    }
+
     protected void assertRoutineResult(RoutineResult result) {
     	assertNotNull("Routine result cannot be null", result);
     	assertTrue("Routine result must be OK", result.isOk());
+    }
+
+    private static class LoggerThread extends Thread {
+        private final Scanner scanner;
+        private final LoggerSink loggerSink;
+
+        public LoggerThread(InputStream is, LoggerSink loggerSink) {
+            this.scanner = new Scanner(is, "utf-8");
+            this.loggerSink = loggerSink;
+        }
+
+        public void run() {
+            String line;
+            while (scanner.hasNextLine()) {
+                line = scanner.nextLine();
+                loggerSink.log(line);
+            }
+        }
+    }
+
+    private static interface LoggerSink {
+        void log(String line);
+    }
+
+    private static class PrintingLoggerSink implements LoggerSink {
+        private final String prefix;
+
+        public PrintingLoggerSink(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public void log(String line) {
+            System.out.println(prefix + line);
+        }
     }
 }

@@ -87,7 +87,7 @@ public interface InternalSSOService {
 	 * @param hotp		HOTP
 	 * @return authentication result
 	 */
-	boolean authenticateHOTP(String username, String hotp);
+	boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
 	
     /**
      * 

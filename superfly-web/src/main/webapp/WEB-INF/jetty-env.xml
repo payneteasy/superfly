@@ -20,28 +20,6 @@
             </New>
         </Arg>
     </New>
-    
-    <New id="mailSession" class="org.mortbay.jetty.plus.naming.Resource">
-        <Arg>java:/comp/env/mail/Session-0</Arg>
-        <Arg>
-			<New class="org.mortbay.naming.factories.MailSessionReference">
-				<Set name="user">some.test@gmail.com</Set>
-				<Set name="password">some.password</Set>
-				<Set name="properties">
-					<New class="java.util.Properties">
-						<Put name="mail.smtp.host">smtp.gmail.com</Put>
-						<Put name="mail.smtp.auth">true</Put>
-						<Put name="mail.smtp.user">some.test@gmail.com</Put>
-						<Put name="mail.debug">true</Put>
-						<Put name="mail.smtp.socketFactory.port">465</Put>
-						<Put name="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</Put>
-						<Put name="mail.smtp.socketFactory.fallback">false</Put>
-					</New>
-				</Set>
-			</New>
-        </Arg>
-    </New>
-
 </Configure>
 
 

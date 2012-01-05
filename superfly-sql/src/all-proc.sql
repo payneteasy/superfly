@@ -267,3 +267,10 @@ create table mysql_routines_return_arguments (
 
 \. get/get_user_for_description.prc
 \. save/update_user_for_description.prc
+
+\. ui_get/ui_get_smtp_servers_list.prc
+\. ui_get/ui_get_smtp_server.prc
+\. ui_get/ui_get_smtp_server_by_subsystem_identifier.prc
+\. ui_create/ui_create_smtp_server.prc
+\. ui_update/ui_edit_smtp_server.prc
+\. ui_delete/ui_delete_smtp_server.prc

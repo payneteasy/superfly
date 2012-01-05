@@ -91,7 +91,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 	}
 
 	public boolean authenticateUsingHOTP(String username, String hotp) {
-		boolean ok = hotpProvider.authenticate(username, hotp);
+		boolean ok = hotpProvider.authenticate(localSubsystemName, username, hotp);
 		if (!ok) {
 			userDao.incrementHOTPLoginsFailed(username);
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);

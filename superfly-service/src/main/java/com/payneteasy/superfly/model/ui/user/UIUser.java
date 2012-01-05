@@ -1,9 +1,12 @@
 package com.payneteasy.superfly.model.ui.user;
 
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 /**
  * User object to be used in the UI (create/update).
@@ -21,6 +24,7 @@ public class UIUser implements Serializable {
 	private String secretAnswer;
     private String salt;
     private String publicKey;
+    private UISubsystemForFilter subsystemForEmail;
 
 	@Column(name = "user_id")
 	@Id
@@ -112,4 +116,13 @@ public class UIUser implements Serializable {
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
+
+    @Transient
+    public UISubsystemForFilter getSubsystemForEmail() {
+        return subsystemForEmail;
+    }
+
+    public void setSubsystemForEmail(UISubsystemForFilter subsystemForEmail) {
+        this.subsystemForEmail = subsystemForEmail;
+    }
 }

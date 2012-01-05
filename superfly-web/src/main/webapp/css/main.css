@@ -440,14 +440,14 @@ table.dataAction td.checkbox-cell,table.dataAction th.checkbox-cell {
 .field-label-text {
     font-size: 14px;
     line-height: 25px;
-    width: 160px;
+    width: 260px;
 	display: inline-block;
 	white-space: nowrap;
 }
 .field-label-text-area{
     font-size: 14px;
     line-height: 25px;
-    width: 160px;
+    width: 260px;
 	display: inline-block;
 	white-space: nowrap;
 	vertical-align: top;

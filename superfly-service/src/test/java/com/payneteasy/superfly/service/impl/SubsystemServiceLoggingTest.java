@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SubsystemService;
 
@@ -24,6 +25,7 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setSubsystemDao(subsystemDao);
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setLoggerSink(loggerSink);
+		service.setJavaMailSenderPool(TrivialProxyFactory.createProxy(JavaMailSenderPool.class));
 		subsystemService = service;
 	}
 	

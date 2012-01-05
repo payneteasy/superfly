@@ -12,6 +12,8 @@ public class SslTestMain {
 		HttpClient httpClient = (HttpClient) applicationContext.getBean("httpClient");
 		HttpMethod method = new PostMethod("/superfly/remoting/sso.service");
 		httpClient.executeMethod(method);
+        System.out.println(method.getStatusCode());
+        System.out.println(method.getResponseHeader("Location"));
 		System.out.println(method.getResponseBodyAsString());
 	}
 }

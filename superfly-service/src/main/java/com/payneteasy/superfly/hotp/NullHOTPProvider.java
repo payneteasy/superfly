@@ -14,7 +14,7 @@ public class NullHOTPProvider implements HOTPProvider {
 	public void init(HOTPProviderContext context) {
 	}
 	
-	public boolean authenticate(String username, String hotp) {
+	public boolean authenticate(String subsystemIdentifier, String username, String hotp) {
 		return true;
 	}
 

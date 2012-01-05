@@ -244,7 +244,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			}
 
 			if (result.isOk()) {
-				hotpService.sendTableIfSupported(registerUser.getUserid());
+				hotpService.sendTableIfSupported(subsystemIdentifier, registerUser.getUserid());
 			}
 
 			notificationService.notifyAboutUsersChanged();
@@ -263,8 +263,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		PGPKeyValidator.validatePublicKey(publicKey, publicKeyCrypto);
 	}
 
-	public boolean authenticateHOTP(String username, String hotp) {
-		boolean ok = hotpProvider.authenticate(username, hotp);
+	public boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp) {
+		boolean ok = hotpProvider.authenticate(subsystemIdentifier, username, hotp);
 		if (!ok) {
 			userDao.incrementHOTPLoginsFailed(username);
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);

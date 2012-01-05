@@ -7,19 +7,24 @@ import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ActionDaoTest extends AbstractDaoTest {
 	private ActionDao actionDao;
 
+    @Autowired
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
+
     public void testCopyActionProperties(){
     	actionDao.copyActionProperties(1, 2, true);
     }
+
     public void testGetAction(){
     	actionDao.getAction(1);
     }
+
 	public void testGetActionsForfilter() {
         List<UIActionForFilter> actions = actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
         assertNotNull("List of actions must not be null", actions);

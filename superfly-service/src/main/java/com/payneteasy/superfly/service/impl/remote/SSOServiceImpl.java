@@ -1,25 +1,13 @@
 package com.payneteasy.superfly.service.impl.remote;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.AuthenticationRequestInfo;
-import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.SSOService;
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.UserDescription;
-import com.payneteasy.superfly.api.UserExistsException;
-import com.payneteasy.superfly.api.UserNotFoundException;
+import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.util.List;
 
 /**
  * Implementation of SSOService.
@@ -83,7 +71,7 @@ public class SSOServiceImpl implements SSOService {
 	}
 	
 	/**
-	 * @see SSOService#registerUser(String, String, String, String, RoleGrantSpecification[])
+	 * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String)
 	 */
 	public void registerUser(String username, String password, String email,
 			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
@@ -99,7 +87,8 @@ public class SSOServiceImpl implements SSOService {
 	 * @see SSOService#authenticateUsingHOTP(String, String)
 	 */
 	public boolean authenticateUsingHOTP(String username, String hotp) {
-		return internalSSOService.authenticateHOTP(username, hotp);
+		String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
+		return internalSSOService.authenticateHOTP(subsystemIdentifier, username, hotp);
 	}
 	
 	protected String obtainSubsystemIdentifier(String systemIdentifier) {
@@ -125,16 +114,23 @@ public class SSOServiceImpl implements SSOService {
 		result.setPublicKey(user.getPublicKey());
 		return result;
 	}
-
+	
 	/**
 	 * @see SSOService#resetAndSendOTPTable(String)
 	 */
 	public void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException {
+		resetAndSendOTPTable(null, username);
+	}
+
+	/**
+	 * @see SSOService#resetAndSendOTPTable(String, String)
+	 */
+	public void resetAndSendOTPTable(String subsystemIdentifier, String username) throws UserNotFoundException, MessageSendException {
 		UserForDescription user = internalSSOService.getUserDescription(username);
 		if (user == null) {
 			throw new UserNotFoundException(username);
 		}
-		hotpService.sendTableIfSupported(user.getUserId());
+		hotpService.sendTableIfSupported(obtainSubsystemIdentifier(subsystemIdentifier), user.getUserId());
 	}
 
 	/**

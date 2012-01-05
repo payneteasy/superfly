@@ -1,14 +1,18 @@
 package com.payneteasy.superfly.model.ui.subsystem;
 
-import java.io.Serializable;
+import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 public class UISubsystem implements Serializable {
 	private Long id;
 	private String name;
 	private String callbackInformation;
 	private boolean allowListUsers;
+    private UISmtpServerForFilter smtpServer;
 
 	@Column(name = "ssys_id")
 	public Long getId() {
@@ -45,4 +49,14 @@ public class UISubsystem implements Serializable {
 	public void setAllowListUsers(boolean allowListUsers) {
 		this.allowListUsers = allowListUsers;
 	}
+
+    @ManyToOne
+    @JoinColumn(table = "smtp_server", name = "ssrv_id")
+    public UISmtpServerForFilter getSmtpServer() {
+        return smtpServer;
+    }
+
+    public void setSmtpServer(UISmtpServerForFilter smtpServer) {
+        this.smtpServer = smtpServer;
+    }
 }

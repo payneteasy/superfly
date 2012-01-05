@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.session.UISession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class SessionDaoTest extends AbstractDaoTest {
 	private SessionDao sessionDao;
 
+    @Autowired
 	public void setSessionDao(SessionDao sessionDao) {
 		this.sessionDao = sessionDao;
 	}

@@ -7,14 +7,13 @@ import com.payneteasy.superfly.register.RegisterUserStrategy;
 
 public class PCIDSSRegisterUserStrategy implements RegisterUserStrategy {
 	private UserDao userDao;
-	private final String TEMPORARY_PASSWORD_YES = "Y";
 
 	public PCIDSSRegisterUserStrategy(UserDao userDao) {
        this.userDao = userDao;
 	}
 
 	public RoutineResult registerUser(UserRegisterRequest registerUser) {
-		registerUser.setIsPasswordTemp(TEMPORARY_PASSWORD_YES);
+		registerUser.setIsPasswordTemp(true);
 		return userDao.registerUser(registerUser);
 	}
 

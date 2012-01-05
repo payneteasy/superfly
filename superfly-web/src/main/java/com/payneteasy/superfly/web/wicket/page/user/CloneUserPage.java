@@ -1,35 +1,27 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.PasswordTextField;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.EmailAddressValidator;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
+import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.field.*;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
+import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.springframework.security.access.annotation.Secured;
 
 /**
  * Page used to create a user.
@@ -43,6 +35,8 @@ public class CloneUserPage extends BasePage {
 	private UserService userService;
 	@SpringBean
 	private PublicKeyCrypto crypto;
+    @SpringBean
+    private SubsystemService subsystemService;
 
     @SpringBean
     private IPolicyValidation<PasswordCheckContext> policyValidation;
@@ -58,7 +52,9 @@ public class CloneUserPage extends BasePage {
 			@Override
 			protected void onSubmit() {
 				try {
-					userService.cloneUser(userId, user.getUsername(), user.getPassword(), user.getEmail(), user.getPublicKey());
+					userService.cloneUser(userId, user.getUsername(), user.getPassword(),
+                            user.getEmail(), user.getPublicKey(),
+                            user.getSubsystemForEmail() == null ? null : user.getSubsystemForEmail().getName());
 				} catch (MessageSendException e) {
 					error("Could not send a message: " + e.getMessage());
 				}
@@ -68,7 +64,7 @@ public class CloneUserPage extends BasePage {
 			}
 		};
 		add(form);
-		form.add(new LabelValueRow<String>("old-username", new Model(oldUser.getUsername()),"user.clone.template-name"));
+		form.add(new LabelValueRow<String>("old-username", new Model<String>(oldUser.getUsername()),"user.clone.template-name"));
 
 		LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
 		form.add(userName);
@@ -90,6 +86,9 @@ public class CloneUserPage extends BasePage {
 		LabelTextAreaRow<String> publicKeyField = new LabelTextAreaRow<String>(user, "publicKey", "user.create.publicKey");
 		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
 		form.add(publicKeyField);
+
+        form.add(new LabelDropDownChoiceRow<UISubsystemForFilter>("subsystemForEmail", user, "user.subsystemForEmail",
+                subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer()));
 		
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
 	}

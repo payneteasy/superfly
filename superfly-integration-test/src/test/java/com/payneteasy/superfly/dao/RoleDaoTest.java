@@ -2,18 +2,48 @@ package com.payneteasy.superfly.dao;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 
 public class RoleDaoTest extends AbstractDaoTest {
 	private RoleDao roleDao;
+	private SubsystemDao subsystemDao;
+	
+	private static boolean created = false;
 
+    @Autowired
 	public void setRoleDao(RoleDao roleDao) {
 		this.roleDao = roleDao;
 	}
+
+    @Autowired
+    public void setSubsystemDao(SubsystemDao subsystemDao) {
+		this.subsystemDao = subsystemDao;
+	}
+
+	public void setUp() throws Exception {
+    	super.setUp();
+    	
+    	if (!created) {
+    		UISubsystem subsystem = new UISubsystem();
+    		subsystem.setName("subsystem-for-role-1");
+    		subsystem.setCallbackInformation("no-callback");
+    		subsystemDao.createSubsystem(subsystem);
+    		
+	    	UIRole role = new UIRole();
+	    	role.setRoleName("role1");
+	    	role.setPrincipalName("role1");
+	    	role.setSubsystemId(subsystem.getId());
+	    	roleDao.createRole(role);
+	    	
+	    	created = true;
+    	}
+    }
     
 	public void testGetAllRoleActions() {
 		roleDao.getAllRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
@@ -117,12 +147,13 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 		result = roleDao.deleteRole(role.getRoleId());
 		assertRoutineResult(result);
-
 	}
+	
 	public void testgetMappedRoleGroups(){
-		List<UIGroupForCheckbox> testRoleGroups=roleDao.getMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
+		roleDao.getMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
+	
 	public void testGetUnMappedRoleGroups(){
-		List<UIGroupForCheckbox> testRoleGroups = roleDao.getUnMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
+		roleDao.getUnMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
 }

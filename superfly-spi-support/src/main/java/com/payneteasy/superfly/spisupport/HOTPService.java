@@ -14,7 +14,7 @@ public interface HOTPService {
 	 * @param userId	ID of a user
 	 * @throws MessageSendException 
 	 */
-	void sendTableIfSupported(long userId) throws MessageSendException;
+	void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException;
 
 	/**
 	 * Resets a table and sends a new table to a user if provider supports
@@ -23,5 +23,5 @@ public interface HOTPService {
 	 * @param userId	ID of a user
 	 * @throws MessageSendException 
 	 */
-	void resetTableAndSendIfSupported(long userId) throws MessageSendException;
+	void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException;
 }
