@@ -274,3 +274,6 @@ create table mysql_routines_return_arguments (
 \. ui_create/ui_create_smtp_server.prc
 \. ui_update/ui_edit_smtp_server.prc
 \. ui_delete/ui_delete_smtp_server.prc
+
+
+commit;
