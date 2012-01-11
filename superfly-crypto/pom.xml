@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-		<version>1.3-3-SNAPSHOT</version>
+		<version>1.3-3</version>
 	</parent>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-crypto</artifactId>
