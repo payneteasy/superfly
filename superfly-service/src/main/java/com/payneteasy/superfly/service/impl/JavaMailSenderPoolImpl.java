@@ -2,6 +2,10 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.Properties;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -30,7 +34,7 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
     };
 
     private ConfiguredSender createSender(MessageServerKey key) {
-        UISmtpServer server;
+        final UISmtpServer server;
         if (key.getServerId() != null) {
             server = smtpServerService.getSmtpServer(key.getServerId());
         } else if (key.getSubsystemIdentifier() != null) {
@@ -41,11 +45,20 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
         if (server != null) {
             JavaMailSenderImpl sender = new JavaMailSenderImpl();
             Properties props = new Properties();
-            props.put("mail.host", server.getHost());
-            props.put("mail.port", server.getPort() == null ? "25" : String.valueOf(server.getPort()));
-            props.put("mail.user", server.getUsername());
-            props.put("mail.password", server.getPassword());
-            sender.setJavaMailProperties(props);
+            props.put("mail.transport.protocol", "smtp");
+            props.put("mail.smtp.host", server.getHost());
+            props.put("mail.smtp.port", server.getPort() == null ? "25" : String.valueOf(server.getPort()));
+            props.put("mail.smtp.user", server.getUsername());
+            props.put("mail.smtp.password", server.getPassword());
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.debug", System.getProperty("mail.debug", "false"));
+    		Session session = Session.getInstance(props, new Authenticator() {
+    			@Override
+    			protected PasswordAuthentication getPasswordAuthentication() {
+    				return new PasswordAuthentication(server.getUsername(), server.getPassword());
+    			}
+    		});
+            sender.setSession(session);
             return new ConfiguredSender(sender, server.getFrom());
         } else {
             logger.warn("No SMTP server found for key {}", key);
@@ -67,7 +80,7 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
     }
 
     public void flushAll() {
-        pool.flushAll();;
+        pool.flushAll();
     }
 
     private static class MessageServerKey {
