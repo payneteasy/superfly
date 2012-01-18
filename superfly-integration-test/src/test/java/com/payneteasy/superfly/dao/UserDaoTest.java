@@ -207,17 +207,17 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 
 	public void testGetUnmappedUserActions() {
-		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(), null,
+		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(), null, 1,
 				null);
 		// the following looks for 'admin'
 		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(),
-				"1,2,3", "dmi");
+				"1,2,3", 1, "dmi");
 	}
 
 	public void testGetUnmappedUserActionsCount() {
-		userDao.getUnmappedUserActionsCount(getAnyUserId(), null, null);
+		userDao.getUnmappedUserActionsCount(getAnyUserId(), null, 1, null);
 		// the following looks for 'admin'
-		userDao.getUnmappedUserActionsCount(getAnyUserId(), "1,2,3", "dmi");
+		userDao.getUnmappedUserActionsCount(getAnyUserId(), "1,2,3", 1, "dmi");
 	}
 
 	public void testChangeUserRoleActions() {
