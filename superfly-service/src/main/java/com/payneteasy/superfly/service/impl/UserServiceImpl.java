@@ -269,21 +269,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
-			Long subsystemId, String actionSubstring, int startFrom,
+			Long subsystemId, long roleId, String actionSubstring, int startFrom,
 			int recordsCount) {
 		String subsystemIds = subsystemId == null ? null : subsystemId
 				.toString();
 		return userDao.getUnmappedUserActions(startFrom, recordsCount,
 				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-				userId, subsystemIds, actionSubstring);
+				userId, subsystemIds, roleId, actionSubstring);
 	}
 
 	public int getUnmappedUserActionsCount(long userId, Long subsystemId,
-			String actionSubstring) {
+			long roleId, String actionSubstring) {
 		String subsystemIds = subsystemId == null ? null : subsystemId
 				.toString();
 		return userDao.getUnmappedUserActionsCount(userId, subsystemIds,
-				actionSubstring);
+				roleId, actionSubstring);
 	}
 
 	public RoutineResult changeUserRoleActions(long userId,
@@ -324,20 +324,20 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
-			Long subsystemId, String actionSubstring, int startFrom,
+			Long subsystemId, long roleId, String actionSubstring, int startFrom,
 			int recordsCount) {
 		String subsystemIds = subsystemId == null ? null : subsystemId
 				.toString();
 		return userDao.getMappedUserActions(startFrom, recordsCount,
 				DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-				userId, subsystemIds, actionSubstring);
+				userId, subsystemIds, roleId, actionSubstring);
 	}
 
 	public int getMappedUserActionsCount(long userId, Long subsystemId,
-			String actionSubstring) {
+			long roleId, String actionSubstring) {
 		String subsystemIds = subsystemId == null ? null : subsystemId
 				.toString();
-		return userDao.getMappedUserActionsCount(userId, subsystemIds,
+		return userDao.getMappedUserActionsCount(userId, subsystemIds, roleId,
 				actionSubstring);
 	}
 

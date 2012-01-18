@@ -16,6 +16,7 @@ create procedure ui_get_all_user_actions_list(i_start_from int(10),
                                i_order_type,
                                i_user_id,
                                i_ssys_list,
+                               null,
                                "A",
                                i_action_name
          );

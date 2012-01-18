@@ -2,11 +2,12 @@ drop procedure if exists ui_get_mapped_user_actions_list_count;
 delimiter $$
 create procedure ui_get_mapped_user_actions_list_count(i_user_id int(10),
                                                        i_ssys_list text,
+                                                       i_role_id int(10),
                                                        i_action_name varchar(100)
 )
  main_sql:
   begin
-    call int_user_actions_list_count(i_user_id, i_ssys_list, "M", i_action_name
+    call int_user_actions_list_count(i_user_id, i_ssys_list, i_role_id, "M", i_action_name
          );
   end
 $$

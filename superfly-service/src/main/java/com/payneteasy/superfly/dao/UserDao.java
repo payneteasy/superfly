@@ -346,7 +346,7 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_get_unmapped_user_actions_list")
 	List<UIActionForCheckboxForUser> getUnmappedUserActions(int startFrom, int recordsCount, int orderFieldNumber,
-			String orderType, long userId, String subsystemIds, String actionSubstring);
+			String orderType, long userId, String subsystemIds, long roleId, String actionSubstring);
 
 	/**
 	 * Returns count of non-assigned actions for the given user.
@@ -361,7 +361,7 @@ public interface UserDao {
 	 * @return actions count
 	 */
 	@AStoredProcedure(name = "ui_get_unmapped_user_actions_list_count")
-	int getUnmappedUserActionsCount(long userId, String subsystemIds, String actionSubstring);
+	int getUnmappedUserActionsCount(long userId, String subsystemIds, long roleId, String actionSubstring);
 
 	/**
 	 * 
@@ -376,7 +376,7 @@ public interface UserDao {
 	 */
 	@AStoredProcedure(name = "ui_get_mapped_user_actions_list")
 	List<UIActionForCheckboxForUser> getMappedUserActions(int startFrom, int recordsCount, int orderFieldNumber,
-			String orderType, long userId, String subsystemIds, String actionSubstring);
+			String orderType, long userId, String subsystemIds, long roleId, String actionSubstring);
 
 	/**
 	 * 
@@ -386,7 +386,7 @@ public interface UserDao {
 	 * @return
 	 */
 	@AStoredProcedure(name = "ui_get_mapped_user_actions_list_count")
-	int getMappedUserActionsCount(long userId, String subsystemIds, String actionSubstring);
+	int getMappedUserActionsCount(long userId, String subsystemIds, long roleId, String actionSubstring);
 
 	/**
 	 * Changes a list of actions assigned to a user.

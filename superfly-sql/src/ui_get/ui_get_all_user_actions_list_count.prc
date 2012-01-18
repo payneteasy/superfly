@@ -6,7 +6,7 @@ create procedure ui_get_all_user_actions_list_count(i_user_id int(10),
 )
  main_sql:
   begin
-    call int_user_actions_list_count(i_user_id, i_ssys_list, "A", i_action_name
+    call int_user_actions_list_count(i_user_id, i_ssys_list, null, "A", i_action_name
          );
   end
 $$

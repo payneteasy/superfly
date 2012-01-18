@@ -1,42 +1,23 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.action.UIAction;
-import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.service.mapping.MappingService;
 import com.payneteasy.superfly.web.wicket.component.mapping.MappingPanel;
-import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
-import com.payneteasy.superfly.web.wicket.page.group.ChangeGroupActionsPage;
 
 /**
  * Used to change actions assigned to a user.
@@ -50,8 +31,6 @@ public class ChangeUserGrantActionsPage extends BasePage {
 	private UserService userService;
 	@SpringBean
 	private SubsystemService subsystemService;
-	@SpringBean
-	private ActionService actionService;
 	@SpringBean
 	private RoleService roleService;
 
@@ -73,12 +52,12 @@ public class ChangeUserGrantActionsPage extends BasePage {
 
 			@Override
 			protected List<? extends MappingService> getMappedItems(String searchLabel) {
-				return userService.getMappedUserActions(userId, subId, searchLabel, 0, Integer.MAX_VALUE);
+				return userService.getMappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
 			}
 
 			@Override
 			protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
-				return userService.getUnmappedUserActions(userId, subId, searchLabel, 0, Integer.MAX_VALUE);
+				return userService.getUnmappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
 			}
 
 			@Override

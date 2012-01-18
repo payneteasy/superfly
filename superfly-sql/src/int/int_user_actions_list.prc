@@ -6,6 +6,7 @@ create procedure int_user_actions_list(i_start_from int(10),
                                        i_order_type varchar(4),
                                        i_user_id int(10),
                                        i_ssys_list text,
+                                       i_role_id int(10),
                                        i_mapping_status varchar(1),
                                        i_action_name varchar(100)
 )
@@ -44,6 +45,10 @@ create procedure int_user_actions_list(i_start_from int(10),
                  '       on ura.ract_ract_id = ra.ract_id and ura.user_user_id = u.user_id ',
                  ' where u.user_id = ',
                  i_user_id,
+                 if (i_role_id is null,
+                     '',
+                     concat(' and r.role_id = ', i_role_id, ' ')
+                 ),
                  '       and(   (? = "M" and ura.urac_id is not null) ',
                  '           or(? = "U" and ura.urac_id is null) ',
                  '           or coalesce(?, "A") = "A")'

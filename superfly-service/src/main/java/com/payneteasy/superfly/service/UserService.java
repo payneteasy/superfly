@@ -239,7 +239,7 @@ public interface UserService {
 	 * @return actions
 	 */
 	List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
-			Long subsystemId, String actionSubstring, int startFrom,
+			Long subsystemId, long roleId, String actionSubstring, int startFrom,
 			int recordsCount);
 	
 	/**
@@ -254,7 +254,7 @@ public interface UserService {
 	 * 			  substring which must be inside action name (ignored if null)
 	 * @return actions count
 	 */
-	int getUnmappedUserActionsCount(long userId, Long subsystemId, String actionSubstring);
+	int getUnmappedUserActionsCount(long userId, Long subsystemId, long roleId, String actionSubstring);
 	/**
 	 * 
 	 * @param userId
@@ -265,7 +265,7 @@ public interface UserService {
 	 * @return
 	 */
 	List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
-			Long subsystemId, String actionSubstring, int startFrom,
+			Long subsystemId, long roleId, String actionSubstring, int startFrom,
 			int recordsCount);
 	/**
 	 * 
@@ -274,7 +274,7 @@ public interface UserService {
 	 * @param actionSubstring
 	 * @return
 	 */
-	int getMappedUserActionsCount(long userId, Long subsystemId, String actionSubstring);
+	int getMappedUserActionsCount(long userId, Long subsystemId, long roleId, String actionSubstring);
 	/**
 	 * Changes a list of actions assigned to a user.
 	 * 

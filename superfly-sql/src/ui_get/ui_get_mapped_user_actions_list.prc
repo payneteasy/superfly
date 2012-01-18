@@ -6,6 +6,7 @@ create procedure ui_get_mapped_user_actions_list(i_start_from int(10),
                                                  i_order_type varchar(4),
                                                  i_user_id int(10),
                                                  i_ssys_list text,
+                                                 i_role_id int(10),
                                                  i_action_name varchar(100)
 )
  main_sql:
@@ -16,6 +17,7 @@ create procedure ui_get_mapped_user_actions_list(i_start_from int(10),
                                i_order_type,
                                i_user_id,
                                i_ssys_list,
+                               i_role_id,
                                "M",
                                i_action_name
          );

@@ -114,7 +114,7 @@ public class UIActionForCheckboxForUser implements Serializable, MappingService 
 	}
 
 	public long getItemId() {
-		return actionId;
+		return roleActionId;
 	}
 
 	public String getItemName() {
