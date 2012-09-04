@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,13 +28,6 @@ import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
-import com.payneteasy.superfly.model.ActionToSave;
-import com.payneteasy.superfly.model.AuthAction;
-import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.LockoutType;
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.UserRegisterRequest;
-import com.payneteasy.superfly.model.UserWithActions;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
@@ -293,4 +287,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		validatePublicKey(user.getPublicKey());
 		userDao.updateUserForDescription(user);
 	}
+
+    @Override
+    public List<UserWithStatus> getUserStatuses(String userNames) {
+        return userDao.getUserStatuses(userNames);
+    }
 }

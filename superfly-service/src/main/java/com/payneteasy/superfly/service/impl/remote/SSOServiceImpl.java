@@ -1,12 +1,16 @@
 package com.payneteasy.superfly.service.impl.remote;
 
 import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import com.payneteasy.superfly.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -162,5 +166,30 @@ public class SSOServiceImpl implements SSOService {
 		}
 		resetPasswordStrategy.resetPassword(user.getUserId(), username, newPassword);
 	}
+
+    @Override
+    public List<UserStatus> getUserStatuses(List<String> userNames) {
+        List<UserWithStatus> daoUsers;
+        if (userNames == null) {
+            daoUsers = internalSSOService.getUserStatuses(null);
+        } else if (userNames.isEmpty()) {
+            daoUsers = Collections.emptyList();
+        } else {
+            daoUsers = internalSSOService.getUserStatuses(
+                    StringUtils.collectionToCommaDelimitedString(userNames));
+        }
+        List<UserStatus> result = new ArrayList<UserStatus>(daoUsers.size());
+        for (UserWithStatus daoUser : daoUsers) {
+            UserStatus user = new UserStatus();
+            user.setUsername(daoUser.getUserName());
+            user.setAccountLocked(daoUser.isAccountLocked());
+            user.setLoginsFailed(daoUser.getLoginsFailed());
+            user.setLastLoginDate(daoUser.getLastLoginDate());
+            user.setLastFailedLoginDate(daoUser.getLastFailedLoginDate());
+            user.setLastFailedLoginIp(daoUser.getLastFailedLoginIp());
+            result.add(user);
+        }
+        return result;
+    }
 
 }

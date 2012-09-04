@@ -18,6 +18,8 @@ create table mysql_routines_return_arguments (
 
 \. get/get_user_salt.sql
 
+\. get/get_user_statuses.sql
+
 \. get/list_users.sql
 
 \. get/get_user_password_history_and_current_password.sql

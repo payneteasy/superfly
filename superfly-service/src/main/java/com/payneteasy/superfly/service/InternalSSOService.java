@@ -10,6 +10,7 @@ import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 
 /**
@@ -110,4 +111,12 @@ public interface InternalSSOService {
 	 * @param user	user's fields
 	 */
 	void updateUserForDescription(UserForDescription user) throws BadPublicKeyException;
+
+    /**
+     * Finds users by comma-separated list of their logins and returns their status information.
+     *
+     * @param userNames comma-separated list of user names (logins)
+     * @return user statuses
+     */
+    List<UserWithStatus> getUserStatuses(String userNames);
 }

@@ -150,4 +150,13 @@ public interface SSOService {
      * @since 1.2-4
      */
     void resetPassword(String username, String newPassword) throws UserNotFoundException, PolicyValidationException;
+
+    /**
+     * Finds users by list of their logins and returns their status information.
+     *
+     * @param userNames list of user names (logins)
+     * @return user statuses
+     * @since 1.3-5
+     */
+    List<UserStatus> getUserStatuses(List<String> userNames);
 }

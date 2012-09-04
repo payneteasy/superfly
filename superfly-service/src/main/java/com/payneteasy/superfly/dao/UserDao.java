@@ -522,6 +522,9 @@ public interface UserDao {
 
     @AStoredProcedure(name="update_user_for_description")
 	void updateUserForDescription(UserForDescription user);
+
+    @AStoredProcedure(name="get_user_statuses")
+    List<UserWithStatus> getUserStatuses(String userNames);
   
 }
 
