@@ -26,7 +26,7 @@ $$
 delimiter ;
 call save_routine_information('get_user_statuses',
                               concat_ws(',',
-                                        'user_id varchar',
+                                        'user_id int',
                                         'user_name varchar',
                                         'is_account_locked varchar',
                                         'last_login_date datetime',
