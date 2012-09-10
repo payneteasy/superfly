@@ -2,12 +2,15 @@ package com.payneteasy.superfly.factorybean;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HostParams;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.springframework.beans.factory.FactoryBean;
@@ -93,9 +96,27 @@ public class HttpClientFactoryBean implements FactoryBean {
 		if (httpConnectionManager != null) {
 			httpClient.setHttpConnectionManager(httpConnectionManager);
 		}
+
+        List<Header> headers = getDefaultHeaders();
+
+        httpClient.getHostConfiguration().getParams().setParameter(HostParams.DEFAULT_HEADERS, headers);
+        httpClient.getParams().setParameter(HttpClientParams.USER_AGENT,
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/11.04 Chromium/18.0.1025.151 Chrome/18.0.1025.151 Safari/535.19");
+        httpClient.getParams().setParameter(HttpClientParams.HTTP_CONTENT_CHARSET, "UTF-8");
+        httpClient.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 	}
 
-	protected HttpClient createHttpClient() {
+    protected List<Header> getDefaultHeaders() {
+        List<Header> headers = new ArrayList<Header>();
+
+        headers.add(new Header("Accept", "*/*"));
+        headers.add(new Header("Connection", "close"));
+        headers.add(new Header("Accept-Language", "en-US,en;q=0.8"));
+        headers.add(new Header("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3"));
+        return headers;
+    }
+
+    protected HttpClient createHttpClient() {
 		return new HttpClient();
 	}
 
