@@ -1,19 +1,5 @@
 package com.payneteasy.superfly.web.wicket;
 
-import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
-import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
-import com.payneteasy.superfly.web.wicket.page.smtp_server.UpdateSmtpServerPage;
-import com.payneteasy.superfly.web.wicket.page.smtp_server.ViewSmtpServerPage;
-import org.apache.wicket.Page;
-import org.apache.wicket.Request;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.Response;
-import org.apache.wicket.Session;
-import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.IRequestCycleProcessor;
-import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
-
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
@@ -28,29 +14,26 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
-import com.payneteasy.superfly.web.wicket.page.role.AddRoleActionsPage;
-import com.payneteasy.superfly.web.wicket.page.role.AddRoleGroupsPage;
-import com.payneteasy.superfly.web.wicket.page.role.AddRolePage;
-import com.payneteasy.superfly.web.wicket.page.role.ChangeRoleActionsPage;
-import com.payneteasy.superfly.web.wicket.page.role.ChangeRoleGroupsPage;
-import com.payneteasy.superfly.web.wicket.page.role.EditRolePage;
-import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
-import com.payneteasy.superfly.web.wicket.page.role.ViewRolePage;
+import com.payneteasy.superfly.web.wicket.page.role.*;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.UpdateSmtpServerPage;
+import com.payneteasy.superfly.web.wicket.page.smtp_server.ViewSmtpServerPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.AddSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
-import com.payneteasy.superfly.web.wicket.page.user.AddSubsystemWithRolePage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserGrantActionsPage;
-import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
-import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
-import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
-import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
+import com.payneteasy.superfly.web.wicket.page.user.*;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingWebRequestCycleProcessor;
+import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
+import org.apache.wicket.*;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
+import org.apache.wicket.request.IRequestCodingStrategy;
+import org.apache.wicket.request.IRequestCycleProcessor;
+import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
 public class SuperflyApplication extends WebApplication{
 
@@ -125,7 +108,13 @@ public class SuperflyApplication extends WebApplication{
 							RequestParameters requestParameters) {
 						return SecurityUtils.isTempPassword();
 					}
-				});
+				}) {
+            @Override
+            public IRequestCodingStrategy newRequestCodingStrategy() {
+                return new SessionStoreUrlWebRequestCodingStrategy(
+                        new WebRequestCodingStrategy());
+            }
+        };
 	}
     
 }
