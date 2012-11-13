@@ -97,7 +97,14 @@
 	</bean>
 
 	<bean id="notifierHttpClient"
-		class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+		    class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+        <property name="httpConnectionManager">
+            <bean class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+            </bean>
+        </property>
+        <property name="connectionManagerTimeout" value="10000"/>
+        <property name="soTimeout" value="30000"/>
+        <property name="connectionTimeout" value="30000"/>
 	</bean>
 
 	<bean id="notificationService"

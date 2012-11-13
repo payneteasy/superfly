@@ -1,21 +1,19 @@
 package com.payneteasy.superfly.factorybean;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.payneteasy.httpclient.contrib.ssl.AuthSSLProtocolSocketFactory;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.springframework.beans.factory.FactoryBean;
 
-import com.payneteasy.httpclient.contrib.ssl.AuthSSLProtocolSocketFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Factory bean for HttpClient.
@@ -29,8 +27,11 @@ public class HttpClientFactoryBean implements FactoryBean {
 	private String password;
 	private String authHost;
 	private StoresAndSSLConfig hostConfig = null;
+    private long connectionManagerTimeout = 10000; // 10 seconds by default
+    private int soTimeout = 10000; // 10 seconds by default
+    private int connectionTimeout = -1; // negative values mean "leave existing value"
 	private HttpConnectionManager httpConnectionManager = null;
-	
+
 	private HttpClient httpClient = null;
 	
 	public boolean isAuthenticationPreemptive() {
@@ -69,7 +70,19 @@ public class HttpClientFactoryBean implements FactoryBean {
 		this.hostConfig = hostConfig;
 	}
 
-	public HttpConnectionManager getHttpConnectionManager() {
+    public void setConnectionManagerTimeout(long connectionManagerTimeout) {
+        this.connectionManagerTimeout = connectionManagerTimeout;
+    }
+
+    public void setSoTimeout(int soTimeout) {
+        this.soTimeout = soTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    public HttpConnectionManager getHttpConnectionManager() {
 		return httpConnectionManager;
 	}
 
@@ -104,6 +117,12 @@ public class HttpClientFactoryBean implements FactoryBean {
                 "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.19 (KHTML, like Gecko) Ubuntu/11.04 Chromium/18.0.1025.151 Chrome/18.0.1025.151 Safari/535.19");
         httpClient.getParams().setParameter(HttpClientParams.HTTP_CONTENT_CHARSET, "UTF-8");
         httpClient.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+
+        httpClient.getParams().setConnectionManagerTimeout(connectionManagerTimeout);
+        httpClient.getParams().setSoTimeout(soTimeout);
+        if (connectionTimeout >= 0) {
+            httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectionTimeout);
+        }
 	}
 
     protected List<Header> getDefaultHeaders() {

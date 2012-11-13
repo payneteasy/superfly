@@ -410,7 +410,7 @@
 		    <dependency>
 		        <groupId>com.googlecode.xremoting</groupId>
 		        <artifactId>xremoting-core</artifactId>
-		        <version>1.0-4</version>
+		        <version>1.0-6</version>
 		    </dependency>
 		    <dependency>
 		        <groupId>com.thoughtworks.xstream</groupId>
