@@ -4,7 +4,8 @@ create procedure get_users_to_suspend(i_days int(10))
  main_sql:
   begin
   	select user_id, user_name from users
-  		where date_add(coalesce(last_login_date, create_date), interval i_days day) < now();
+  		where date_add(coalesce(last_login_date, create_date), interval i_days day) < now()
+  		  and is_account_suspended = 'N';
   end
 $$
 delimiter ;
