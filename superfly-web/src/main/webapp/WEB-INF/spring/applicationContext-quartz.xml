@@ -36,17 +36,17 @@
 	
 	<bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="expireSessionsJobDetail"/>
-		<property name="repeatInterval" value="60000"/>
+		<property name="repeatInterval" value="60000"/> <!-- every minute -->
 	</bean>
 
     <bean id="expirePasswordsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="expirePasswordJobDetail"/>
-        <property name="repeatInterval" value="3600000"/>
+        <property name="repeatInterval" value="86400000"/> <!-- daily -->
     </bean>
     
     <bean id="suspendUsersTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="suspendUsersJobDetail"/>
-        <property name="repeatInterval" value="3600000"/>
+        <property name="repeatInterval" value="86400000"/> <!-- daily -->
     </bean>
 
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
