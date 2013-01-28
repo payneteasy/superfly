@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,5 +91,10 @@ public class SubsystemServiceImpl implements SubsystemService {
 	public UISubsystem getSubsystemByName(String subsystemName) {
 		return subsystemDao.getSubsystemByName(subsystemName);
 	}
+
+    @Override
+    public SubsystemTokenData getSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier) {
+        return subsystemDao.getSubsystemTokenIfCanLogin(ssoSessionId, subsystemIdentifier);
+    }
 
 }

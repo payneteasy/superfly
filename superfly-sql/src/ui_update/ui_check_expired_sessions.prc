@@ -9,6 +9,11 @@ create procedure ui_check_expired_sessions(i_ssys_id int(10),
   begin
     declare v_ssys_id   int(10);
 
+    -- TODO: this procedure invalidates TOO much when i_role_id or i_grop_id is specified!
+    -- for instance, if i_role_id is specified, we have to only invalidates sessions
+    -- of users which actually have that role assigned... but ALL sessions in the
+    -- subsystem of a role is invalidated.
+
     if i_user_id is null then
       if i_ssys_id is not null then
         set v_ssys_id   = i_ssys_id;

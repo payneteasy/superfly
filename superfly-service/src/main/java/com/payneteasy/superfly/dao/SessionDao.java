@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.ui.session.UISession;
 
 /**
@@ -51,4 +52,14 @@ public interface SessionDao {
 	 */
 	@AStoredProcedure(name = "ui_delete_expired_sessions")
 	List<UISession> deleteExpiredSessions(Date beforeWhat);
+
+    /**
+     * Obtains a valid SSO session by its identifier if such session exists,
+     * otherwise returns null.
+     *
+     * @param ssoSessionIdentifier  identifier of an SSO session
+     * @return session or null
+     */
+    @AStoredProcedure(name = "get_valid_sso_session")
+    SSOSession getValidSSOSession(String ssoSessionIdentifier);
 }

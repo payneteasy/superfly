@@ -1,28 +1,25 @@
 package com.payneteasy.superfly.web.wicket.page;
 
+import com.payneteasy.superfly.web.security.SecurityUtils;
+import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
+import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
+import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
+import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
+import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
+import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 
-import com.payneteasy.superfly.web.security.SecurityUtils;
-import com.payneteasy.superfly.web.wicket.SuperflySession;
-import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
-import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
-import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
-import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
-import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
-import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
-
 /**
  * Base page which defines a common page template and some common page elements.
  */
-public abstract class BasePage extends WebPage {
+public abstract class BasePage extends SessionAccessorPage {
 	private Class<? extends Page> pageClass;
 	
 	private FeedbackPanel feedbackPanel;
@@ -67,11 +64,6 @@ public abstract class BasePage extends WebPage {
 
 	protected String getHeadTitlePostfix() {
 		return getTitle();
-	}
-
-	@Override
-	public SuperflySession getSession() {
-		return (SuperflySession) super.getSession();
 	}
 
 	private void addLink(String id, Class<? extends Page> aPageClass) {

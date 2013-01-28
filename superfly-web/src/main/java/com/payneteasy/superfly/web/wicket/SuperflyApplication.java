@@ -14,6 +14,7 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
+import com.payneteasy.superfly.web.wicket.page.login.SSOLoginPage;
 import com.payneteasy.superfly.web.wicket.page.role.*;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
@@ -47,6 +48,8 @@ public class SuperflyApplication extends WebApplication{
         mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePage("/login", LoginPasswordStepPage.class);
         mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
+        // SSO (i.e., real single sign-on) login
+        mountBookmarkablePage("/login-sso", SSOLoginPage.class);
         
         mountBookmarkablePage("/actions", ListActionsPage.class);
         mountBookmarkablePage("/actions/copyAction", CopyActionPropertiesPage.class);

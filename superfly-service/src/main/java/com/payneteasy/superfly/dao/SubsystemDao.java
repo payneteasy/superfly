@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.SubsystemToNotify;
+import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -86,4 +87,17 @@ public interface SubsystemDao {
 	 */
 	@AStoredProcedure(name = "get_subsystems_allowing_to_list_users")
 	List<SubsystemToNotify> getSubsystemsAllowingToListUsers();
+
+    /**
+     * Tries to obtain a subsystem token. If user identified
+     * by that SSO session can login to the requested subsystem,
+     * subsystem token is returned.
+     * If user cannot login to that subsystem, null is returned
+     *
+     * @param ssoSessionId          ID of SSO session
+     * @param subsystemIdentifier   name of the subsystem
+     * @return subsystem token or null
+     */
+    @AStoredProcedure(name = "get_subsystem_token_if_can_login")
+    SubsystemTokenData getSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
 }

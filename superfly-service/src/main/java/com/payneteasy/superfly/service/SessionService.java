@@ -1,10 +1,11 @@
 package com.payneteasy.superfly.service;
 
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.model.ui.session.UISession;
+
 import java.util.Date;
 import java.util.List;
-
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.session.UISession;
 
 /**
  * Service for sessions.
@@ -75,4 +76,13 @@ public interface SessionService {
 	 * @return deleted sessions
 	 */
 	List<UISession> deleteExpiredAndOldSessionsAndNotify(int seconds);
+
+    /**
+     * Obtains a valid SSO session by its identifier if such session exists,
+     * otherwise returns null.
+     *
+     * @param ssoSessionIdentifier  identifier of an SSO session
+     * @return session or null
+     */
+    SSOSession getValidSSOSession(String ssoSessionIdentifier);
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.payneteasy.superfly.model.SSOSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -90,5 +91,10 @@ public class SessionServiceImpl implements SessionService {
 		calendar.add(Calendar.SECOND, -seconds);
 		return deleteExpiredSessionsAndNotify(calendar.getTime());
 	}
+
+    @Override
+    public SSOSession getValidSSOSession(String ssoSessionIdentifier) {
+        return sessionDao.getValidSSOSession(ssoSessionIdentifier);
+    }
 
 }
