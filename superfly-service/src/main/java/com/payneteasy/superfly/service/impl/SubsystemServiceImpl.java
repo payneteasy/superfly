@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
+import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -93,8 +94,13 @@ public class SubsystemServiceImpl implements SubsystemService {
 	}
 
     @Override
-    public SubsystemTokenData getSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier) {
-        return subsystemDao.getSubsystemTokenIfCanLogin(ssoSessionId, subsystemIdentifier);
+    public SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier) {
+        return subsystemDao.issueSubsystemTokenIfCanLogin(ssoSessionId,
+                subsystemIdentifier, generateUniqueSubsystemToken());
+    }
+
+    private String generateUniqueSubsystemToken() {
+        return "ST-" + new RandomGUID().toString().replaceAll("-", "");
     }
 
 }

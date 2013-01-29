@@ -78,5 +78,5 @@ public interface SubsystemService {
      * @param subsystemIdentifier   name of the subsystem
      * @return subsystem token or null
      */
-    SubsystemTokenData getSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
+    SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
 }

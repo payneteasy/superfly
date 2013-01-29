@@ -4,7 +4,6 @@ import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.injection.ComponentInjector;
@@ -61,7 +60,7 @@ public class SSOLoginPageTest extends TestCase {
     public void testWithSSOCookieAndValidSessionAndCanNotLogin() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1));
-        EasyMock.expect(subsystemService.getSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(null);
 
         EasyMock.replay(sessionService, subsystemService);
@@ -80,7 +79,7 @@ public class SSOLoginPageTest extends TestCase {
     public void testWithSSOCookieAndValidSessionAndCanLogin() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1));
-        EasyMock.expect(subsystemService.getSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
         EasyMock.replay(sessionService, subsystemService);
@@ -98,7 +97,7 @@ public class SSOLoginPageTest extends TestCase {
     public void testWithSSOCookieAndValidSessionAndCanLoginShortenedUrl() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1));
-        EasyMock.expect(subsystemService.getSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
         EasyMock.replay(sessionService, subsystemService);

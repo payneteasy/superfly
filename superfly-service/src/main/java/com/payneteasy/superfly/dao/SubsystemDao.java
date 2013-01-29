@@ -98,6 +98,7 @@ public interface SubsystemDao {
      * @param subsystemIdentifier   name of the subsystem
      * @return subsystem token or null
      */
-    @AStoredProcedure(name = "get_subsystem_token_if_can_login")
-    SubsystemTokenData getSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
+    @AStoredProcedure(name = "create_subsystem_token_if_can_login")
+    SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId,
+            String subsystemIdentifier, String uniqueToken);
 }

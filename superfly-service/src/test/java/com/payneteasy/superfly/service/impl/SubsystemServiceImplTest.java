@@ -23,11 +23,11 @@ public class SubsystemServiceImplTest extends TestCase {
         SubsystemTokenData tokenData = new SubsystemTokenData();
         tokenData.setSubsystemToken("abc");
         tokenData.setLandingUrl("url");
-        EasyMock.expect(subsystemDao.getSubsystemTokenIfCanLogin(1, "subsystem"))
+        EasyMock.expect(subsystemDao.issueSubsystemTokenIfCanLogin(EasyMock.eq(1L), EasyMock.eq("subsystem"), EasyMock.anyObject(String.class)))
                 .andReturn(tokenData);
 
         EasyMock.replay(subsystemDao);
-        Assert.assertSame(tokenData, subsystemService.getSubsystemTokenIfCanLogin(1, "subsystem"));
+        Assert.assertSame(tokenData, subsystemService.issueSubsystemTokenIfCanLogin(1L, "subsystem"));
         EasyMock.verify(subsystemDao);
     }
 }

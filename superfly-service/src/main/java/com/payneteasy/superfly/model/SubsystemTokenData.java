@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.model;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 
 /**
@@ -17,6 +18,7 @@ public class SubsystemTokenData implements Serializable {
         this.landingUrl = landingUrl;
     }
 
+    @Column(name = "subsystem_token")
     public String getSubsystemToken() {
         return subsystemToken;
     }
@@ -25,6 +27,7 @@ public class SubsystemTokenData implements Serializable {
         this.subsystemToken = subsystemToken;
     }
 
+    @Column(name = "landing_url")
     public String getLandingUrl() {
         return landingUrl;
     }

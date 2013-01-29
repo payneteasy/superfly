@@ -47,7 +47,8 @@ public class SSOLoginPage extends SessionAccessorPage {
             SSOSession ssoSession = sessionService.getValidSSOSession(ssoSessionId);
             if (ssoSession != null) {
                 // session is valid
-                SubsystemTokenData token = subsystemService.getSubsystemTokenIfCanLogin(ssoSession.getId(), subsystemIdentifier);
+                SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(ssoSession.getId(),
+                        subsystemIdentifier);
                 if (token != null) {
                     // can login: redirecting a user to a subsystem
                     getRequestCycle().setRequestTarget(new RedirectRequestTarget(buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(), targetUrl)));

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.model;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,7 @@ public class SSOSession implements Serializable {
         this.id = id;
     }
 
+    @Column(name = "sso_session_id")
     public long getId() {
         return id;
     }
