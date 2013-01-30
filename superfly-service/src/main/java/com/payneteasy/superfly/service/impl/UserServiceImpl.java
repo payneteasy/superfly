@@ -362,6 +362,8 @@ public class UserServiceImpl implements UserService {
     public UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier) {
         String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
         return UserLoginStatus.findByDbStatus(userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));
+        // TODO: on failure!
+//        lockoutStrategy.checkLoginsFailed(session.getUsername(), LockoutType.PASSWORD);
     }
 
 }

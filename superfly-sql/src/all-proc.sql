@@ -15,6 +15,7 @@ create table mysql_routines_return_arguments (
 \. uninject.sql
 
 \. int/int_check_user_password.prc
+\. int/int_get_user_actions.sql
 
 \. get/get_user_actions.sql
 
@@ -284,6 +285,7 @@ create table mysql_routines_return_arguments (
 \. get/get_valid_sso_session.sql
 \. get/get_user_login_status.sql
 \. create/create_sso_session.prc
+\. get/exchange_subsystem_token.sql
 
 
 commit;

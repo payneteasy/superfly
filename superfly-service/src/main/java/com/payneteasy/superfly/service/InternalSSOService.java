@@ -119,4 +119,15 @@ public interface InternalSSOService {
      * @return user statuses
      */
     List<UserWithStatus> getUserStatuses(String userNames);
+
+    /**
+     * Exchanges subsystem token to SSOUser. After this operation
+     * returns, subsystem token is not valid anymore and cannot
+     * be used for exchanging.
+     *
+     * @param subsystemToken    subsystem token
+     * @return SSOUser or null if token does not exist, expired or
+     * already used
+     */
+    SSOUser exchangeSubsystemToken(String subsystemToken);
 }

@@ -16,7 +16,7 @@ import java.util.HashMap;
 /**
  * @author rpuch
  */
-public class AbstractPageTest extends TestCase {
+public abstract class AbstractPageTest extends TestCase {
     protected Tester tester;
 
     public void setUp() {

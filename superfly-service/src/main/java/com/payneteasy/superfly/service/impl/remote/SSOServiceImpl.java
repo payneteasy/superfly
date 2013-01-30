@@ -192,4 +192,9 @@ public class SSOServiceImpl implements SSOService {
         return result;
     }
 
+    @Override
+    public SSOUser exchangeSubsystemToken(String subsystemToken) {
+        return internalSSOService.exchangeSubsystemToken(subsystemToken);
+    }
+
 }

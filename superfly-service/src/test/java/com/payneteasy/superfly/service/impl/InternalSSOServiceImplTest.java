@@ -5,6 +5,8 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -210,5 +212,17 @@ public class InternalSSOServiceImplTest extends TestCase {
 		user.setPublicKey("");
 		internalSSOService.updateUserForDescription(user);
 	}
+
+    public void testExchangeSubsystemToken() {
+        AuthSession session = new AuthSession("pete", 1L);
+        session.setRoles(Collections.singletonList(new AuthRole("test-role")));
+        EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
+                .andReturn(session);
+        EasyMock.replay(userDao);
+
+        internalSSOService.exchangeSubsystemToken("valid-token");
+
+        EasyMock.verify(userDao);
+    }
 	
 }

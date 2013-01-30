@@ -47,7 +47,7 @@ create procedure create_subsystem_token_if_can_login(
     insert into subsystem_tokens(
         ssos_ssos_id,
         ssys_ssys_id,
-        subsystem_token,
+        token,
         created_date
     ) values (
         v_sso_sess_id,

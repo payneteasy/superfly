@@ -1,19 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>superfly-parent</artifactId>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
+        <version>1.4-1-SNAPSHOT</version>
+    </parent>
     <groupId>com.payneteasy.superfly</groupId>
-    <version>1.3-10-SNAPSHOT</version>
-  </parent>
-  <groupId>com.payneteasy.superfly</groupId>
-  <artifactId>superfly-spi</artifactId>
-  <version>1.3-10-SNAPSHOT</version>
-  <name>SPI for Superfly</name>
-  <description>Interfaces for implementations of internal matters like HOTP processing</description>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.payneteasy.superfly</groupId>
-  		<artifactId>superfly-spi-support</artifactId>
-  	</dependency>
-  </dependencies>
+    <artifactId>superfly-spi</artifactId>
+    <name>SPI for Superfly</name>
+    <description>Interfaces for implementations of internal matters like HOTP processing</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-spi-support</artifactId>
+        </dependency>
+    </dependencies>
 </project>

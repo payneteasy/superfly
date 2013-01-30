@@ -33,10 +33,10 @@ public interface UserDao {
 	 *            IP address of the user who logs in
 	 * @param sessionInfo
 	 *            session info
-	 * @return roles with actions
+	 * @return session
 	 */
 	@AStoredProcedure(name = "get_user_actions")
-	List<AuthRole> authenticate(String username, String password, String subsystemName, String ipAddress,
+	AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
 			String sessionInfo);
 
 	/**
@@ -540,5 +540,17 @@ public interface UserDao {
      */
     @AStoredProcedure(name="get_user_login_status")
     String getUserLoginStatus(String username, String password, String subsystemIdentifier);
+
+    /**
+     * Exchanges subsystem token to SSOUser. After this operation
+     * returns, subsystem token is not valid anymore and cannot
+     * be used for exchanging.
+     *
+     * @param subsystemToken    subsystem token
+     * @return SSOUser or null if token does not exist, expired or
+     * already used
+     */
+    @AStoredProcedure(name="exchange_subsystem_token")
+    AuthSession exchangeSubsystemToken(String subsystemToken);
 }
 

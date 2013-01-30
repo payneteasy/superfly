@@ -1,20 +1,20 @@
 package com.payneteasy.superfly.service.impl;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
@@ -64,26 +64,28 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 
 	public String[] authenticate(String username, String password) {
 		String encPassword = userPasswordEncoder.encode(password, username);
-		List<AuthRole> roles = userDao.authenticate(username, encPassword,
+		AuthSession session = userDao.authenticate(username, encPassword,
 				localSubsystemName, null, null);
-		if (roles != null) {
-			AuthRole role = null;
-			for (AuthRole r : roles) {
-				if (localRoleName.equals(r.getRoleName())) {
-					role = r;
-					break;
-				}
-			}
-			if (role != null) {
-				String[] result = new String[role.getActions().size()];
-				for (int i = 0; i < result.length; i++) {
-					result[i] = role.getActions().get(i).getActionName();
-				}
-				loggerSink.info(logger, "LOCAL_LOGIN", true, username);
-				return result;
-			}
-		}
-		if (roles == null || roles.isEmpty()) {
+        AuthRole role = null;
+        if (session.getRoles().size() == 1 && session.getRoles().get(0).getRoleName() == null) {
+            // actually, it's empty
+            session.setRoles(Collections.<AuthRole>emptyList());
+        }
+        for (AuthRole r : session.getRoles()) {
+            if (localRoleName.equals(r.getRoleName())) {
+                role = r;
+                break;
+            }
+        }
+        if (role != null) {
+            String[] result = new String[role.getActions().size()];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = role.getActions().get(i).getActionName();
+            }
+            loggerSink.info(logger, "LOCAL_LOGIN", true, username);
+            return result;
+        }
+		if (session.getRoles().isEmpty()) {
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);

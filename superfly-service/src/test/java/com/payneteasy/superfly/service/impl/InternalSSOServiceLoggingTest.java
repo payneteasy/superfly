@@ -5,6 +5,7 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.model.AuthSession;
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
@@ -93,15 +94,18 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 
 	public void testAuthenticate() throws Exception {
+        AuthSession session = new AuthSession("username", 1L);
+        session.setRoles(Collections.singletonList(new AuthRole()));
+
 		EasyMock.expect(
 				userDao.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
-						anyObject(String.class))).andReturn(Collections.singletonList(new AuthRole()));
+						anyObject(String.class))).andReturn(session);
 		loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(true), eq("username"));
 		EasyMock.replay(loggerSink, userDao);
 
 		internalSSOService.authenticate("username", "password", null, null, null);
 
-		EasyMock.verify(loggerSink);
+		EasyMock.verify(loggerSink, userDao);
 	}
 
 	public void testAuthenticateFail() throws Exception {
@@ -117,9 +121,12 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	}
 
 	public void testAuthenticateNoRoles() throws Exception {
+        AuthSession session = new AuthSession("username");
+        session.setRoles(Collections.<AuthRole> emptyList());
+
 		EasyMock.expect(
 				userDao.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
-						anyObject(String.class))).andReturn(Collections.<AuthRole> emptyList());
+						anyObject(String.class))).andReturn(session);
 		loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
 		EasyMock.replay(loggerSink, userDao);
 
