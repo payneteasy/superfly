@@ -3,7 +3,7 @@ delimiter $$
 create procedure create_subsystem_token_if_can_login(
         i_sso_sess_id       int(10),
         i_subsystem_name    varchar(32),
-        i_unique_token      varchar(64)
+        i_generated_token   varchar(64)
 )
  main_sql:
   begin

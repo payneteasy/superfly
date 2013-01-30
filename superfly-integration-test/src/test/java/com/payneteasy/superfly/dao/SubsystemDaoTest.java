@@ -28,6 +28,7 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		UISubsystem subsystem = getAnySubsystem();
 		subsystem.setName("testName");
 		subsystem.setCallbackInformation("testCallbackInfo");
+        subsystem.setLandingUrl("/landing-url");
 		RoutineResult result = subsystemDao.updateSubsystem(subsystem);
 		assertRoutineResult(result);
 	}
@@ -68,6 +69,7 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		UISubsystem subsystem = new UISubsystem();
 		subsystem.setName("subsystem-name");
 		subsystem.setCallbackInformation("http://no-such-host.dlm");
+        subsystem.setLandingUrl("/landing-url");
 		subsystemDao.createSubsystem(subsystem);
 		assertNotNull("ID must be generated", subsystem.getId());
 
@@ -80,6 +82,7 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		subsystem.setName("subsystem-name-2");
 		subsystem.setCallbackInformation("http://no-such-host.dlm");
         subsystem.setSmtpServer(serverForFilter);
+        subsystem.setLandingUrl("/landing-url");
 		subsystemDao.createSubsystem(subsystem);
 		assertNotNull("ID must be generated", subsystem.getId());
 	}

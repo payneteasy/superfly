@@ -51,6 +51,10 @@ public class EditSubsystemPage extends BasePage {
 		LabelTextFieldRow<String> callbackInformation = new LabelTextFieldRow<String>(subsystem, "callbackInformation", "subsystem.edit.callback",true);
 		callbackInformation.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
 		form.add(callbackInformation);
+
+        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.edit.landingUrl",true);
+        landingUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        form.add(landingUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.edit.allow-list-users"));
 

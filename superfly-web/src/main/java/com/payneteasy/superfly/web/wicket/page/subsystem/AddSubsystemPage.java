@@ -32,7 +32,7 @@ public class AddSubsystemPage extends BasePage {
 		super(ListSubsystemsPage.class);
 		
 		final UISubsystem subsystem = new UISubsystem();
-		Form<UISubsystem> form = new Form<UISubsystem>("form",new CompoundPropertyModel<UISubsystem>(subsystem)) {
+		Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<UISubsystem>(subsystem)) {
 			@Override
 			protected void onSubmit() {
 				subsystemService.createSubsystem(subsystem);
@@ -46,6 +46,10 @@ public class AddSubsystemPage extends BasePage {
 		LabelTextFieldRow<String> callbackInformation = new LabelTextFieldRow<String>(subsystem, "callbackInformation", "subsystem.add.callback",true);
 		callbackInformation.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
 		form.add(callbackInformation);
+
+        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.add.landingUrl",true);
+        landingUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        form.add(landingUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
 

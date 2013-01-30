@@ -13,6 +13,7 @@ public class UISubsystem implements Serializable {
 	private String callbackInformation;
 	private boolean allowListUsers;
     private UISmtpServerForFilter smtpServer;
+    private String landingUrl;
 
 	@Column(name = "ssys_id")
 	public Long getId() {
@@ -58,5 +59,14 @@ public class UISubsystem implements Serializable {
 
     public void setSmtpServer(UISmtpServerForFilter smtpServer) {
         this.smtpServer = smtpServer;
+    }
+
+    @Column(name = "landing_url")
+    public String getLandingUrl() {
+        return landingUrl;
+    }
+
+    public void setLandingUrl(String landingUrl) {
+        this.landingUrl = landingUrl;
     }
 }

@@ -31,7 +31,7 @@ create function int_has_actions(
            join
              actions a
            on a.ssys_ssys_id = ss.ssys_id and ga.actn_actn_id = a.actn_id
-     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name;
+     where ur.user_user_id = i_user_id and ss.subsystem_name = i_subsystem_name;
 
     if v_group_actions > 0 then
       return 'Y';
@@ -55,7 +55,7 @@ create function int_has_actions(
            join
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
-     where ur.user_user_id = v_user_id and ss.subsystem_name = i_subsystem_name;
+     where ur.user_user_id = i_user_id and ss.subsystem_name = i_subsystem_name;
 
     if v_role_actions > 0 then
       return 'Y';
