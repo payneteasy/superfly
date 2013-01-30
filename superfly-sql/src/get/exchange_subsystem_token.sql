@@ -1,6 +1,6 @@
 drop procedure if exists exchange_subsystem_token;
 delimiter $$
-create procedure exchange_subsystem_token(i_subsystem_token varchar(32))
+create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
  main_sql:
   begin
     declare v_user_id   int(10);

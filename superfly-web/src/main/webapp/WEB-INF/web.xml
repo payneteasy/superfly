@@ -138,7 +138,7 @@
         </init-param>
         <init-param>
         	<param-name>ignorePaths</param-name>
-        	<param-value>/remoting/</param-value>
+        	<param-value>/remoting/,/sso/</param-value>
         </init-param>
     </filter>
 
@@ -147,5 +147,18 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>wicket.sso</filter-name>
+        <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+        <init-param>
+            <param-name>applicationClassName</param-name>
+            <param-value>com.payneteasy.superfly.web.wicket.SSOApplication</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>wicket.sso</filter-name>
+        <url-pattern>/sso/*</url-pattern>
+    </filter-mapping>
 	
 </web-app>

@@ -5,9 +5,6 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
-import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
@@ -25,9 +22,10 @@ public class SSOLoginPage extends SessionAccessorPage {
     @SpringBean
     private SessionService sessionService;
 
-    public SSOLoginPage(PageParameters params) {
-        String subsystemIdentifier = params.getString("subsystemIdentifier");
-        String targetUrl = sanitizeTargetUrl(params.getString("targetUrl"));
+    public SSOLoginPage() {
+        WebRequest request = (WebRequest) getRequest();
+        String subsystemIdentifier = request.getParameter("subsystemIdentifier");
+        String targetUrl = sanitizeTargetUrl(request.getParameter("targetUrl"));
 
         SSOLoginData loginData = new SSOLoginData();
         loginData.setSubsystemIdentifier(subsystemIdentifier);
@@ -35,7 +33,6 @@ public class SSOLoginPage extends SessionAccessorPage {
 
         saveLoginData(loginData);
 
-        WebRequest request = (WebRequest) getRequestCycle().getRequest();
         String ssoSessionId = null;
         Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
         if (cookie != null) {
@@ -53,9 +50,7 @@ public class SSOLoginPage extends SessionAccessorPage {
                     getRequestCycle().setRequestTarget(new RedirectRequestTarget(SSOUtils.buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(), targetUrl)));
                 } else {
                     // can't login: just display an error
-                    getRequestCycle().setResponsePage(
-                            new LoginErrorPage(new Model<String>("Can't login to " + subsystemIdentifier)));
-                    getRequestCycle().setRedirect(true);
+                    SSOUtils.redirectToCantLoginErrorPage(this, loginData);
                 }
                 needToLogin = false;
             }

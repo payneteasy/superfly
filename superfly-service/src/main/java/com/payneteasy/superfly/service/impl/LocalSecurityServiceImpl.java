@@ -67,14 +67,16 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 		AuthSession session = userDao.authenticate(username, encPassword,
 				localSubsystemName, null, null);
         AuthRole role = null;
-        if (session.getRoles().size() == 1 && session.getRoles().get(0).getRoleName() == null) {
-            // actually, it's empty
-            session.setRoles(Collections.<AuthRole>emptyList());
-        }
-        for (AuthRole r : session.getRoles()) {
-            if (localRoleName.equals(r.getRoleName())) {
-                role = r;
-                break;
+        if (session != null) {
+            if (session.getRoles().size() == 1 && session.getRoles().get(0).getRoleName() == null) {
+                // actually, it's empty
+                session.setRoles(Collections.<AuthRole>emptyList());
+            }
+            for (AuthRole r : session.getRoles()) {
+                if (localRoleName.equals(r.getRoleName())) {
+                    role = r;
+                    break;
+                }
             }
         }
         if (role != null) {
@@ -85,7 +87,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
             loggerSink.info(logger, "LOCAL_LOGIN", true, username);
             return result;
         }
-		if (session.getRoles().isEmpty()) {
+		if (session == null || session.getRoles().isEmpty()) {
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
 		}
 		loggerSink.info(logger, "LOCAL_LOGIN", false, username);

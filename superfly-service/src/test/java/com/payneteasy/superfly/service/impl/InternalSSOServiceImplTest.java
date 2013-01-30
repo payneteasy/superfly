@@ -5,8 +5,10 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -213,14 +215,27 @@ public class InternalSSOServiceImplTest extends TestCase {
 		internalSSOService.updateUserForDescription(user);
 	}
 
-    public void testExchangeSubsystemToken() {
+    public void testExchangeSubsystemTokenSuccess() {
         AuthSession session = new AuthSession("pete", 1L);
         session.setRoles(Collections.singletonList(new AuthRole("test-role")));
         EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
                 .andReturn(session);
         EasyMock.replay(userDao);
 
-        internalSSOService.exchangeSubsystemToken("valid-token");
+        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
+        Assert.assertNotNull(user);
+        Assert.assertEquals("pete", user.getName());
+        Assert.assertEquals("1", user.getSessionId());
+
+        EasyMock.verify(userDao);
+    }
+
+    public void testExchangeSubsystemTokenNullResult() {
+        EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
+                .andReturn(null);
+        EasyMock.replay(userDao);
+
+        Assert.assertNull(internalSSOService.exchangeSubsystemToken("valid-token"));
 
         EasyMock.verify(userDao);
     }

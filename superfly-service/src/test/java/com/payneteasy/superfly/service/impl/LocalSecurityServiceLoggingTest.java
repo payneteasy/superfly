@@ -52,7 +52,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		EasyMock.verify(loggerSink);
 	}
 	
-	public void testAuthenticateUserFail() throws Exception {
+	public void testAuthenticateUserFailNotNull() throws Exception {
 		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
 				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
 						.andReturn(new AuthSession("username"));
@@ -63,5 +63,17 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		
 		EasyMock.verify(loggerSink);
 	}
+
+    public void testAuthenticateUserFailWithNull() throws Exception {
+   		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+   				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+   						.andReturn(null);
+   		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
+   		EasyMock.replay(loggerSink, userDao);
+
+   		localSecurityService.authenticate("username", "password");
+
+   		EasyMock.verify(loggerSink);
+   	}
 	
 }

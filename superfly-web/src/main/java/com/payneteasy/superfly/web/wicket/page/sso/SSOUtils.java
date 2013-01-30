@@ -1,5 +1,9 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
+import org.apache.wicket.Component;
+import org.apache.wicket.model.Model;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -26,5 +30,11 @@ public class SSOUtils {
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData) {
+        component.getRequestCycle().setResponsePage(
+                new LoginErrorPage(new Model<String>("Can't login to " + loginData.getSubsystemIdentifier())));
+        component.getRequestCycle().setRedirect(true);
     }
 }

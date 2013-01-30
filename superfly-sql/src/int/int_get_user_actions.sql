@@ -29,7 +29,7 @@ create procedure int_get_user_actions(i_user_id int(10),
      where     u.user_id = i_user_id;
 
 
-    if v_ignore_temp = 'Y' or v_temp <> 'Y' then
+    if i_ignore_temp = 'Y' or v_temp <> 'Y' then
 
         insert into sessions
               (
@@ -98,7 +98,7 @@ create procedure int_get_user_actions(i_user_id int(10),
             ta.*
           from
             (
-                select i_username username from dual
+                select user_name username from users where user_id = i_user_id
             ) tu
             left join
             (

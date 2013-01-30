@@ -308,12 +308,14 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser exchangeSubsystemToken(String subsystemToken) {
         SSOUser ssoUser;
         AuthSession session = userDao.exchangeSubsystemToken(subsystemToken);
-        boolean ok = session.getSessionId() != null;
-        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session.getUsername());
+        boolean ok = session != null && session.getSessionId() != null;
+        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
-            logger.warn("No roles for user {}", session.getUsername());
+            if (session != null) {
+                logger.warn("No roles for user {}", session.getUsername());
+            }
             ssoUser = null;
         }
         return ssoUser;

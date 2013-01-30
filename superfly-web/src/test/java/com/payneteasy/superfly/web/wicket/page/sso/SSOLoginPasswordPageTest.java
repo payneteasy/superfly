@@ -81,6 +81,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         form.setValue("password", "password");
         form.submit();
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
+        tester.assertLabel("form:message", "The username or password you entered is incorrect or user is locked.");
 
         EasyMock.verify(userService);
     }

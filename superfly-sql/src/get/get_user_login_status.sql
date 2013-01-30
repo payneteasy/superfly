@@ -22,7 +22,7 @@ create procedure get_user_login_status(
           into v_temp
           from users u
          where     u.user_id = v_user_id;
-        if is_password_temp = 'Y' then
+        if v_temp = 'Y' then
             set v_result = 'T';
         else
             set v_result = 'Y';

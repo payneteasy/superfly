@@ -1,6 +1,6 @@
 drop procedure if exists get_valid_sso_session;
 delimiter $$
-create procedure get_valid_sso_session(i_identifier varchar(32))
+create procedure get_valid_sso_session(i_identifier varchar(64))
  main_sql:
   begin
 

@@ -2,26 +2,30 @@ drop procedure if exists create_sso_session;
 delimiter $$
 create procedure create_sso_session(
         i_user_name         varchar(32),
-        i_unique_token      varchar(32)
+        i_unique_token      varchar(64)
 )
  main_sql:
   begin
     declare v_sso_sess_id   int(10);
     declare v_user_id       int(10);
+    declare v_now           datetime;
 
     select user_id
       into v_user_id
       from users u
      where     u.user_name = i_user_name;
 
+    set v_now = now();
     insert into sso_sessions(
         identifier,
         user_user_id,
-        created_date
+        created_date,
+        access_date
     ) values (
         i_unique_token,
         v_user_id,
-        now()
+        v_now,
+        v_now
     );
 
     set v_sso_sess_id = last_insert_id();

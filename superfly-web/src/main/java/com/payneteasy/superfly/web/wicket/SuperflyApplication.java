@@ -1,7 +1,6 @@
 package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.security.SecurityUtils;
-import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.CopyActionPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
@@ -14,7 +13,6 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
-import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
 import com.payneteasy.superfly.web.wicket.page.role.*;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
@@ -28,29 +26,21 @@ import com.payneteasy.superfly.web.wicket.page.user.*;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingWebRequestCycleProcessor;
 import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
-import org.apache.wicket.*;
-import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.Page;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCycleProcessor;
 import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 
-public class SuperflyApplication extends WebApplication{
+public class SuperflyApplication extends BaseApplication {
 
 	@Override
-	protected void init() {
-		getResourceSettings().addResourceFolder("src/main/java");
-        addComponentInstantiationListener(new SpringComponentInjector(this));
-        getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
-        getDebugSettings().setOutputMarkupContainerClassName(false);
-        
+	protected void customInit() {
         mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePage("/login", LoginPasswordStepPage.class);
         mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
-        // SSO (i.e., real single sign-on) login
-        mountBookmarkablePage("/login-sso", SSOLoginPage.class);
-        
+
         mountBookmarkablePage("/actions", ListActionsPage.class);
         mountBookmarkablePage("/actions/copyAction", CopyActionPropertiesPage.class);
         
@@ -96,11 +86,6 @@ public class SuperflyApplication extends WebApplication{
 	@Override
 	public Class<? extends Page> getHomePage() {
 		return HomePage.class;
-	}
-
-	@Override
-	public Session newSession(Request request, Response response) {
-		return new SuperflySession(request);
 	}
 
 	@Override

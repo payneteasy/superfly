@@ -9,6 +9,7 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.RequestCycle;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -18,6 +19,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import java.io.Serializable;
@@ -34,6 +36,7 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
     private SubsystemService subsystemService;
 
     private IModel<String> errorMessageModel = new Model<String>();
+    private Label errorMessageLabel;
 
     public SSOLoginPasswordPage() {
         final SSOLoginData loginData = getSsoLoginData();
@@ -52,6 +55,10 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
         add(form);
         form.add(new TextField<String>("username", new PropertyModel<String>(loginBean, "username")));
         form.add(new PasswordTextField("password", new PropertyModel<String>(loginBean, "password")));
+
+        errorMessageLabel = new Label("message", errorMessageModel);
+        errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));
+        form.add(errorMessageLabel);
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
@@ -63,7 +70,8 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
                 onPasswordChecked(loginBean, loginData);
                 break;
             case FAILED:
-                errorMessageModel.setObject("Bad password, or user is locked");
+                errorMessageModel.setObject("The username or password you entered is incorrect or user is locked.");
+                errorMessageLabel.setVisible(true);
                 break;
             case TEMP_PASSWORD:
                 // TODO: change password
@@ -88,9 +96,7 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
             // can't login: just display an error
             // actually, this should not happen as we've already
             // checked user access, but just in case...
-            getRequestCycle().setResponsePage(
-                    new LoginErrorPage(new Model<String>("Can't login to " + loginData.getSubsystemIdentifier())));
-            getRequestCycle().setRedirect(true);
+            SSOUtils.redirectToCantLoginErrorPage(this, loginData);
         }
     }
 
