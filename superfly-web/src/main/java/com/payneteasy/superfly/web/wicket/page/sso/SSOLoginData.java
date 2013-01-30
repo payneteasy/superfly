@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.wicket.page.login;
+package com.payneteasy.superfly.web.wicket.page.sso;
 
 import java.io.Serializable;
 
@@ -8,6 +8,14 @@ import java.io.Serializable;
 public class SSOLoginData implements Serializable {
     private String subsystemIdentifier;
     private String targetUrl;
+
+    public SSOLoginData() {
+    }
+
+    public SSOLoginData(String subsystemIdentifier, String targetUrl) {
+        this.subsystemIdentifier = subsystemIdentifier;
+        this.targetUrl = targetUrl;
+    }
 
     public String getSubsystemIdentifier() {
         return subsystemIdentifier;

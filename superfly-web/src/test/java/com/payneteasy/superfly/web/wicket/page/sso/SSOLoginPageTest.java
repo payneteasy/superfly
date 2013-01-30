@@ -1,36 +1,38 @@
-package com.payneteasy.superfly.web.wicket.page.login;
+package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import junit.framework.TestCase;
+import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
+import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.injection.ComponentInjector;
-import org.apache.wicket.injection.ConfigurableInjector;
-import org.apache.wicket.injection.IFieldValueFactory;
-import org.apache.wicket.injection.web.InjectorHolder;
 import org.easymock.EasyMock;
 
 import javax.servlet.http.Cookie;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 
 /**
  * @author rpuch
  */
-public class SSOLoginPageTest extends TestCase {
+public class SSOLoginPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
-    private Tester tester;
 
     public void setUp() {
+        super.setUp();
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
-        tester = new Tester();
-        tester.getApplication().addComponentInstantiationListener(new ComponentInjector() {{
-            InjectorHolder.setInjector(createInjector());
-        }});
+    }
+
+    @Override
+    protected Object getBean(Class<?> type) {
+        if (SessionService.class == type) {
+            return sessionService;
+        } else if (SubsystemService.class == type) {
+            return subsystemService;
+        }
+        return super.getBean(type);
     }
 
     public void testNoSSOCookie() {
@@ -59,7 +61,7 @@ public class SSOLoginPageTest extends TestCase {
 
     public void testWithSSOCookieAndValidSessionAndCanNotLogin() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
-                .andReturn(new SSOSession(1));
+                .andReturn(new SSOSession(1, "super-session-id"));
         EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(null);
 
@@ -78,7 +80,7 @@ public class SSOLoginPageTest extends TestCase {
 
     public void testWithSSOCookieAndValidSessionAndCanLogin() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
-                .andReturn(new SSOSession(1));
+                .andReturn(new SSOSession(1, "super-session-id"));
         EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
@@ -96,7 +98,7 @@ public class SSOLoginPageTest extends TestCase {
 
     public void testWithSSOCookieAndValidSessionAndCanLoginShortenedUrl() {
         EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
-                .andReturn(new SSOSession(1));
+                .andReturn(new SSOSession(1, "super-session-id"));
         EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
@@ -110,34 +112,5 @@ public class SSOLoginPageTest extends TestCase {
         tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
 
         EasyMock.verify(sessionService, subsystemService);
-    }
-
-    private ConfigurableInjector createInjector() {
-        return new ConfigurableInjector() {
-            @Override
-            protected IFieldValueFactory getFieldValueFactory() {
-                return createFieldValueFactory();
-            }
-        };
-    }
-
-    private IFieldValueFactory createFieldValueFactory() {
-        return new IFieldValueFactory() {
-            @Override
-            public Object getFieldValue(Field field, Object fieldOwner) {
-                if (SessionService.class == field.getType()) {
-                    return sessionService;
-                } else if (SubsystemService.class == field.getType()) {
-                    return subsystemService;
-                }
-                throw new IllegalStateException("Canno instantiate " + field.getType());
-            }
-
-            @Override
-            public boolean supportsField(Field field) {
-                return SessionService.class == field.getType()
-                        || SubsystemService.class == field.getType();
-            }
-        };
     }
 }

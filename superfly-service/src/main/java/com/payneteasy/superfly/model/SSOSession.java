@@ -8,12 +8,14 @@ import java.io.Serializable;
  */
 public class SSOSession implements Serializable {
     private long id;
+    private String identifier;
 
     public SSOSession() {
     }
 
-    public SSOSession(long id) {
+    public SSOSession(long id, String identifier) {
         this.id = id;
+        this.identifier = identifier;
     }
 
     @Column(name = "sso_session_id")
@@ -23,5 +25,14 @@ public class SSOSession implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Column(name = "identifier")
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 }

@@ -525,6 +525,20 @@ public interface UserDao {
 
     @AStoredProcedure(name="get_user_statuses")
     List<UserWithStatus> getUserStatuses(String userNames);
-  
+
+    /**
+     * Checks user login status. That is: tries to login to the
+     * specified subsystem and returns one of the following:
+     * Y (login successful, there are some actions)
+     * N (no user, password mismatched, user locked or no actions)
+     * T (login successful, but user's password has expired)
+     *
+     * @param username              name of the user
+     * @param password              hashed password
+     * @param subsystemIdentifier   subsystem identifier
+     * @return user login status
+     */
+    @AStoredProcedure(name="get_user_login_status")
+    String getUserLoginStatus(String username, String password, String subsystemIdentifier);
 }
 

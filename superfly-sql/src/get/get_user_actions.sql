@@ -13,31 +13,10 @@ create procedure get_user_actions(i_user_name varchar(32),
     declare v_sess_id	int(10);
 
     set session group_concat_max_len   = 64 * 1028;
-		set v_user_id   = null;
-
-    select user_id,is_password_temp
-      into v_user_id,v_temp
-      from users u
-     where     u.user_name = i_user_name
-           and u.user_password = i_user_password
-           and coalesce(u.is_account_locked, 'N') = 'N';
+    set v_user_id = int_check_user_password(i_user_name, i_user_password, i_ip_address, i_session_info);
 
     if v_user_id is null then
-      update users u
-         set u.logins_failed    = coalesce(u.logins_failed, 0) + 1
-       where u.user_name = i_user_name
-             and coalesce(u.is_account_locked, 'N') = 'N';
-
-      insert into unauthorised_access
-            (
-               printed_user_name,
-               access_date,
-               ip_address,
-               session_info
-            )
-      values (i_user_name, now(), ip_address, session_info);
-
-      commit;
+      commit; -- to save unauthorized_access INSERT
 
       select null
         from dual
@@ -46,12 +25,12 @@ create procedure get_user_actions(i_user_name varchar(32),
       leave main_sql;
     end if;
 
-    update users u
-       set u.last_login_date = now(), u.logins_failed = null
-     where u.user_name = i_user_name
-           and coalesce(u.is_account_locked, 'N') = 'N';
+    select is_password_temp
+      into v_temp
+      from users u
+     where     u.user_id = v_user_id;
 
-   
+
     if v_temp<>'Y' then 
 
     insert into sessions

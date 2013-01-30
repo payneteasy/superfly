@@ -78,6 +78,7 @@
 	<bean id="sessionService" class="com.payneteasy.superfly.service.impl.SessionServiceImpl">
 		<property name="sessionDao" ref="sessionDao" />
 		<property name="notifier" ref="notifier" />
+        <property name="loggerSink" ref="loggerSink" />
 	</bean>
 
 	<bean id="smtpServerService" class="com.payneteasy.superfly.service.impl.SmtpServerServiceImpl">

@@ -85,4 +85,12 @@ public interface SessionService {
      * @return session or null
      */
     SSOSession getValidSSOSession(String ssoSessionIdentifier);
+
+    /**
+     * Creates an SSO session for a user with given name.
+     *
+     * @param username  user name
+     * @return SSO session
+     */
+    SSOSession createSSOSession(String username);
 }

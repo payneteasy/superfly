@@ -6,6 +6,7 @@ import java.util.List;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -317,4 +318,18 @@ public interface UserService {
 	void suspendUsers(int days);
 
     void changeTempPassword(String userName,String password);
+
+    /**
+     * Checks user login status. That is: tries to login to the
+     * specified subsystem and returns one of the following:
+     * SUCCESS (login successful, there are some actions)
+     * FAILED (no user, password mismatched, user locked or no actions)
+     * TEMP_PASSWORD (login successful, but user's password has expired)
+     *
+     * @param username              name of the user
+     * @param password              hashed password
+     * @param subsystemIdentifier   subsystem identifier
+     * @return user login status
+     */
+    UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier);
 }

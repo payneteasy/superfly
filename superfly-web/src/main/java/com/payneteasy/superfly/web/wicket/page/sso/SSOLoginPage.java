@@ -1,10 +1,11 @@
-package com.payneteasy.superfly.web.wicket.page.login;
+package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
@@ -14,8 +15,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * @author rpuch
@@ -38,7 +37,7 @@ public class SSOLoginPage extends SessionAccessorPage {
 
         WebRequest request = (WebRequest) getRequestCycle().getRequest();
         String ssoSessionId = null;
-        Cookie cookie = request.getCookie("SSOSESSIONID");
+        Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
         if (cookie != null) {
             ssoSessionId = cookie.getValue();
         }
@@ -51,7 +50,7 @@ public class SSOLoginPage extends SessionAccessorPage {
                         subsystemIdentifier);
                 if (token != null) {
                     // can login: redirecting a user to a subsystem
-                    getRequestCycle().setRequestTarget(new RedirectRequestTarget(buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(), targetUrl)));
+                    getRequestCycle().setRequestTarget(new RedirectRequestTarget(SSOUtils.buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(), targetUrl)));
                 } else {
                     // can't login: just display an error
                     getRequestCycle().setResponsePage(
@@ -84,24 +83,6 @@ public class SSOLoginPage extends SessionAccessorPage {
         } else {
             // no protocol, so just returning url ensuring it is absolute
             return targetUrl.startsWith("/") ? targetUrl : "/" + targetUrl;
-        }
-    }
-
-    private String buildRedirectToSubsystemUrl(String landingUrl, String subsystemToken, String targetUrl) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(landingUrl);
-        buf.append(landingUrl.contains("?") ? "&" : "?");
-        buf.append("subsystemToken").append("=").append(encodeForUrl(subsystemToken));
-        buf.append("&");
-        buf.append("targetUrl").append("=").append(encodeForUrl(targetUrl));
-        return buf.toString();
-    }
-
-    private String encodeForUrl(String subsystemToken) {
-        try {
-            return URLEncoder.encode(subsystemToken, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
         }
     }
 

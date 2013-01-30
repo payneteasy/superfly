@@ -14,7 +14,7 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
-import com.payneteasy.superfly.web.wicket.page.login.SSOLoginPage;
+import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
 import com.payneteasy.superfly.web.wicket.page.role.*;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;

@@ -62,4 +62,13 @@ public interface SessionDao {
      */
     @AStoredProcedure(name = "get_valid_sso_session")
     SSOSession getValidSSOSession(String ssoSessionIdentifier);
+
+    /**
+     * Creates an SSO session for a user with given name.
+     *
+     * @param username  user name
+     * @return SSO session
+     */
+    @AStoredProcedure(name = "create_sso_session")
+    SSOSession createSSOSession(String username, String uniqueToken);
 }

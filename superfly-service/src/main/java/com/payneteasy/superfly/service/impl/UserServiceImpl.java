@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -355,6 +356,12 @@ public class UserServiceImpl implements UserService {
 
     public void changeTempPassword(String userName, String password) {
         userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
+
+    @Override
+    public UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier) {
+        String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        return UserLoginStatus.findByDbStatus(userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));
     }
 
 }
