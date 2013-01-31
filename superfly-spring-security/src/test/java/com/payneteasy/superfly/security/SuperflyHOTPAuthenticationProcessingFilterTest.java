@@ -28,8 +28,8 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		super.setUp();
 		procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
-		procFilter.afterPropertiesSet();
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
+        procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
 	

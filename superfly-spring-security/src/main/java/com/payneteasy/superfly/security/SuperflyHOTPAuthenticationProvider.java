@@ -20,7 +20,7 @@ import com.payneteasy.superfly.security.exception.BadOTPValueException;
 public class SuperflyHOTPAuthenticationProvider implements AuthenticationProvider {
 
 	private SSOService ssoService;
-	private Class<? extends Object> supportedAuthenticationClass = CheckHOTPToken.class;
+	private Class<?> supportedAuthenticationClass = CheckHOTPToken.class;
 
 	@Required
 	public void setSsoService(SSOService ssoService) {
@@ -48,7 +48,7 @@ public class SuperflyHOTPAuthenticationProvider implements AuthenticationProvide
 		return result;
 	}
 
-	public boolean supports(Class<? extends Object> authentication) {
+	public boolean supports(Class<?> authentication) {
 		return supportedAuthenticationClass.isAssignableFrom(authentication);
 	}
 

@@ -1,11 +1,9 @@
 package com.payneteasy.superfly.security;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,20 +11,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
+import static org.easymock.EasyMock.*;
 
 
-public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
+public class SuperflySSOAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
 
     public void setUp() {
 		super.setUp();
-        SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
+        SuperflySSOAuthenticationProcessingFilter procFilter = new SuperflySSOAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
         procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
-        procFilter.setSubsystemIdentifier("my-subsystem");
 		procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
@@ -35,13 +30,12 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		// expecting some request examination...
 		initExpectationsForAuthentication();
 		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(UsernamePasswordAuthRequestInfoAuthenticationToken.class)))
+		expect(authenticationManager.authenticate(anyObject(SSOAuthenticationRequest.class)))
 				.andAnswer(new IAnswer<Authentication>() {
 					public Authentication answer() throws Throwable {
 						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
-						UsernamePasswordAuthRequestInfoAuthenticationToken token = (UsernamePasswordAuthRequestInfoAuthenticationToken) compound.getCurrentAuthenticationRequest();
-						assertEquals("192.168.0.4", token.getAuthRequestInfo().getIpAddress());
-						assertEquals("my-subsystem", token.getAuthRequestInfo().getSubsystemIdentifier());
+						SSOAuthenticationRequest token = (SSOAuthenticationRequest) compound.getCurrentAuthenticationRequest();
+						assertEquals("abcdef", token.getSubsystemToken());
 						return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 					}
 				});
@@ -71,9 +65,9 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 	}
 	
 	private void initExpectationsForAuthentication() {
-		expect(request.getRequestURI()).andReturn("/j_superfly_password_security_check").anyTimes();
-		expect(request.getParameter("j_username")).andReturn("user").anyTimes();
-		expect(request.getParameter("j_password")).andReturn("password").anyTimes();
+		expect(request.getRequestURI()).andReturn("/j_superfly_sso_security_check").anyTimes();
+        expect(request.getParameter("subsystemToken")).andReturn("abcdef").anyTimes();
+		expect(request.getParameter("targetUrl")).andReturn("/my-target").anyTimes();
 		expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
 		expect(request.getSession()).andReturn(session).anyTimes();
 		expect(request.getRemoteAddr()).andReturn("192.168.0.4").anyTimes();

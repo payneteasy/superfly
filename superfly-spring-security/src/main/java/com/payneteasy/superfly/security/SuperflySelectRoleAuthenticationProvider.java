@@ -27,7 +27,7 @@ public class SuperflySelectRoleAuthenticationProvider extends AbstractRoleTransf
 		return result;
 	}
 
-	public boolean supports(Class<? extends Object> authentication) {
+	public boolean supports(Class<?> authentication) {
 		return SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }
