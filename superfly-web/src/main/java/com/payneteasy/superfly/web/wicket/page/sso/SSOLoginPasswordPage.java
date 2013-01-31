@@ -17,7 +17,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -89,9 +88,7 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
                 ssoSession.getId(), loginData.getSubsystemIdentifier());
         if (token != null) {
             // can login: redirecting a user to a subsystem
-            getRequestCycle().setRequestTarget(new RedirectRequestTarget(
-                    SSOUtils.buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(),
-                            loginData.getTargetUrl())));
+            SSOUtils.redirectToSubsystem(this, loginData, token);
         } else {
             // can't login: just display an error
             // actually, this should not happen as we've already

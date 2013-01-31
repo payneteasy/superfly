@@ -7,7 +7,6 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -31,7 +30,7 @@ public class SSOLoginPage extends SessionAccessorPage {
         loginData.setSubsystemIdentifier(subsystemIdentifier);
         loginData.setTargetUrl(targetUrl);
 
-        saveLoginData(loginData);
+        SSOUtils.saveLoginData(this, loginData);
 
         String ssoSessionId = null;
         Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
@@ -47,7 +46,7 @@ public class SSOLoginPage extends SessionAccessorPage {
                         subsystemIdentifier);
                 if (token != null) {
                     // can login: redirecting a user to a subsystem
-                    getRequestCycle().setRequestTarget(new RedirectRequestTarget(SSOUtils.buildRedirectToSubsystemUrl(token.getLandingUrl(), token.getSubsystemToken(), targetUrl)));
+                    SSOUtils.redirectToSubsystem(this, loginData, token);
                 } else {
                     // can't login: just display an error
                     SSOUtils.redirectToCantLoginErrorPage(this, loginData);
@@ -79,10 +78,6 @@ public class SSOLoginPage extends SessionAccessorPage {
             // no protocol, so just returning url ensuring it is absolute
             return targetUrl.startsWith("/") ? targetUrl : "/" + targetUrl;
         }
-    }
-
-    private void saveLoginData(SSOLoginData loginData) {
-        getSession().setSsoLoginData(loginData);
     }
 
     @Override

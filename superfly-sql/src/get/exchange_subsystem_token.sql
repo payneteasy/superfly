@@ -22,6 +22,8 @@ create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
       leave main_sql;
     end if;
 
+    delete from subsystem_tokens where token = i_subsystem_token;
+
     call int_get_user_actions(
         v_user_id,
         i_subsystem_name,

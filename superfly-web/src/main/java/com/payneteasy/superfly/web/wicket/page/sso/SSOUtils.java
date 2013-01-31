@@ -1,8 +1,11 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -33,8 +36,26 @@ public class SSOUtils {
     }
 
     public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData) {
+        clearLoginData((SessionAccessorPage) component.getPage());
         component.getRequestCycle().setResponsePage(
                 new LoginErrorPage(new Model<String>("Can't login to " + loginData.getSubsystemIdentifier())));
         component.getRequestCycle().setRedirect(true);
+    }
+
+    public static void saveLoginData(SessionAccessorPage page, SSOLoginData loginData) {
+        page.getSession().setSsoLoginData(loginData);
+    }
+
+    public static void clearLoginData(SessionAccessorPage page) {
+        saveLoginData(page, null);
+    }
+
+    public static void redirectToSubsystem(SessionAccessorPage page, SSOLoginData loginData, SubsystemTokenData token) {
+        SSOUtils.clearLoginData(page);
+        RedirectRequestTarget requestTarget = new RedirectRequestTarget(
+                buildRedirectToSubsystemUrl(token.getLandingUrl(),
+                        token.getSubsystemToken(), loginData.getTargetUrl())
+        );
+        page.getRequestCycle().setRequestTarget(requestTarget);
     }
 }
