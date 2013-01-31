@@ -92,7 +92,7 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
 	}
 
 	@Override
-	protected boolean doSupports(Class<? extends Object> authentication) {
+	protected boolean doSupports(Class<?> authentication) {
 		if (CompoundAuthentication.class.isAssignableFrom(authentication)) {
 			return true;
 		}

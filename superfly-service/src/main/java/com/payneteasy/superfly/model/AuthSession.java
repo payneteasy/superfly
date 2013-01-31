@@ -53,4 +53,21 @@ public class AuthSession {
     public void setRoles(List<AuthRole> roles) {
         this.roles = roles;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AuthSession session = (AuthSession) o;
+
+        if (sessionId != null ? !sessionId.equals(session.sessionId) : session.sessionId != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return sessionId != null ? sessionId.hashCode() : 0;
+    }
 }
