@@ -5,9 +5,10 @@ create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
   begin
     declare v_user_id           int(10);
     declare v_subsystem_name    varchar(32);
+    declare v_sso_sess_id       int(10);
 
-    select u.user_id, s.subsystem_name
-      into v_user_id, v_subsystem_name
+    select u.user_id, s.subsystem_name, st.ssos_ssos_id
+      into v_user_id, v_subsystem_name, v_sso_sess_id
       from subsystem_tokens st
         join sso_sessions ss on st.ssos_ssos_id = ss.ssos_id
         join users u on ss.user_user_id = u.user_id
@@ -24,6 +25,10 @@ create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
       leave main_sql;
     end if;
 
+    -- touching SSO session
+    update sso_sessions set access_time = now() where ssos_id = v_sso_sess_id;
+
+    -- destroying token
     delete from subsystem_tokens where token = i_subsystem_token;
 
     call int_get_user_actions(
