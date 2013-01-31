@@ -2,8 +2,8 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
-import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 
@@ -37,8 +37,12 @@ public class SSOUtils {
 
     public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData) {
         clearLoginData((SessionAccessorPage) component.getPage());
+        redirectToLoginErrorPage(component, new Model<String>("Can't login to " + loginData.getSubsystemIdentifier()));
+    }
+
+    public static void redirectToLoginErrorPage(Component component, IModel<String> errorModel) {
         component.getRequestCycle().setResponsePage(
-                new LoginErrorPage(new Model<String>("Can't login to " + loginData.getSubsystemIdentifier())));
+                new SSOLoginErrorPage(errorModel));
         component.getRequestCycle().setRedirect(true);
     }
 

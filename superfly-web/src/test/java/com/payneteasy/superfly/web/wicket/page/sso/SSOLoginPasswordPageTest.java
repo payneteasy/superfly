@@ -7,7 +7,6 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
-import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
 
@@ -42,7 +41,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
     public void testNoLoginData() {
         tester.startPage(SSOLoginPasswordPage.class);
-        tester.assertRenderedPage(LoginErrorPage.class);
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "No login data found");
     }
 

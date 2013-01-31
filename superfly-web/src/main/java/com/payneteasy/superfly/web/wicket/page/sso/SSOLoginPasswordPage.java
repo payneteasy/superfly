@@ -7,7 +7,6 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
-import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -41,7 +40,7 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
         final SSOLoginData loginData = getSsoLoginData();
         if (loginData == null) {
             RequestCycle.get().setRedirect(true);
-            RequestCycle.get().setResponsePage(new LoginErrorPage(new Model<String>("No login data found")));
+            RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<String>("No login data found")));
         }
 
         final LoginBean loginBean = new LoginBean();

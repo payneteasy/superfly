@@ -5,6 +5,7 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -24,40 +25,53 @@ public class SSOLoginPage extends SessionAccessorPage {
     public SSOLoginPage() {
         WebRequest request = (WebRequest) getRequest();
         String subsystemIdentifier = request.getParameter("subsystemIdentifier");
-        String targetUrl = sanitizeTargetUrl(request.getParameter("targetUrl"));
-
-        SSOLoginData loginData = new SSOLoginData();
-        loginData.setSubsystemIdentifier(subsystemIdentifier);
-        loginData.setTargetUrl(targetUrl);
-
-        SSOUtils.saveLoginData(this, loginData);
-
-        String ssoSessionId = null;
-        Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
-        if (cookie != null) {
-            ssoSessionId = cookie.getValue();
+        String targetUrl = request.getParameter("targetUrl");
+        boolean ok = true;
+        if (!StringUtils.hasText(subsystemIdentifier)) {
+            SSOUtils.redirectToLoginErrorPage(this, new Model<String>("No subsystemIdentifier parameter specified"));
+            ok = false;
         }
-        boolean needToLogin = true;
-        if (StringUtils.hasText(ssoSessionId)) {
-            SSOSession ssoSession = sessionService.getValidSSOSession(ssoSessionId);
-            if (ssoSession != null) {
-                // session is valid
-                SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(ssoSession.getId(),
-                        subsystemIdentifier);
-                if (token != null) {
-                    // can login: redirecting a user to a subsystem
-                    SSOUtils.redirectToSubsystem(this, loginData, token);
-                } else {
-                    // can't login: just display an error
-                    SSOUtils.redirectToCantLoginErrorPage(this, loginData);
-                }
-                needToLogin = false;
+        if (!StringUtils.hasText(targetUrl)) {
+            SSOUtils.redirectToLoginErrorPage(this, new Model<String>("No targetUrl parameter specified"));
+            ok = false;
+        }
+
+        if (ok) {
+            targetUrl = sanitizeTargetUrl(targetUrl);
+
+            SSOLoginData loginData = new SSOLoginData();
+            loginData.setSubsystemIdentifier(subsystemIdentifier);
+            loginData.setTargetUrl(targetUrl);
+
+            SSOUtils.saveLoginData(this, loginData);
+
+            String ssoSessionId = null;
+            Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
+            if (cookie != null) {
+                ssoSessionId = cookie.getValue();
             }
-        }
+            boolean needToLogin = true;
+            if (StringUtils.hasText(ssoSessionId)) {
+                SSOSession ssoSession = sessionService.getValidSSOSession(ssoSessionId);
+                if (ssoSession != null) {
+                    // session is valid
+                    SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(ssoSession.getId(),
+                            subsystemIdentifier);
+                    if (token != null) {
+                        // can login: redirecting a user to a subsystem
+                        SSOUtils.redirectToSubsystem(this, loginData, token);
+                    } else {
+                        // can't login: just display an error
+                        SSOUtils.redirectToCantLoginErrorPage(this, loginData);
+                    }
+                    needToLogin = false;
+                }
+            }
 
-        if (needToLogin) {
-            getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
-            getRequestCycle().setRedirect(true);
+            if (needToLogin) {
+                getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
+                getRequestCycle().setRedirect(true);
+            }
         }
     }
 

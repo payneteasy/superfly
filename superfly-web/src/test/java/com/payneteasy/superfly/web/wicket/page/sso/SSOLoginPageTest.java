@@ -5,7 +5,6 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
-import com.payneteasy.superfly.web.wicket.page.login.LoginErrorPage;
 import org.apache.wicket.PageParameters;
 import org.easymock.EasyMock;
 
@@ -72,7 +71,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
-        tester.assertRenderedPage(LoginErrorPage.class);
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "Can&#039;t login to test-subsystem");
 
         EasyMock.verify(sessionService, subsystemService);
@@ -112,5 +111,19 @@ public class SSOLoginPageTest extends AbstractPageTest {
         tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
 
         EasyMock.verify(sessionService, subsystemService);
+    }
+
+    public void testNoParams() {
+        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+            put("subsystemIdentifier", "test");
+        }}));
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
+        tester.assertLabel("message", "No targetUrl parameter specified");
+
+        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+            put("targetUrl", "/target");
+        }}));
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
+        tester.assertLabel("message", "No subsystemIdentifier parameter specified");
     }
 }
