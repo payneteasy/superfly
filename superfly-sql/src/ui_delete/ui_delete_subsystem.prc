@@ -71,6 +71,8 @@ create procedure ui_delete_subsystem(i_ssys_id int(10))
 
     -- !!!TODO!!! remove complects
 
+    delete from subsystem_token where ssys_ssys_id = i_ssys_id;
+
     delete from subsystems
      where ssys_id = i_ssys_id;
 
