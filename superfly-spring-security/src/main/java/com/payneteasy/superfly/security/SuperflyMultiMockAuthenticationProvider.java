@@ -81,15 +81,15 @@ public class SuperflyMultiMockAuthenticationProvider extends
 					throw new BadCredentialsException("Bad username/password");
 				}
 			} else if (auth instanceof CheckHOTPToken) {
-                if (compound == null) {
-                    throw new IllegalStateException("CompoundAuthentication cannot be null here");
-                }
 				CheckHOTPToken token = (CheckHOTPToken) auth;
 				if (hotp.equals(token.getCredentials())) {
 					if (token.getSsoUser().getActionsMap().size() == 1) {
 						return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
 								token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
 					}
+                    if (compound == null) {
+                        throw new IllegalStateException("CompoundAuthentication cannot be null here");
+                    }
 					CompoundAuthentication newCompound = new CompoundAuthentication(compound.getReadyAuthentications(), auth);
 					newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
 					return newCompound;
