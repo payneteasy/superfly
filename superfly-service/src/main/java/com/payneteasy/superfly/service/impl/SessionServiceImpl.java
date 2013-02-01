@@ -127,4 +127,9 @@ public class SessionServiceImpl implements SessionService {
         sessionDao.deleteExpiredTokens(maxSubsystemTokenAgeSeconds);
     }
 
+    @Override
+    public void deleteSSOSession(String ssoSessionIdentifier) {
+        sessionDao.deleteSSOSession(ssoSessionIdentifier);
+    }
+
 }

@@ -108,4 +108,11 @@ public interface SessionService {
      * @param maxSubsystemTokenAgeSeconds max subsystem token age in seconds
      */
     void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds);
+
+    /**
+     * Deletes SSO session by its identifier.
+     *
+     * @param ssoSessionIdentifier  identifier of SSO session
+     */
+    void deleteSSOSession(String ssoSessionIdentifier);
 }

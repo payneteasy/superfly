@@ -3,10 +3,13 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 
+import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -54,12 +57,29 @@ public class SSOUtils {
         saveLoginData(page, null);
     }
 
+    public static SSOLoginData getSsoLoginData(SessionAccessorPage page) {
+        return page.getSession().getSsoLoginData();
+    }
+
     public static void redirectToSubsystem(SessionAccessorPage page, SSOLoginData loginData, SubsystemTokenData token) {
         SSOUtils.clearLoginData(page);
-        RedirectRequestTarget requestTarget = new RedirectRequestTarget(
-                buildRedirectToSubsystemUrl(token.getLandingUrl(),
-                        token.getSubsystemToken(), loginData.getTargetUrl())
-        );
+        String url = buildRedirectToSubsystemUrl(token.getLandingUrl(),
+                token.getSubsystemToken(), loginData.getTargetUrl());
+        redirect(page, url);
+    }
+
+    public static void redirect(Page page, String url) {
+        RedirectRequestTarget requestTarget = new RedirectRequestTarget(url);
         page.getRequestCycle().setRequestTarget(requestTarget);
     }
+
+    public static String getSsoSessionIdFromCookie(WebRequest request) {
+        String ssoSessionId = null;
+        Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
+        if (cookie != null) {
+            ssoSessionId = cookie.getValue();
+        }
+        return ssoSessionId;
+    }
+
 }

@@ -98,4 +98,12 @@ public interface SessionDao {
      */
     @AStoredProcedure(name = "delete_expired_tokens")
     void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds);
+
+    /**
+     * Deletes SSO session by its identifier.
+     *
+     * @param ssoSessionIdentifier  identifier of SSO session
+     */
+    @AStoredProcedure(name = "delete_sso_session")
+    void deleteSSOSession(String ssoSessionIdentifier);
 }

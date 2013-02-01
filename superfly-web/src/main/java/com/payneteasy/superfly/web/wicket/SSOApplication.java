@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
+import com.payneteasy.superfly.web.wicket.page.sso.SSOLogoutPage;
 import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
@@ -14,6 +15,8 @@ public class SSOApplication extends BaseApplication {
 	protected void customInit() {
         // SSO (i.e., real single sign-on) login
         mountBookmarkablePage("/login", SSOLoginPage.class);
+        // single sign-out
+        mountBookmarkablePage("/logout", SSOLogoutPage.class);
 	}
 
 	@Override

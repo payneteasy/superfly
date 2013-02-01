@@ -6,7 +6,6 @@ import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -25,7 +24,7 @@ import java.io.Serializable;
 /**
  * @author rpuch
  */
-public class SSOLoginPasswordPage extends SessionAccessorPage {
+public class SSOLoginPasswordPage extends AbstractSSOPage {
     @SpringBean
     private UserService userService;
     @SpringBean
@@ -37,7 +36,7 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
     private Label errorMessageLabel;
 
     public SSOLoginPasswordPage() {
-        final SSOLoginData loginData = getSsoLoginData();
+        final SSOLoginData loginData = SSOUtils.getSsoLoginData(this);
         if (loginData == null) {
             RequestCycle.get().setRedirect(true);
             RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<String>("No login data found")));
@@ -94,10 +93,6 @@ public class SSOLoginPasswordPage extends SessionAccessorPage {
             // checked user access, but just in case...
             SSOUtils.redirectToCantLoginErrorPage(this, loginData);
         }
-    }
-
-    public SSOLoginData getSsoLoginData() {
-        return getSession().getSsoLoginData();
     }
 
     private static class LoginBean implements Serializable {

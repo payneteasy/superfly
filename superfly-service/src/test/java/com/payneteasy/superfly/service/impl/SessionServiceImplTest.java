@@ -71,4 +71,14 @@ public class SessionServiceImplTest extends TestCase {
 
         EasyMock.verify(sessionDao);
     }
+
+    public void testDeleteSSOSession() {
+        sessionDao.deleteSSOSession("session-id");
+        EasyMock.expectLastCall();
+        EasyMock.replay(sessionDao);
+
+        sessionService.deleteSSOSession("session-id");
+
+        EasyMock.verify(sessionDao);
+    }
 }

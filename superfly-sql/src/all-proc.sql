@@ -289,6 +289,7 @@ create table mysql_routines_return_arguments (
 \. save/touch_sessions.prc
 \. delete/delete_expired_sso_sessions.prc
 \. delete/delete_expired_tokens.prc
+\. delete/delete_sso_session.prc
 
 
 commit;

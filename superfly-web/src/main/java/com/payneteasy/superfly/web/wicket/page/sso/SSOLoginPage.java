@@ -4,19 +4,15 @@ import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
-
-import javax.servlet.http.Cookie;
 
 /**
  * @author rpuch
  */
-public class SSOLoginPage extends SessionAccessorPage {
+public class SSOLoginPage extends AbstractSSOPage {
     @SpringBean
     private SubsystemService subsystemService;
     @SpringBean
@@ -45,11 +41,7 @@ public class SSOLoginPage extends SessionAccessorPage {
 
             SSOUtils.saveLoginData(this, loginData);
 
-            String ssoSessionId = null;
-            Cookie cookie = request.getCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME);
-            if (cookie != null) {
-                ssoSessionId = cookie.getValue();
-            }
+            String ssoSessionId = SSOUtils.getSsoSessionIdFromCookie(request);
             boolean needToLogin = true;
             if (StringUtils.hasText(ssoSessionId)) {
                 SSOSession ssoSession = sessionService.getValidSSOSession(ssoSessionId);
@@ -93,16 +85,5 @@ public class SSOLoginPage extends SessionAccessorPage {
             return targetUrl.startsWith("/") ? targetUrl : "/" + targetUrl;
         }
     }
-
-    @Override
-   	protected void configureResponse() {
-   		super.configureResponse();
-   		WebResponse response = getWebRequestCycle().getWebResponse();
-   		response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
-
-   		//for IE
-   		response.setHeader("Expires", "-1");
-   		response.setHeader("Pragma", "no-cache");
-   	}
 
 }
