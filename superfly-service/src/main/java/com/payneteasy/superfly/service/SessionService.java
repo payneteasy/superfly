@@ -101,4 +101,11 @@ public interface SessionService {
      * @param maxAgeSeconds max SSO session age in seconds
      */
     void deleteExpiredSSOSessions(int maxAgeSeconds);
+
+    /**
+     * Deletes tokens which have expired.
+     *
+     * @param maxSubsystemTokenAgeSeconds max subsystem token age in seconds
+     */
+    void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds);
 }

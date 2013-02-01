@@ -113,13 +113,18 @@ public class SessionServiceImpl implements SessionService {
         return session;
     }
 
+    private String generateUniqueSSOSessionToken() {
+        return "SSO-" + new RandomGUID().toString().replaceAll("-", "");
+    }
+
     @Override
     public void deleteExpiredSSOSessions(int maxAgeSeconds) {
         sessionDao.deleteExpiredSSOSessions(maxAgeSeconds);
     }
 
-    private String generateUniqueSSOSessionToken() {
-        return "SSO-" + new RandomGUID().toString().replaceAll("-", "");
+    @Override
+    public void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds) {
+        sessionDao.deleteExpiredTokens(maxSubsystemTokenAgeSeconds);
     }
 
 }

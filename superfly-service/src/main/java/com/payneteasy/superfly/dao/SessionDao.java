@@ -90,4 +90,12 @@ public interface SessionDao {
      */
     @AStoredProcedure(name = "delete_expired_sso_sessions")
     void deleteExpiredSSOSessions(int maxAgeSeconds);
+
+    /**
+     * Deletes tokens which have expired.
+     *
+     * @param maxSubsystemTokenAgeSeconds max subsystem token age in seconds
+     */
+    @AStoredProcedure(name = "delete_expired_tokens")
+    void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds);
 }

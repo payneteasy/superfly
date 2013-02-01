@@ -42,6 +42,16 @@
    			</list>
    		</property>
    	</bean>
+
+    <bean id="expireTokensJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+   		<property name="targetObject" ref="sessionService"/>
+   		<property name="targetMethod" value="deleteExpiredTokens"/>
+   		<property name="arguments">
+   			<list>
+   				<value type="int">5</value>
+   			</list>
+   		</property>
+   	</bean>
     
 	
 	<bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
@@ -64,6 +74,11 @@
    		<property name="repeatInterval" value="60000"/> <!-- every minute -->
    	</bean>
 
+    <bean id="expireTokensTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+   		<property name="jobDetail" ref="expireTokensJobDetail"/>
+   		<property name="repeatInterval" value="60000"/> <!-- every minute -->
+   	</bean>
+
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
@@ -71,6 +86,7 @@
                 <ref bean="expirePasswordsTrigger"/>
                 <ref bean="suspendUsersTrigger"/>
                 <ref bean="expireSSOSessionsTrigger"/>
+                <ref bean="expireTokensTrigger"/>
 			</list>
 		</property>
 	</bean>
