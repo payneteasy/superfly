@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author rpuch
+ * @author Roman Puchkovskiy
  */
 public class AbstractSessionTouchingFilterTest extends TestCase {
     private HttpServletRequest request;

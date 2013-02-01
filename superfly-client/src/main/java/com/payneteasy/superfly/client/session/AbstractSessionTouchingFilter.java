@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * @author rpuch
+ * Base for a filter that can be used for touching session.
+ *
+ * @author Roman Puchkovskiy
  */
 public abstract class AbstractSessionTouchingFilter implements Filter {
     private static final Logger logger = LoggerFactory.getLogger(AbstractSessionTouchingFilter.class);
