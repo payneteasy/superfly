@@ -113,6 +113,11 @@ public class SessionServiceImpl implements SessionService {
         return session;
     }
 
+    @Override
+    public void deleteExpiredSSOSessions(int maxAgeSeconds) {
+        sessionDao.deleteExpiredSSOSessions(maxAgeSeconds);
+    }
+
     private String generateUniqueSSOSessionToken() {
         return "SSO-" + new RandomGUID().toString().replaceAll("-", "");
     }

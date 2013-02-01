@@ -332,6 +332,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public void touchSessions(List<Long> sessionIds) {
         if (sessionIds != null && !sessionIds.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Touching sessions " + sessionIds);
+            }
             sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
         }
     }

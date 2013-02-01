@@ -81,6 +81,11 @@
 		<param-name>disable-hotp</param-name>
 		<param-value>false</param-value>
 	</context-param>
+
+    <context-param>
+   		<param-name>superfly-max-sso-session-age-minutes</param-name>
+   		<param-value>30</param-value>
+   	</context-param>
 	
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>

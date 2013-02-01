@@ -287,6 +287,7 @@ create table mysql_routines_return_arguments (
 \. create/create_subsystem_token_if_can_login.prc
 \. create/create_sso_session.prc
 \. save/touch_sessions.prc
+\. delete/delete_expired_sso_sessions.prc
 
 
 commit;

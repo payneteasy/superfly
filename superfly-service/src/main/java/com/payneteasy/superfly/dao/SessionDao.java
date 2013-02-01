@@ -81,4 +81,13 @@ public interface SessionDao {
      */
     @AStoredProcedure(name = "touch_sessions")
     void touchSessions(String sessionIds);
+
+    /**
+     * Deletes SSO sessions which have been inactive for the
+     * given amount of time.
+     *
+     * @param maxAgeSeconds max SSO session age in seconds
+     */
+    @AStoredProcedure(name = "delete_expired_sso_sessions")
+    void deleteExpiredSSOSessions(int maxAgeSeconds);
 }

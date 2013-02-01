@@ -93,4 +93,12 @@ public interface SessionService {
      * @return SSO session
      */
     SSOSession createSSOSession(String username);
+
+    /**
+     * Deletes SSO sessions which have been inactive for the
+     * given amount of time.
+     *
+     * @param maxAgeSeconds max SSO session age in seconds
+     */
+    void deleteExpiredSSOSessions(int maxAgeSeconds);
 }
