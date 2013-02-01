@@ -281,11 +281,12 @@ create table mysql_routines_return_arguments (
 \. ui_delete/ui_delete_smtp_server.prc
 
 \. int/int_has_actions.prc
-\. create/create_subsystem_token_if_can_login.prc
 \. get/get_valid_sso_session.sql
 \. get/get_user_login_status.sql
-\. create/create_sso_session.prc
 \. get/exchange_subsystem_token.sql
+\. create/create_subsystem_token_if_can_login.prc
+\. create/create_sso_session.prc
+\. save/touch_sessions.prc
 
 
 commit;

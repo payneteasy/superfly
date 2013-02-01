@@ -171,4 +171,13 @@ public interface SSOService {
      * @since 1.4
      */
     SSOUser exchangeSubsystemToken(String subsystemToken);
+
+    /**
+     * Touches sessions: that is, updates their access time to avoid
+     * removal. If a session was issued by an SSO session, the latter
+     * is touched too.
+     *
+     * @param sessionIds    IDs of sessions to touch
+     */
+    void touchSessions(List<Long> sessionIds);
 }

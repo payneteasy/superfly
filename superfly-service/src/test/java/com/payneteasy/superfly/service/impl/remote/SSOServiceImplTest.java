@@ -9,6 +9,7 @@ import org.easymock.EasyMock;
 
 import com.payneteasy.superfly.service.InternalSSOService;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class SSOServiceImplTest extends TestCase {
@@ -47,6 +48,14 @@ public class SSOServiceImplTest extends TestCase {
 
         ssoService.exchangeSubsystemToken("token");
 
+        EasyMock.verify(internalSSOService);
+    }
+
+    public void testTouchSessions() {
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        EasyMock.expectLastCall();
+        EasyMock.replay(internalSSOService);
+        ssoService.touchSessions(Arrays.asList(1L, 2L, 3L));
         EasyMock.verify(internalSSOService);
     }
 }

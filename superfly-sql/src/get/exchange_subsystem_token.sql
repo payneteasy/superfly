@@ -36,7 +36,8 @@ create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
         v_subsystem_name,
         null,
         null,
-        'Y'
+        'Y',
+        v_sso_sess_id
     );
   
   end

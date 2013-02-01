@@ -27,7 +27,8 @@ create procedure get_user_actions(i_user_name varchar(32),
         i_subsystem_name,
         i_ip_address,
         i_session_info,
-        'N'
+        'N',
+        null
     );
   
   end

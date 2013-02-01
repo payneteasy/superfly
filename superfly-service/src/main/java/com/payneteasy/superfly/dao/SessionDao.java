@@ -71,4 +71,14 @@ public interface SessionDao {
      */
     @AStoredProcedure(name = "create_sso_session")
     SSOSession createSSOSession(String username, String uniqueToken);
+
+    /**
+     * Touches sessions: that is, updates their access time to avoid
+     * removal. If a session was issued by an SSO session, the latter
+     * is touched too.
+     *
+     * @param sessionIds    IDs of sessions to touch (comma-separated list)
+     */
+    @AStoredProcedure(name = "touch_sessions")
+    void touchSessions(String sessionIds);
 }

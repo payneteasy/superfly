@@ -197,4 +197,9 @@ public class SSOServiceImpl implements SSOService {
         return internalSSOService.exchangeSubsystemToken(subsystemToken);
     }
 
+    @Override
+    public void touchSessions(List<Long> sessionIds) {
+        internalSSOService.touchSessions(sessionIds);
+    }
+
 }

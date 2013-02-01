@@ -13,6 +13,7 @@
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
+        <property name="sessionDao" ref="sessionDao" />
 		<property name="actionDao" ref="actionDao" />
 		<property name="notificationService" ref="notificationService" />
 		<property name="loggerSink" ref="loggerSink" />

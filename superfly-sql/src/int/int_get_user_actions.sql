@@ -4,7 +4,8 @@ create procedure int_get_user_actions(i_user_id int(10),
                                       i_subsystem_name varchar(32),
                                       i_ip_address varchar(15),
                                       i_session_info text,
-                                      i_ignore_temp varchar(1)
+                                      i_ignore_temp varchar(1),
+                                      i_sso_session_id int(10)
 )
  main_sql:
   begin
@@ -33,7 +34,7 @@ create procedure int_get_user_actions(i_user_id int(10),
 
         insert into sessions
               (
-                 start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list
+                 start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list, ssos_ssos_id
               )
           select now(),
                  i_user_id,
@@ -87,7 +88,8 @@ create procedure int_get_user_actions(i_user_id int(10),
                          on a.ssys_ssys_id = ss.ssys_id
                             and ga.actn_actn_id = a.actn_id
                    where ur.user_user_id = i_user_id
-                         and ss.subsystem_name = i_subsystem_name)
+                         and ss.subsystem_name = i_subsystem_name),
+                 i_sso_session_id
             from subsystems
            where subsystem_name = i_subsystem_name;
 
@@ -159,12 +161,14 @@ create procedure int_get_user_actions(i_user_id int(10),
 
         insert into sessions
               (
-                 start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list
+                 start_date, user_user_id, ssys_ssys_id, callback_information, role_action_list, action_list, ssos_ssos_id
               )
           select now(),
                  i_user_id,
                  ssys_id,
-                 callback_information, null,null
+                 callback_information,
+                 null,null,
+                 i_sso_session_id
             from subsystems
            where subsystem_name = i_subsystem_name;
 

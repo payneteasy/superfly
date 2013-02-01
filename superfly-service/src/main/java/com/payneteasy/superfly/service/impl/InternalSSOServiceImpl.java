@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.model.*;
+import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -49,6 +51,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	private UserDao userDao;
 	private ActionDao actionDao;
+    private SessionDao sessionDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
@@ -73,7 +76,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.userDao = userDao;
 	}
 
-	@Required
+    @Required
+    public void setSessionDao(SessionDao sessionDao) {
+        this.sessionDao = sessionDao;
+    }
+
+    @Required
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
@@ -319,5 +327,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             ssoUser = null;
         }
         return ssoUser;
+    }
+
+    @Override
+    public void touchSessions(List<Long> sessionIds) {
+        if (sessionIds != null && !sessionIds.isEmpty()) {
+            sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
+        }
     }
 }
