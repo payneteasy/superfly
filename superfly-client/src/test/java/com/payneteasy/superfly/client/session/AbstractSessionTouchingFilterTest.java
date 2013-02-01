@@ -36,17 +36,27 @@ public class AbstractSessionTouchingFilterTest extends TestCase {
         final TestSessionToucher toucher = new TestSessionToucher();
         AbstractSessionTouchingFilter filter;
 
+        chain.doFilter(request, response);
+        EasyMock.expectLastCall();
+        EasyMock.replay(chain);
         filter = createFilterWithSuperflySessionId(toucher, null);
         filter.init(filterConfig);
         filter.doFilter(request, response, chain);
         filter.destroy();
+        EasyMock.verify(chain);
 
         Assert.assertEquals(Collections.emptyList(), toucher.getTouchedIds());
 
+        EasyMock.reset(chain);
+        chain.doFilter(request, response);
+        EasyMock.expectLastCall();
+        EasyMock.replay(chain);
         filter = createFilterWithSuperflySessionId(toucher, 3L);
         filter.init(filterConfig);
         filter.doFilter(request, response, chain);
         filter.destroy();
+        EasyMock.verify(chain);
+
         Assert.assertEquals(Arrays.asList(3L), toucher.getTouchedIds());
     }
 

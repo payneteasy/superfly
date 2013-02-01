@@ -40,7 +40,7 @@ create procedure create_subsystem_token_if_can_login(
     end if;
 
     -- touching SSO session
-    update sso_sessions set access_time = now() where ssos_id = i_sso_sess_id;
+    update sso_sessions set access_date = now() where ssos_id = i_sso_sess_id;
 
     -- removing tokens (for that subsystem) that already exist
     delete from subsystem_tokens

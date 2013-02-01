@@ -26,7 +26,7 @@ create procedure exchange_subsystem_token(i_subsystem_token varchar(64))
     end if;
 
     -- touching SSO session
-    update sso_sessions set access_time = now() where ssos_id = v_sso_sess_id;
+    update sso_sessions set access_date = now() where ssos_id = v_sso_sess_id;
 
     -- destroying token
     delete from subsystem_tokens where token = i_subsystem_token;
