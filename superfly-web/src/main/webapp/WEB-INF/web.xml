@@ -42,7 +42,7 @@
 	
 	<context-param>
 		<param-name>superfly-policy</param-name>
-		<param-value>none</param-value>
+		<param-value>none</param-value> <!-- none or pcidss -->
 	</context-param>
 	<!-- This is for constant salt generator -->
 	<context-param>

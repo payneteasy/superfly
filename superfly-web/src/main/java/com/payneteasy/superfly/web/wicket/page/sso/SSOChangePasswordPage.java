@@ -29,7 +29,7 @@ public class SSOChangePasswordPage extends BaseSSOPage {
 
             @Override
             protected void onPasswordChanged() {
-                SSOUtils.processSuccessfulPasswordCheck(username,
+                SSOUtils.onSuccessfulLogin(username,
                         SSOChangePasswordPage.this,
                         SSOChangePasswordPage.this.getSession().getSsoLoginData(),
                         sessionService, subsystemService);

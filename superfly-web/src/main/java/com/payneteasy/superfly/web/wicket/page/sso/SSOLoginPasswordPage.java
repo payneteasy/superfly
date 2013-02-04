@@ -2,8 +2,10 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spring.Policy;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -27,6 +29,8 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     private SessionService sessionService;
     @SpringBean
     private SubsystemService subsystemService;
+    @SpringBean
+    private SettingsService settingsService;
 
     private IModel<String> errorMessageModel = new Model<String>();
     private Label errorMessageLabel;
@@ -74,8 +78,14 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
-        SSOUtils.processSuccessfulPasswordCheck(loginBean.getUsername(),
-                this, loginData, sessionService, subsystemService);
+        if (settingsService.getPolicy() != Policy.PCIDSS || settingsService.isHotpDisabled()) {
+            SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                    this, loginData, sessionService, subsystemService);
+        } else {
+            loginData.setUsername(loginBean.getUsername());
+            getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+            getRequestCycle().setRedirect(true);
+        }
     }
 
     private static class LoginBean implements Serializable {

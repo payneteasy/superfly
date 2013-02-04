@@ -10,6 +10,7 @@ public class SSOLoginData implements Serializable {
     private String targetUrl;
     private String subsystemTitle;
     private String subsystemUrl;
+    private String username;
 
     public SSOLoginData() {
     }
@@ -49,5 +50,13 @@ public class SSOLoginData implements Serializable {
 
     public void setSubsystemTitle(String subsystemTitle) {
         this.subsystemTitle = subsystemTitle;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

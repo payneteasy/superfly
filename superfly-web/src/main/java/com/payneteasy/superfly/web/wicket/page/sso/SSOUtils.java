@@ -87,7 +87,7 @@ public class SSOUtils {
         return ssoSessionId;
     }
 
-    public static void processSuccessfulPasswordCheck(String username,
+    public static void onSuccessfulLogin(String username,
             SessionAccessorPage page,
             SSOLoginData loginData, SessionService sessionService,
             SubsystemService subsystemService) {

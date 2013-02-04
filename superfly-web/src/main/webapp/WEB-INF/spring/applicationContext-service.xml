@@ -10,6 +10,11 @@
 		<property name="userInfoService" ref="userInfoService" />
 	</bean>
 
+    <bean id="settingsService" class="com.payneteasy.superfly.service.impl.SettingsServiceImpl">
+        <property name="hotpDisabled" value="#{contextParameters['disable-hotp']}"/>
+        <property name="policyName" value="#{contextParameters['superfly-policy']}"/>
+    </bean>
+
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
