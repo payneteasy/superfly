@@ -6,7 +6,7 @@ import org.apache.wicket.protocol.http.WebResponse;
 /**
  * @author rpuch
  */
-public abstract class AbstractSSOPage extends SessionAccessorPage {
+public abstract class BaseSSOPage extends SessionAccessorPage {
     @Override
    	protected void configureResponse() {
    		super.configureResponse();

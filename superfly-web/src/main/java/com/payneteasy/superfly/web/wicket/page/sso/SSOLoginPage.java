@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 /**
  * @author rpuch
  */
-public class SSOLoginPage extends AbstractSSOPage {
+public class SSOLoginPage extends BaseSSOPage {
     @SpringBean
     private SubsystemService subsystemService;
     @SpringBean

@@ -1,7 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
-import com.payneteasy.superfly.model.SSOSession;
-import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -14,17 +12,15 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.Cookie;
 import java.io.Serializable;
 
 /**
  * @author rpuch
  */
-public class SSOLoginPasswordPage extends AbstractSSOPage {
+public class SSOLoginPasswordPage extends BaseSSOPage {
     @SpringBean
     private UserService userService;
     @SpringBean
@@ -71,28 +67,15 @@ public class SSOLoginPasswordPage extends AbstractSSOPage {
                 errorMessageLabel.setVisible(true);
                 break;
             case TEMP_PASSWORD:
-                // TODO: change password
+                getRequestCycle().setResponsePage(new SSOChangePasswordPage(loginBean.getUsername()));
+                getRequestCycle().setRedirect(true);
                 break;
         }
     }
 
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
-        SSOSession ssoSession = sessionService.createSSOSession(loginBean.getUsername());
-        Cookie cookie = new Cookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, ssoSession.getIdentifier());
-        cookie.setMaxAge(SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE);
-        ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
-
-        SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(
-                ssoSession.getId(), loginData.getSubsystemIdentifier());
-        if (token != null) {
-            // can login: redirecting a user to a subsystem
-            SSOUtils.redirectToSubsystem(this, loginData, token);
-        } else {
-            // can't login: just display an error
-            // actually, this should not happen as we've already
-            // checked user access, but just in case...
-            SSOUtils.redirectToCantLoginErrorPage(this, loginData);
-        }
+        SSOUtils.processSuccessfulPasswordCheck(loginBean.getUsername(),
+                this, loginData, sessionService, subsystemService);
     }
 
     private static class LoginBean implements Serializable {

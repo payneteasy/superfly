@@ -9,8 +9,9 @@ create procedure int_get_user_actions(i_user_id int(10),
 )
  main_sql:
   begin
-    declare v_temp   varchar(1);
+    declare v_temp      varchar(1);
     declare v_sess_id	int(10);
+    declare v_user_name varchar(32);
 
     set session group_concat_max_len   = 64 * 1028;
 
@@ -24,8 +25,8 @@ create procedure int_get_user_actions(i_user_id int(10),
       leave main_sql;
     end if;
 
-    select is_password_temp
-      into v_temp
+    select user_name, is_password_temp
+      into v_user_name, v_temp
       from users u
      where     u.user_id = i_user_id;
 
@@ -175,13 +176,13 @@ create procedure int_get_user_actions(i_user_id int(10),
         set v_sess_id = last_insert_id();
 
 
-        select i_user_name username,
+        select v_user_name username,
                v_sess_id session_id,
                r.role_name role_role_name,
                r.principal_name role_principal_name,
                ss.callback_information role_callback_information,
                'action_temp_password' as  role_action_action_name,
-               'Y' as action_log_action
+               'Y' as role_action_log_action
           from           user_roles ur
                        join
                          roles r

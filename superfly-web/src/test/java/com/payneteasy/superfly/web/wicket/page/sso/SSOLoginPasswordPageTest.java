@@ -84,4 +84,21 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
         EasyMock.verify(userService);
     }
+
+    public void testTempPassword() {
+        EasyMock.expect(userService.getUserLoginStatus("known-user", "expired-password", "test-subsystem"))
+                .andReturn(UserLoginStatus.TEMP_PASSWORD);
+        EasyMock.replay(userService);
+
+        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.startPage(SSOLoginPasswordPage.class);
+        tester.assertRenderedPage(SSOLoginPasswordPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("username", "known-user");
+        form.setValue("password", "expired-password");
+        form.submit();
+        tester.assertRenderedPage(SSOChangePasswordPage.class);
+
+        EasyMock.verify(userService);
+    }
 }

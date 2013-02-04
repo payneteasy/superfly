@@ -1,12 +1,17 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
 
 import javax.servlet.http.Cookie;
@@ -80,6 +85,28 @@ public class SSOUtils {
             ssoSessionId = cookie.getValue();
         }
         return ssoSessionId;
+    }
+
+    public static void processSuccessfulPasswordCheck(String username,
+            SessionAccessorPage page,
+            SSOLoginData loginData, SessionService sessionService,
+            SubsystemService subsystemService) {
+        SSOSession ssoSession = sessionService.createSSOSession(username);
+        Cookie cookie = new Cookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, ssoSession.getIdentifier());
+        cookie.setMaxAge(SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE);
+        ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
+
+        SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(
+                ssoSession.getId(), loginData.getSubsystemIdentifier());
+        if (token != null) {
+            // can login: redirecting a user to a subsystem
+            SSOUtils.redirectToSubsystem(page, loginData, token);
+        } else {
+            // can't login: just display an error
+            // actually, this should not happen as we've already
+            // checked user access, but just in case...
+            SSOUtils.redirectToCantLoginErrorPage(page, loginData);
+        }
     }
 
 }
