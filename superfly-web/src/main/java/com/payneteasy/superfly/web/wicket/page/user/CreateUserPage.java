@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -141,14 +142,23 @@ public class CreateUserPage extends BasePage {
 			public void onSubmit() {
 				UIRoleForList role = models.getDropDownChoice().getModelObject();
 				user.setRoleId(role.getId());
+                RoutineResult result = null;
 				try {
-					userService.createUser(user, subsystem == null ? null : subsystem.getName());
+					result = userService.createUser(user, subsystem == null ? null : subsystem.getName());
 				} catch (MessageSendException e) {
 					error("Could not send a message: " + e.getMessage());
 				}
-				getRequestCycle().setResponsePage(ListUsersPage.class);
-				getRequestCycle().setRedirect(true);
-				info("User created: " + user.getUsername());
+                if (result != null) {
+                    if (result.isOk()) {
+                        getRequestCycle().setResponsePage(ListUsersPage.class);
+                        getRequestCycle().setRedirect(true);
+                        info("User created: " + user.getUsername());
+                    } else if (result.isDuplicate()) {
+                        error("User with this username already exists, please peak another one");
+                    } else {
+                        error("Can't create user");
+                    }
+                }
 			}
 
 		});
