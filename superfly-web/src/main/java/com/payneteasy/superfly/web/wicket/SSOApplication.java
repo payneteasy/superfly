@@ -21,8 +21,7 @@ public class SSOApplication extends BaseApplication {
 
 	@Override
 	public Class<? extends Page> getHomePage() {
-		// TODO: show some error text or redirect somewhere... possibly, to /
-        return null;
+		return SSOLoginPage.class;
 	}
 
 	@Override

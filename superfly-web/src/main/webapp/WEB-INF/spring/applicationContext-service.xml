@@ -61,6 +61,7 @@
         <property name="createUserStrategy" ref="createUserStrategy"/>
 		<property name="accountPolicy" ref="accountPolicy" />
 		<property name="hotpService" ref="hotpService" />
+        <property name="lockoutStrategy" ref="lockoutStrategy" />
 	</bean>
 
 	<bean id="roleService" class="com.payneteasy.superfly.service.impl.RoleServiceImpl">

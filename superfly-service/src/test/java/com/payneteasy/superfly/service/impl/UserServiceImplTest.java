@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -130,11 +132,15 @@ public class UserServiceImplTest extends TestCase {
 
     public void testGetUserLoginStatusFailed() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        TestLockoutStrategy testLockoutStrategy = new TestLockoutStrategy();
+        userService.setLockoutStrategy(testLockoutStrategy);
         EasyMock.expect(userDao.getUserLoginStatus("stranger", "password{c3pio}", "subsystem"))
                 .andReturn("N");
         EasyMock.replay(userDao);
 
         Assert.assertEquals(UserLoginStatus.FAILED, userService.getUserLoginStatus("stranger", "password", "subsystem"));
+        Assert.assertEquals("stranger", testLockoutStrategy.username);
+        Assert.assertEquals(LockoutType.PASSWORD, testLockoutStrategy.lockoutType);
 
         EasyMock.verify(userDao);
     }
@@ -148,5 +154,16 @@ public class UserServiceImplTest extends TestCase {
         Assert.assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.getUserLoginStatus("old-pete", "password", "subsystem"));
 
         EasyMock.verify(userDao);
+    }
+
+    private static class TestLockoutStrategy implements LockoutStrategy {
+        public String username;
+        public LockoutType lockoutType;
+
+        @Override
+        public void checkLoginsFailed(String userName, LockoutType lockoutType) {
+            this.username = userName;
+            this.lockoutType = lockoutType;
+        }
     }
 }
