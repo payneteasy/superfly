@@ -2,14 +2,20 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
+import junit.framework.Assert;
 import org.apache.wicket.PageParameters;
 import org.easymock.EasyMock;
 
 import javax.servlet.http.Cookie;
 import java.util.HashMap;
+
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 /**
  * @author rpuch
@@ -35,18 +41,37 @@ public class SSOLoginPageTest extends AbstractPageTest {
     }
 
     public void testNoSSOCookie() {
+        UISubsystem subsystem = createTestSubsystem();
+        expect(subsystemService.getSubsystemByName("test-subsystem"))
+                .andReturn(subsystem);
+        replay(subsystemService);
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
-            put("subsystemIdentifier", "test");
+            put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
+        Assert.assertEquals("the subsystem", tester.getWicketSession().getSsoLoginData().getSubsystemTitle());
+        Assert.assertEquals("subsystem-url", tester.getWicketSession().getSsoLoginData().getSubsystemUrl());
+
+        verify(subsystemService);
+    }
+
+    private UISubsystem createTestSubsystem() {
+        UISubsystem subsystem = new UISubsystem();
+        subsystem.setId(1L);
+        subsystem.setName("test-subsystem");
+        subsystem.setTitle("the subsystem");
+        subsystem.setSubsystemUrl("subsystem-url");
+        return subsystem;
     }
 
     public void testWithSSOCookieAndNoValidSession() {
-        EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
+        expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(null);
+        expect(subsystemService.getSubsystemByName("test-subsystem"))
+                        .andReturn(createTestSubsystem());
 
-        EasyMock.replay(sessionService);
+        replay(sessionService, subsystemService);
 
         tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
@@ -55,16 +80,16 @@ public class SSOLoginPageTest extends AbstractPageTest {
         }}));
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
 
-        EasyMock.verify(sessionService);
+        verify(sessionService, subsystemService);
     }
 
     public void testWithSSOCookieAndValidSessionAndCanNotLogin() {
-        EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
+        expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1, "super-session-id"));
-        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(null);
 
-        EasyMock.replay(sessionService, subsystemService);
+        replay(sessionService, subsystemService);
 
         tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
@@ -74,16 +99,16 @@ public class SSOLoginPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "Can&#039;t login to test-subsystem");
 
-        EasyMock.verify(sessionService, subsystemService);
+        verify(sessionService, subsystemService);
     }
 
     public void testWithSSOCookieAndValidSessionAndCanLogin() {
-        EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
+        expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1, "super-session-id"));
-        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
-        EasyMock.replay(sessionService, subsystemService);
+        replay(sessionService, subsystemService);
 
         tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
@@ -92,16 +117,16 @@ public class SSOLoginPageTest extends AbstractPageTest {
         }}));
         tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
 
-        EasyMock.verify(sessionService, subsystemService);
+        verify(sessionService, subsystemService);
     }
 
     public void testWithSSOCookieAndValidSessionAndCanLoginShortenedUrl() {
-        EasyMock.expect(sessionService.getValidSSOSession("super-session-id"))
+        expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1, "super-session-id"));
-        EasyMock.expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
 
-        EasyMock.replay(sessionService, subsystemService);
+        replay(sessionService, subsystemService);
 
         tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
@@ -110,7 +135,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         }}));
         tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
 
-        EasyMock.verify(sessionService, subsystemService);
+        verify(sessionService, subsystemService);
     }
 
     public void testNoParams() {

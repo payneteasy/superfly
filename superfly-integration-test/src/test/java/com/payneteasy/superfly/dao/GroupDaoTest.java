@@ -32,7 +32,7 @@ public class GroupDaoTest extends AbstractDaoTest {
         if (!created) {
 	        UISubsystem subsystem = new UISubsystem();
 	        subsystem.setName("system-for-groups-1");
-	        subsystem.setCallbackInformation("http://localhost");
+	        subsystem.setCallbackUrl("http://localhost");
 	        subsystemDao.createSubsystem(subsystem);
 	        subsystemId = subsystem.getId();
 	

@@ -41,11 +41,16 @@ public class AddSubsystemPage extends BasePage {
 
 		};
 		add(form);
-		form.add(new LabelTextFieldRow<UISubsystem>(subsystem,"name","subsystem.add.name",true));
+		form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.add.name", true));
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "title", "subsystem.add.title", true));
 		
-		LabelTextFieldRow<String> callbackInformation = new LabelTextFieldRow<String>(subsystem, "callbackInformation", "subsystem.add.callback",true);
-		callbackInformation.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
-		form.add(callbackInformation);
+		LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<String>(subsystem, "callbackUrl", "subsystem.add.callback",true);
+		callbackUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+		form.add(callbackUrlRow);
+
+        LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<String>(subsystem, "subsystemUrl", "subsystem.add.subsystemUrl",true);
+        subsystemUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        form.add(subsystemUrlRow);
 
         LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.add.landingUrl",true);
         landingUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));

@@ -32,7 +32,7 @@ public class RoleDaoTest extends AbstractDaoTest {
     	if (!created) {
     		UISubsystem subsystem = new UISubsystem();
     		subsystem.setName("subsystem-for-role-1");
-    		subsystem.setCallbackInformation("no-callback");
+    		subsystem.setCallbackUrl("no-callback");
     		subsystemDao.createSubsystem(subsystem);
     		
 	    	UIRole role = new UIRole();

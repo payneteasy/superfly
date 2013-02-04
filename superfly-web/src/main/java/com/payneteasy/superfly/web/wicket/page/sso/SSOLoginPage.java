@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import org.apache.wicket.model.Model;
@@ -35,10 +36,7 @@ public class SSOLoginPage extends BaseSSOPage {
         if (ok) {
             targetUrl = sanitizeTargetUrl(targetUrl);
 
-            SSOLoginData loginData = new SSOLoginData();
-            loginData.setSubsystemIdentifier(subsystemIdentifier);
-            loginData.setTargetUrl(targetUrl);
-
+            SSOLoginData loginData = new SSOLoginData(subsystemIdentifier, targetUrl);
             SSOUtils.saveLoginData(this, loginData);
 
             String ssoSessionId = SSOUtils.getSsoSessionIdFromCookie(request);
@@ -61,6 +59,9 @@ public class SSOLoginPage extends BaseSSOPage {
             }
 
             if (needToLogin) {
+                UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemIdentifier);
+                loginData.setSubsystemTitle(subsystem.getTitle());
+                loginData.setSubsystemUrl(subsystem.getSubsystemUrl());
                 getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
                 getRequestCycle().setRedirect(true);
             }

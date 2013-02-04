@@ -8,6 +8,8 @@ import java.io.Serializable;
 public class SSOLoginData implements Serializable {
     private String subsystemIdentifier;
     private String targetUrl;
+    private String subsystemTitle;
+    private String subsystemUrl;
 
     public SSOLoginData() {
     }
@@ -31,5 +33,21 @@ public class SSOLoginData implements Serializable {
 
     public void setTargetUrl(String targetUrl) {
         this.targetUrl = targetUrl;
+    }
+
+    public String getSubsystemUrl() {
+        return subsystemUrl;
+    }
+
+    public void setSubsystemUrl(String subsystemUrl) {
+        this.subsystemUrl = subsystemUrl;
+    }
+
+    public String getSubsystemTitle() {
+        return subsystemTitle;
+    }
+
+    public void setSubsystemTitle(String subsystemTitle) {
+        this.subsystemTitle = subsystemTitle;
     }
 }

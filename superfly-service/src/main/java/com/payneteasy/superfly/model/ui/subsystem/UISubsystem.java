@@ -10,9 +10,11 @@ import java.io.Serializable;
 public class UISubsystem implements Serializable {
 	private Long id;
 	private String name;
-	private String callbackInformation;
+    private String title;
+	private String callbackUrl;
 	private boolean allowListUsers;
     private UISmtpServerForFilter smtpServer;
+    private String subsystemUrl;
     private String landingUrl;
 
 	@Column(name = "ssys_id")
@@ -33,13 +35,22 @@ public class UISubsystem implements Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "callback_information")
-	public String getCallbackInformation() {
-		return callbackInformation;
+    @Column(name = "subsystem_title")
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Column(name = "callback_information")
+	public String getCallbackUrl() {
+		return callbackUrl;
 	}
 
-	public void setCallbackInformation(String callbackInformation) {
-		this.callbackInformation = callbackInformation;
+	public void setCallbackUrl(String callbackUrl) {
+		this.callbackUrl = callbackUrl;
 	}
 
 	@Column(name = "allow_list_users")
@@ -59,6 +70,15 @@ public class UISubsystem implements Serializable {
 
     public void setSmtpServer(UISmtpServerForFilter smtpServer) {
         this.smtpServer = smtpServer;
+    }
+
+    @Column(name = "subsystem_url")
+    public String getSubsystemUrl() {
+        return subsystemUrl;
+    }
+
+    public void setSubsystemUrl(String subsystemUrl) {
+        this.subsystemUrl = subsystemUrl;
     }
 
     @Column(name = "landing_url")
