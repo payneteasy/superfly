@@ -9,4 +9,6 @@ public interface SettingsService {
     boolean isHotpDisabled();
 
     Policy getPolicy();
+
+    String getSuperflyVersion();
 }
