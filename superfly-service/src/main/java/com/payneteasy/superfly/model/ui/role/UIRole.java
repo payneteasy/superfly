@@ -3,6 +3,7 @@ package com.payneteasy.superfly.model.ui.role;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 
 public class UIRole implements Serializable {
 	private long roleId;
@@ -11,6 +12,7 @@ public class UIRole implements Serializable {
 	private long subsystemId;
 	
 	@Column(name = "role_id")
+    @Id
 	public long getRoleId() {
 		return roleId;
 	}

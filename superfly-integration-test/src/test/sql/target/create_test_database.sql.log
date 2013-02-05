@@ -2,7 +2,7 @@
 drop database if exists ssotest
 --------------
 
-Query OK, 33 rows affected
+Query OK, 35 rows affected
 
 --------------
 create database ssotest default character set utf8 collate utf8_general_ci

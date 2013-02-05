@@ -68,8 +68,10 @@ public class SubsystemDaoTest extends AbstractDaoTest {
         // no smtp server
 		UISubsystem subsystem = new UISubsystem();
 		subsystem.setName("subsystem-name");
+        subsystem.setTitle("The Subsystem");
 		subsystem.setCallbackUrl("http://no-such-host.dlm");
         subsystem.setLandingUrl("/landing-url");
+        subsystem.setSubsystemUrl("/");
 		subsystemDao.createSubsystem(subsystem);
 		assertNotNull("ID must be generated", subsystem.getId());
 
@@ -80,8 +82,10 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 
 		subsystem = new UISubsystem();
 		subsystem.setName("subsystem-name-2");
+        subsystem.setTitle("The Subsystem");
 		subsystem.setCallbackUrl("http://no-such-host.dlm");
         subsystem.setSmtpServer(serverForFilter);
+        subsystem.setSubsystemUrl("/");
         subsystem.setLandingUrl("/landing-url");
 		subsystemDao.createSubsystem(subsystem);
 		assertNotNull("ID must be generated", subsystem.getId());
