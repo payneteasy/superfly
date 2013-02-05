@@ -71,9 +71,6 @@ public class UserDaoTest extends AbstractDaoTest {
             userDao.addSubsystemWithRole(2L, role.getRoleId());
 
    	    	created = true;
-
-            System.out.println("!!! Just initialized UserDaoTest");
-            System.out.println("Subsystem is " + subsystem);
        	}
     }
 
@@ -83,8 +80,6 @@ public class UserDaoTest extends AbstractDaoTest {
 	}
 
 	public void testAuthenticate() {
-        System.out.println("!!! Going to testAuthenticate");
-        System.out.println("Subsystem is " + subsystem);
 		AuthSession session = userDao.authenticate("user-1", "abc",
 				subsystem.getName(), null, null);
 		assertNotNull("Must authenticate successfully", session);
@@ -293,4 +288,14 @@ public class UserDaoTest extends AbstractDaoTest {
 				"this substring is expected to not exist",
 				"this substring is expected to not exist");
 	}
+
+    public void testGetUserLoginStatus() {
+   		String status;
+        status = userDao.getUserLoginStatus("user-1", "abc",
+                subsystem.getName());
+        assertEquals("Y", status);
+        status = userDao.getUserLoginStatus("user-1", "abcd",
+                subsystem.getName());
+        assertEquals("N", status);
+   	}
 }
