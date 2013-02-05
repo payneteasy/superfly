@@ -58,6 +58,12 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         form.add(errorMessageLabel);
     }
 
+    @Override
+    protected IModel<String> createCustomCssUrlModel() {
+        return new SubsystemLoginCssUrlModel(
+                subsystemService, getSession().getSsoLoginData());
+    }
+
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
         UserLoginStatus loginStatus = userService.getUserLoginStatus(
                 loginBean.getUsername(), loginBean.getPassword(),
@@ -108,4 +114,5 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
             this.password = password;
         }
     }
+
 }

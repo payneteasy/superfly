@@ -3,7 +3,9 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RequestCycle;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -49,6 +51,12 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
         errorMessageLabel = new Label("message", errorMessageModel);
         errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));
         form.add(errorMessageLabel);
+    }
+
+    @Override
+    protected IModel<String> createCustomCssUrlModel() {
+        return new SubsystemLoginCssUrlModel(
+                subsystemService, getSession().getSsoLoginData());
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {

@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -24,6 +25,9 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         internalSSOService = EasyMock.createStrictMock(InternalSSOService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
+
+        expect(subsystemService.getSubsystemByName("test-subsystem"))
+                .andReturn(createSubsystem()).anyTimes();
     }
 
     @Override
@@ -66,6 +70,14 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(internalSSOService, sessionService, subsystemService);
+    }
+
+    private UISubsystem createSubsystem() {
+        UISubsystem subsystem = new UISubsystem();
+        subsystem.setId(1L);
+        subsystem.setName("test-subsystem");
+        subsystem.setTitle("The Subsystem (tm)");
+        return subsystem;
     }
 
     private SSOLoginData createLoginData() {

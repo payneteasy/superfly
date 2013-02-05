@@ -45,16 +45,21 @@ public class AddSubsystemPage extends BasePage {
         form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "title", "subsystem.add.title", true));
 		
 		LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<String>(subsystem, "callbackUrl", "subsystem.add.callback",true);
-		callbackUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
+        callbackUrlRow.getTextField().add(urlValidator);
 		form.add(callbackUrlRow);
 
         LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<String>(subsystem, "subsystemUrl", "subsystem.add.subsystemUrl",true);
-        subsystemUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        subsystemUrlRow.getTextField().add(urlValidator);
         form.add(subsystemUrlRow);
 
         LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.add.landingUrl",true);
-        landingUrlRow.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
+        landingUrlRow.getTextField().add(urlValidator);
         form.add(landingUrlRow);
+
+        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<String>(subsystem, "loginFormCssUrl", "subsystem.add.loginFormCssUrl");
+        loginFormCssUrlRow.getTextField().add(urlValidator);
+        form.add(loginFormCssUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
 

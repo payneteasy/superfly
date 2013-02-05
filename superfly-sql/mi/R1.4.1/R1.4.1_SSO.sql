@@ -32,6 +32,7 @@ create table subsystem_tokens(
 call run_install_command('alter table subsystems add column landing_url varchar(255) not null', '42S21');
 call run_install_command('alter table subsystems add column subsystem_url varchar(255) not null', '42S21');
 call run_install_command('alter table subsystems add column subsystem_title varchar(255) not null', '42S21');
+call run_install_command('alter table subsystems add column login_form_css_url varchar(255)', '42S21');
 call run_install_command('alter table sessions add column ssos_ssos_id int(10), add index idx_sessions_ssos_ssos_id (ssos_ssos_id)', '42S21');
 
 commit;

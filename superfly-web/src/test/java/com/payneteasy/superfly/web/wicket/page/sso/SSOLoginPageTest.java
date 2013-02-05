@@ -43,7 +43,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
     public void testNoSSOCookie() {
         UISubsystem subsystem = createTestSubsystem();
         expect(subsystemService.getSubsystemByName("test-subsystem"))
-                .andReturn(subsystem);
+                .andReturn(subsystem).anyTimes();
         replay(subsystemService);
         tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
@@ -69,7 +69,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(null);
         expect(subsystemService.getSubsystemByName("test-subsystem"))
-                        .andReturn(createTestSubsystem());
+                        .andReturn(createTestSubsystem()).anyTimes();
 
         replay(sessionService, subsystemService);
 

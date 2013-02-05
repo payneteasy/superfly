@@ -7,6 +7,7 @@ create procedure ui_create_subsystem(i_subsystem_name varchar(32),
                                      i_ssrv_id int(10),
                                      i_subsystem_url varchar(255),
                                      i_landing_url varchar(255),
+                                     i_login_form_css_url varchar(255),
                                      out o_ssys_id int(10)
 )
  main_sql:
@@ -20,16 +21,20 @@ create procedure ui_create_subsystem(i_subsystem_name varchar(32),
              allow_list_users,
              ssrv_ssrv_id,
              subsystem_url,
-             landing_url
+             landing_url,
+             login_form_css_url
           )
-    values (i_subsystem_name,
+    values (
+            i_subsystem_name,
             i_subsystem_title,
             i_callback_information,
             'N',
             i_allow_list_users,
             i_ssrv_id,
             i_subsystem_url,
-            i_landing_url);
+            i_landing_url,
+            i_login_form_css_url
+           );
 
     set o_ssys_id   = last_insert_id();
 

@@ -1,0 +1,109 @@
+html {
+    background: #fff;
+    color: #274152;
+    font: 12px Arial, Helvetica, sans-serif;
+}
+
+div, input, form, label {
+    margin: 0;
+    padding: 0;
+}
+
+.superfly-login-page {
+    border: 1px solid #dedede;
+    background: #fff;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    width: 400px;
+    margin: 10em auto;
+    padding: 30px 42px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#E5ECF9));
+    background: -moz-linear-gradient(top,#fefefe,#dedede);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#fefefe,endColorstr=#E5ECF9,GradientType=0); zoom: 1;
+
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+
+}
+
+.superfly-button:hover {
+    border:1px solid #333;
+}
+
+.superfly-button:active {
+    background-color: fefefe;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f4f4f4), to(#dedede));
+    background: -moz-linear-gradient(top,#f4f4f4,#dedede);
+    background gradient(top,#f4f4f4,#dedede);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#e9e9e9,endColorstr=#dedede,GradientType=0); zoom: 1;
+    padding: 1px 15px 1px 17px;
+}
+
+.superfly-button {
+    margin: 0;
+    padding: 1px 16px ;
+    border:1px solid #9db2b2;
+    line-height:29px;
+    background-color: #fefefe;
+    /*background:#ffd48e url(../images/bg-save-btn.gif) repeat-x 0 100%;*/
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    font-size:14px;
+    color:#333;
+    font-weight: bold;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fefefe), to(#e9e9e9));
+    background: -moz-linear-gradient(top,#fefefe,#e9e9e9);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled='true',startColorstr=#fefefe,endColorstr=#e9e9e9,GradientType=0); zoom: 1;
+    cursor: pointer;
+}
+
+.superfly-form {
+    width: 400px;
+
+}
+.superfly-form-row{
+   display: inline;
+}
+h2 {
+    color: #8d919e;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.superfly-form-label {
+    font-size: 12px;
+    margin-right: 10px;
+    width: 56px;
+    display: inline-block;
+}
+
+.superfly-form-input-text, .superfly-select {
+    margin: 6px 0 25px;
+    color: #555;
+    font-size: 18px;
+    height: 25px;
+    padding-left: 5px;
+    width: 300px;
+
+}
+
+.superfly-button-row {
+    text-align: right;
+    margin: 0;
+}
+
+.superfly-reason {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.superfly-subsystem-title {
+    font-weight: bold;
+}
+
+.superfly-subsystem-url {
+    font-style: italic;
+}

@@ -16,6 +16,7 @@ public class UISubsystem implements Serializable {
     private UISmtpServerForFilter smtpServer;
     private String subsystemUrl;
     private String landingUrl;
+    private String loginFormCssUrl;
 
 	@Column(name = "ssys_id")
 	public Long getId() {
@@ -88,5 +89,14 @@ public class UISubsystem implements Serializable {
 
     public void setLandingUrl(String landingUrl) {
         this.landingUrl = landingUrl;
+    }
+
+    @Column(name = "login_form_css_url")
+    public String getLoginFormCssUrl() {
+        return loginFormCssUrl;
+    }
+
+    public void setLoginFormCssUrl(String loginFormCssUrl) {
+        this.loginFormCssUrl = loginFormCssUrl;
     }
 }

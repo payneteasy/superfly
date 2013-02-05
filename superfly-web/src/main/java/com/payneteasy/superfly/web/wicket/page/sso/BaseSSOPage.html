@@ -1,14 +1,28 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html xmlns:wicket>
 <head>
     <title></title>
+    <link wicket:id="login-css-url" rel="stylesheet" type="text/css" href="#" />
+    <script type="text/javascript">
+        var superflyStartupFunctions = new Array();
+        function superflyAddStartupFunction(f) {
+            superflyStartupFunctions[superflyStartupFunctions.length] = f;
+        }
+
+        function superflyStartup() {
+            for (var i = 0; i < superflyStartupFunctions.length; i++) {
+                superflyStartupFunctions[i]();
+            }
+        }
+    </script>
 </head>
-<body>
-<div wicket:id="subsystem-info">
-    Logging in to <b wicket:id="subsystem-title">[subsystem title]</b> located at
-    <em wicket:id="subsystem-url">http://localhost/subsystem</em>
+<body onload="superflyStartup()">
+<div class="superfly-login-page">
+    <div wicket:id="subsystem-info" class="superfly-subsystem-info">
+        Logging in to <span class="superfly-subsystem-title" wicket:id="subsystem-title">[subsystem title]</span> located at
+        <span class="superfly-subsystem-url" wicket:id="subsystem-url">http://localhost/subsystem</span>
+    </div>
+    <wicket:child/>
 </div>
-<wicket:child/>
 </body>
 </html>

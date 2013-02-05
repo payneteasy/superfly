@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -30,6 +31,9 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
         settingsService = EasyMock.createStrictMock(SettingsService.class);
+
+        expect(subsystemService.getSubsystemByName("test-subsystem"))
+                        .andReturn(createSubsystem()).anyTimes();
     }
 
     @Override
@@ -47,6 +51,14 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
             return settingsService;
         }
         return super.getBean(type);
+    }
+
+    private UISubsystem createSubsystem() {
+        UISubsystem subsystem = new UISubsystem();
+        subsystem.setId(1L);
+        subsystem.setName("test-subsystem");
+        subsystem.setTitle("The Subsystem (tm)");
+        return subsystem;
     }
 
     public void testNoLoginData() {
@@ -84,7 +96,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
                 .andReturn(UserLoginStatus.SUCCESS);
         expect(settingsService.getPolicy()).andReturn(Policy.PCIDSS);
         expect(settingsService.isHotpDisabled()).andReturn(false);
-        replay(userService, settingsService);
+        replay(userService, settingsService, subsystemService);
 
         tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -96,7 +108,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         Assert.assertEquals("known-user", tester.getWicketSession().getSsoLoginData().getUsername());
 
-        verify(userService, settingsService);
+        verify(userService, settingsService, subsystemService);
     }
 
     public void testFailure() {

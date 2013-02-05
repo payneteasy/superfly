@@ -61,6 +61,10 @@ public class EditSubsystemPage extends BasePage {
         LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.edit.landingUrl",true);
         landingUrlRow.getTextField().add(urlValidator);
         form.add(landingUrlRow);
+
+        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<String>(subsystem, "loginFormCssUrl", "subsystem.edit.loginFormCssUrl");
+        loginFormCssUrlRow.getTextField().add(urlValidator);
+        form.add(loginFormCssUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.edit.allow-list-users"));
 
