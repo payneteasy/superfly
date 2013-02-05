@@ -1,26 +1,29 @@
 package com.payneteasy.superfly.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-
-import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
-import junit.framework.TestCase;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
+import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
+import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+
+import static org.easymock.EasyMock.anyObject;
 
 public class UserServiceImplTest extends TestCase {
 	
@@ -115,4 +118,52 @@ public class UserServiceImplTest extends TestCase {
 		
 		EasyMock.verify(userDao);
 	}
+
+    public void testGetUserLoginStatusSuccess() {
+        userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        EasyMock.expect(userDao.getUserLoginStatus("pete", "password{c3pio}", "subsystem"))
+                .andReturn("Y");
+        EasyMock.replay(userDao);
+
+        Assert.assertEquals(UserLoginStatus.SUCCESS, userService.getUserLoginStatus("pete", "password", "subsystem"));
+
+        EasyMock.verify(userDao);
+    }
+
+    public void testGetUserLoginStatusFailed() {
+        userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        TestLockoutStrategy testLockoutStrategy = new TestLockoutStrategy();
+        userService.setLockoutStrategy(testLockoutStrategy);
+        EasyMock.expect(userDao.getUserLoginStatus("stranger", "password{c3pio}", "subsystem"))
+                .andReturn("N");
+        EasyMock.replay(userDao);
+
+        Assert.assertEquals(UserLoginStatus.FAILED, userService.getUserLoginStatus("stranger", "password", "subsystem"));
+        Assert.assertEquals("stranger", testLockoutStrategy.username);
+        Assert.assertEquals(LockoutType.PASSWORD, testLockoutStrategy.lockoutType);
+
+        EasyMock.verify(userDao);
+    }
+
+    public void testGetUserLoginStatusTemp() {
+        userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        EasyMock.expect(userDao.getUserLoginStatus("old-pete", "password{c3pio}", "subsystem"))
+                .andReturn("T");
+        EasyMock.replay(userDao);
+
+        Assert.assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.getUserLoginStatus("old-pete", "password", "subsystem"));
+
+        EasyMock.verify(userDao);
+    }
+
+    private static class TestLockoutStrategy implements LockoutStrategy {
+        public String username;
+        public LockoutType lockoutType;
+
+        @Override
+        public void checkLoginsFailed(String userName, LockoutType lockoutType) {
+            this.username = userName;
+            this.lockoutType = lockoutType;
+        }
+    }
 }

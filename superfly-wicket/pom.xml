@@ -3,11 +3,10 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-		<version>1.3-10-SNAPSHOT</version>
+        <version>1.4-1-SNAPSHOT</version>
 	</parent>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-wicket</artifactId>
-	<version>1.3-10-SNAPSHOT</version>
 	<name>Superfly wicket extensions</name>
 	<description>Classes that allow to integrate Superfly and Wicket</description>
 	

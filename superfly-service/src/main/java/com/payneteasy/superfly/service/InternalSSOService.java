@@ -119,4 +119,24 @@ public interface InternalSSOService {
      * @return user statuses
      */
     List<UserWithStatus> getUserStatuses(String userNames);
+
+    /**
+     * Exchanges subsystem token to SSOUser. After this operation
+     * returns, subsystem token is not valid anymore and cannot
+     * be used for exchanging.
+     *
+     * @param subsystemToken    subsystem token
+     * @return SSOUser or null if token does not exist, expired or
+     * already used
+     */
+    SSOUser exchangeSubsystemToken(String subsystemToken);
+
+    /**
+     * Touches sessions: that is, updates their access time to avoid
+     * removal. If a session was issued by an SSO session, the latter
+     * is touched too.
+     *
+     * @param sessionIds    IDs of sessions to touch
+     */
+    void touchSessions(List<Long> sessionIds);
 }

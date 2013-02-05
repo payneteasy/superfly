@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.ui.session.UISession;
+import junit.framework.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SessionDaoTest extends AbstractDaoTest {
@@ -34,4 +36,12 @@ public class SessionDaoTest extends AbstractDaoTest {
 		List<UISession> sessions = sessionDao.deleteExpiredSessions(new Date());
 		assertNotNull("Must get some result", sessions);
 	}
+
+    public void testDeleteExpiredSSOSession() {
+        sessionDao.deleteExpiredSSOSessions(1);
+    }
+
+    public void testDeleteExpiredTokens() {
+        sessionDao.deleteExpiredTokens(1);
+    }
 }

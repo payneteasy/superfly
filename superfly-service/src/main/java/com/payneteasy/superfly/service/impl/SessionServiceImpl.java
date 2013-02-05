@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,6 +30,7 @@ public class SessionServiceImpl implements SessionService {
 	
 	private SessionDao sessionDao;
 	private Notifier notifier;
+    private LoggerSink loggerSink;
 
 	@Required
 	public void setSessionDao(SessionDao sessionDao) {
@@ -38,7 +42,12 @@ public class SessionServiceImpl implements SessionService {
 		this.notifier = notifier;
 	}
 
-	public List<UISession> getExpiredSessions() {
+    @Required
+    public void setLoggerSink(LoggerSink loggerSink) {
+        this.loggerSink = loggerSink;
+    }
+
+    public List<UISession> getExpiredSessions() {
 		return sessionDao.getExpiredSessions();
 	}
 
@@ -90,5 +99,37 @@ public class SessionServiceImpl implements SessionService {
 		calendar.add(Calendar.SECOND, -seconds);
 		return deleteExpiredSessionsAndNotify(calendar.getTime());
 	}
+
+    @Override
+    public SSOSession getValidSSOSession(String ssoSessionIdentifier) {
+        return sessionDao.getValidSSOSession(ssoSessionIdentifier);
+    }
+
+    @Override
+    public SSOSession createSSOSession(String username) {
+        SSOSession session = sessionDao.createSSOSession(username,
+                generateUniqueSSOSessionToken());
+        loggerSink.info(logger, "SSO_SESSION_CREATED", true, username);
+        return session;
+    }
+
+    private String generateUniqueSSOSessionToken() {
+        return "SSO-" + new RandomGUID().toString().replaceAll("-", "");
+    }
+
+    @Override
+    public void deleteExpiredSSOSessions(int maxAgeSeconds) {
+        sessionDao.deleteExpiredSSOSessions(maxAgeSeconds);
+    }
+
+    @Override
+    public void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds) {
+        sessionDao.deleteExpiredTokens(maxSubsystemTokenAgeSeconds);
+    }
+
+    @Override
+    public void deleteSSOSession(String ssoSessionIdentifier) {
+        sessionDao.deleteSSOSession(ssoSessionIdentifier);
+    }
 
 }

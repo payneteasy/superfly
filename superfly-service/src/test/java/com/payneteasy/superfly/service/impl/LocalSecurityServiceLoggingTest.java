@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.model.AuthSession;
 import org.easymock.EasyMock;
 import org.slf4j.Logger;
 
@@ -38,11 +39,11 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 	}
 	
 	public void testAuthenticateUser() throws Exception {
-		AuthRole role = new AuthRole();
+		final AuthRole role = new AuthRole();
 		role.setRoleName("local");
 		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
 				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
-						.andReturn(Collections.singletonList(role));
+						.andReturn(new AuthSession("username", 1L){{setRoles(Collections.singletonList(role));}});
 		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(true), eq("username"));
 		EasyMock.replay(loggerSink, userDao);
 		
@@ -51,10 +52,10 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		EasyMock.verify(loggerSink);
 	}
 	
-	public void testAuthenticateUserFail() throws Exception {
+	public void testAuthenticateUserFailNotNull() throws Exception {
 		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
 				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
-						.andReturn(null);
+						.andReturn(new AuthSession("username"));
 		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
 		EasyMock.replay(loggerSink, userDao);
 		
@@ -62,5 +63,17 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		
 		EasyMock.verify(loggerSink);
 	}
+
+    public void testAuthenticateUserFailWithNull() throws Exception {
+   		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+   				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+   						.andReturn(null);
+   		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
+   		EasyMock.replay(loggerSink, userDao);
+
+   		localSecurityService.authenticate("username", "password");
+
+   		EasyMock.verify(loggerSink);
+   	}
 	
 }

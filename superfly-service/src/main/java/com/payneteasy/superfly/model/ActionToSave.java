@@ -10,7 +10,14 @@ public class ActionToSave implements Serializable {
 	private String name;
 	private String description;
 
-	@Column(name = "action_name")
+    public ActionToSave() {
+    }
+
+    public ActionToSave(String name) {
+        this.name = name;
+    }
+
+    @Column(name = "action_name")
 	public String getName() {
 		return name;
 	}

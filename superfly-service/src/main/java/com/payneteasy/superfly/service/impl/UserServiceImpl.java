@@ -1,10 +1,27 @@
 package com.payneteasy.superfly.service.impl;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
+import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.LockoutType;
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
+import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
+import com.payneteasy.superfly.model.ui.user.*;
+import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltSource;
+import com.payneteasy.superfly.policy.IPolicyValidation;
+import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
+import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
+import com.payneteasy.superfly.spisupport.SaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -12,28 +29,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.dao.DaoConstants;
-import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
-import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import com.payneteasy.superfly.model.ui.user.UIUserForList;
-import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
-import com.payneteasy.superfly.password.PasswordEncoder;
-import com.payneteasy.superfly.password.SaltSource;
-import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.policy.account.AccountPolicy;
-import com.payneteasy.superfly.policy.password.PasswordCheckContext;
-import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spisupport.HOTPService;
-import com.payneteasy.superfly.spisupport.SaltGenerator;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -50,12 +48,8 @@ public class UserServiceImpl implements UserService {
     private AccountPolicy accountPolicy;
     private HOTPService hotpService;
     private CreateUserStrategy createUserStrategy;
+    private LockoutStrategy lockoutStrategy;
 
-
-    @Required
-    public void setCreateUserStrategy(CreateUserStrategy createUserStrategy) {
-        this.createUserStrategy = createUserStrategy;
-    }
 
     @Required
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -102,7 +96,17 @@ public class UserServiceImpl implements UserService {
 		this.hotpService = hotpService;
 	}
 
-	public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
+    @Required
+    public void setCreateUserStrategy(CreateUserStrategy createUserStrategy) {
+        this.createUserStrategy = createUserStrategy;
+    }
+
+    @Required
+    public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+        this.lockoutStrategy = lockoutStrategy;
+    }
+
+    public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
 			Long complectId, Long subsystemId, int startFrom, int recordsCount,
 			int orderFieldNumber, boolean asc) {
 		return userDao.getUsers(startFrom, recordsCount, orderFieldNumber,
@@ -355,6 +359,17 @@ public class UserServiceImpl implements UserService {
 
     public void changeTempPassword(String userName, String password) {
         userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
+
+    @Override
+    public UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier) {
+        String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        UserLoginStatus result = UserLoginStatus.findByDbStatus(
+                userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));
+        if (result == UserLoginStatus.FAILED) {
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
+        }
+        return result;
     }
 
 }

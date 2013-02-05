@@ -35,7 +35,7 @@ public class SuperflyLocalHOTPAuthenticationProvider implements
 		return new FullAuthentication(username, authentication.getAuthorities());
 	}
 
-	public boolean supports(Class<? extends Object> authentication) {
+	public boolean supports(Class<?> authentication) {
 		return LocalCheckHOTPToken.class.isAssignableFrom(authentication);
 	}
 

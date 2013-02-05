@@ -33,10 +33,10 @@ public interface UserDao {
 	 *            IP address of the user who logs in
 	 * @param sessionInfo
 	 *            session info
-	 * @return roles with actions
+	 * @return session
 	 */
 	@AStoredProcedure(name = "get_user_actions")
-	List<AuthRole> authenticate(String username, String password, String subsystemName, String ipAddress,
+	AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
 			String sessionInfo);
 
 	/**
@@ -525,6 +525,32 @@ public interface UserDao {
 
     @AStoredProcedure(name="get_user_statuses")
     List<UserWithStatus> getUserStatuses(String userNames);
-  
+
+    /**
+     * Checks user login status. That is: tries to login to the
+     * specified subsystem and returns one of the following:
+     * Y (login successful, there are some actions)
+     * N (no user, password mismatched, user locked or no actions)
+     * T (login successful, but user's password has expired)
+     *
+     * @param username              name of the user
+     * @param password              hashed password
+     * @param subsystemIdentifier   subsystem identifier
+     * @return user login status
+     */
+    @AStoredProcedure(name="get_user_login_status")
+    String getUserLoginStatus(String username, String password, String subsystemIdentifier);
+
+    /**
+     * Exchanges subsystem token to SSOUser. After this operation
+     * returns, subsystem token is not valid anymore and cannot
+     * be used for exchanging.
+     *
+     * @param subsystemToken    subsystem token
+     * @return SSOUser or null if token does not exist, expired or
+     * already used
+     */
+    @AStoredProcedure(name="exchange_subsystem_token")
+    AuthSession exchangeSubsystemToken(String subsystemToken);
 }
 

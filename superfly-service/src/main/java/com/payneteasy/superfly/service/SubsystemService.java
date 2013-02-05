@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -66,4 +67,16 @@ public interface SubsystemService {
 	 * @return subsystem or null if no such subsystem
 	 */
 	UISubsystem getSubsystemByName(String subsystemName);
+
+    /**
+     * Tries to obtain a subsystem token. If user identified
+     * by that SSO session can login to the requested subsystem,
+     * subsystem token is returned.
+     * If user cannot login to that subsystem, null is returned
+     *
+     * @param ssoSessionId          ID of SSO session
+     * @param subsystemIdentifier   name of the subsystem
+     * @return subsystem token or null
+     */
+    SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
 }

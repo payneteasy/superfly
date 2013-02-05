@@ -16,7 +16,7 @@ create table sessions(
   primary key pk_sessions (sess_id),
   index idx_sessions_ssys_session_expired (ssys_ssys_id, session_expired),
   index idx_sessions_user_session_expired (user_user_id, session_expired)
-);
+) engine = innodb;
 
 call run_install_command('alter table users add column email varchar(255) not null', '42S21');
 

@@ -46,11 +46,25 @@ public class EditSubsystemPage extends BasePage {
 		};
 		add(form);
 		
-        form.add(new LabelTextFieldRow<UISubsystem>(subsystem,"name","subsystem.edit.name",true));
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.edit.name", true));
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "title", "subsystem.edit.title", true));
 		
-		LabelTextFieldRow<String> callbackInformation = new LabelTextFieldRow<String>(subsystem, "callbackInformation", "subsystem.edit.callback",true);
-		callbackInformation.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
-		form.add(callbackInformation);
+		LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<String>(subsystem, "callbackUrl", "subsystem.edit.callback",true);
+        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
+        callbackUrlRow.getTextField().add(urlValidator);
+		form.add(callbackUrlRow);
+
+        LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<String>(subsystem, "subsystemUrl", "subsystem.edit.subsystemUrl", true);
+        subsystemUrlRow.getTextField().add(urlValidator);
+        form.add(subsystemUrlRow);
+
+        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.edit.landingUrl",true);
+        landingUrlRow.getTextField().add(urlValidator);
+        form.add(landingUrlRow);
+
+        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<String>(subsystem, "loginFormCssUrl", "subsystem.edit.loginFormCssUrl");
+        loginFormCssUrlRow.getTextField().add(urlValidator);
+        form.add(loginFormCssUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.edit.allow-list-users"));
 

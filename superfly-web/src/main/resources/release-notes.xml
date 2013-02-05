@@ -1,17 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <news>
-    <release number="1.3-8" date="2012.11.13">
-   	<item type="task">
-   		<name>HttpClient timeouts</name>
-   		<description>
-   			All HttpClient timeouts (connectionTimeout, soTimeout, connectionManagerTimeout)
-            are configurable so no eternal freezes occur anymore.
-            This is fixed both for internal server code (notifications) and client libraries.
-   		</description>
-   	</item>
-   </release>
+    <release number="1.4-1" date="2013.02.05">
+        <item type="task">
+            <name>Redirect-based Single Sign-on functionality</name>
+            <description>
+                Single sign-on option based on redirects. This allows
+                user to login just once and then access all his subsystems
+                with no additional authentication.
+            </description>
+        </item>
+        <item type="task">
+            <name>Single Sign-out</name>
+            <description>
+                This feature allows to destroy an SSO session which was
+                established using redirect-based Single Sign-on login
+                process.
+            </description>
+        </item>
+        <item type="task">
+            <name>Single Sign-on forms are skinnable</name>
+            <description>
+                A URL to subsystem-side CSS may be specified in Subsystem
+                settings. This CSS file will be used by Superfly when a
+                user logs into that subsystem via Redirect-based Single
+                Sign-on process. This allows subsystem to customize login
+                forms look.
+            </description>
+        </item>
+        <item type="task">
+            <name>Small bugfixes</name>
+            <description>
+            </description>
+        </item>
+    </release>
 
-     <release number="1.3-1" date="2012.01.05">
+    <release number="1.3-8" date="2012.11.13">
+        <item type="task">
+            <name>HttpClient timeouts</name>
+            <description>
+                All HttpClient timeouts (connectionTimeout, soTimeout, connectionManagerTimeout)
+                are configurable so no eternal freezes occur anymore.
+                This is fixed both for internal server code (notifications) and client libraries.
+            </description>
+        </item>
+    </release>
+
+    <release number="1.3-1" date="2012.01.05">
     	<item type="task">
     		<name>SMTP servers</name>
     		<description>
@@ -22,7 +56,7 @@
     	</item>
     </release>
 
-     <release number="1.2-4" date="2010.11.16">
+    <release number="1.2-4" date="2010.11.16">
     	<item type="task">
     		<name>Remote editing and password/OTP table resetting</name>
     		<description>

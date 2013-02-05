@@ -112,8 +112,11 @@ public class SmtpServerDaoTest extends AbstractDaoTest {
 
         UISubsystem subsystem = new UISubsystem();
         subsystem.setName("for smtp server deletion");
-        subsystem.setCallbackInformation("some info");
+        subsystem.setCallbackUrl("some info");
         subsystem.setSmtpServer(serverForFilter);
+        subsystem.setTitle("The Subsystem");
+        subsystem.setSubsystemUrl("url");
+        subsystem.setLandingUrl("url");
         subsystemDao.createSubsystem(subsystem);
 
         RoutineResult result = smtpServerDao.deleteSmtpServer(forSuccess);

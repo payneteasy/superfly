@@ -20,16 +20,14 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
 
 public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
-	
-	private SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter;
 
-	public void setUp() {
+    public void setUp() {
 		super.setUp();
-		procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
+        SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
+        procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
+        procFilter.setSubsystemIdentifier("my-subsystem");
 		procFilter.afterPropertiesSet();
-		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
-		procFilter.setSubsystemIdentifier("my-subsystem");
 		filter = procFilter;
 	}
 	

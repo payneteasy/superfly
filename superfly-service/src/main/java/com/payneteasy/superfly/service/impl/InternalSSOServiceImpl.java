@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.model.*;
+import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -49,6 +51,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	private UserDao userDao;
 	private ActionDao actionDao;
+    private SessionDao sessionDao;
 	private NotificationService notificationService;
 	private LoggerSink loggerSink;
 	private PasswordEncoder passwordEncoder;
@@ -73,7 +76,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		this.userDao = userDao;
 	}
 
-	@Required
+    @Required
+    public void setSessionDao(SessionDao sessionDao) {
+        this.sessionDao = sessionDao;
+    }
+
+    @Required
 	public void setActionDao(ActionDao actionDao) {
 		this.actionDao = actionDao;
 	}
@@ -136,20 +144,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 			String sessionInfo) {
 		SSOUser ssoUser;
 		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-		List<AuthRole> authRoles = userDao.authenticate(username, encPassword, subsystemIdentifier, userIpAddress,
-				sessionInfo);
-		boolean ok = authRoles != null && !authRoles.isEmpty();
+		AuthSession session = userDao.authenticate(username, encPassword,
+                subsystemIdentifier, userIpAddress, sessionInfo);
+		boolean ok = session != null && session.getSessionId() != null;
 		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
 		if (ok) {
-			Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
-			for (AuthRole authRole : authRoles) {
-				SSORole ssoRole = new SSORole(authRole.getRoleName());
-				SSOAction[] actions = convertToSSOActions(authRole.getActions());
-				actionsMap.put(ssoRole, actions);
-			}
-			Map<String, String> preferences = Collections.emptyMap();
-			ssoUser = new SSOUser(username, actionsMap, preferences);
-			ssoUser.setSessionId(String.valueOf(authRoles.get(0).getSessionId()));
+            ssoUser = buildSSOUser(session);
 		} else {
             logger.warn("No roles for user {}", username);
 			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
@@ -158,7 +158,26 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return ssoUser;
 	}
 
-	protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
+    private SSOUser buildSSOUser(AuthSession session) {
+        SSOUser ssoUser;
+        List<AuthRole> authRoles = session.getRoles();
+        if (authRoles.size() == 1 && authRoles.get(0).getRoleName() == null) {
+            // actually it's empty
+            authRoles = Collections.emptyList();
+        }
+        Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
+        for (AuthRole authRole : authRoles) {
+            SSORole ssoRole = new SSORole(authRole.getRoleName());
+            SSOAction[] actions = convertToSSOActions(authRole.getActions());
+            actionsMap.put(ssoRole, actions);
+        }
+        Map<String, String> preferences = Collections.emptyMap();
+        ssoUser = new SSOUser(session.getUsername(), actionsMap, preferences);
+        ssoUser.setSessionId(String.valueOf(session.getSessionId()));
+        return ssoUser;
+    }
+
+    protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
 		SSOAction[] actions = new SSOAction[authActions.size()];
 		for (int i = 0; i < authActions.size(); i++) {
 			AuthAction authAction = authActions.get(i);
@@ -291,5 +310,32 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public List<UserWithStatus> getUserStatuses(String userNames) {
         return userDao.getUserStatuses(userNames);
+    }
+
+    @Override
+    public SSOUser exchangeSubsystemToken(String subsystemToken) {
+        SSOUser ssoUser;
+        AuthSession session = userDao.exchangeSubsystemToken(subsystemToken);
+        boolean ok = session != null && session.getSessionId() != null;
+        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
+        if (ok) {
+            ssoUser = buildSSOUser(session);
+        } else {
+            if (session != null) {
+                logger.warn("No roles for user {}", session.getUsername());
+            }
+            ssoUser = null;
+        }
+        return ssoUser;
+    }
+
+    @Override
+    public void touchSessions(List<Long> sessionIds) {
+        if (sessionIds != null && !sessionIds.isEmpty()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Touching sessions " + sessionIds);
+            }
+            sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
+        }
     }
 }

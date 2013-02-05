@@ -32,7 +32,7 @@ public class AddSubsystemPage extends BasePage {
 		super(ListSubsystemsPage.class);
 		
 		final UISubsystem subsystem = new UISubsystem();
-		Form<UISubsystem> form = new Form<UISubsystem>("form",new CompoundPropertyModel<UISubsystem>(subsystem)) {
+		Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<UISubsystem>(subsystem)) {
 			@Override
 			protected void onSubmit() {
 				subsystemService.createSubsystem(subsystem);
@@ -41,11 +41,25 @@ public class AddSubsystemPage extends BasePage {
 
 		};
 		add(form);
-		form.add(new LabelTextFieldRow<UISubsystem>(subsystem,"name","subsystem.add.name",true));
+		form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.add.name", true));
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "title", "subsystem.add.title", true));
 		
-		LabelTextFieldRow<String> callbackInformation = new LabelTextFieldRow<String>(subsystem, "callbackInformation", "subsystem.add.callback",true);
-		callbackInformation.getTextField().add(new UrlValidator(new String[] {"http", "https"}));
-		form.add(callbackInformation);
+		LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<String>(subsystem, "callbackUrl", "subsystem.add.callback",true);
+        UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
+        callbackUrlRow.getTextField().add(urlValidator);
+		form.add(callbackUrlRow);
+
+        LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<String>(subsystem, "subsystemUrl", "subsystem.add.subsystemUrl",true);
+        subsystemUrlRow.getTextField().add(urlValidator);
+        form.add(subsystemUrlRow);
+
+        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.add.landingUrl",true);
+        landingUrlRow.getTextField().add(urlValidator);
+        form.add(landingUrlRow);
+
+        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<String>(subsystem, "loginFormCssUrl", "subsystem.add.loginFormCssUrl");
+        loginFormCssUrlRow.getTextField().add(urlValidator);
+        form.add(loginFormCssUrlRow);
 		
 		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
 

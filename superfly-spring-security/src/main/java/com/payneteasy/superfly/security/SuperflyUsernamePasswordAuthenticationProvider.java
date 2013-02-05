@@ -47,7 +47,7 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
 		return null;
 	}
 
-	public boolean supports(Class<? extends Object> authentication) {
+	public boolean supports(Class<?> authentication) {
 		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 

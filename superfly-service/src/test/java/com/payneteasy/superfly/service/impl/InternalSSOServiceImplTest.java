@@ -3,8 +3,14 @@ package com.payneteasy.superfly.service.impl;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
+import java.util.Arrays;
 import java.util.Collections;
 
+import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.dao.SessionDao;
+import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -35,16 +41,19 @@ import com.payneteasy.superfly.spisupport.HOTPService;
 public class InternalSSOServiceImplTest extends TestCase {
 	
 	private UserDao userDao;
+    private SessionDao sessionDao;
 	private InternalSSOServiceImpl internalSSOService;
 	private HOTPProvider hotpProvider;
 	private HOTPService hotpService;
 	
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
+        sessionDao = EasyMock.createStrictMock(SessionDao.class);
 		hotpProvider = EasyMock.createMock(HOTPProvider.class);
 		hotpService = EasyMock.createMock(HOTPService.class);
 		InternalSSOServiceImpl service = new InternalSSOServiceImpl();
 		service.setUserDao(userDao);
+        service.setSessionDao(sessionDao);
 		service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
 		service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
 		service.setHotpProvider(hotpProvider);
@@ -210,5 +219,48 @@ public class InternalSSOServiceImplTest extends TestCase {
 		user.setPublicKey("");
 		internalSSOService.updateUserForDescription(user);
 	}
+
+    public void testExchangeSubsystemTokenSuccess() {
+        AuthSession session = new AuthSession("pete", 1L);
+        session.setRoles(Collections.singletonList(new AuthRole("test-role")));
+        EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
+                .andReturn(session);
+        EasyMock.replay(userDao);
+
+        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
+        Assert.assertNotNull(user);
+        Assert.assertEquals("pete", user.getName());
+        Assert.assertEquals("1", user.getSessionId());
+
+        EasyMock.verify(userDao);
+    }
+
+    public void testExchangeSubsystemTokenNullResult() {
+        EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
+                .andReturn(null);
+        EasyMock.replay(userDao);
+
+        Assert.assertNull(internalSSOService.exchangeSubsystemToken("valid-token"));
+
+        EasyMock.verify(userDao);
+    }
+
+    public void testTouchSessions() {
+        sessionDao.touchSessions("1,2,3");
+        EasyMock.expectLastCall();
+        EasyMock.replay(sessionDao);
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        EasyMock.verify(sessionDao);
+
+        EasyMock.reset(sessionDao);
+        EasyMock.replay(sessionDao);
+        internalSSOService.touchSessions(Collections.<Long>emptyList());
+        EasyMock.verify(sessionDao);
+
+        EasyMock.reset(sessionDao);
+        EasyMock.replay(sessionDao);
+        internalSSOService.touchSessions(null);
+        EasyMock.verify(sessionDao);
+    }
 	
 }

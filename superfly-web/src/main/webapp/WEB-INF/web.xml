@@ -42,7 +42,7 @@
 	
 	<context-param>
 		<param-name>superfly-policy</param-name>
-		<param-value>none</param-value>
+		<param-value>none</param-value> <!-- none or pcidss -->
 	</context-param>
 	<!-- This is for constant salt generator -->
 	<context-param>
@@ -81,6 +81,11 @@
 		<param-name>disable-hotp</param-name>
 		<param-value>false</param-value>
 	</context-param>
+
+    <context-param>
+   		<param-name>superfly-max-sso-session-age-minutes</param-name>
+   		<param-value>30</param-value>
+   	</context-param>
 	
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
@@ -138,7 +143,7 @@
         </init-param>
         <init-param>
         	<param-name>ignorePaths</param-name>
-        	<param-value>/remoting/</param-value>
+        	<param-value>/remoting/,/sso/</param-value>
         </init-param>
     </filter>
 
@@ -147,5 +152,18 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <filter>
+        <filter-name>wicket.sso</filter-name>
+        <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+        <init-param>
+            <param-name>applicationClassName</param-name>
+            <param-value>com.payneteasy.superfly.web.wicket.SSOApplication</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>wicket.sso</filter-name>
+        <url-pattern>/sso/*</url-pattern>
+    </filter-mapping>
 	
 </web-app>

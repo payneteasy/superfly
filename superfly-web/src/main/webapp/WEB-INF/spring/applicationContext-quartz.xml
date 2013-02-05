@@ -32,6 +32,26 @@
             </list>
         </property>
     </bean>
+
+    <bean id="expireSSOSessionsJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+   		<property name="targetObject" ref="sessionService"/>
+   		<property name="targetMethod" value="deleteExpiredSSOSessions"/>
+   		<property name="arguments">
+   			<list>
+   				<value type="int">#{contextParameters['superfly-max-sso-session-age-minutes']}</value>
+   			</list>
+   		</property>
+   	</bean>
+
+    <bean id="expireTokensJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+   		<property name="targetObject" ref="sessionService"/>
+   		<property name="targetMethod" value="deleteExpiredTokens"/>
+   		<property name="arguments">
+   			<list>
+   				<value type="int">5</value>
+   			</list>
+   		</property>
+   	</bean>
     
 	
 	<bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
@@ -49,12 +69,24 @@
         <property name="repeatInterval" value="86400000"/> <!-- daily -->
     </bean>
 
+    <bean id="expireSSOSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+   		<property name="jobDetail" ref="expireSSOSessionsJobDetail"/>
+   		<property name="repeatInterval" value="60000"/> <!-- every minute -->
+   	</bean>
+
+    <bean id="expireTokensTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+   		<property name="jobDetail" ref="expireTokensJobDetail"/>
+   		<property name="repeatInterval" value="60000"/> <!-- every minute -->
+   	</bean>
+
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="expireSessionsTrigger"/>
                 <ref bean="expirePasswordsTrigger"/>
                 <ref bean="suspendUsersTrigger"/>
+                <ref bean="expireSSOSessionsTrigger"/>
+                <ref bean="expireTokensTrigger"/>
 			</list>
 		</property>
 	</bean>

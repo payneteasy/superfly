@@ -1,10 +1,11 @@
 package com.payneteasy.superfly.service;
 
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.model.ui.session.UISession;
+
 import java.util.Date;
 import java.util.List;
-
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.session.UISession;
 
 /**
  * Service for sessions.
@@ -75,4 +76,43 @@ public interface SessionService {
 	 * @return deleted sessions
 	 */
 	List<UISession> deleteExpiredAndOldSessionsAndNotify(int seconds);
+
+    /**
+     * Obtains a valid SSO session by its identifier if such session exists,
+     * otherwise returns null.
+     *
+     * @param ssoSessionIdentifier  identifier of an SSO session
+     * @return session or null
+     */
+    SSOSession getValidSSOSession(String ssoSessionIdentifier);
+
+    /**
+     * Creates an SSO session for a user with given name.
+     *
+     * @param username  user name
+     * @return SSO session
+     */
+    SSOSession createSSOSession(String username);
+
+    /**
+     * Deletes SSO sessions which have been inactive for the
+     * given amount of time.
+     *
+     * @param maxAgeSeconds max SSO session age in seconds
+     */
+    void deleteExpiredSSOSessions(int maxAgeSeconds);
+
+    /**
+     * Deletes tokens which have expired.
+     *
+     * @param maxSubsystemTokenAgeSeconds max subsystem token age in seconds
+     */
+    void deleteExpiredTokens(int maxSubsystemTokenAgeSeconds);
+
+    /**
+     * Deletes SSO session by its identifier.
+     *
+     * @param ssoSessionIdentifier  identifier of SSO session
+     */
+    void deleteSSOSession(String ssoSessionIdentifier);
 }

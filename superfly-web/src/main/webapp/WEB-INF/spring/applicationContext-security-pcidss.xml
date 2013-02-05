@@ -12,8 +12,9 @@
     	<sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
     
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
-        <sec:intercept-url pattern="/css*"   filters="none"/>
+        <sec:intercept-url pattern="/css/**"   filters="none"/>
         <sec:intercept-url pattern="/login*" filters="none"/>
+        <sec:intercept-url pattern="/sso/**" filters="none"/>
 
 		<!--
 			If you're not planning to use client SSL auth to protect your subsystem

@@ -10,9 +10,15 @@
 		<property name="userInfoService" ref="userInfoService" />
 	</bean>
 
+    <bean id="settingsService" class="com.payneteasy.superfly.service.impl.SettingsServiceImpl">
+        <property name="hotpDisabled" value="#{contextParameters['disable-hotp']}"/>
+        <property name="policyName" value="#{contextParameters['superfly-policy']}"/>
+    </bean>
+
 	<bean id="internalSsoService"
 		class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
 		<property name="userDao" ref="userDao" />
+        <property name="sessionDao" ref="sessionDao" />
 		<property name="actionDao" ref="actionDao" />
 		<property name="notificationService" ref="notificationService" />
 		<property name="loggerSink" ref="loggerSink" />
@@ -60,6 +66,7 @@
         <property name="createUserStrategy" ref="createUserStrategy"/>
 		<property name="accountPolicy" ref="accountPolicy" />
 		<property name="hotpService" ref="hotpService" />
+        <property name="lockoutStrategy" ref="lockoutStrategy" />
 	</bean>
 
 	<bean id="roleService" class="com.payneteasy.superfly.service.impl.RoleServiceImpl">
@@ -78,6 +85,7 @@
 	<bean id="sessionService" class="com.payneteasy.superfly.service.impl.SessionServiceImpl">
 		<property name="sessionDao" ref="sessionDao" />
 		<property name="notifier" ref="notifier" />
+        <property name="loggerSink" ref="loggerSink" />
 	</bean>
 
 	<bean id="smtpServerService" class="com.payneteasy.superfly.service.impl.SmtpServerServiceImpl">

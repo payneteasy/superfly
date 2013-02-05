@@ -1,9 +1,10 @@
 package com.payneteasy.superfly.dao;
 
-import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
-import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.ui.role.UIRole;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
@@ -15,21 +16,73 @@ import java.util.List;
 public class UserDaoTest extends AbstractDaoTest {
 
 	private UserDao userDao;
+    private SubsystemDao subsystemDao;
+    private RoleDao roleDao;
+
+    private static boolean created = false;
+
+    private static UISubsystem subsystem;
+    private static UIRole role;
 
     @Autowired
 	public void setUserDao(UserDao userDao) {
 		this.userDao = userDao;
 	}
 
+    @Autowired
+    public void setSubsystemDao(SubsystemDao subsystemDao) {
+        this.subsystemDao = subsystemDao;
+    }
+
+    @Autowired
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
+
+    public void setUp() throws Exception {
+        super.setUp();
+
+        if (!created) {
+       		subsystem = new UISubsystem();
+       		subsystem.setName("subsystem-for-user");
+       		subsystem.setCallbackUrl("no-callback");
+            subsystem.setTitle("The Subsystem");
+            subsystem.setSubsystemUrl("subsystem-for-user-url");
+            subsystem.setLandingUrl("subsystem-for-user-url");
+       		subsystemDao.createSubsystem(subsystem);
+
+   	    	role = new UIRole();
+   	    	role.setRoleName("role1");
+   	    	role.setPrincipalName("role1");
+   	    	role.setSubsystemId(subsystem.getId());
+   	    	roleDao.createRole(role);
+
+            UIUserForCreate user = new UIUserForCreate();
+            user.setUsername("user-1");
+            user.setPassword("abc");
+            user.setEmail("email-1");
+            user.setName("user-1");
+            user.setSurname("user-1");
+            user.setSecretQuestion("");
+            user.setSecretAnswer("");
+            user.setHotpSalt("DEADBEEF");
+            userDao.createUser(user);
+
+            userDao.addSubsystemWithRole(2L, role.getRoleId());
+
+   	    	created = true;
+       	}
+    }
+
 	public void testAddSubsystemWithRole() {
-        RoutineResult result = userDao.addSubsystemWithRole(1L, 1L);
+        RoutineResult result = userDao.addSubsystemWithRole(1L, role.getRoleId());
         assertRoutineResult(result);
 	}
 
 	public void testAuthenticate() {
-		List<AuthRole> roles = userDao.authenticate("admin", "password",
-				"superfly-demo", null, null);
-		assertNotNull("Must authenticate successfully", roles);
+		AuthSession session = userDao.authenticate("user-1", "abc",
+				subsystem.getName(), null, null);
+		assertNotNull("Must authenticate successfully", session);
 	}
 
 	public void testGetUsersAndActions() {
@@ -81,7 +134,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		user.setUsername("testusercreate1");
 		user.setPassword("secret1");
 		user.setEmail("email1");
-		user.setRoleId(1L);
+		user.setRoleId(role.getRoleId());
         user.setName("John");
         user.setSurname("Smith");
         user.setSecretQuestion("What is 2+2?");
@@ -235,4 +288,14 @@ public class UserDaoTest extends AbstractDaoTest {
 				"this substring is expected to not exist",
 				"this substring is expected to not exist");
 	}
+
+    public void testGetUserLoginStatus() {
+   		String status;
+        status = userDao.getUserLoginStatus("user-1", "abc",
+                subsystem.getName());
+        assertEquals("Y", status);
+        status = userDao.getUserLoginStatus("user-1", "abcd",
+                subsystem.getName());
+        assertEquals("N", status);
+   	}
 }

@@ -10,25 +10,22 @@ import javax.persistence.OneToMany;
 
 public class AuthRole implements Serializable {
 	private String roleName;
-	private long sessionId;
 	private List<AuthAction> actions = new ArrayList<AuthAction>();
 
-	@Column(name = "principal_name")
+    public AuthRole() {
+    }
+
+    public AuthRole(String roleName) {
+        this.roleName = roleName;
+    }
+
+    @Column(name = "principal_name")
 	public String getRoleName() {
 		return roleName;
 	}
 
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
-	}
-
-	@Column(name = "session_id")
-	public long getSessionId() {
-		return sessionId;
-	}
-
-	public void setSessionId(long sessionId) {
-		this.sessionId = sessionId;
 	}
 
 	@OneToMany
