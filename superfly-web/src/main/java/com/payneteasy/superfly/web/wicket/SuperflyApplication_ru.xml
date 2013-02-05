@@ -14,13 +14,27 @@
 
 <entry key="subsystem.add.name">Name</entry>
 <entry key="subsystem.add.name.Required">Name is required</entry>
+<entry key="subsystem.add.title">Имя для пользователя</entry>
+<entry key="subsystem.add.title.Required">Пожалуйста, введите имя для пользователя</entry>
 <entry key="subsystem.add.callback">Callback Info</entry>
 <entry key="subsystem.add.callback.Required">Callback Info is required</entry>
+<entry key="subsystem.add.subsystemUrl">URL подсистемы</entry>
+<entry key="subsystem.add.subsystemUrl.Required">Пожалуйста, введите URL подсистемы</entry>
+<entry key="subsystem.add.landingUrl">URL возврата в подсистему</entry>
+<entry key="subsystem.add.landingUrl.Required">Пожалуйста, введите URL возврата в подсистему</entry>
+<entry key="subsystem.add.loginFormCssUrl">URL CSS форм логина</entry>
 <entry key="subsystem.add.allow-list-users">Allow list users</entry>
 <entry key="subsystem.edit.name">Name</entry>
 <entry key="subsystem.edit.name.Required">Name is required</entry>
+<entry key="subsystem.edit.title">Имя для пользователя</entry>
+<entry key="subsystem.edit.title.Required">Пожалуйста, введите имя для пользователя</entry>
 <entry key="subsystem.edit.callback">Callback Info</entry>
 <entry key="subsystem.edit.callback.Required">Callback Info is required</entry>
+<entry key="subsystem.edit.subsystemUrl">URL подсистемы</entry>
+<entry key="subsystem.edit.subsystemUrl.Required">Пожалуйста, введите URL подсистемы</entry>
+<entry key="subsystem.edit.landingUrl">URL возврата в подсистему</entry>
+<entry key="subsystem.edit.landingUrl.Required">Пожалуйста, введите URL возврата в подсистему</entry>
+<entry key="subsystem.edit.loginFormCssUrl">URL CSS форм логина</entry>
 <entry key="subsystem.edit.allow-list-users">Allow list users</entry>
 
 <!--
