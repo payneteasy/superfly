@@ -13,7 +13,6 @@ public abstract class BaseApplication extends WebApplication {
 	protected final void init() {
 		getResourceSettings().addResourceFolder("src/main/java");
         addComponentInstantiationListener(new SpringComponentInjector(this));
-        getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
         customInit();

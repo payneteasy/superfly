@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.security.SecurityUtils;
+import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
 import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.CopyActionPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
@@ -37,6 +38,8 @@ public class SuperflyApplication extends BaseApplication {
 
 	@Override
 	protected void customInit() {
+        getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
+
         mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePage("/login", LoginPasswordStepPage.class);
         mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
