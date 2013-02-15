@@ -91,6 +91,10 @@ public class SSOUtils {
             SessionAccessorPage page,
             SSOLoginData loginData, SessionService sessionService,
             SubsystemService subsystemService) {
+        if (loginData == null) {
+            throw new IllegalStateException("loginData is null");
+        }
+
         SSOSession ssoSession = sessionService.createSSOSession(username);
         Cookie cookie = new Cookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, ssoSession.getIdentifier());
         cookie.setMaxAge(SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE);
