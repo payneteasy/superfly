@@ -358,7 +358,8 @@ public class UserServiceImpl implements UserService {
 	}
 
     public void changeTempPassword(String userName, String password) {
-        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+        RoutineResult result = userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+        loggerSink.info(logger, "CHANGE_TEMP_PASSWORD", result.isOk(), userName);
     }
 
     @Override
