@@ -55,7 +55,10 @@ public abstract class ChangePasswordPanel extends Panel {
                         password2Field));
         form.add(new PasswordInputValidator(getCurrentUserName(), password1Field, userService));
 
-        form.add(new Button("change"));
+        Button submitButton = new Button("change");
+        submitButton.setOutputMarkupId(true);
+        submitButton.setMarkupId("change-button");
+        form.add(submitButton);
 	}
 
     protected abstract String getCurrentUserName();
