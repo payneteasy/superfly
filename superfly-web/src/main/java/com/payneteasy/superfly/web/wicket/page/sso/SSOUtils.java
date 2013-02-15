@@ -13,6 +13,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.Cookie;
 import java.io.UnsupportedEncodingException;
@@ -22,6 +24,8 @@ import java.net.URLEncoder;
  * @author rpuch
  */
 public class SSOUtils {
+    private static final Logger logger = LoggerFactory.getLogger(SSOUtils.class);
+
     public static final String SSO_SESSION_ID_COOKIE_NAME = "SSOSESSIONID";
     public static final int SSO_SESSION_ID_COOKIE_MAXAGE = 3600; // seconds
 
@@ -44,7 +48,7 @@ public class SSOUtils {
     }
 
     public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData) {
-        clearLoginData((SessionAccessorPage) component.getPage());
+        anonymizeLoginData((SessionAccessorPage) component.getPage());
         redirectToLoginErrorPage(component, new Model<String>("Can't login to " + loginData.getSubsystemIdentifier()));
     }
 
@@ -58,8 +62,11 @@ public class SSOUtils {
         page.getSession().setSsoLoginData(loginData);
     }
 
-    public static void clearLoginData(SessionAccessorPage page) {
-        saveLoginData(page, null);
+    public static void anonymizeLoginData(SessionAccessorPage page) {
+        SSOLoginData loginData = getSsoLoginData(page);
+        if (loginData != null) {
+            loginData.setUsername(null);
+        }
     }
 
     public static SSOLoginData getSsoLoginData(SessionAccessorPage page) {
@@ -67,10 +74,16 @@ public class SSOUtils {
     }
 
     public static void redirectToSubsystem(SessionAccessorPage page, SSOLoginData loginData, SubsystemTokenData token) {
-        SSOUtils.clearLoginData(page);
-        String url = buildRedirectToSubsystemUrl(token.getLandingUrl(),
-                token.getSubsystemToken(), loginData.getTargetUrl());
-        redirect(page, url);
+        if (loginData == null) {
+            // possibly, session has expired
+            logger.error("Tried to redirect to subsystem with loginData=null", new RuntimeException());
+            redirectToLoginErrorPage(page, new Model<String>("Session has expired. Please try to login again."));
+        } else {
+            SSOUtils.anonymizeLoginData(page);
+            String url = buildRedirectToSubsystemUrl(token.getLandingUrl(),
+                    token.getSubsystemToken(), loginData.getTargetUrl());
+            redirect(page, url);
+        }
     }
 
     public static void redirect(Page page, String url) {
