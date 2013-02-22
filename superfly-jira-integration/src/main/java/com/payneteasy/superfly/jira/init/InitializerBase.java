@@ -94,8 +94,13 @@ public abstract class InitializerBase {
 			builder.trustKeyStore(truststoreUrl, getProperty("context.truststorePassword"));
 		}
 		builder.securePort(Integer.parseInt(getProperty("superfly.sso.service.secure.port")));
+        builder.sslEnabledProtocols(getSslEnabledProtocols());
 		HttpClient httpClient = builder.build();
 		return httpClient;
 	}
-	
+
+    protected String[] getSslEnabledProtocols() {
+        return new String[] {"SSLv3"};
+    }
+
 }

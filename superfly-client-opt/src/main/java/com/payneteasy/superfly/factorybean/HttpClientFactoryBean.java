@@ -8,10 +8,12 @@ import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.ssl.HttpSecureProtocol;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class HttpClientFactoryBean implements FactoryBean {
     private int soTimeout = 10000; // 10 seconds by default
     private int connectionTimeout = -1; // negative values mean "leave existing value"
 	private HttpConnectionManager httpConnectionManager = null;
+    private String[] sslEnabledProtocols = null;
 
 	private HttpClient httpClient = null;
 	
@@ -90,23 +93,28 @@ public class HttpClientFactoryBean implements FactoryBean {
 		this.httpConnectionManager = httpConnectionManager;
 	}
 
-	public synchronized Object getObject() throws Exception {
+    public void setSslEnabledProtocols(String[] sslEnabledProtocols) {
+        this.sslEnabledProtocols = sslEnabledProtocols;
+    }
+
+    public synchronized Object getObject() throws Exception {
 		if (httpClient == null) {
 			createAndConfigureHttpClient();
 		}
 		return httpClient;
 	}
 
-	protected void createAndConfigureHttpClient() throws IOException {
+	protected void createAndConfigureHttpClient() throws IOException, GeneralSecurityException {
 		httpClient = createHttpClient();
 		configureHttpClient();
 	}
 
-	protected void configureHttpClient() throws IOException {
+	protected void configureHttpClient() throws IOException, GeneralSecurityException {
 		httpClient.getParams().setAuthenticationPreemptive(isAuthenticationPreemptive());
 		initCredentials();
 		initSocketFactory();
-		if (httpConnectionManager != null) {
+        initProtocolIfNeeded();
+        if (httpConnectionManager != null) {
 			httpClient.setHttpConnectionManager(httpConnectionManager);
 		}
 
@@ -124,6 +132,17 @@ public class HttpClientFactoryBean implements FactoryBean {
             httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(connectionTimeout);
         }
 	}
+
+    protected void initProtocolIfNeeded() throws GeneralSecurityException, IOException {
+        if (sslEnabledProtocols != null) {
+            // have to register our own protocol
+            HttpSecureProtocol psf = new HttpSecureProtocol();
+            psf.setEnabledProtocols(sslEnabledProtocols);
+
+            Protocol sslV3OnlyProtocol = new Protocol("https", (ProtocolSocketFactory) psf, 443);
+            Protocol.registerProtocol("https", sslV3OnlyProtocol);
+        }
+    }
 
     protected List<Header> getDefaultHeaders() {
         List<Header> headers = new ArrayList<Header>();
@@ -159,9 +178,12 @@ public class HttpClientFactoryBean implements FactoryBean {
 			if (hostConfig.getKeyStoreResource() != null) {
 				keyStoreUrl = hostConfig.getKeyStoreResource().getURL();
 			}
-			ProtocolSocketFactory factory = new AuthSSLProtocolSocketFactory(
+            AuthSSLProtocolSocketFactory factory = new AuthSSLProtocolSocketFactory(
 					keyStoreUrl, hostConfig.getKeyStorePassword(),
 					trustKeyStoreUrl, hostConfig.getTrustKeyStorePassword());
+            if (sslEnabledProtocols != null) {
+                factory.setEnabledProtocols(sslEnabledProtocols);
+            }
 			Protocol protocol = createProtocol(hostConfig, factory);
 			httpClient.getHostConfiguration().setHost(hostConfig.getHost(),
 					hostConfig.getSecurePort(), protocol);

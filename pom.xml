@@ -410,7 +410,7 @@
 		    <dependency>
 		        <groupId>com.googlecode.xremoting</groupId>
 		        <artifactId>xremoting-core</artifactId>
-		        <version>1.0-6</version>
+		        <version>1.0-7</version>
 		    </dependency>
 		    <dependency>
 		        <groupId>com.thoughtworks.xstream</groupId>
@@ -558,6 +558,12 @@
 				<artifactId>bcpg-jdk15</artifactId>
 				<version>1.45</version>
 			</dependency>
+
+            <dependency>
+                <groupId>ca.juliusdavies</groupId>
+                <artifactId>not-yet-commons-ssl</artifactId>
+                <version>0.3.9</version>
+            </dependency>
 	    	
 	        <dependency>
 	        	<groupId>org.easymock</groupId>
