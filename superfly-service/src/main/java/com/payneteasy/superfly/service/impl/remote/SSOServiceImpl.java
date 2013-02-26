@@ -107,16 +107,22 @@ public class SSOServiceImpl implements SSOService {
 	 * @see SSOService#getUserDescription(String)
 	 */
 	public UserDescription getUserDescription(String username) {
+        UserDescription result;
 		UserForDescription user = internalSSOService.getUserDescription(username);
-		UserDescription result = new UserDescription();
-		result.setUsername(user.getUsername());
-		result.setEmail(user.getEmail());
-		result.setFirstName(user.getName());
-		result.setLastName(user.getSurname());
-		result.setSecretQuestion(user.getSecretQuestion());
-		result.setSecretAnswer(user.getSecretAnswer());
-		result.setPublicKey(user.getPublicKey());
-		return result;
+        if (user == null) {
+            result = null;
+        } else {
+            result = new UserDescription();
+            result.setUsername(user.getUsername());
+            result.setEmail(user.getEmail());
+            result.setFirstName(user.getName());
+            result.setLastName(user.getSurname());
+            result.setSecretQuestion(user.getSecretQuestion());
+            result.setSecretAnswer(user.getSecretAnswer());
+            result.setPublicKey(user.getPublicKey());
+        }
+
+        return result;
 	}
 	
 	/**
