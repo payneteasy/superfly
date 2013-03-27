@@ -1,35 +1,18 @@
 package com.payneteasy.superfly.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.dao.SessionDao;
-import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.AuthSession;
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-
 import com.payneteasy.superfly.api.BadPublicKeyException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.crypto.pgp.PGPCrypto;
+import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
-import com.payneteasy.superfly.password.ConstantSaltSource;
-import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
-import com.payneteasy.superfly.password.NullSaltSource;
-import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
-import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
+import com.payneteasy.superfly.password.*;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
@@ -37,15 +20,29 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class InternalSSOServiceImplTest extends TestCase {
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.junit.Assert.*;
+
+public class InternalSSOServiceImplTest {
 	
 	private UserDao userDao;
     private SessionDao sessionDao;
 	private InternalSSOServiceImpl internalSSOService;
 	private HOTPProvider hotpProvider;
 	private HOTPService hotpService;
-	
+
+    @Before
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
         sessionDao = EasyMock.createStrictMock(SessionDao.class);
@@ -65,7 +62,8 @@ public class InternalSSOServiceImplTest extends TestCase {
         service.setSaltSource(new ConstantSaltSource("abc"));
 		internalSSOService = service;
 	}
-	
+
+    @Test
 	public void testPasswordEncodingWithPlainTextAndNullSalt() {
 		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
 		internalSSOService.setSaltSource(new NullSaltSource());
@@ -75,7 +73,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 		internalSSOService.authenticate("user", "pass", null, null, null);
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
 		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
 		internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
@@ -85,7 +84,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 		internalSSOService.authenticate("user", "pass", null, null, null);
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testRegisterUserPasswordEncoding() throws Exception {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("md5");
@@ -96,7 +96,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 			public RoutineResult answer() throws Throwable {
 				UserRegisterRequest user = (UserRegisterRequest) EasyMock.getCurrentArguments()[0];
 				assertEquals(DigestUtils.md5Hex("secret{e2e4}"), user.getPassword());
-				assertNotNull(user.getHotpSalt());
+                assertNotNull(user.getHotpSalt());
 				user.setUserid(1L);
 				return RoutineResult.okResult();
 			}
@@ -107,20 +107,22 @@ public class InternalSSOServiceImplTest extends TestCase {
 		internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{},"user", "user", "question", "answer", null);
 		EasyMock.verify(userDao, hotpService);
 	}
-	
+
+    @Test
 	public void testAuthenticateHOTP() {
 		EasyMock.expect(hotpProvider.authenticate(null, "pete", "123456")).andReturn(true);
 		EasyMock.replay(hotpProvider);
-		assertTrue(internalSSOService.authenticateHOTP(null, "pete", "123456"));
+        assertTrue(internalSSOService.authenticateHOTP(null, "pete", "123456"));
 		EasyMock.verify(hotpProvider);
 		
 		EasyMock.reset(hotpProvider);
 		EasyMock.expect(hotpProvider.authenticate(null, "pete", "123456")).andReturn(false);
 		EasyMock.replay(hotpProvider);
-		assertFalse(internalSSOService.authenticateHOTP(null, "pete", "123456"));
+        assertFalse(internalSSOService.authenticateHOTP(null, "pete", "123456"));
 		EasyMock.verify(hotpProvider);
 	}
-	
+
+    @Test
 	public void testRegisterUserWithBadPublicKey() throws Exception {
 		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
 		try {
@@ -133,7 +135,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 			// expected
 		}
 	}
-	
+
+    @Test
 	public void testRegisterUserWithPrefixedAndPostfixedBadPublicKey() throws Exception {
 		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
 		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
@@ -147,7 +150,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 			// expected
 		}
 	}
-	
+
+    @Test
 	public void testRegisterUserWithNullOrEmptyPublicKey() throws Exception {
 		internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
 		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
@@ -184,7 +188,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 				"");
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testUpdateUserDescriptionWithBadPublicKey() throws Exception {
 		UserForDescription user = new UserForDescription();
 		user.setUsername("user");
@@ -196,7 +201,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 			// expected
 		}
 	}
-	
+
+    @Test
 	public void testUpdateUserDescriptionWithPrefixedAndPostfixedBadPublicKey() throws Exception {
 		internalSSOService.setPublicKeyCrypto(new PGPCrypto());
 		UserForDescription user = new UserForDescription();
@@ -209,7 +215,8 @@ public class InternalSSOServiceImplTest extends TestCase {
 			// expected
 		}
 	}
-	
+
+    @Test
 	public void testUpdateUserDescriptionWithNullOrEmptyPublicKey() throws Exception {
 		UserForDescription user = new UserForDescription();
 		user.setUsername("user");
@@ -220,6 +227,7 @@ public class InternalSSOServiceImplTest extends TestCase {
 		internalSSOService.updateUserForDescription(user);
 	}
 
+    @Test
     public void testExchangeSubsystemTokenSuccess() {
         AuthSession session = new AuthSession("pete", 1L);
         session.setRoles(Collections.singletonList(new AuthRole("test-role")));
@@ -228,13 +236,14 @@ public class InternalSSOServiceImplTest extends TestCase {
         EasyMock.replay(userDao);
 
         SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
-        Assert.assertNotNull(user);
-        Assert.assertEquals("pete", user.getName());
-        Assert.assertEquals("1", user.getSessionId());
+        assertNotNull(user);
+        assertEquals("pete", user.getName());
+        assertEquals("1", user.getSessionId());
 
         EasyMock.verify(userDao);
     }
 
+    @Test
     public void testExchangeSubsystemTokenNullResult() {
         EasyMock.expect(userDao.exchangeSubsystemToken("valid-token"))
                 .andReturn(null);
@@ -245,6 +254,7 @@ public class InternalSSOServiceImplTest extends TestCase {
         EasyMock.verify(userDao);
     }
 
+    @Test
     public void testTouchSessions() {
         sessionDao.touchSessions("1,2,3");
         EasyMock.expectLastCall();
@@ -262,5 +272,5 @@ public class InternalSSOServiceImplTest extends TestCase {
         internalSSOService.touchSessions(null);
         EasyMock.verify(sessionDao);
     }
-	
+
 }

@@ -1,17 +1,21 @@
 package com.payneteasy.superfly.model;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author rpuch
  */
-public class AuthSessionTest extends TestCase {
+public class AuthSessionTest {
+    @Test
     public void test() {
-        Assert.assertTrue(new AuthSession("abc", 1L).equals(new AuthSession("abc", 1L)));
-        Assert.assertTrue(new AuthSession("abc", null).equals(new AuthSession("abc", null)));
-        Assert.assertFalse(new AuthSession("abc", 1L).equals(new AuthSession("abc", null)));
-        Assert.assertFalse(new AuthSession("abc", null).equals(new AuthSession("abc", 1L)));
-        Assert.assertFalse(new AuthSession("abc", null).equals(null));
+        assertTrue(new AuthSession("abc", 1L).equals(new AuthSession("abc", 1L)));
+        assertTrue(new AuthSession("abc", null).equals(new AuthSession("abc", null)));
+        assertFalse(new AuthSession("abc", 1L).equals(new AuthSession("abc", null)));
+        assertFalse(new AuthSession("abc", null).equals(new AuthSession("abc", 1L)));
+        //noinspection ObjectEqualsNull
+        assertFalse(new AuthSession("abc", null).equals(null));
     }
 }

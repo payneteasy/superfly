@@ -1,21 +1,19 @@
 package com.payneteasy.superfly.password;
 
-import junit.framework.TestCase;
-
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.policy.password.pcidss.PCIDSSPasswordPolicyValidation;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
-public class PasswordPolicyTest extends TestCase {
+public class PasswordPolicyTest {
 
-
-
+    @Test
 	public void testComplexity() {
-
-
-
         AbstractPolicyValidation<PasswordCheckContext> validation=new PCIDSSPasswordPolicyValidation();
 
         PasswordCheckContext password=new PasswordCheckContext(null);
@@ -24,7 +22,7 @@ public class PasswordPolicyTest extends TestCase {
         try{
             validation.validate(password);
         } catch (PolicyValidationException e){
-            assertEquals(e.getCode(),PolicyValidationException.EMPTY_PASSWORD);
+            assertEquals(e.getCode(), PolicyValidationException.EMPTY_PASSWORD);
         }
 
         password=new PasswordCheckContext("12345");
@@ -56,7 +54,7 @@ public class PasswordPolicyTest extends TestCase {
             throwsException=true;
         }
 
-        assertFalse(throwsException);
+        Assert.assertFalse(throwsException);
 	}
 
 }

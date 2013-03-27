@@ -1,10 +1,11 @@
 package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import org.junit.Assert;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class TrivialProxyFactoryTest extends TestCase {
+public class TrivialProxyFactoryTest {
+    @Test
 	public void testProxy() {
 		I i = TrivialProxyFactory.createProxy(I.class);
 		i.voidMethod();
@@ -13,12 +14,13 @@ public class TrivialProxyFactoryTest extends TestCase {
 		i.booleanMethod();
 		i.charMethod();
 	}
-	
+
+    @Test
 	public void testProxyForRoutineResult() {
 		J j = TrivialProxyFactory.createProxy(J.class);
 		RoutineResult result = j.getResult();
-		assertNotNull(result);
-		assertTrue(result.isOk());
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isOk());
 	}
 	
 	private static interface I {

@@ -9,6 +9,8 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
 
@@ -20,8 +22,8 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
 
+    @Before
     public void setUp() {
-        super.setUp();
         userService = EasyMock.createStrictMock(UserService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
@@ -47,6 +49,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
 //        tester.assertLabel("message", "No login data found");
 //    }
 
+    @Test
     public void testSuccess() throws PolicyValidationException {
         userService.validatePassword("user", "password");
         expectLastCall();
@@ -71,6 +74,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         verify(userService, sessionService, subsystemService);
     }
 
+    @Test
     public void testMismatchingPassword() throws PolicyValidationException {
         userService.validatePassword("user", "password");
         replay(userService);
@@ -90,6 +94,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         tester.assertLabel("change-password-panel:feedback:feedbackul:messages:0:message", "password and password2 must be equal.");
     }
 
+    @Test
     public void testInvalidPassword() throws PolicyValidationException {
         // password validation logic
         userService.validatePassword("user", "invalid-password");

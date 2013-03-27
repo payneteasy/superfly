@@ -2,23 +2,26 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.SubsystemTokenData;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.easymock.EasyMock;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author rpuch
  */
-public class SubsystemServiceImplTest extends TestCase {
+public class SubsystemServiceImplTest {
     private SubsystemDao subsystemDao;
     private SubsystemServiceImpl subsystemService;
 
+    @Before
     public void setUp() {
         subsystemDao = EasyMock.createStrictMock(SubsystemDao.class);
         subsystemService = new SubsystemServiceImpl();
         subsystemService.setSubsystemDao(subsystemDao);
     }
 
+    @Test
     public void testGetSubsystemTokenIfCanLogin() throws Exception {
         SubsystemTokenData tokenData = new SubsystemTokenData();
         tokenData.setSubsystemToken("abc");

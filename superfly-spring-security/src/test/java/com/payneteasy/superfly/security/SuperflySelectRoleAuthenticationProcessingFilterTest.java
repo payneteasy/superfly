@@ -1,35 +1,30 @@
 package com.payneteasy.superfly.security;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+
+import static org.easymock.EasyMock.*;
 
 public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
-	
-	private SuperflySelectRoleAuthenticationProcessingFilter procFilter;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
-		procFilter = new SuperflySelectRoleAuthenticationProcessingFilter();
+        SuperflySelectRoleAuthenticationProcessingFilter procFilter = new SuperflySelectRoleAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
 		procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
-	
+
+    @Test
 	public void testAuthenticate() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();
@@ -41,7 +36,8 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 		replay(request, response, session, chain, authenticationManager);
 		
 		filter.doFilter(request, response, chain);
-		assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(), SecurityContextHolder.getContext().getAuthentication() instanceof SSOUserAuthenticationToken);
+        Assert.assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(),
+                SecurityContextHolder.getContext().getAuthentication() instanceof SSOUserAuthenticationToken);
 		
 		verify(request, response, session, chain, authenticationManager);
 	}
@@ -52,10 +48,6 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 				return new String[]{};
 			}
 		});
-	}
-	
-	protected HOTPCheckedToken createInputAuthentication() {
-		return new HOTPCheckedToken(createSSOUserWithOneRole());
 	}
 	
 	private void initExpectationsForAuthentication() {

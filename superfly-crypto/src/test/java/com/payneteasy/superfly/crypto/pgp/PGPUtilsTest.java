@@ -1,18 +1,12 @@
 package com.payneteasy.superfly.crypto.pgp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import org.junit.Assert;
+import org.junit.Test;
 
-import com.payneteasy.superfly.crypto.pgp.PGPUtils;
+import java.io.*;
 
-import junit.framework.TestCase;
-
-public class PGPUtilsTest extends TestCase {
+public class PGPUtilsTest {
+    @Test
 	public void testEncrypt() throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String armoredPublicKey = readArmoredPublicKey("public_key");
@@ -22,33 +16,34 @@ public class PGPUtilsTest extends TestCase {
 		String encryptedMessage = baos.toString();
 		System.out.println(encryptedMessage);
 	}
-	
+
+    @Test
 	public void testInvalidPublicKey() throws Exception {
 		try {
 			PGPUtils.encryptBytesAndArmor("secret message".getBytes(), "secret.txt", readArmoredPublicKey("invalid_public_key1"), new ByteArrayOutputStream());
-			fail();
+            Assert.fail();
 		} catch (EOFException e) {
 			// expected
 		}
 		
 		try {
 			PGPUtils.encryptBytesAndArmor("secret message".getBytes(), "secret.txt", readArmoredPublicKey("invalid_public_key2"), new ByteArrayOutputStream());
-			fail();
+            Assert.fail();
 		} catch (Exception e) {
 			// expected
 		}
 	}
-	
+
+    @Test
 	public void testIsPublicKeyValid() {
-		assertFalse(PGPUtils.isPublicKeyValid("lalala, i'm not a key!"));
+        Assert.assertFalse(PGPUtils.isPublicKeyValid("lalala, i'm not a key!"));
 	}
 
-	private String readArmoredPublicKey(String fileName) throws UnsupportedEncodingException,
-			IOException {
+	private String readArmoredPublicKey(String fileName) throws IOException {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
 		Reader reader = new InputStreamReader(is, "utf-8");
 		
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		while (true) {
 			int c = reader.read();
 			if (c < 0) {
@@ -58,7 +53,6 @@ public class PGPUtilsTest extends TestCase {
 			}
 		}
 		is.close();
-		String armoredPublicKey = buf.toString();
-		return armoredPublicKey;
+        return buf.toString();
 	}
 }

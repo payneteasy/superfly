@@ -9,6 +9,8 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
 
@@ -20,8 +22,8 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
 
+    @Before
     public void setUp() {
-        super.setUp();
         internalSSOService = EasyMock.createStrictMock(InternalSSOService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
@@ -44,12 +46,14 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         return super.getBean(type);
     }
 
+    @Test
     public void testNoLoginData() {
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "No login data found");
     }
 
+    @Test
     public void testSuccess() {
         expect(internalSSOService.authenticateHOTP("test-subsystem", "known-user", "111111"))
                 .andReturn(true);
@@ -86,6 +90,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         return loginData;
     }
 
+    @Test
     public void testFailure() {
         expect(internalSSOService.authenticateHOTP("test-subsystem", "known-user", "222222"))
                         .andReturn(false);

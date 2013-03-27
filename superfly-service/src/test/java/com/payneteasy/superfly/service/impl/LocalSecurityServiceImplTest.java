@@ -1,25 +1,25 @@
 package com.payneteasy.superfly.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-
-import com.payneteasy.superfly.model.AuthSession;
-import junit.framework.TestCase;
-
-import org.easymock.EasyMock;
-
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 import com.payneteasy.superfly.service.LoggerSink;
+import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 
-public class LocalSecurityServiceImplTest extends TestCase {
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+
+public class LocalSecurityServiceImplTest {
 	private UserDao userDao;
 	private LocalSecurityServiceImpl localSecurityService;
-	
+
+    @Before
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
@@ -28,7 +28,8 @@ public class LocalSecurityServiceImplTest extends TestCase {
 		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}
-	
+
+    @Test
 	public void testPasswordEncodingWithPlainTextAndNullSalt() {
 		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
 		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
@@ -40,7 +41,8 @@ public class LocalSecurityServiceImplTest extends TestCase {
 		localSecurityService.authenticate("user", "pass");
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
 		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
 		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());

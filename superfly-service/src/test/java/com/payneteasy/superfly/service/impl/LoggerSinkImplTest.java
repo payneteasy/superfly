@@ -1,15 +1,19 @@
 package com.payneteasy.superfly.service.impl;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.LogManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-public class LoggerSinkImplTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class LoggerSinkImplTest {
 	
 	private LoggerSinkImpl loggerSink;
 	private StackAppender appender;
-	
+
+    @Before
 	public void setUp() {
 		loggerSink = new LoggerSinkImpl();
 		loggerSink.setUserInfoService(new UserInfoServiceMock());
@@ -17,18 +21,22 @@ public class LoggerSinkImplTest extends TestCase {
 		LogManager.getRootLogger().removeAllAppenders();
 		LogManager.getRootLogger().addAppender(appender);
 	}
-	
+
+    @After
 	public void tearDown() {
 		LogManager.getLoggerRepository().resetConfiguration();
 		loggerSink = null;
 		appender = null;
 	}
-	
+
+    @Test
 	public void testInfo() {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
-		assertEquals("user:test-user, event:create_user, resource:new-user, result:success", appender.getLastMessage());
+        assertEquals("user:test-user, event:create_user, resource:new-user, result:success",
+                appender.getLastMessage());
 	}
-	
+
+    @Test
 	public void testInfoWithNullUser() {
 		loggerSink.setUserInfoService(new UserInfoServiceMock() {
 			@Override
@@ -39,7 +47,8 @@ public class LoggerSinkImplTest extends TestCase {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
 		assertEquals("user:<SYSTEM>, event:create_user, resource:new-user, result:success", appender.getLastMessage());
 	}
-	
+
+    @Test
 	public void testInfoFailure() {
 		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", false, "new-user");
 		assertEquals("user:test-user, event:create_user, resource:new-user, result:failure", appender.getLastMessage());

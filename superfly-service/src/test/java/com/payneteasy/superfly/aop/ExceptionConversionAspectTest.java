@@ -1,20 +1,24 @@
 package com.payneteasy.superfly.aop;
 
-import junit.framework.TestCase;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 import org.aspectj.runtime.internal.AroundClosure;
+import org.junit.Before;
+import org.junit.Test;
 
-public class ExceptionConversionAspectTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class ExceptionConversionAspectTest {
 	
 	private ExceptionConversionAspect aspect;
-	
+
+    @Before
 	public void setUp() {
 		aspect = new ExceptionConversionAspect();
 	}
-	
+
+    @Test
 	public void testNoNonconvertibles() {
 		// first, no non-convertible classes
 		try {
@@ -28,7 +32,8 @@ public class ExceptionConversionAspectTest extends TestCase {
 			assertOnlyRuntimeExceptions(e);
 		}
 	}
-	
+
+    @Test
 	@SuppressWarnings("unchecked")
 	public void testMissNonconvertibles() {
 		// now, no-convertible classes exist, but we don't hit them
@@ -44,7 +49,8 @@ public class ExceptionConversionAspectTest extends TestCase {
 			assertOnlyRuntimeExceptions(e);
 		}
 	}
-	
+
+    @Test
 	@SuppressWarnings("unchecked")
 	public void testConvertion() {
 		// now, no-convertible classes exist, but we don't hit them
@@ -69,7 +75,7 @@ public class ExceptionConversionAspectTest extends TestCase {
 				}
 			});
 		} catch (Throwable e) {
-			assertEquals(SubNonConvertibleException.class, e.getClass());
+            assertEquals(SubNonConvertibleException.class, e.getClass());
 		}
 		
 		// now, non-convertible is thrown
@@ -169,11 +175,13 @@ public class ExceptionConversionAspectTest extends TestCase {
 			super();
 		}
 
-		public SubNonConvertibleException(String message, Throwable cause) {
+		@SuppressWarnings("UnusedDeclaration")
+        public SubNonConvertibleException(String message, Throwable cause) {
 			super(message, cause);
 		}
 
-		public SubNonConvertibleException(String message) {
+		@SuppressWarnings("UnusedDeclaration")
+        public SubNonConvertibleException(String message) {
 			super(message);
 		}
 

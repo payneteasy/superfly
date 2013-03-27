@@ -1,15 +1,18 @@
 package com.payneteasy.superfly.spring;
 
-import junit.framework.TestCase;
-
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.SaltSource;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SaltSourceFactoryBeanTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class SaltSourceFactoryBeanTest {
+    @Test
 	public void testPlaintext() throws Exception {
 		SaltSourceFactoryBean factoryBean = new SaltSourceFactoryBean();
 		factoryBean.setPolicyName("none");
@@ -20,10 +23,11 @@ public class SaltSourceFactoryBeanTest extends TestCase {
 
         factoryBean.setSalts(ss);
         
-		SaltSource encoder = (SaltSource) factoryBean.getObject();
-		assertEquals(encoder.getClass(), NullSaltSource.class);
+		SaltSource encoder = factoryBean.getObject();
+        assertEquals(encoder.getClass(), NullSaltSource.class);
 	}
-	
+
+    @Test
 	public void testPciDss() throws Exception {
 		SaltSourceFactoryBean factoryBean = new SaltSourceFactoryBean();
 		factoryBean.setPolicyName("pcidss");
@@ -34,16 +38,17 @@ public class SaltSourceFactoryBeanTest extends TestCase {
         ss.put("pcidss",new ConstantSaltSource());
         factoryBean.setSalts(ss);
         
-		SaltSource encoder = (SaltSource) factoryBean.getObject();
+		SaltSource encoder = factoryBean.getObject();
 		assertEquals(encoder.getClass(), ConstantSaltSource.class);
 	}
-	
+
+    @Test
 	public void testNull() throws Exception {
 		SaltSourceFactoryBean factoryBean = new SaltSourceFactoryBean();
 		factoryBean.setPolicyName(null);
 		try {
 			factoryBean.getObject();
-			fail();
+            Assert.fail();
 		} catch (IllegalArgumentException e) {
 			// expected
 		}

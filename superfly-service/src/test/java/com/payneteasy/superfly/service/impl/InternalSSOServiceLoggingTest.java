@@ -7,6 +7,8 @@ import java.util.Collections;
 
 import com.payneteasy.superfly.model.AuthSession;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.api.RoleGrantSpecification;
@@ -30,8 +32,8 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 	private InternalSSOService internalSSOService;
 	private UserDao userDao;
 
+    @Before
 	public void setUp() {
-		super.setUp();
 		InternalSSOServiceImpl service = new InternalSSOServiceImpl();
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		service.setUserDao(userDao);
@@ -47,6 +49,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		internalSSOService = service;
 	}
 
+    @Test
 	public void testRegisterUser() throws Exception {
         EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
@@ -59,6 +62,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 
+    @Test
 	public void testRegisterUserDuplicate() throws Exception {
         EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
@@ -76,6 +80,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 
+    @Test
 	public void testRegisterUserFail() throws Exception {
         EasyMock.expect(userDao.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
 		userDao.registerUser(anyObject(UserRegisterRequest.class));
@@ -93,6 +98,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 
+    @Test
 	public void testAuthenticate() throws Exception {
         AuthSession session = new AuthSession("username", 1L);
         session.setRoles(Collections.singletonList(new AuthRole()));
@@ -108,6 +114,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink, userDao);
 	}
 
+    @Test
 	public void testAuthenticateFail() throws Exception {
 		EasyMock.expect(
 				userDao.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
@@ -120,6 +127,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		EasyMock.verify(loggerSink);
 	}
 
+    @Test
 	public void testAuthenticateNoRoles() throws Exception {
         AuthSession session = new AuthSession("username");
         session.setRoles(Collections.<AuthRole> emptyList());

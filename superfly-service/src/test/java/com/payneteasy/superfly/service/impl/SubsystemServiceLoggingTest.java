@@ -5,6 +5,8 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
@@ -17,9 +19,9 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 	
 	private SubsystemService subsystemService;
 	private SubsystemDao subsystemDao;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
 		SubsystemServiceImpl service = new SubsystemServiceImpl();
 		subsystemDao = EasyMock.createStrictMock(SubsystemDao.class);
 		service.setSubsystemDao(subsystemDao);
@@ -28,7 +30,8 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setJavaMailSenderPool(TrivialProxyFactory.createProxy(JavaMailSenderPool.class));
 		subsystemService = service;
 	}
-	
+
+    @Test
 	public void testCreateSubsystem() throws Exception {
 		loggerSink.info(anyObject(Logger.class), eq("CREATE_SUBSYSTEM"), eq(true), eq("test-subsystem"));
 		EasyMock.replay(loggerSink);
@@ -39,7 +42,8 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteSubsystem() throws Exception {
 		subsystemDao.deleteSubsystem(eq(1L));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -50,7 +54,8 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteSubsystemFail() throws Exception {
 		subsystemDao.deleteSubsystem(eq(1L));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -61,7 +66,8 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateSubsystem() {
 		loggerSink.info(anyObject(Logger.class), eq("UPDATE_SUBSYSTEM"), eq(true), eq("test-subsystem"));
 		subsystemDao.updateSubsystem(anyObject(UISubsystem.class));
@@ -74,7 +80,8 @@ public class SubsystemServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateSubsystemFail() {
 		loggerSink.info(anyObject(Logger.class), eq("UPDATE_SUBSYSTEM"), eq(false), eq("test-subsystem"));
 		subsystemDao.updateSubsystem(anyObject(UISubsystem.class));

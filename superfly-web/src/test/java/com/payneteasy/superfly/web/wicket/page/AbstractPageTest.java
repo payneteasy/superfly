@@ -1,11 +1,12 @@
 package com.payneteasy.superfly.web.wicket.page;
 
 import com.payneteasy.superfly.web.wicket.page.sso.Tester;
-import junit.framework.TestCase;
 import org.apache.wicket.injection.ComponentInjector;
 import org.apache.wicket.injection.ConfigurableInjector;
 import org.apache.wicket.injection.IFieldValueFactory;
 import org.apache.wicket.injection.web.InjectorHolder;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 import java.lang.reflect.Field;
 import java.util.Locale;
@@ -13,14 +14,16 @@ import java.util.Locale;
 /**
  * @author rpuch
  */
-public abstract class AbstractPageTest extends TestCase {
+public abstract class AbstractPageTest {
     protected Tester tester;
 
-    static {
+    @BeforeClass
+    public static void staticInit() {
         Locale.setDefault(Locale.ENGLISH);
     }
 
-    public void setUp() {
+    @Before
+    public void initPageTest() {
         tester = new Tester();
         tester.getApplication().addComponentInstantiationListener(new ComponentInjector() {{
             InjectorHolder.setInjector(createInjector());

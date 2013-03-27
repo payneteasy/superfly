@@ -1,14 +1,15 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.web.wicket.SuperflySession;
-import junit.framework.Assert;
 import org.apache.wicket.Request;
 import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.util.tester.BaseWicketTester;
 import org.apache.wicket.util.tester.WicketTester;
+import org.junit.Assert;
 
 import javax.servlet.http.Cookie;
+import java.util.Arrays;
 
 /**
  * @author rpuch
@@ -51,7 +52,8 @@ public class Tester extends WicketTester {
                 break;
             }
         }
-        Assert.assertTrue(String.format("Expected to have cookie %s with name %s but had only the following: %s", name, value, cookies.toString()), has);
+        Assert.assertTrue(String.format("Expected to have cookie %s with name %s but had only the following: %s", name, value,
+                Arrays.toString(cookies)), has);
     }
 
     @Override

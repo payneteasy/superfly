@@ -1,9 +1,10 @@
 package com.payneteasy.superfly.client.session;
 
 import com.payneteasy.superfly.client.SessionToucher;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.easymock.EasyMock;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -19,12 +20,13 @@ import java.util.List;
 /**
  * @author Roman Puchkovskiy
  */
-public class AbstractSessionTouchingFilterTest extends TestCase {
+public class AbstractSessionTouchingFilterTest {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private FilterChain chain;
     private FilterConfig filterConfig;
 
+    @Before
     public void setUp() {
         request = EasyMock.createStrictMock(HttpServletRequest.class);
         response = EasyMock.createStrictMock(HttpServletResponse.class);
@@ -32,6 +34,7 @@ public class AbstractSessionTouchingFilterTest extends TestCase {
         filterConfig = EasyMock.createStrictMock(FilterConfig.class);
     }
 
+    @Test
     public void test() throws ServletException, IOException {
         final TestSessionToucher toucher = new TestSessionToucher();
         AbstractSessionTouchingFilter filter;
@@ -45,7 +48,7 @@ public class AbstractSessionTouchingFilterTest extends TestCase {
         filter.destroy();
         EasyMock.verify(chain);
 
-        Assert.assertEquals(Collections.emptyList(), toucher.getTouchedIds());
+        Assert.assertEquals(Collections.<Long>emptyList(), toucher.getTouchedIds());
 
         EasyMock.reset(chain);
         chain.doFilter(request, response);

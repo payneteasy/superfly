@@ -5,9 +5,13 @@ import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class GroupDaoTest extends AbstractDaoTest {
 	private GroupDao groupDao;
@@ -26,9 +30,8 @@ public class GroupDaoTest extends AbstractDaoTest {
         this.subsystemDao = subsystemDao;
     }
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         if (!created) {
 	        UISubsystem subsystem = new UISubsystem();
 	        subsystem.setName("system-for-groups-1");
@@ -48,17 +51,19 @@ public class GroupDaoTest extends AbstractDaoTest {
         }
     }
 
-	
+	@Test
 	public void testGetGroupsForSubsystems() {
 		List<UIGroupForList> groupList = groupDao.getGroups(0, 10, 1, "asc", null, "1,2," + subsystemId);
-		assertTrue("Group list should not be empty", groupList.size() > 0);
+        assertTrue("Group list should not be empty", groupList.size() > 0);
 	}
-	
+
+    @Test
 	public void testGetGroupCount(){		
 		int count = groupDao.getGroupsCount(null, null);
 		assertTrue("Must get some group", count > 0);
 	}
-	
+
+    @Test
 	public void testCreateGetDeleteUpdateGroup(){
 		UIGroup group = new UIGroup();
 		group.setName("test");
@@ -66,7 +71,7 @@ public class GroupDaoTest extends AbstractDaoTest {
 		RoutineResult routineResult =  groupDao.createGroup(group);
 		assertRoutineResult(routineResult);
         groupDao.updateGroup(group.getId(), "test_updated");
-        assertEquals(groupDao.getGroupById(group.getId()).getName(),"test_updated");
+        assertEquals(groupDao.getGroupById(group.getId()).getName(), "test_updated");
 		routineResult = groupDao.deleteGroup(group.getId());
 		assertRoutineResult(routineResult);
 	}
@@ -75,22 +80,26 @@ public class GroupDaoTest extends AbstractDaoTest {
 		List<UIGroupForList> list = groupDao.getGroups(0, 1, 1, "asc", null, null);
 		return list.get(0).getId();
 	}
-	
+
+    @Test
 	public void testChangeGroupActions() {
 		long groupId = getAnyGroupId();
 		assertRoutineResult(groupDao.changeGroupActions(groupId, "1,2,3", "4,5,6"));
 	}
-	
+
+    @Test
 	public void testGetAllGroupActions() {
 		groupDao.getAllGroupMappedActions(0, 10, 1, "asc", getAnyGroupId(), null);
 		groupDao.getAllGroupMappedActions(0, 10, 1, "asc", getAnyGroupId(), "dmi");
 	}
-	
+
+    @Test
 	public void testGetAllGroupActionsCount() {
 		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), null);
 		groupDao.getAllGroupMappedActionsCount(getAnyGroupId(), "dmi");
 	}
-	
+
+    @Test
 	public void testCloneGroup() {
 		long groupId = getAnyGroupId();
 		UICloneGroupRequest request = new UICloneGroupRequest();
@@ -100,8 +109,10 @@ public class GroupDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 		
 		UIGroup newGroup = groupDao.getGroupById(request.getId());
-		assertNotNull("Group must be cloned", newGroup);
+        assertNotNull("Group must be cloned", newGroup);
 	}
+
+    @Test
 	public void testGetAllGroupUnMappedActions(){
 		groupDao.getAllGroupUnMappedActions(0, 10, 1, "asc", getAnyGroupId(), null);
 	}

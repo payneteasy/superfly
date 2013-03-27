@@ -1,20 +1,24 @@
 package com.payneteasy.superfly.model;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 /**
  * @author rpuch
  */
-public class UserLoginStatusTest extends TestCase {
+public class UserLoginStatusTest {
+    @Test
     public void test() {
-        Assert.assertEquals("Y", UserLoginStatus.SUCCESS.getDbStatus());
-        Assert.assertEquals("N", UserLoginStatus.FAILED.getDbStatus());
-        Assert.assertEquals("T", UserLoginStatus.TEMP_PASSWORD.getDbStatus());
+        assertEquals("Y", UserLoginStatus.SUCCESS.getDbStatus());
+        assertEquals("N", UserLoginStatus.FAILED.getDbStatus());
+        assertEquals("T", UserLoginStatus.TEMP_PASSWORD.getDbStatus());
 
-        Assert.assertSame(UserLoginStatus.SUCCESS, UserLoginStatus.findByDbStatus("Y"));
-        Assert.assertSame(UserLoginStatus.FAILED, UserLoginStatus.findByDbStatus("N"));
-        Assert.assertSame(UserLoginStatus.TEMP_PASSWORD, UserLoginStatus.findByDbStatus("T"));
+        assertSame(UserLoginStatus.SUCCESS, UserLoginStatus.findByDbStatus("Y"));
+        assertSame(UserLoginStatus.FAILED, UserLoginStatus.findByDbStatus("N"));
+        assertSame(UserLoginStatus.TEMP_PASSWORD, UserLoginStatus.findByDbStatus("T"));
 
         try {
             UserLoginStatus.findByDbStatus("no-such-status");

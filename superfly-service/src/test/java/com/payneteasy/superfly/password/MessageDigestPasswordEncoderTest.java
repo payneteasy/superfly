@@ -1,26 +1,29 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.common.utils.CryptoHelper;
+import com.payneteasy.superfly.utils.RandomGUID;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Test;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.payneteasy.superfly.common.utils.CryptoHelper;
-import com.payneteasy.superfly.utils.RandomGUID;
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
+public class MessageDigestPasswordEncoderTest {
 
-public class MessageDigestPasswordEncoderTest extends TestCase {
-	
+    @Test
 	public void testMd5() {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("MD5");
 		String encoded = encoder.encode("password", "salt");
 		String expected = DigestUtils.md5Hex("password{salt}");
-		assertEquals(expected, encoded);
+        assertEquals(expected, encoded);
 	}
-	
+
+    @Test
 	public void testSha1() {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("SHA1");
@@ -28,7 +31,8 @@ public class MessageDigestPasswordEncoderTest extends TestCase {
 		String expected = DigestUtils.shaHex("password{salt}");
 		assertEquals(expected, encoded);
 	}
-	
+
+    @Test
 	public void testSha256() throws NoSuchAlgorithmException, UnsupportedEncodingException {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("SHA-256");
@@ -39,6 +43,7 @@ public class MessageDigestPasswordEncoderTest extends TestCase {
 		assertEquals(expected, encoded);
 	}
 
+    @Test
     public void testNewPassword() {
         RandomGUID guid=new RandomGUID(true);
         String salt= CryptoHelper.SHA256(guid.toString());

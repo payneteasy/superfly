@@ -1,16 +1,14 @@
 package com.payneteasy.superfly.security;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 
-public abstract class AbstractSSOUserAwareTest extends TestCase {
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class AbstractSSOUserAwareTest {
 
 	protected SSOUser createSSOUserWithOneRole() {
 		return createSSOUser(1);

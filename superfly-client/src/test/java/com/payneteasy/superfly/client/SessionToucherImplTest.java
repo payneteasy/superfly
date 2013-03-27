@@ -1,23 +1,26 @@
 package com.payneteasy.superfly.client;
 
 import com.payneteasy.superfly.api.SSOService;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.*;
 
 /**
  * @author rpuch
  */
-public class SessionToucherImplTest extends TestCase {
+public class SessionToucherImplTest {
     private SSOService ssoService;
 
+    @Before
     public void setUp() {
         ssoService = EasyMock.createStrictMock(SSOService.class);
     }
 
+    @Test
     public void testSingle() throws InterruptedException {
         SessionToucherImpl toucher = new SessionToucherImpl(1); // 1 second between flushes
         toucher.setSsoService(ssoService);
@@ -39,6 +42,7 @@ public class SessionToucherImplTest extends TestCase {
         toucher.shutdown();
     }
 
+    @Test
     @SuppressWarnings("unchecked")
     public void testDisable() throws InterruptedException {
         SessionToucherImpl toucher = new SessionToucherImpl(1); // 1 second between flushes
@@ -66,6 +70,7 @@ public class SessionToucherImplTest extends TestCase {
         Assert.assertTrue("Nothing should be sent", sent.isEmpty());
     }
 
+    @Test
     @SuppressWarnings("unchecked")
     public void testMultithreaded() throws InterruptedException {
         final Set<Long> touchedSessionIds = Collections.synchronizedSet(new HashSet<Long>());

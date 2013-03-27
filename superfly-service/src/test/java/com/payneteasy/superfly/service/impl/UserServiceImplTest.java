@@ -17,19 +17,22 @@ import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.spisupport.HOTPService;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.anyObject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class UserServiceImplTest extends TestCase {
+public class UserServiceImplTest {
 	
 	private UserDao userDao;
 	private UserServiceImpl userService;
-	
+
+    @Before
 	public void setUp() {
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		userService = new UserServiceImpl();
@@ -44,13 +47,14 @@ public class UserServiceImplTest extends TestCase {
 		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
         userService.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
 	}
-	
+
+    @Test
 	public void testCreateUserPasswordEncryption() throws MessageSendException {
 		EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
 				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
-				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
-				assertNotNull(user.getHotpSalt());
+                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                assertNotNull(user.getHotpSalt());
 				user.setId(1L);
 				return RoutineResult.okResult();
 			}
@@ -64,7 +68,8 @@ public class UserServiceImplTest extends TestCase {
 		
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testUpdateUserPasswordEncryption() {
 		EasyMock.expect(userDao.updateUser(anyObject(UIUser.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
@@ -82,7 +87,8 @@ public class UserServiceImplTest extends TestCase {
 		
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testCloneUserPasswordEncryption() throws MessageSendException {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
@@ -98,7 +104,8 @@ public class UserServiceImplTest extends TestCase {
 		
 		EasyMock.verify(userDao);
 	}
-	
+
+    @Test
 	public void testCloneUser() throws MessageSendException {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
@@ -119,17 +126,19 @@ public class UserServiceImplTest extends TestCase {
 		EasyMock.verify(userDao);
 	}
 
+    @Test
     public void testGetUserLoginStatusSuccess() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
         EasyMock.expect(userDao.getUserLoginStatus("pete", "password{c3pio}", "subsystem"))
                 .andReturn("Y");
         EasyMock.replay(userDao);
 
-        Assert.assertEquals(UserLoginStatus.SUCCESS, userService.getUserLoginStatus("pete", "password", "subsystem"));
+        assertEquals(UserLoginStatus.SUCCESS, userService.getUserLoginStatus("pete", "password", "subsystem"));
 
         EasyMock.verify(userDao);
     }
 
+    @Test
     public void testGetUserLoginStatusFailed() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
         TestLockoutStrategy testLockoutStrategy = new TestLockoutStrategy();
@@ -138,20 +147,21 @@ public class UserServiceImplTest extends TestCase {
                 .andReturn("N");
         EasyMock.replay(userDao);
 
-        Assert.assertEquals(UserLoginStatus.FAILED, userService.getUserLoginStatus("stranger", "password", "subsystem"));
-        Assert.assertEquals("stranger", testLockoutStrategy.username);
-        Assert.assertEquals(LockoutType.PASSWORD, testLockoutStrategy.lockoutType);
+        assertEquals(UserLoginStatus.FAILED, userService.getUserLoginStatus("stranger", "password", "subsystem"));
+        assertEquals("stranger", testLockoutStrategy.username);
+        assertEquals(LockoutType.PASSWORD, testLockoutStrategy.lockoutType);
 
         EasyMock.verify(userDao);
     }
 
+    @Test
     public void testGetUserLoginStatusTemp() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
         EasyMock.expect(userDao.getUserLoginStatus("old-pete", "password{c3pio}", "subsystem"))
                 .andReturn("T");
         EasyMock.replay(userDao);
 
-        Assert.assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.getUserLoginStatus("old-pete", "password", "subsystem"));
+        assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.getUserLoginStatus("old-pete", "password", "subsystem"));
 
         EasyMock.verify(userDao);
     }

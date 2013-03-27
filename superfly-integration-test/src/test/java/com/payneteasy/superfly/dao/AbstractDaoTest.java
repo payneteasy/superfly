@@ -1,15 +1,16 @@
 package com.payneteasy.superfly.dao;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit38.AbstractJUnit38SpringContextTests;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
 @ContextConfiguration({"/spring/test-datasource.xml", "/spring/test-dao.xml"})
-public abstract class AbstractDaoTest extends AbstractJUnit38SpringContextTests {
+public abstract class AbstractDaoTest extends AbstractJUnit4SpringContextTests {
     private static boolean alreadyRunCreateDb = false;
 
     static {
@@ -40,8 +41,8 @@ public abstract class AbstractDaoTest extends AbstractJUnit38SpringContextTests 
     }
 
     protected void assertRoutineResult(RoutineResult result) {
-    	assertNotNull("Routine result cannot be null", result);
-    	assertTrue("Routine result must be OK", result.isOk());
+    	Assert.assertNotNull("Routine result cannot be null", result);
+        Assert.assertTrue("Routine result must be OK", result.isOk());
     }
 
     private static class LoggerThread extends Thread {
