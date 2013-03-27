@@ -49,7 +49,7 @@ public class EmailServiceImpl implements EmailService {
 				MimeMessage message = sender.getSender().createMimeMessage();
 				MimeMessageHelper helper = new MimeMessageHelper(message, true);
 				helper.setFrom(new InternetAddress(sender.getFrom()));
-	//    		logger.info("Trying to send a message to address " + address + ", subject is " + subject);
+//	    		logger.info("Trying to send a message to address " + address + ", subject is " + subject);
 				helper.setSubject(subject);
 				String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
 						templatePrefix + "hotp-table.vm", "utf-8", model);
