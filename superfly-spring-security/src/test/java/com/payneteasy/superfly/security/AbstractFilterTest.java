@@ -27,6 +27,7 @@ public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
 		expect(request.getContextPath()).andReturn("").anyTimes();
 		expect(request.getMethod()).andReturn("POST").anyTimes();
 		response = EasyMock.createMock(HttpServletResponse.class);
+        expect(response.isCommitted()).andReturn(false).anyTimes();
 		chain = EasyMock.createMock(FilterChain.class);
 		session = EasyMock.createMock(HttpSession.class);
 	}

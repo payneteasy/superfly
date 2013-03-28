@@ -15,7 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 public class EmptyAuthenticationToken implements Authentication {
 	private static final long serialVersionUID = 5670753128479212097L;
 
-	public Collection<GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.emptySet();
 	}
 
