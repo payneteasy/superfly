@@ -58,17 +58,17 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         expect(sessionService.createSSOSession("user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
         replay(userService, sessionService, subsystemService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         FormTester form = tester.newFormTester("change-password-panel:form");
         form.setValue("password", "password");
         form.setValue("password2", "password");
         form.submit();
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(userService, sessionService, subsystemService);
@@ -79,7 +79,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         userService.validatePassword("user", "password");
         replay(userService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         FormTester form;
@@ -101,7 +101,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         expectLastCall().andThrow(new PolicyValidationException("P003"));
         replay(userService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         FormTester form = tester.newFormTester("change-password-panel:form");

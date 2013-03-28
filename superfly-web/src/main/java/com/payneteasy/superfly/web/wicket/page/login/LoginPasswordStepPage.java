@@ -7,7 +7,7 @@ import org.apache.wicket.model.Model;
 public class LoginPasswordStepPage extends AbstractLoginPage {
 	
 	public LoginPasswordStepPage() {
-		String relativePath = getRequest().getRelativePathPrefixToContextRoot();
+		String relativePath = getRequest().getPrefixToContextPath();
 		String url = buildSuperflyPasswordSecurityCheckUrl(relativePath);
 		Form<Void> form = new Form<Void>("form");
 		form.add(new AttributeModifier("action", new Model<String>(url)));

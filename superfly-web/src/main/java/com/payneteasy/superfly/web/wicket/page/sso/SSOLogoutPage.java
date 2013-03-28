@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -17,7 +17,7 @@ public class SSOLogoutPage extends BaseSSOPage {
 
     public SSOLogoutPage() {
         WebRequest request = (WebRequest) getRequest();
-        String returnUrl = request.getParameter("returnUrl");
+        String returnUrl = request.getRequestParameters().getParameterValue("returnUrl").toString();
 
         String ssoSessionId = SSOUtils.getSsoSessionIdFromCookie(request);
 

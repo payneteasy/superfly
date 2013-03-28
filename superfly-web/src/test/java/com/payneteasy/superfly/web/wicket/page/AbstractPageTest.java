@@ -1,10 +1,10 @@
 package com.payneteasy.superfly.web.wicket.page;
 
 import com.payneteasy.superfly.web.wicket.page.sso.Tester;
-import org.apache.wicket.injection.ComponentInjector;
-import org.apache.wicket.injection.ConfigurableInjector;
+import org.apache.wicket.Component;
+import org.apache.wicket.application.IComponentInstantiationListener;
 import org.apache.wicket.injection.IFieldValueFactory;
-import org.apache.wicket.injection.web.InjectorHolder;
+import org.apache.wicket.injection.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -25,22 +25,11 @@ public abstract class AbstractPageTest {
     @Before
     public void initPageTest() {
         tester = new Tester();
-        tester.getApplication().addComponentInstantiationListener(new ComponentInjector() {{
-            InjectorHolder.setInjector(createInjector());
-        }});
+        tester.getApplication().getComponentInstantiationListeners().add(new TestInjector());
     }
 
     protected Object getBean(Class<?> type) {
         return null;
-    }
-
-    private ConfigurableInjector createInjector() {
-        return new ConfigurableInjector() {
-            @Override
-            protected IFieldValueFactory getFieldValueFactory() {
-                return createFieldValueFactory();
-            }
-        };
     }
 
     private IFieldValueFactory createFieldValueFactory() {
@@ -59,5 +48,19 @@ public abstract class AbstractPageTest {
                 return getBean(field.getType()) != null;
             }
         };
+    }
+
+    private class TestInjector extends Injector implements IComponentInstantiationListener {
+        private IFieldValueFactory fieldValueFactory = createFieldValueFactory();
+
+        @Override
+        public void onInstantiation(Component component) {
+            inject(component);
+        }
+
+        @Override
+        public void inject(Object object) {
+            inject(object, fieldValueFactory);
+        }
     }
 }

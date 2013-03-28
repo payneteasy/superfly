@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.smtp_server;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.spring.injection.annot.SpringBean;

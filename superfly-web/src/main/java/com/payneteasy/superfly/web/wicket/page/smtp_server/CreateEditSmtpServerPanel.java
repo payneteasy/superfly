@@ -4,11 +4,11 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 /**
  * @author rpuch
@@ -29,8 +29,8 @@ public abstract class CreateEditSmtpServerPanel extends Panel {
                 if (!result.isOk()) {
                     error(result.getErrorMessage());
                 } else {
-                    RequestCycle.get().setResponsePage(ViewSmtpServerPage.class, PageParametersBuilder.createId(finalServer.getId()));
-                    RequestCycle.get().setRedirect(true);
+                    RequestCycle.get().setResponsePage(ViewSmtpServerPage.class,
+                            PageParametersBuilder.createId(finalServer.getId()));
                 }
             }
         };
@@ -55,7 +55,6 @@ public abstract class CreateEditSmtpServerPanel extends Panel {
             @Override
             public void onClick() {
                 RequestCycle.get().setResponsePage(ListSmtpServersPage.class);
-                RequestCycle.get().setRedirect(true);
             }
         });
     }

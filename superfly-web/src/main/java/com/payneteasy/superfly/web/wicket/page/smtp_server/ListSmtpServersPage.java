@@ -4,7 +4,6 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForList;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -13,6 +12,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
@@ -48,7 +48,6 @@ public class ListSmtpServersPage extends AbstractSmtpServerPage {
                             error(result.getErrorMessage());
                         } else {
                             RequestCycle.get().setResponsePage(ListSmtpServersPage.class);
-                            RequestCycle.get().setRedirect(true);
                         }
                     }
                 });

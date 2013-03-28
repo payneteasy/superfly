@@ -1,25 +1,20 @@
 package com.payneteasy.superfly.web.wicket.page.group;
 
-import java.io.Serializable;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
 
 @Secured("ROLE_ADMIN")
 public class CloneGroupPage extends BasePage {
@@ -35,7 +30,7 @@ public class CloneGroupPage extends BasePage {
 	public CloneGroupPage(PageParameters param) {
 		super(ListGroupsPage.class, param);
 		
-		final Long sourceId = param.getAsLong("sid");
+		final Long sourceId = param.get("sid").toLong();
 		
 		final UIGroup sourceGroup = groupService.getGroupById(sourceId);
 		GroupModel groupModel = new GroupModel();

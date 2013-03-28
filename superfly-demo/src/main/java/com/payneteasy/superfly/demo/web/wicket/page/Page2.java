@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.demo.web.wicket.page;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.springframework.security.annotation.Secured;
 
 @Secured({"ROLE_ADMINPAGE2", "ROLE_USERPAGE2"})

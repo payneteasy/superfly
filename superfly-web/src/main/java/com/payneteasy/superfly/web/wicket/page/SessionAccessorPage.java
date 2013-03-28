@@ -1,10 +1,9 @@
 package com.payneteasy.superfly.web.wicket.page;
 
 import com.payneteasy.superfly.web.wicket.SuperflySession;
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * @author rpuch
@@ -17,20 +16,8 @@ public class SessionAccessorPage extends WebPage {
         super(model);
     }
 
-    public SessionAccessorPage(IPageMap pageMap) {
-        super(pageMap);
-    }
-
-    public SessionAccessorPage(IPageMap pageMap, IModel<?> model) {
-        super(pageMap, model);
-    }
-
     public SessionAccessorPage(PageParameters parameters) {
         super(parameters);
-    }
-
-    public SessionAccessorPage(IPageMap pageMap, PageParameters parameters) {
-        super(pageMap, parameters);
     }
 
     @Override

@@ -14,7 +14,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -44,7 +44,7 @@ public class CloneUserPage extends BasePage {
 	public CloneUserPage(PageParameters params) {
 		super(ListUsersPage.class, params);
 		
-		final long userId = params.getAsLong("userId");
+		final long userId = params.get("userId").toLong();
 		final UIUser oldUser = userService.getUser(userId);
 		
 		final UIUserWithPassword2 user = new UIUserWithPassword2();
@@ -59,7 +59,6 @@ public class CloneUserPage extends BasePage {
 					error("Could not send a message: " + e.getMessage());
 				}
 				getRequestCycle().setResponsePage(ListUsersPage.class);
-				getRequestCycle().setRedirect(true);
 				info("User cloned: " + oldUser.getUsername() + " to " + user.getUsername());
 			}
 		};

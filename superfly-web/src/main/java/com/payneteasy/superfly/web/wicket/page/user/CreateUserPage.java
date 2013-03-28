@@ -1,29 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.payneteasy.superfly.model.RoutineResult;
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.EmailAddressValidator;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
@@ -38,6 +17,21 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.springframework.security.access.annotation.Secured;
+
+import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class CreateUserPage extends BasePage {
@@ -151,7 +145,6 @@ public class CreateUserPage extends BasePage {
                 if (result != null) {
                     if (result.isOk()) {
                         getRequestCycle().setResponsePage(ListUsersPage.class);
-                        getRequestCycle().setRedirect(true);
                         info("User created: " + user.getUsername());
                     } else if (result.isDuplicate()) {
                         error("User with this username already exists, please peak another one");

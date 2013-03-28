@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.group;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -23,7 +23,7 @@ public class ChangeGroupActionsPage extends BasePage {
 	public ChangeGroupActionsPage(final PageParameters parameters) {
 		super(ListGroupsPage.class, parameters);
 		
-		final long groupId = parameters.getAsLong("gid");
+		final long groupId = parameters.get("gid").toLong();
 		UIGroup group = groupService.getGroupById(groupId);
 		add(new Label("group-name", group.getName()));
         add(new MappingPanel("mapping-panel",groupId){

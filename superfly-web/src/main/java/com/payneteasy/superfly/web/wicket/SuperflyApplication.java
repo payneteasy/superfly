@@ -25,20 +25,19 @@ import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.*;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
-import com.payneteasy.superfly.wicket.PageInterceptingWebRequestCycleProcessor;
-import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
+import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCycleProcessor;
-import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.mapper.CryptoMapper;
 
 public class SuperflyApplication extends BaseApplication {
 
 	@Override
 	protected void customInit() {
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
+        CryptoMapper requestMapper = new CryptoMapper(getRootRequestMapper(), this);
+        setRootRequestMapper(new PageInterceptingRequestMapper(requestMapper,
+                createInterceptionDecisions(), ChangePasswordPage.class));
 
         mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePage("/login", LoginPasswordStepPage.class);
@@ -86,26 +85,36 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePage("smtp-servers/view", ViewSmtpServerPage.class);
 	}
 
-	@Override
+    protected InterceptionDecisions createInterceptionDecisions() {
+        return new InterceptionDecisions() {
+            @Override
+            public boolean shouldIntercept(Request requestCycle) {
+                return SecurityUtils.isTempPassword();
+            }
+        };
+    }
+
+    @Override
 	public Class<? extends Page> getHomePage() {
 		return HomePage.class;
 	}
 
-	@Override
-	protected IRequestCycleProcessor newRequestCycleProcessor() {
-		return new PageInterceptingWebRequestCycleProcessor(ChangePasswordPage.class,
-				new InterceptionDecisions() {
-					public boolean shouldIntercept(RequestCycle requestCycle,
-							RequestParameters requestParameters) {
-						return SecurityUtils.isTempPassword();
-					}
-				}) {
-            @Override
-            public IRequestCodingStrategy newRequestCodingStrategy() {
-                return new SessionStoreUrlWebRequestCodingStrategy(
-                        new WebRequestCodingStrategy());
-            }
-        };
-	}
+    // TODO: test temp password changing! (and request coding strategy)
+//	@Override
+//	protected IRequestCycleProcessor newRequestCycleProcessor() {
+//		return new PageInterceptingWebRequestCycleProcessor(ChangePasswordPage.class,
+//				new InterceptionDecisions() {
+//					public boolean shouldIntercept(RequestCycle requestCycle,
+//							IRequestParameters requestParameters) {
+//						return SecurityUtils.isTempPassword();
+//					}
+//				}) {
+//            @Override
+//            public IRequestCodingStrategy newRequestCodingStrategy() {
+//                return new SessionStoreUrlWebRequestCodingStrategy(
+//                        new WebRequestCodingStrategy());
+//            }
+//        };
+//	}
     
 }

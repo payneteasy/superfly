@@ -13,7 +13,7 @@ import com.payneteasy.superfly.security.exception.BadOTPValueException;
 public abstract class AbstractLoginPage extends WebPage {
     protected String getSpringSecurityExceptionMessageAndRemoveException() {
         ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
-        HttpServletRequest request = servletWebRequest.getHttpServletRequest();
+        HttpServletRequest request = servletWebRequest.getContainerRequest();
 
         HttpSession session = request.getSession(false);
         Object ex = null;

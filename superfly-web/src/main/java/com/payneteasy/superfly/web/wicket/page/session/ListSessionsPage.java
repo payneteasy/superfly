@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.session;
 
 import java.util.List;
 
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -89,7 +89,7 @@ public class ListSessionsPage extends BasePage {
 		UISession session = item.getModelObject();
 		item.add(new Label("session-id", String.valueOf(session.getId())));
 		PageParameters params = new PageParameters();
-		params.add("userId", String.valueOf(session.getUserId()));
+		params.set("userId", String.valueOf(session.getUserId()));
 		BookmarkablePageLink<UserDetailsPage> userLink = new BookmarkablePageLink<UserDetailsPage>(
 				"user-link", UserDetailsPage.class, params);
 		item.add(userLink);

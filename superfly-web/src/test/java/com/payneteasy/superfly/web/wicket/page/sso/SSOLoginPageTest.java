@@ -6,7 +6,7 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
-import org.apache.wicket.PageParameters;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,13 +46,13 @@ public class SSOLoginPageTest extends AbstractPageTest {
         expect(subsystemService.getSubsystemByName("test-subsystem"))
                 .andReturn(subsystem).anyTimes();
         replay(subsystemService);
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
-        assertEquals("the subsystem", tester.getWicketSession().getSsoLoginData().getSubsystemTitle());
-        assertEquals("subsystem-url", tester.getWicketSession().getSsoLoginData().getSubsystemUrl());
+        assertEquals("the subsystem", tester.getSession().getSsoLoginData().getSubsystemTitle());
+        assertEquals("subsystem-url", tester.getSession().getSsoLoginData().getSubsystemUrl());
 
         verify(subsystemService);
     }
@@ -75,8 +75,8 @@ public class SSOLoginPageTest extends AbstractPageTest {
 
         replay(sessionService, subsystemService);
 
-        tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
@@ -94,8 +94,8 @@ public class SSOLoginPageTest extends AbstractPageTest {
 
         replay(sessionService, subsystemService);
 
-        tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
@@ -110,16 +110,16 @@ public class SSOLoginPageTest extends AbstractPageTest {
         expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
 
         replay(sessionService, subsystemService);
 
-        tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
         }}));
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
 
         verify(sessionService, subsystemService);
     }
@@ -129,29 +129,29 @@ public class SSOLoginPageTest extends AbstractPageTest {
         expect(sessionService.getValidSSOSession("super-session-id"))
                 .andReturn(new SSOSession(1, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
 
         replay(sessionService, subsystemService);
 
-        tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "http://some.domain/target");
         }}));
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
 
         verify(sessionService, subsystemService);
     }
 
     @Test
     public void testNoParams() {
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test");
         }}));
         tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "No targetUrl parameter specified");
 
-        tester.startPage(SSOLoginPage.class, new PageParameters(new HashMap<String, Object>() {{
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("targetUrl", "/target");
         }}));
         tester.assertRenderedPage(SSOLoginErrorPage.class);

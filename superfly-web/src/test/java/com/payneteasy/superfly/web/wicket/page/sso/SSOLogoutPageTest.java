@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
-import org.apache.wicket.PageParameters;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,10 +31,10 @@ public class SSOLogoutPageTest extends AbstractPageTest {
 
     @Test
     public void testNoSSOCookie() {
-        tester.startPage(SSOLogoutPage.class, new PageParameters(new HashMap<String, Object>() {{
-            put("returnUrl", "http://localhost/return-url");
+        tester.startPage(SSOLogoutPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
+            put("returnUrl", "http://some.domain.test/return-url");
         }}));
-        tester.assertRedirected("http://localhost/return-url");
+        tester.assertRedirectUrl("http://some.domain.test/return-url");
     }
 
     @Test
@@ -43,11 +43,11 @@ public class SSOLogoutPageTest extends AbstractPageTest {
         EasyMock.expectLastCall();
         EasyMock.replay(sessionService);
 
-        tester.getServletResponse().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
-        tester.startPage(SSOLogoutPage.class, new PageParameters(new HashMap<String, Object>() {{
-            put("returnUrl", "http://localhost/return-url");
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLogoutPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
+            put("returnUrl", "http://some.domain.test/return-url");
         }}));
-        tester.assertRedirected("http://localhost/return-url");
+        tester.assertRedirectUrl("http://some.domain.test/return-url");
 
         EasyMock.verify(sessionService);
     }

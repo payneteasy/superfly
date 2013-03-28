@@ -12,7 +12,7 @@ import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 
 public class LoginPageWithoutHOTP extends WebPage {
 	public LoginPageWithoutHOTP() {
-		String relativePath = getRequest().getRelativePathPrefixToContextRoot();
+        String relativePath = getRequest().getPrefixToContextPath();
 		String url = buildSuperflyPasswordSecurityCheckUrl(relativePath);
 		Form<Void> form = new Form<Void>("form");
 		form.add(new AttributeModifier("action", new Model<String>(url)));
@@ -33,7 +33,7 @@ public class LoginPageWithoutHOTP extends WebPage {
 
 	protected String getSpringSecurityExceptionMessage() {
 		ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
-		HttpServletRequest request = servletWebRequest.getHttpServletRequest();
+		HttpServletRequest request = servletWebRequest.getContainerRequest();
 
 		HttpSession session = request.getSession(false);
 		Object ex = null;

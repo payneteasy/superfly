@@ -60,17 +60,17 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
         replay(internalSSOService, sessionService, subsystemService);
 
         SSOLoginData loginData = createLoginData();
-        tester.getWicketSession().setSsoLoginData(loginData);
+        tester.getSession().setSsoLoginData(loginData);
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         FormTester form = tester.newFormTester("form");
         form.setValue("hotp", "111111");
         form.submit();
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(internalSSOService, sessionService, subsystemService);
@@ -96,7 +96,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
                         .andReturn(false);
         replay(internalSSOService);
 
-        tester.getWicketSession().setSsoLoginData(createLoginData());
+        tester.getSession().setSsoLoginData(createLoginData());
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         FormTester form = tester.newFormTester("form");

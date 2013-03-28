@@ -1,35 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Locale;
-
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.target.resource.ResourceStreamRequestTarget;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -45,6 +15,32 @@ import com.payneteasy.superfly.web.wicket.component.label.DateLabels;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.lang.Bytes;
+import org.apache.wicket.util.resource.AbstractResourceStream;
+import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
+import org.apache.wicket.util.time.Time;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.*;
+import java.util.Iterator;
 
 /**
  * Displays a list of users.
@@ -115,7 +111,7 @@ public class ListUsersPage extends BasePage {
 			protected void populateItem(Item<UIUserForList> item) {
 				final UIUserForList user = item.getModelObject();
 				final PageParameters actionsParameters = new PageParameters();
-				actionsParameters.add("userId", String.valueOf(user.getId()));
+				actionsParameters.set("userId", String.valueOf(user.getId()));
 				BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("view-user",
 						UserDetailsPage.class, actionsParameters);
 				item.add(viewUserLink);
@@ -170,41 +166,33 @@ public class ListUsersPage extends BasePage {
 							throw new IllegalStateException(e);
 						}
 						final byte[] bytes = os.toByteArray();
-						IResourceStream resourceStream = new IResourceStream() {
-								private Locale locale;
-								
-								public Time lastModifiedTime() {
-									return Time.now();
-								}
-								
-								public void setLocale(Locale locale) {
-								}
-								
-								public long length() {
-									return bytes.length;
-								}
-								
-								public Locale getLocale() {
-									return locale;
-								}
-								
-								public InputStream getInputStream() throws ResourceStreamNotFoundException {
-									return new ByteArrayInputStream(bytes);
-								}
-								
-								public String getContentType() {
-									return "application/vnd.ms-excel";
-								}
-								
-								public void close() throws IOException {
-								}
+						IResourceStream resourceStream = new AbstractResourceStream() {
+                            @Override
+                            public Time lastModifiedTime() {
+                                return Time.now();
+                            }
+
+                            @Override
+                            public Bytes length() {
+                                return Bytes.bytes(bytes.length);
+                            }
+
+                            @Override
+                            public InputStream getInputStream() throws ResourceStreamNotFoundException {
+                                return new ByteArrayInputStream(bytes);
+                            }
+
+                            @Override
+                            public String getContentType() {
+                                return "application/vnd.ms-excel";
+                            }
+
+                            @Override
+                            public void close() throws IOException {
+                            }
 						};
-						getRequestCycle().setRequestTarget(new ResourceStreamRequestTarget(resourceStream) {
-							@Override
-							public String getFileName() {
-								return hotpProvider.getSequenceForDownloadFileName(user.getUsername());
-							}
-						});
+						getRequestCycle().replaceAllRequestHandlers(new ResourceStreamRequestHandler(resourceStream,
+                                hotpProvider.getSequenceForDownloadFileName(user.getUsername())));
 					}
 					
 				};

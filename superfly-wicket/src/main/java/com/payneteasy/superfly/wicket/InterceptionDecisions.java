@@ -1,9 +1,7 @@
 package com.payneteasy.superfly.wicket;
 
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.request.Request;
 
 public interface InterceptionDecisions {
-	boolean shouldIntercept(RequestCycle requestCycle,
-			RequestParameters requestParameters);
+	boolean shouldIntercept(Request requestCycle);
 }

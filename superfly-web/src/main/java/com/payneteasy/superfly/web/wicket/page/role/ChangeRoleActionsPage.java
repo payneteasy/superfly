@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.role;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -23,7 +23,7 @@ public class ChangeRoleActionsPage extends BasePage {
 	public ChangeRoleActionsPage(final PageParameters parameters) {
 		super(ListRolesPage.class, parameters);
 
-		final long roleId = parameters.getAsLong("id");
+		final long roleId = parameters.get("id").toLong();
 		UIRole role = roleService.getRole(roleId);
 		add(new Label("role-name", role.getRoleName()));
 		

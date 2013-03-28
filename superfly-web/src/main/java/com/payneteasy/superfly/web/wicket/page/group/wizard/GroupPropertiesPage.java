@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.group.wizard;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -37,7 +37,7 @@ public class GroupPropertiesPage extends BasePage {
 	public GroupPropertiesPage(PageParameters param) {
 		super(ListGroupsPage.class, param);
 
-		final Long groupId = param.getAsLong("gid");
+		final Long groupId = param.get("gid").toLong();
 
 		String msg_text = "Please, provide new Group name and Subsystem";
 		GroupWizardModel groupModel = new GroupWizardModel();
@@ -67,7 +67,7 @@ public class GroupPropertiesPage extends BasePage {
 				if (groupId == null) {
 					groupService.createGroup(group);
 					PageParameters params = new PageParameters();
-					params.add("gid", String.valueOf(groupId == null ? group.getId() : groupId));
+					params.set("gid", String.valueOf(groupId == null ? group.getId() : groupId));
 					setResponsePage(GroupActionsPage.class, params);
 				} else {
 					group.setId(groupId);

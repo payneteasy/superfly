@@ -1,31 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.action;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.Strings;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
@@ -34,6 +8,29 @@ import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.Strings;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class CopyActionPropertiesPage extends BasePage {
@@ -42,12 +39,12 @@ public class CopyActionPropertiesPage extends BasePage {
 
 	public CopyActionPropertiesPage(final PageParameters parameters) {
 		super(ListActionsPage.class, parameters);
-		final long actionId = parameters.getAsLong("id", -1);
+		final long actionId = parameters.get("id").toLong(-1);
 
 		// modalWindow
 		final ModalWindow modalWindow;
 		add(modalWindow = new ModalWindow("modalWindow"));
-		modalWindow.setPageMapName("modal-name");
+//		modalWindow.setPageMapName("modal-name");
 		modalWindow.setCookieName("modal-cookie");
 		modalWindow.setPageCreator(new ModalWindow.PageCreator() {
 			public Page createPage() {
@@ -56,7 +53,7 @@ public class CopyActionPropertiesPage extends BasePage {
 		});
 		modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
 			public void onClose(AjaxRequestTarget target) {
-				if (parameters.containsKey("copy")) {
+				if (!parameters.get("copy").isNull()) {
 					setResponsePage(ListActionsPage.class);
 				}
 
@@ -74,11 +71,11 @@ public class CopyActionPropertiesPage extends BasePage {
 		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model("")) {
 
 			@Override
-			protected Iterator getChoices(String input) {
+			protected Iterator<String> getChoices(String input) {
 				if (Strings.isEmpty(input)) {
-					return Collections.EMPTY_LIST.iterator();
+					return Collections.<String>emptyList().iterator();
 				}
-				List choices = new ArrayList(20);
+				List<String> choices = new ArrayList<String>(20);
 				List<UIActionForFilter> action = actionService.getActionForFilter();
 				for (UIActionForFilter uia : action) {
 					final String name = uia.getActionName();
@@ -130,7 +127,7 @@ public class CopyActionPropertiesPage extends BasePage {
 
 					@Override
 					public void onClick(AjaxRequestTarget target) {
-						parameters.put("copyId", action.getId());
+						parameters.set("copyId", action.getId());
 						modalWindow.show(target);
 					}
 

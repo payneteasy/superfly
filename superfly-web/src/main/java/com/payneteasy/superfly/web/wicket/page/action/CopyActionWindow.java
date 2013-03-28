@@ -1,20 +1,19 @@
 package com.payneteasy.superfly.web.wicket.page.action;
 
-import java.io.Serializable;
-
-import org.apache.wicket.PageParameters;
+import com.payneteasy.superfly.model.ui.action.UIAction;
+import com.payneteasy.superfly.service.ActionService;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import com.payneteasy.superfly.model.ui.action.UIAction;
-import com.payneteasy.superfly.service.ActionService;
+import java.io.Serializable;
 
 public class CopyActionWindow extends WebPage {
 	@SpringBean
@@ -24,8 +23,8 @@ public class CopyActionWindow extends WebPage {
 	public CopyActionWindow(final CopyActionPropertiesPage actionPropertiesPage, final ModalWindow modalWindow,
 			final PageParameters parameters) {
 		super(parameters);
-		final Long actionId = parameters.getAsLong("id");
-		final Long actionIdForCopy = parameters.getAsLong("copyId");
+		final Long actionId = parameters.get("id").toLong();
+		final Long actionIdForCopy = parameters.get("copyId").toLong();
 		UIAction action = actionService.getAction(actionId);
 		UIAction actionForCopy = actionService.getAction(actionIdForCopy);
 		final ActionSelected check = new ActionSelected();
@@ -41,19 +40,19 @@ public class CopyActionWindow extends WebPage {
 		form.add(new Label("action-desc", action.getActionDescription()));
 		form.add(new Label("action-subname", action.getSubsystemName()));
 		form.add(new CheckBox("selected", new PropertyModel<Boolean>(check, "selected")));
-		form.add(new AjaxSubmitButton("copy") {
+		form.add(new AjaxButton("copy") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
-				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected() ? true : false);
+				actionService.copyActionProperties(actionIdForCopy, actionId, check.isSelected());
 				info("properties are copied");
-				parameters.put("copy", "copy");
+				parameters.set("copy", "copy");
 				modalWindow.close(target);
 			}
 
 		});
-		form.add(new AjaxSubmitButton("cancel") {
+		form.add(new AjaxButton("cancel") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
