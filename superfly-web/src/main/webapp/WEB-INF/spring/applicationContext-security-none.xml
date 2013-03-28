@@ -2,14 +2,15 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-		
+
+    <sec:http security="none" pattern="/favicon.ico"/>
+    <sec:http security="none" pattern="/css/**"/>
+    <sec:http security="none" pattern="/login*"/>
+    <sec:http security="none" pattern="/sso/**"/>
+
     <sec:http auto-config="false">
-        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
-        <sec:intercept-url pattern="/css/**"   filters="none"/>
-        <sec:intercept-url pattern="/login*" filters="none"/>
-        <sec:intercept-url pattern="/sso/**" filters="none"/>
 
 		<!--
 			If you're not planning to use client SSL auth to protect your subsystem
@@ -28,7 +29,7 @@
         <sec:x509 user-service-ref="subsystemUserDetailsService"/>
 
     </sec:http>
-    
+
     <sec:authentication-manager alias="authenticationManager">
         <sec:authentication-provider ref="superflyLocalAuthenticationProvider"/>
     </sec:authentication-manager>
