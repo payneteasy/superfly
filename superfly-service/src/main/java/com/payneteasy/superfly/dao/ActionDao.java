@@ -31,7 +31,7 @@ public interface ActionDao {
 			List<ActionToSave> actions);
 
 	@AStoredProcedure(name = "ui_get_actions_list")
-	List<UIActionForList> getActions(int startFrom, int recordsCount,
+	List<UIActionForList> getActions(long startFrom, long recordsCount,
 			int orderFieldNumber, String orderType, String actionNamePrefix,
 			String description, String subsystemIds);
 
@@ -39,7 +39,7 @@ public interface ActionDao {
 	void changeActionsLogLevel(String actnListLogOn, String actnListLogOff);
 
 	@AStoredProcedure(name = "ui_get_actions_list_count")
-	int getActionCount(String actionName, String description,
+	long getActionCount(String actionName, String description,
 			String subsystemIds);
 
 	@AStoredProcedure(name = "ui_filter_dyn_actions")

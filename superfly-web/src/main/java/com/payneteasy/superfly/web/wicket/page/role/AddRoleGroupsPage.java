@@ -52,8 +52,8 @@ public class AddRoleGroupsPage extends BasePage {
 
 		final IDataProvider<UIGroupForCheckbox> rolesProvider = new BaseDataProvider<UIGroupForCheckbox>() {
 
-			public Iterator<? extends UIGroupForCheckbox> iterator(int first,
-					int count) {
+			public Iterator<? extends UIGroupForCheckbox> iterator(long first,
+                    long count) {
 				List<UIGroupForCheckbox> allGroupsForRole = roleService
 						.getAllRoleGroups(first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
@@ -63,7 +63,7 @@ public class AddRoleGroupsPage extends BasePage {
 				return allGroupsForRole.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				return roleService.getAllRoleGroupsCount(roleId);
 			}
 

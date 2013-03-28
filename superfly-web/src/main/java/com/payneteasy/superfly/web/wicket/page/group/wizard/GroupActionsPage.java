@@ -90,18 +90,17 @@ public class GroupActionsPage extends BasePage {
 		
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForGroup> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
+		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
 				fieldName) {
 			
-			public Iterator<? extends UIActionForCheckboxForGroup> iterator(int first,
-					int count) {
+			public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first, long count) {
 				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupActions(first, count, getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
 				actionsHolder.setObject(list);
 				actionsCheckGroupModel.clearInitialized();
 				return list.iterator(); 
 			}
 
-			public int size() {
+			public long size() {
 				return groupService.getAllGroupActionsCount(groupId, filter.getActionNameSubstring());
 			}
 

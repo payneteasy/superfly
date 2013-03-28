@@ -62,7 +62,7 @@ public class AddRoleActionsPage extends BasePage {
 		final IDataProvider<UIActionForCheckboxForRole> actionsProvider = new BaseDataProvider<UIActionForCheckboxForRole>() {
 
 			public Iterator<? extends UIActionForCheckboxForRole> iterator(
-					int first, int count) {
+                    long first, long count) {
 				List<UIActionForCheckboxForRole> allRoleActions = roleService
 						.getAllRoleActions(first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
@@ -73,7 +73,7 @@ public class AddRoleActionsPage extends BasePage {
 				return allRoleActions.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				return roleService.getAllRoleActionsCount(roleId, filters
 						.getActionNameSubstring());
 			}

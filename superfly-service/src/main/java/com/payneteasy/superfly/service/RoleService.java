@@ -20,11 +20,11 @@ public interface RoleService {
 
 	List<UIRoleForFilter> getRolesForFilter();
 
-	List<UIRoleForList> getRoles(int startFrom, int recordsCount,
+	List<UIRoleForList> getRoles(long startFrom, long recordsCount,
 			int orderFieldNumber, boolean asc, String rolesName,
 			List<Long> subsystems);
 
-	int getRoleCount(String rolesName, List<Long> subsystems);
+    long getRoleCount(String rolesName, List<Long> subsystems);
 
 	RoutineResult deleteRole(long roleId);
 
@@ -34,29 +34,29 @@ public interface RoleService {
 
 	RoutineResult createRole(UIRole role);
 
-	List<UIGroupForCheckbox> getAllRoleGroups(int startFrom, int recordsCount,
+	List<UIGroupForCheckbox> getAllRoleGroups(long startFrom, long recordsCount,
 			int orderFieldNumber, String orderType, long roleId);
 
 	RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds,
 			List<Long> groupToRemoveIds);
 
-	List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	List<UIActionForCheckboxForRole> getAllRoleActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);
 
-	int getAllRoleActionsCount(long roleId, String actionName);
+    long getAllRoleActionsCount(long roleId, String actionName);
 
-	List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);
 
-	List<UIActionForCheckboxForRole> getUnMappedRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	List<UIActionForCheckboxForRole> getUnMappedRoleActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName);
 
-	int getMappedRoleActionsCount(long roleId, String actionName);
+    long getMappedRoleActionsCount(long roleId, String actionName);
 
-	int getAllRoleGroupsCount(long roleId);
+    long getAllRoleGroupsCount(long roleId);
 
 	RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
 			List<Long> actionToRemoveIds);

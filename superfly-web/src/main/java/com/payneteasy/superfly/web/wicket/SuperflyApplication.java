@@ -27,8 +27,8 @@ import com.payneteasy.superfly.web.wicket.page.user.*;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
+import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.request.Request;
-import org.apache.wicket.request.mapper.CryptoMapper;
 
 public class SuperflyApplication extends BaseApplication {
 

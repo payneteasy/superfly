@@ -49,12 +49,12 @@ public class RoleServiceImpl implements RoleService {
 		return roleDao.getRolesForFilter(null, null, 0, Integer.MAX_VALUE);
 	}
 
-	public int getRoleCount(String rolesName, List<Long> subsystems) {
+	public long getRoleCount(String rolesName, List<Long> subsystems) {
 		return roleDao.getRoleCount(rolesName, StringUtils
 				.collectionToCommaDelimitedString(subsystems));
 	}
 
-	public List<UIRoleForList> getRoles(int startFrom, int recordsCount,
+	public List<UIRoleForList> getRoles(long startFrom, long recordsCount,
 			int orderFieldNumber, boolean asc, String rolesName,
 			List<Long> subsystems) {
 		return roleDao.getRoles(startFrom, recordsCount, orderFieldNumber,
@@ -120,36 +120,36 @@ public class RoleServiceImpl implements RoleService {
 		return result;
 	}
 
-	public List<UIActionForCheckboxForRole> getAllRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	public List<UIActionForCheckboxForRole> getAllRoleActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName) {
 		return roleDao.getAllRoleActions(startFrom, recordsCount,
 				orderFieldNumber, ascending ? DaoConstants.ASC
 						: DaoConstants.DESC, roleId, actionName);
 	}
 
-	public int getAllRoleActionsCount(long roleId, String actionName) {
+	public long getAllRoleActionsCount(long roleId, String actionName) {
 		return roleDao.getAllRoleActionsCount(roleId, actionName);
 	}
 
-	public List<UIActionForCheckboxForRole> getMappedRoleActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	public List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId, String actionName) {
 		return roleDao.getMappedRoleActions(startFrom, recordsCount,
 				orderFieldNumber, ascending ? DaoConstants.ASC
 						: DaoConstants.DESC, roleId, actionName);
 	}
 
-	public int getMappedRoleActionsCount(long roleId, String actionName) {
+	public long getMappedRoleActionsCount(long roleId, String actionName) {
 		return roleDao.getMappedRoleActionsCount(roleId, actionName);
 	}
 
-	public int getAllRoleGroupsCount(long roleId) {
+	public long getAllRoleGroupsCount(long roleId) {
 		return roleDao.getAllRoleGroupsCount(roleId);
 	}
 
-	public List<UIGroupForCheckbox> getAllRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+	public List<UIGroupForCheckbox> getAllRoleGroups(long startFrom,
+            long recordsCount, int orderFieldNumber, String orderType,
 			long roleId) {
 		return roleDao.getAllRoleGroups(startFrom, recordsCount,
 				orderFieldNumber, orderType, roleId);
@@ -163,7 +163,7 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public List<UIActionForCheckboxForRole> getUnMappedRoleActions(
-			int startFrom, int recordsCount, int orderFieldNumber,
+            long startFrom, long recordsCount, int orderFieldNumber,
 			boolean ascending, long roleId, String actionName) {
 
 		return roleDao.getUnMappedRoleActions(startFrom, recordsCount,

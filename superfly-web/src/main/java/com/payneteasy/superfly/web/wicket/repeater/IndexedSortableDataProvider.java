@@ -17,7 +17,7 @@ import org.apache.wicket.model.Model;
  * @author Roman Puchkovskiy
  * @param <T>	provided type
  */
-public abstract class IndexedSortableDataProvider<T extends Serializable> extends SortableDataProvider<T> {
+public abstract class IndexedSortableDataProvider<T extends Serializable> extends SortableDataProvider<T, String> {
 	private Map<String, Integer> fieldNameToIndex;
 	
 	/**

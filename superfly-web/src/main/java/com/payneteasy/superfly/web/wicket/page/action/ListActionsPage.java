@@ -1,33 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.action;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.string.Strings;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -41,6 +13,24 @@ import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
+import org.apache.wicket.Page;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.Strings;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
+import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class ListActionsPage extends BasePage {
@@ -110,11 +100,11 @@ public class ListActionsPage extends BasePage {
 		};
 		
 		String[] fieldName = { "actionId","actionName", "actionDescription","actionLog","subsystemId" ,"subsystemName"};
-		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
+		SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
 				fieldName) {
 
-			public Iterator<? extends UIActionForList> iterator(int first,
-					int count) {
+			public Iterator<? extends UIActionForList> iterator(long first,
+                    long count) {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				String actionForFilter = stickyFilters.getActionNameSubstring();
 				List<Long> subsystemId = new ArrayList<Long>();
@@ -136,7 +126,7 @@ public class ListActionsPage extends BasePage {
 				}
 			}
 
-			public int size() {
+			public long size() {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if(subsystem == null){
@@ -186,7 +176,7 @@ public class ListActionsPage extends BasePage {
 				item.add(switchLogLevel);
 				item.add(new Check<UIActionForList>("selected", item.getModel(),group));
 				item.add(new BookmarkablePageLink<Page>("copy-action",
-						CopyActionPropertiesPage.class ).setParameter("id", action.getId()));
+						CopyActionPropertiesPage.class, PageParametersBuilder.fromPair("id", action.getId())));
 				
 			}
 			

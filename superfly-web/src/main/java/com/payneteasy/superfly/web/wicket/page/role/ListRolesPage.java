@@ -14,6 +14,7 @@ import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -70,42 +71,31 @@ public class ListRolesPage extends BasePage {
 
 		};
 		String[] fieldNames = { "roleId", "roleName", "principalName", "subsystemName" };
-		SortableDataProvider<UIRoleForList> rolesDataProvider = new IndexedSortableDataProvider<UIRoleForList>(
+		SortableDataProvider<UIRoleForList, String> rolesDataProvider = new IndexedSortableDataProvider<UIRoleForList>(
 				fieldNames) {
 
-			public Iterator<? extends UIRoleForList> iterator(int first,
-					int count) {
+			public Iterator<? extends UIRoleForList> iterator(long first, long count) {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
-				if (subsystem == null) {
-					List<UIRoleForList> roles = roleService.getRoles(first, count,
-							getSortFieldIndex(), isAscending(), null,
-							subsystem == null ? null : null);
-					rolesHolder.setObject(roles);
-					rolesCheckGroupModel.clearInitialized();
-					return roles.iterator();
-				} else {
-					subsystemId.add(subsystem.getId());
-					List<UIRoleForList> roles = roleService.getRoles(first, count,
-							getSortFieldIndex(), isAscending(), null,
-							subsystem == null ? null : subsystemId);
-					rolesHolder.setObject(roles);
-					rolesCheckGroupModel.clearInitialized();
-					return roles.iterator();
-				}
+                if (subsystem != null) {
+                    subsystemId.add(subsystem.getId());
+                }
+                List<UIRoleForList> roles = roleService.getRoles(first, count,
+                        getSortFieldIndex(), isAscending(), null,
+                        subsystem == null ? null : subsystemId);
+                rolesHolder.setObject(roles);
+                rolesCheckGroupModel.clearInitialized();
+                return roles.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
-				if (subsystem == null) {
-					return roleService.getRoleCount(null,
-							subsystem == null ? null : null);
-				} else {
-					subsystemId.add(subsystem.getId());
-					return roleService.getRoleCount(null,
-							subsystem == null ? null : subsystemId);
-				}
+                if (subsystem != null) {
+                    subsystemId.add(subsystem.getId());
+                }
+                return roleService.getRoleCount(null,
+                        subsystem == null ? null : subsystemId);
 			}
 
 		};
@@ -135,11 +125,11 @@ public class ListRolesPage extends BasePage {
 				item.add(new Label("subsystem-name", role.getSubsystem()));
 				item.add(new Check<UIRoleForList>("selected", item.getModel(),group));
 				item.add(new BookmarkablePageLink<Page>("role-edit",
-						EditRolePage.class).setParameter("id", role.getId()));
+						EditRolePage.class, PageParametersBuilder.fromPair("id", role.getId())));
 				item.add(new BookmarkablePageLink<Page>("role-groups",
-						ChangeRoleGroupsPage.class).setParameter("id", role.getId()));
+						ChangeRoleGroupsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
 				item.add(new BookmarkablePageLink<Page>("role-actions",
-						ChangeRoleActionsPage.class).setParameter("id", role.getId()));
+						ChangeRoleActionsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
 				item.add(new SubmitLink("delete-role"){
 
 					@Override

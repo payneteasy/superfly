@@ -99,9 +99,9 @@ public class CopyActionPropertiesPage extends BasePage {
 		filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));
 
 		String[] fieldName = { "actionId", "actionName", "actionDescription" };
-		SortableDataProvider<UIActionForList> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
+		SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
 
-			public Iterator<? extends UIActionForList> iterator(int first, int count) {
+			public Iterator<? extends UIActionForList> iterator(long first, long count) {
 				String actionForFilter = autoTextNameAction.getModelObject();
 				List<Long> subsystemId = new ArrayList<Long>();
 				subsystemId.add(subId);
@@ -110,7 +110,7 @@ public class CopyActionPropertiesPage extends BasePage {
 				return actions.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				List<Long> subsystemId = new ArrayList<Long>();
 				subsystemId.add(subId);
 				return actionService.getActionCount(null, null, subsystemId);

@@ -27,4 +27,10 @@ public class PageParametersBuilder {
         }
         return params;
     }
+
+    public static PageParameters fromPair(String key, Object value) {
+        PageParameters params = new PageParameters();
+        params.set(key, value);
+        return params;
+    }
 }

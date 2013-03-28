@@ -64,18 +64,17 @@ public class ViewRolePage extends BasePage {
 		
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "roleId", "roleName", "subsystemName", "actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForRole> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForRole>(
+		final SortableDataProvider<UIActionForCheckboxForRole, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForRole>(
 				fieldName) {
 			
-			public Iterator<? extends UIActionForCheckboxForRole> iterator(int first,
-					int count) {
+			public Iterator<? extends UIActionForCheckboxForRole> iterator(long first, long count) {
 				
 				List<UIActionForCheckboxForRole> list = roleService.getMappedRoleActions(first, count, 
 						getSortFieldIndex(), isAscending(), roleId, filter.getActionNameSubstring());
 				return list.iterator(); 
 			}
 
-			public int size() {
+			public long size() {
 				return roleService.getMappedRoleActionsCount(roleId, filter.getActionNameSubstring());
 			}
 

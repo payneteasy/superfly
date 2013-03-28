@@ -60,7 +60,7 @@ public class ActionDaoTest extends AbstractDaoTest {
 
     @Test
 	public void testGetActionCount() {
-		int count = actionDao.getActionCount(null, null, null);
+		long count = actionDao.getActionCount(null, null, null);
         Assert.assertTrue("Must get some action", count > 0);
 		actionDao.getActionCount("someActionName", "someActionDescription",
 				"1,2");

@@ -114,7 +114,7 @@ public class UserDaoTest extends AbstractDaoTest {
 
     @Test
 	public void testGetUsersCount() {
-		int count = userDao.getUsersCount(null, null, null, null);
+		long count = userDao.getUsersCount(null, null, null, null);
         assertTrue("Must get some users", count > 0);
 		userDao.getUsersCount("someprefix", 1L, 2L, 1L);
 	}

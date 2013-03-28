@@ -72,7 +72,7 @@ public interface UserDao {
 	 * @return users
 	 */
 	@AStoredProcedure(name = "ui_get_users_list")
-	List<UIUserForList> getUsers(int startFrom, int recordsCount, int orderFieldNumber, String orderType,
+	List<UIUserForList> getUsers(long startFrom, long recordsCount, int orderFieldNumber, String orderType,
 			String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
 
 	/**
@@ -89,7 +89,7 @@ public interface UserDao {
 	 * @return users count
 	 */
 	@AStoredProcedure(name = "ui_get_users_list_count")
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
+    long getUsersCount(String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
 
 	/**
 	 * Returns a user for editing.

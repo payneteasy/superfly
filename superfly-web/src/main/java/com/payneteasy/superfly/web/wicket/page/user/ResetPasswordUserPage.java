@@ -51,7 +51,7 @@ public class ResetPasswordUserPage extends BasePage {
 
 			public void onClick(AjaxRequestTarget aTarget) {
 				setNewPassword(passwordGenerator.generate());
-				aTarget.addComponent(label);
+				aTarget.add(label);
 			}
 		});
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));

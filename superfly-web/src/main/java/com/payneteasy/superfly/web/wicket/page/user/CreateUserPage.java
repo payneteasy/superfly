@@ -117,7 +117,7 @@ public class CreateUserPage extends BasePage {
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
-				target.addComponent(models);
+				target.add(models);
 			}
 			
 		});

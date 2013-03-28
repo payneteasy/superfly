@@ -134,7 +134,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 
     @Test
 	public void testGetRoleCount() {
-		int count = roleDao.getRoleCount(null, null);
+		long count = roleDao.getRoleCount(null, null);
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
 	}

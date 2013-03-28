@@ -44,17 +44,17 @@ public class TestPanel extends Panel {
 				try {
 					emailService.sendTestMesage(serverId, addressModel.getObject());
 					info("Test message sent");
-					target.addComponent(feedbackPanel);
+					target.add(feedbackPanel);
 				} catch (RuntimeException e) {
 					logger.error(e.getMessage(), e);
 					error(e.getMessage());
-					target.addComponent(feedbackPanel);
+					target.add(feedbackPanel);
 				}
 				window.close(target);
 			}
 			
 			public void onError(AjaxRequestTarget target, Form<?> form) {
-				target.addComponent(feedbackPanel);
+				target.add(feedbackPanel);
 			}
 		});
 	}

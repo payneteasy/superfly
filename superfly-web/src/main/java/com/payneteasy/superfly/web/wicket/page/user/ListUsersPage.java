@@ -84,9 +84,8 @@ public class ListUsersPage extends BasePage {
 		// data provider + sortability
 		String[] fieldNames = {"userId", "username", "password", "locked",
 				"loginsFailed", "lastLoginDate"};
-		SortableDataProvider<UIUserForList> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
-			public Iterator<? extends UIUserForList> iterator(int first,
-					int count) {
+		SortableDataProvider<UIUserForList, String> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
+			public Iterator<? extends UIUserForList> iterator(long first, long count) {
 				UIRoleForFilter role = userFilters.getRole();
 				UISubsystemForFilter subsystem = userFilters.getSubsystem();
 				return userService.getUsers(userFilters.getUsernamePrefix(),
@@ -95,7 +94,7 @@ public class ListUsersPage extends BasePage {
 						first, count, getSortFieldIndex(), isAscending()).iterator();
 			}
 
-			public int size() {
+			public long size() {
 				UIRoleForFilter role = userFilters.getRole();
 				UISubsystemForFilter subsystem = userFilters.getSubsystem();
 				return userService.getUsersCount(userFilters.getUsernamePrefix(),

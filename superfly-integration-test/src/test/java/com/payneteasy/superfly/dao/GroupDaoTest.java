@@ -59,7 +59,7 @@ public class GroupDaoTest extends AbstractDaoTest {
 
     @Test
 	public void testGetGroupCount(){		
-		int count = groupDao.getGroupsCount(null, null);
+		long count = groupDao.getGroupsCount(null, null);
 		assertTrue("Must get some group", count > 0);
 	}
 

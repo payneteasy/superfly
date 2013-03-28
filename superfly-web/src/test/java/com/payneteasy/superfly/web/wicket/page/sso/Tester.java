@@ -5,6 +5,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.mock.MockApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.util.file.Path;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Assert;
 
@@ -50,7 +51,7 @@ public class Tester extends WicketTester {
         @Override
         protected void init() {
             super.init();
-            getResourceSettings().addResourceFolder("src/main/java");
+            getResourceSettings().getResourceFinders().add(0, new Path("src/main/java"));
         }
 
         @Override

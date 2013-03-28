@@ -59,20 +59,20 @@ public class ViewGroupPage extends BasePage {
 		// SORTABLE DATA PROVIDER
 		
 		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForGroup> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
+		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
 				fieldName) {
 			
-					private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-			public Iterator<? extends UIActionForCheckboxForGroup> iterator(int first,
-					int count) {
+			public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first,
+                    long count) {
 				
 				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupMappedActions(first, count, 
 						getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
 				return list.iterator(); 
 			}
 
-			public int size() {
+			public long size() {
 				return groupService.getAllGroupMappedActionsCount(groupId, filter.getActionNameSubstring());
 			}
 

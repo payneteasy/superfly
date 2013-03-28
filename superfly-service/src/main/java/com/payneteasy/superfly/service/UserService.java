@@ -37,8 +37,8 @@ public interface UserService {
 	 * @return users
 	 */
 	List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
-			Long complectId, Long subsystemId, int startFrom,
-			int recordsCount, int orderFieldNumber, boolean asc);
+			Long complectId, Long subsystemId, long startFrom,
+            long recordsCount, int orderFieldNumber, boolean asc);
 
 	/**
 	 * Returns total count of users satisfy to the given conditions.
@@ -52,7 +52,7 @@ public interface UserService {
 	 * 							(ignored if null)
 	 * @return users count
 	 */
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId,
+    long getUsersCount(String userNamePrefix, Long roleId, Long complectId,
 			Long subsystemId);
 	
 	/**

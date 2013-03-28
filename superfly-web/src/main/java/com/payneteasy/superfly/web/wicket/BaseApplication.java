@@ -1,15 +1,15 @@
 package com.payneteasy.superfly.web.wicket;
 
 import org.apache.wicket.Session;
+import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import org.apache.wicket.request.mapper.MountedMapper;
 import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
-import org.apache.wicket.request.mapper.parameter.UrlPathPageParametersEncoder;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.apache.wicket.util.file.Path;
 
 public abstract class BaseApplication extends WebApplication {
 
@@ -23,7 +23,7 @@ public abstract class BaseApplication extends WebApplication {
 	protected final void init() {
         super.init();
 
-		getResourceSettings().addResourceFolder("src/main/java");
+        getResourceSettings().getResourceFinders().add(0, new Path("src/main/java"));
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
