@@ -11,6 +11,7 @@ import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -42,7 +43,8 @@ public abstract class BasePage extends SessionAccessorPage {
 	}
 
 	private void init() {
-		add(new Label("user-name-log", SecurityUtils.getUsername()));
+		add(userContainer("user-container"));
+
 		add(new BookmarkablePageLink<HomePage>("self-link", HomePage.class));
 		
 		add(new Label("page-title", getTitle()));
@@ -54,13 +56,15 @@ public abstract class BasePage extends SessionAccessorPage {
 		feedbackPanel.setOutputMarkupId(true);
 		add(feedbackPanel);
 		
-		addLink("subsystems-main-menu-item", ListSubsystemsPage.class);
-		addLink("actions-main-menu-item", ListActionsPage.class);
-		addLink("groups-main-menu-item", ListGroupsPage.class);
-		addLink("users-main-menu-item", ListUsersPage.class);
-		addLink("roles-main-menu-item", ListRolesPage.class);
-		addLink("sessions-main-menu-item", ListSessionsPage.class);
-        addLink("smtp-servers-main-menu-item", ListSmtpServersPage.class);
+		addNavBarItem("subsystems", ListSubsystemsPage.class);
+		addNavBarItem("actions", ListActionsPage.class);
+		addNavBarItem("groups", ListGroupsPage.class);
+		addNavBarItem("users", ListUsersPage.class);
+		addNavBarItem("roles", ListRolesPage.class);
+		addNavBarItem("sessions", ListSessionsPage.class);
+        addNavBarItem("smtp", ListSmtpServersPage.class);
+
+
 	}
 
 	protected abstract String getTitle();
@@ -73,15 +77,23 @@ public abstract class BasePage extends SessionAccessorPage {
 		return getTitle();
 	}
 
-	private void addLink(String id, Class<? extends Page> aPageClass) {
+    private WebMarkupContainer userContainer(String containerId){
+        WebMarkupContainer webMarkupContainer = new WebMarkupContainer(containerId);
+        webMarkupContainer.add(new Label("user-name", SecurityUtils.getUsername()));
+        return webMarkupContainer;
+    }
+
+	private void addNavBarItem(String id, Class<? extends Page> aPageClass) {
+        WebMarkupContainer listItemContainer = new WebMarkupContainer("list-item-"+id);
+        add(listItemContainer);
 		BookmarkablePageLink<? extends Page> link = new BookmarkablePageLink<Page>(id, aPageClass);
-		add(link);
+        listItemContainer.add(link);
 		if (pageClass != null) {
 			if (pageClass.equals(aPageClass)) {
-				link.add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
+				listItemContainer.add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
 					@Override
 					public String getObject() {
-						return "p-nav-selected";
+						return "active";
 					}
 
 				}));

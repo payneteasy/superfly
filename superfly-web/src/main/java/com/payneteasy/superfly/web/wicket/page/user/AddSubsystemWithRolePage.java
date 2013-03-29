@@ -26,6 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.*;
@@ -43,9 +44,6 @@ public class AddSubsystemWithRolePage extends BasePage {
 	public AddSubsystemWithRolePage(PageParameters params) {
 		super(ListUsersPage.class, params);
 		final long userId = params.get("userId").toLong();
-		UIUser user = userService.getUser(userId);
-		
-		add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
 		
 		WebMarkupContainer container = new WebMarkupContainer("container");
 		add(container);
@@ -109,6 +107,10 @@ public class AddSubsystemWithRolePage extends BasePage {
 		};
 		Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>("form");
 		container.add(form);
+
+//        USER INFO
+        UIUser user = userService.getUser(userId);
+        form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
 
 		LabelDropDownChoiceRow<UISubsystemForList> makes = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", makeChoices, new SubsystemInCreateUserChoiceRender());
 		makes.getDropDownChoice().setRequired(true);

@@ -111,10 +111,7 @@ public class ListUsersPage extends BasePage {
 				final UIUserForList user = item.getModelObject();
 				final PageParameters actionsParameters = new PageParameters();
 				actionsParameters.set("userId", String.valueOf(user.getId()));
-				BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("view-user",
-						UserDetailsPage.class, actionsParameters);
-				item.add(viewUserLink);
-				viewUserLink.add(new Label("user-name", user.getUsername()));
+				item.add(new Label("user-name", user.getUsername()));
 				Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
 					@Override
 					public void onClick() {
@@ -141,13 +138,13 @@ public class ListUsersPage extends BasePage {
 				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
 				item.add(new Label("next-otp-counter", String.valueOf(user.getNextOtpCounter())));
 				item.add(new Label("email",user.getEmail()));
-				
-				item.add(new BookmarkablePageLink<EditUserPage>("edit-user",
-						EditUserPage.class, actionsParameters));
-				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user",
-						CloneUserPage.class, actionsParameters));
+
+//                ACTIONS
+                BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("add-subsystem", UserDetailsPage.class, actionsParameters);
+                item.add(viewUserLink);
+				item.add(new BookmarkablePageLink<EditUserPage>("edit-user", EditUserPage.class, actionsParameters));
+				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user", CloneUserPage.class, actionsParameters));
 				Link<String> resetLink = new Link<String>("reset-password-link") {
-					
 					@Override
 					public void onClick() {
 						setResponsePage(ResetPasswordUserPage.class, actionsParameters);

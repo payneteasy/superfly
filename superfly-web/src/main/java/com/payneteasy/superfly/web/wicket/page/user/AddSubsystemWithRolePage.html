@@ -2,28 +2,31 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Add user</title>
 </head>
 <body>
 <wicket:extend>
-<div class="cont-box">
-<div wicket:id="user-name"></div>
 
 <div wicket:id="container">
-<form wicket:id="form">
-	  <div wicket:id="subsystem"></div>
-      <div wicket:id="role"></div>
-	<div>
-	  <input wicket:id="add-sub" type="submit" value="Add" class="button"/>
-	  <input type="submit" value="Cancel" wicket:id="cancel" class="button" />
-	</div>
-</form>
+
+    <form wicket:id="form" class="form-horizontal s-form-horizontal">
+         <wicket:container wicket:id="user-name"></wicket:container>
+
+          <wicket:container wicket:id="subsystem"></wicket:container>
+          <wicket:container wicket:id="role"></wicket:container>
+
+        <div class="form-actions">
+          <button wicket:id="add-sub" class="btn btn-primary">Add</button>
+          <button wicket:id="cancel" class="btn" >Cancel</button>
+        </div>
+
+    </form>
 </div>
+
 <div wicket:id="no-more-sub-container">
-  <wicket:message key="user.no-more-sub"></wicket:message>&nbsp;<a href="#" wicket:id="back">back to user details</a>
+  <wicket:message key="user.no-more-sub"></wicket:message>&nbsp;&nbsp;<a href="#" class="btn" wicket:id="back">back to user details</a>
 </div>
-</div>
+
 </wicket:extend>
 </body>
 </html>

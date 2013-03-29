@@ -3,51 +3,67 @@
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  <title wicket:id="page-head-title">Superfly service web</title>
+ <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+ <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
  <link rel="stylesheet" type="text/css" href="css/main.css" />
+
+ <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+ <script type="text/javascript" src="js/bootstrap.min.js"></script>
 </head>
 <body>
-  <div id="userinfo">
-       <ul>
-          <li><span wicket:id="user-name-log"></span> |</li>
-          <li><a href="j_spring_security_logout">Sign out</a></li>
-       </ul>
-  </div>
-  <div class="superfly-header-logo">
-     <ul>
-        <li>
-          <a href="#" wicket:id="self-link" class="superfly-logo">superfly</a>
-        </li>
-        <li>
-          <span class="superfly-info-logo">Centralized web authentication system for Java</span>
-        </li>
-     </ul> 
-  </div>
-<div class="cp-bar"></div>
-<table width=100% height=100%>
-	<tr valign="top" >
-		<td class="p-nav p-unit">
-            <ul>
-            <li><a href="#" wicket:id="users-main-menu-item">Users</a></li>
-            <li><a href="#" wicket:id="subsystems-main-menu-item">Subsystems</a></li>
-            <li><a href="#" wicket:id="actions-main-menu-item">Actions</a></li>
-            <li><a href="#" wicket:id="groups-main-menu-item">Groups</a></li>
-            <li><a href="#" wicket:id="roles-main-menu-item">Roles</a></li>
-            <li><a href="#" wicket:id="sessions-main-menu-item">Sessions</a></li>
-            <li><a href="#" wicket:id="smtp-servers-main-menu-item">SMTP servers</a></li>
-            </ul>
-            </td>
-            <td class="p-content p-unit">
-            <span wicket:id="feedback"></span>
-            <h1 wicket:id="page-title">Hello there!</h1>
-            <wicket:child />
-		</td>
-	</tr>
 
-</table>
-  <div id="userinfo">
-       <ul>
-          <li><span wicket:id="superfly-version">1.2.3</span></li>
-       </ul>
-  </div>
+<!--HEADER NAVBAR-->
+<div class="container-fluid">
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+                <!--BRAND-->
+                <a class="brand" href="#" wicket:id="self-link">SUPERFLY</a>
+                <!--MENU-->
+                <ul class="nav">
+                    <li wicket:id="list-item-users"><a href="#" wicket:id="users">Users</a></li>
+                    <li wicket:id="list-item-subsystems"><a href="#" wicket:id="subsystems">Subsystems</a></li>
+                    <li wicket:id="list-item-actions"><a href="#" wicket:id="actions">Actions</a></li>
+                    <li wicket:id="list-item-groups"><a href="#" wicket:id="groups">Groups</a></li>
+                    <li wicket:id="list-item-roles"><a href="#" wicket:id="roles">Roles</a></li>
+                    <li wicket:id="list-item-sessions"><a href="#" wicket:id="sessions">Sessions</a></li>
+                    <li wicket:id="list-item-smtp"><a href="#" wicket:id="smtp">SMTP servers</a></li>
+                </ul>
+
+                <!--USER INFO  -->
+                <ul class="nav pull-right">
+                    <li wicket:id="user-container">
+                        <a href="#" id="user-container-dropdown" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="icon-user icon-white"></i>
+                            <span wicket:id="user-name">Admin</span>
+                            <b class="s-user-caret caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="j_spring_security_logout"><i class="icon-off"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+        </div>
+    </div>
+
+    <!--BODY-->
+    <div class="container-fluid">
+        <span wicket:id="feedback"></span>
+        <legend wicket:id="page-title">Hello there!</legend>
+
+        <wicket:child />
+
+        <div id="userinfo">
+            <ul>
+                <li><span wicket:id="superfly-version">1.2.3</span></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $('#user-container-dropdown').dropdown();
+</script>
+
 </body>
 </html>

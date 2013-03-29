@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.component.field;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -22,12 +23,12 @@ public class LabelTextAreaRow<T> extends Panel {
 
 		// row
 		WebMarkupContainer row = new WebMarkupContainer("row");
-		row.add(new AttributeModifier("class", true, new Model<String>(aRequired ? "text-field-required" : "text-field")));
+		row.add(new AttributeAppender("class", new Model<String>(aRequired ? "required" : ""), " "));
 		add(row);
 
 		// label
 		Label label = new Label("label-id", new ResourceModel(aResourceKey));
-		label.add(new AttributeModifier("for", true, new Model<String>(aProperty)));
+		label.add(new AttributeModifier("for", new Model<String>(aProperty)));
 		row.add(label);
 
 		// field

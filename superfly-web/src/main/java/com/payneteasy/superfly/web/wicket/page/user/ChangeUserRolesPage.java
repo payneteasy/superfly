@@ -45,11 +45,8 @@ public class ChangeUserRolesPage extends BasePage {
 		final long userId = params.get("userId").toLong();
 		final long subId = params.get("subId").toLong();
 
-		UIUser user = userService.getUser(userId);
-		UISubsystem subsystem = subsystemService.getSubsystem(subId);
-
-		add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
-		add(new LabelValueRow<String>("sub-name", new Model<String>(subsystem.getName()), "user.subsystem"));
+        UIUser user = userService.getUser(userId);
+        UISubsystem subsystem = subsystemService.getSubsystem(subId);
 
 		WebMarkupContainer container = new WebMarkupContainer("container");
 		
@@ -83,6 +80,9 @@ public class ChangeUserRolesPage extends BasePage {
 		Form<Void> form = new Form<Void>("form");
 		container.add(form);
 		final ListRole listRole = new ListRole();
+
+        form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
+        form.add(new LabelValueRow<String>("sub-name", new Model<String>(subsystem.getName()), "user.subsystem"));
 		
 		LabelDropDownChoiceRow<UIRoleForCheckbox> role = new LabelDropDownChoiceRow<UIRoleForCheckbox>("role", listRole, "user.role", notSelectedRole, new RoleChoiceRenderer());
 		role.getDropDownChoice().setRequired(true);

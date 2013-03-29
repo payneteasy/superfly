@@ -2,50 +2,60 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Users</title>
-
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 
 </head>
 <body>
 <wicket:extend>
-	<div class="name">
-		User name : <span wicket:id="user-name">bond</span>&nbsp;|&nbsp;<a href="#" wicket:id="add-sub">add subsystem with role</a>
-	</div>
-	<div>
-		<a href="#" onclick="var e = document.getElementById('public_key_holder'); e.style.display = (e.style.display == 'none' ? 'block' : 'none'); return false;">Public key</a>
-		<div id="public_key_holder" wicket:id="public-key" style="white-space: pre; font-family: monospace; display: none;">
-		</div>
-	</div>
-<table class="dataSubRoles">
-<thead>
-   <tr>
-      <th>Subsystems</th>
-       <th>Actions</th>
-   </tr>
- </thead>
-  <tbody wicket:id="sub-list">
-       <tr onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-        <td><span wicket:id="sub-name">subsystem</span></td>
-        <td><a href="#" wicket:id="add-role"><span class="add-role-img"></span>add role</a></td> 
-       </tr>
-       <tr wicket:id="role-list" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-          <td><a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a></td>
-          <td><a href="#" wicket:id="delete-role" class="remove-role-img" title="remove role"></a></td>
-       </tr>
-  </tbody>
-</table>
+<div class="s-details-container">
+
+    <div class="s-details-head clearfix">
+        User name : <span wicket:id="user-name">bond</span>
+        <div class="pull-right">
+            <a href="#" class="btn btn-primary" wicket:id="add-sub">Add subsystem with role</a>
+            <button class="btn" id="show-public-key-modal">Public key</button>
+        </div>
+    </div>
+
+    <!--PUBLIC KEY MODAL-->
+    <div class="modal hide fade" id="public-key-modal">
+        <div class="modal-header">
+            <H3>Public key</H3>
+        </div>
+        <div class="modal-body">
+            <div  wicket:id="public-key" style="white-space: pre; font-family: monospace;"></div>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+        </div>
+    </div>
+
+
+    <table class="table table-bordered table-hover s-table-subRole">
+        <thead>
+        <tr class="s-table-head">
+            <th>Subsystems</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody wicket:id="sub-list">
+        <tr class="warning">
+            <td><span wicket:id="sub-name">subsystem</span></td>
+            <td><a href="#" class="btn btn-primary" wicket:id="add-role">Add role</a></td>
+        </tr>
+        <tr wicket:id="role-list">
+            <td class="role"><a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a></td>
+            <td><a href="#" wicket:id="delete-role"  class="btn btn-danger" title="Remove role">Remove</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+    <script type="text/javascript">
+        $("#show-public-key-modal").click(function(){
+            $("#public-key-modal").modal();
+        });
+    </script>
 </wicket:extend>
 </body>
 </html>

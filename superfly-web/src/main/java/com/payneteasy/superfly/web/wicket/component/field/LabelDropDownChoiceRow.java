@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.component.field;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -48,12 +49,12 @@ public class LabelDropDownChoiceRow<T> extends Panel {
 
 		WebMarkupContainer container = new WebMarkupContainer("container");
 		add(container);
-		container.add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
+		container.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
 			@Override
 			public String getObject() {
-				return dropDownChoice.isRequired() ? "text-field-required" : "text-field";
+				return dropDownChoice.isRequired() ? "required" : "";
 			}
-		}));
+		}, " "));
 
 		// label
 		Label label = new Label("label-id", new ResourceModel(labelResourceKey));
