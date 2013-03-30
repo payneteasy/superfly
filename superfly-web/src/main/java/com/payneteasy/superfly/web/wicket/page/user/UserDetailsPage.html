@@ -44,8 +44,11 @@
             <td><a href="#" class="btn btn-primary" wicket:id="add-role">Add role</a></td>
         </tr>
         <tr wicket:id="role-list">
-            <td class="role"><a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a></td>
-            <td><a href="#" wicket:id="delete-role"  class="btn btn-danger" title="Remove role">Remove</a></td>
+            <td class="role"><span wicket:id="role-name">some-role</span></td>
+            <td>
+                <a href="#" wicket:id="grant-user-action" class="btn btn-primary">Grant Actions</a>
+                <a href="#" wicket:id="delete-role"  class="btn btn-warning" title="Remove role">Remove</a>
+            </td>
         </tr>
         </tbody>
     </table>

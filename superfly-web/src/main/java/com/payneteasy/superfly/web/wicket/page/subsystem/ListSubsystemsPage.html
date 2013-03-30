@@ -2,51 +2,49 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Superfly Substems</title>
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
+
 	<p><span wicket:id="confirmPanel"></span></p>
 	<form wicket:id="form">
-	<div wicket:id="group">
-		<table class="data">
-			<thead>
-				<tr>
-					<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-					<th>Name</th>
-					<th>Callback Info</th>
-					<th>Allow list users</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr wicket:id="list-subsystem" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-					<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
-					<td><span wicket:id="subsytem-name">[Name]</span></td>
-					<td><span wicket:id="subsystem-callback">[Callback info]</span></td>
-					<td><span wicket:id="allow-list-users">Yes</span></td>
-					<td><a href=# wicket:id="subsystem-edit">Edit</a>
-					<a href="#" wicket:id="delete-subsystem">Delete</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		</div>
-		<div>
-		<input type="submit" wicket:id="add-subsystem" value="Add" class="button">
-		<input type="submit" wicket:id="delete-sub" value="Delete" class="button"></div>
+        <div class="s-legend-btn">
+            <input type="submit" wicket:id="add-subsystem" value="Add Subsystem" class="btn btn-primary">
+            <input type="submit" wicket:id="delete-sub" value="Delete selected" class="btn btn-warning">
+        </div>
+
+        <div wicket:id="group">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr class="s-table-head">
+                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th>Name</th>
+                        <th>Callback Info</th>
+                        <th>Allow list users</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="list-subsystem" >
+                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
+                        <td><span wicket:id="subsytem-name">[Name]</span></td>
+                        <td><span wicket:id="subsystem-callback">[Callback info]</span></td>
+                        <td><span wicket:id="allow-list-users">Yes</span></td>
+                        <td class="s-td-action">
+                            <div class="dropdown s-dropdown">
+                                <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
+                                <ul class="dropdown-menu s-dropdown-menu">
+                                    <li><a href=# wicket:id="subsystem-edit">Edit</a></li>
+                                    <li><a href="#" wicket:id="delete-subsystem">Delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
 	</form>
 </wicket:extend>
 </body>

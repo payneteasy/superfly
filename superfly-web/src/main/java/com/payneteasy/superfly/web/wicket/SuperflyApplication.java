@@ -74,7 +74,7 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
         mountBookmarkablePage("/users/changeActions", ChangeUserGrantActionsPage.class);
         mountBookmarkablePage("/users/view", UserDetailsPage.class);
-        mountBookmarkablePage("/users/addSubsystemWithRole", AddSubsystemWithRolePage.class);
+        mountBookmarkablePage("/users/addSubsystemWithRole", AppendSubsystemWithRolePage.class);
         
         mountBookmarkablePage("/sessions", ListSessionsPage.class);
         mountBookmarkablePage("/changepassword", ChangePasswordPage.class);

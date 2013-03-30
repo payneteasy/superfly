@@ -1,12 +1,18 @@
 <html xmlns:wicket>
 <body>
 <wicket:panel>
-	<form wicket:id="form">
-		Email address: <input wicket:id="address">
-		<div>
-			<button wicket:id="submit-link">Test</button>
-			<button wicket:id="cancel-link">Cancel</button>
-		</div>
+	<form wicket:id="form" class="form-horizontal s-form-horizontal s-form-modal">
+        <div class="control-group" >
+            <label class="control-label" for="email">Email address:</label>
+            <div class="controls">
+                <input name="email" wicket:id="address">
+            </div>
+        </div>
+
+        <div class="form-actions s-form-actions-default">
+			<button class="btn btn-primary" wicket:id="submit-link">Test</button>
+			<button class="btn" wicket:id="cancel-link">Cancel</button>
+        </div>
 	</form>
 </wicket:panel>
 </body>

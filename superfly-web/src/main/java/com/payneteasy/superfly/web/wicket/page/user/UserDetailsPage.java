@@ -74,29 +74,27 @@ public class UserDetailsPage extends BasePage {
 				item.add(new ListView<UIRoleWithActions>("role-list", roles) {
 
 					@Override
-					protected void populateItem(ListItem<UIRoleWithActions> it) {
-						final UIRoleWithActions role = it.getModelObject();
+					protected void populateItem(ListItem<UIRoleWithActions> listItem) {
+						final UIRoleWithActions role = listItem.getModelObject();
 						PageParameters params = new PageParameters();
 						params.set("userId", String.valueOf(userId));
 						params.set("subId", String.valueOf(subsystem.getId()));
 						params.set("roleId", String.valueOf(role.getId()));
-						BookmarkablePageLink<ChangeUserGrantActionsPage> userAction = new BookmarkablePageLink<ChangeUserGrantActionsPage>(
-								"user-action", ChangeUserGrantActionsPage.class, params);
-						it.add(userAction);
-						userAction.add(new Label("role-name", role.getName()));
-						it.add(new Link<Void>("delete-role") {
+						listItem.add(new BookmarkablePageLink<ChangeUserGrantActionsPage>("grant-user-action", ChangeUserGrantActionsPage.class, params));
+						listItem.add(new Label("role-name", role.getName()));
+						listItem.add(new Link<Void>("delete-role") {
 
-							@Override
-							public void onClick() {
-								List<Long> rolesId = new ArrayList<Long>();
-								rolesId.add(role.getId());
-								userService.changeUserRoles(userId, null, rolesId, null);
-								PageParameters parameters = new PageParameters();
-								parameters.set("userId", String.valueOf(userId));
-								setResponsePage(UserDetailsPage.class, parameters);
-							}
+                            @Override
+                            public void onClick() {
+                                List<Long> rolesId = new ArrayList<Long>();
+                                rolesId.add(role.getId());
+                                userService.changeUserRoles(userId, null, rolesId, null);
+                                PageParameters parameters = new PageParameters();
+                                parameters.set("userId", String.valueOf(userId));
+                                setResponsePage(UserDetailsPage.class, parameters);
+                            }
 
-						});
+                        });
 					}
 
 				});
@@ -108,7 +106,7 @@ public class UserDetailsPage extends BasePage {
 
 		PageParameters param = new PageParameters();
 		param.set("userId", String.valueOf(userId));
-		add(new BookmarkablePageLink<AddSubsystemWithRolePage>("add-sub", AddSubsystemWithRolePage.class, param));
+		add(new BookmarkablePageLink<AppendSubsystemWithRolePage>("add-sub", AppendSubsystemWithRolePage.class, param));
 	}
 
 	@Override

@@ -1,3 +1,49 @@
+/*      STICKY FOOTER       */
+html, body{
+    height: 100%;
+}
+#s-wrap-container{
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -50px;
+}
+#s-push, #s-footer{
+    height: 40px;
+}
+#s-footer{
+    background-color: #fafafa;
+    border-top: 1px solid #d4d4d4;
+    padding-top: 15px;
+}
+
+/*            NAVBAR                        */
+.s-navbar-inner{
+    border-radius: 0;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+
+    color: #fff;
+    text-decoration: none;
+    background-color: #0081c2;
+    background-image: -moz-linear-gradient(top,#08c,#0077b3);
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#0077b3));
+    background-image: -webkit-linear-gradient(top,#08c,#0077b3);
+    background-image: -o-linear-gradient(top,#08c,#0077b3);
+    background-image: linear-gradient(to bottom,#08c,#0077b3);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+}
+.s-navbar-inner>.nav>li>a, .s-navbar-inner .brand{
+    text-shadow: none;
+    color: #fff;
+}
+.s-navbar-inner .nav>li>a:focus, .s-navbar-inner .nav>li>a:hover{
+    color: #eeeeee;
+}
+.s-navbar-inner .nav>.active>a, .s-navbar-inner .nav>.active>a:hover, .s-navbar-inner .nav>.active>a:focus{
+    background: #ffffff;
+}
 
 /*            FEEDBACK PANEL              */
 .feedbackPanel {
@@ -46,7 +92,7 @@
         background: url('../img/sort_both.png') no-repeat center right;
     }
 
-.s-table-head{
+.table > thead > tr{
     background-color: #fafafa;
     background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
@@ -61,6 +107,9 @@
 .table-action{
     padding: 2px 4px;
 }
+.table tbody > tr > .s-td-action{
+    width: 10%;
+}
 
 .s-table-subRole{}
     .s-table-subRole td.role{
@@ -71,10 +120,15 @@
     }
 
 /*      COMPONENTS              */
-.s-add-btn{
+.s-legend-btn{
     position: absolute;
     top: 65px;
-    right: 60px;
+    right: 30px;
+}
+
+.s-form-actions-default{
+    background: #fff;
+    border-top: 0;
 }
 .s-details-container{
     width: 50%;
@@ -87,6 +141,56 @@
     padding-top: 5px;
 }
 
+.s-mapping .input-append{
+    width: 100%;
+    margin-top: 20px;
+}
+    .s-mapping .input-append>input{
+        width: 84%;
+    }
+.s-mapping-table{
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+    .s-mapping-header{
+        background-color: #fafafa;
+        background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+        background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+        background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+        background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+        -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    }
+    .s-mapping-body{
+        height: 400px;
+        overflow-y: auto;
+    }
+    .s-mapping-header, .s-mapping-row{
+        min-width: 35px;
+        line-height: 30px;
+    }
+        .s-mapping-row{
+            border-bottom: 1px solid #ddd;
+        }
+    .s-mapping-chb-item{
+        vertical-align: middle;
+        border-right: 1px solid #ddd;
+        text-align: center;
+        padding-top: 8px;
+    }
+    .s-mapping-middle{
+        text-align: center;
+        height: 500px;
+        vertical-align: middle;
+        padding-top: 200px;
+    }
+
+
+
 .s-dropdown{
     display: inline;
 }
@@ -95,14 +199,19 @@
         right: 0;
         left: auto;
     }
+    .s-dropdown .caret{
+        margin-top: 9px;
+        margin-left: 4px;
+    }
+
 
 .nav .dropdown-toggle .s-user-caret{
-    border-top-color: #999;
-    border-bottom-color: #999;
+    border-top-color: #fff;
+    border-bottom-color: #fff;
 }
         .nav .dropdown-toggle:hover .s-user-caret, .nav .dropdown-toggle:focus .s-user-caret{
-            border-top-color: #fff;
-            border-bottom-color: #fff;
+            border-top-color: #eee;
+            border-bottom-color: #eee;
         }
 
 /*          FORMS        */
@@ -115,6 +224,9 @@
 .required > label:after{
     content: "*";
     font-size: 16px;
+}
+.s-form-modal{
+    margin-top: 20px;
 }
 
 

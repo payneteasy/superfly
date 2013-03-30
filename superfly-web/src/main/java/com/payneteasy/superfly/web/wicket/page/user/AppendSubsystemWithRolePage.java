@@ -32,7 +32,7 @@ import org.springframework.security.access.annotation.Secured;
 import java.util.*;
 
 @Secured("ROLE_ADMIN")
-public class AddSubsystemWithRolePage extends BasePage {
+public class AppendSubsystemWithRolePage extends BasePage {
 	@SpringBean
 	private UserService userService;
 	@SpringBean
@@ -41,7 +41,7 @@ public class AddSubsystemWithRolePage extends BasePage {
 	private SubsystemService subsystemService;
 	private boolean isVisible=true;
 
-	public AddSubsystemWithRolePage(PageParameters params) {
+	public AppendSubsystemWithRolePage(PageParameters params) {
 		super(ListUsersPage.class, params);
 		final long userId = params.get("userId").toLong();
 		

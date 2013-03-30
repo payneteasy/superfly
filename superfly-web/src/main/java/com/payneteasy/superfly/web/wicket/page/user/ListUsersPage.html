@@ -6,8 +6,10 @@
 <body>
 <wicket:extend>
 
+    <div class="s-legend-btn">
+        <input type="submit" wicket:id="add-user" value="Add User" class="btn btn-primary"/>
+    </div>
 
-    <input type="submit" wicket:id="add-user" value="Add User" class="btn btn-primary s-add-btn"/>
 
     <div wicket:id="reset-hotp-window"></div>
 
@@ -74,14 +76,14 @@
 				<td align="center">
 					<span wicket:id="next-otp-counter">3</span>
 				</td>
-				<td>
+				<td class="s-td-action">
                     <div class="dropdown s-dropdown">
-                        <a class="btn table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
+                        <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
                         <ul class="dropdown-menu s-dropdown-menu">
                             <li><a href="#" wicket:id="edit-user">Edit</a></li>
-                            <li><a href="#" wicket:id="add-subsystem">Add subsystem</a></li>
                             <li><a href="#" wicket:id="clone-user">Clone</a></li>
                             <li><a href="#" wicket:id="reset-password-link">Reset password</a></li>
+                            <li><a href="#" wicket:id="add-subsystem">Append subsystem</a></li>
                             <li><a href="#" wicket:id="download-hotp-table">OTP table</a></li>
                             <li><a href="#" wicket:id="reset-table-link">Reset table</a></li>
                         </ul>
@@ -93,10 +95,6 @@
 			</tr>
 		</tbody>
 	</table>
-
-    <script type="text/javascript">
-
-    </script>
 
 </wicket:extend>
 </body>
