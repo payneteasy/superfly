@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket;
 
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.markup.html.WebPage;
@@ -10,8 +11,14 @@ import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.file.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 public abstract class BaseApplication extends WebApplication {
+
+    private static final Logger logger = LoggerFactory.getLogger(BaseApplication.class);
 
     private IPageParametersEncoder parametersEncoder = new PageParametersEncoder();
 
@@ -23,7 +30,14 @@ public abstract class BaseApplication extends WebApplication {
 	protected final void init() {
         super.init();
 
-        getResourceSettings().getResourceFinders().add(0, new Path("src/main/java"));
+        if (getConfigurationType() == RuntimeConfigurationType.DEVELOPMENT) {
+            String path = "src/main/java";
+            if (new File(path).exists()) {
+                getResourceSettings().getResourceFinders().add(0, new Path(path));
+            } else {
+                logger.warn("No src/main/java folder found, dynamic resource reloading is not available");
+            }
+        }
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
