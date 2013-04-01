@@ -2,39 +2,41 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Actions</title>
-<wicket:head>
-<style></style>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
-	<div class="filters">
-		<form wicket:id="filters-form">
-			<span>Subsystem:
-				<select wicket:id="subsystem-filter">
-					<option>Subsystem 1</option>
-					<option>Subsystem 2</option>
-					<option>Subsystem 3</option>
-				</select>
-			</span>&nbsp;&nbsp;&nbsp;
-			<span>Action Name: <input type="text" wicket:id="auto" size="33" /></span>
-			<input type="submit" value="Filter" class="button"/>
+
+	<div class="well s-filter">
+		<form wicket:id="filters-form" class="form-inline">
+            <ul class="s-filter-items">
+                <li>
+                    <span>Subsystem:</span>
+                    <select wicket:id="subsystem-filter">
+                        <option>Subsystem 1</option>
+                        <option>Subsystem 2</option>
+                        <option>Subsystem 3</option>
+                    </select>
+                </li>
+                <li>
+                    <span>Action Name:</span> <input type="text" wicket:id="auto" size="33" />
+                </li>
+                <li>
+                    <input type="submit" value="Filter" class="btn"/>
+                </li>
+            </ul>
 		</form>
 	</div>
+
+    <!--TABLE    -->
 	<form wicket:id="form">
+
+        <div class="s-legend-btn">
+            <input type="submit" value="Log On/Off" wicket:id="log-action"  class="btn btn-warning"/>
+        </div>
+
 		<div wicket:id="group">
-			<table class="data">
+			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th><input type="checkbox" wicket:id="master-checkbox" /></th>
@@ -46,25 +48,19 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr wicket:id="actionList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+					<tr wicket:id="actionList">
 						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 						<td><span wicket:id="action-name">bond</span></td>
 						<td><span wicket:id="action-description">bond</span></td>
 						<td><span wicket:id="subsystem-name">bond</span></td>
-						<td><a href="#" wicket:id="switch-loglevel"><span
-							wicket:id="log-action">Yes</span></a></td>
-						<td><a href="#" wicket:id="copy-action">Copy</a></td>
-		
+						<td><a href="#" wicket:id="switch-loglevel" class="btn btn-warning"><span wicket:id="log-action">Yes</span></a></td>
+						<td><a href="#" wicket:id="copy-action" class="btn btn-info">Copy</a></td>
 					</tr>
 					<tr>
 					   <td wicket:id="paging-navigator" class="paging-navigator" colspan="6"></td>
 					</tr>
 				</tbody>
 			</table>
-		</div>
-		
-		<div>
-			<input type="submit" value="Log On/Off" wicket:id="log-action"  class="button"/>
 		</div>
 		
 	</form>

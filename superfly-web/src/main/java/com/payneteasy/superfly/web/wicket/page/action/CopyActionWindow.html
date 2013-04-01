@@ -1,50 +1,65 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Copy action</title>
-<style type="text/css">
-body {
-	font-family: verdana, sans-serif;
-	font-size: 82%;
-	background-color: white;
-}
-</style>
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 </head>
 <body>
-	<form wicket:id="form">
-	<h1>Table of the copied action</h1>
-	<table class="data">
-		<tr>
-			<td>Action Name:<span wicket:id="action-name"></span></td>
-		</tr>
-		<tr>
-			<td>Description:<span wicket:id="action-desc"></span></td>
-		</tr>
-		<tr>
-			<td>Subsystem Name:<span wicket:id="action-subname"></span></td>
-		</tr>
-		<tr>
-		<td>Grant user privileges: <input type="checkbox" wicket:id="selected" /></td>
-		</tr>
-	</table>
-	<h1>Table of the selected action for copying</h1>
-	<table class="data">
-		<tr>
-			<td>Action Name:<span wicket:id="action-name-for-copy"></span></td>
-		</tr>
-		<tr>
-			<td>Description:<span wicket:id="action-desc-for-copy"></span></td>
-		</tr>
-		<tr>
-			<td>Subsystem Name:<span wicket:id="action-subname-for-copy"></span></td>
-		</tr>
-	</table>
-	 <div>
-	   <input wicket:id="copy" type="submit" value="Copy" class="button">
-	   <input wicket:id="cancel" type="submit" value="Cancel" class="button">
-	 </div>
-	</form>
+	<form wicket:id="form" class="form-horizontal s-form-horizontal">
+        <h5>Table of the copied action</h5>
+        <div class="control-group">
+            <label class="control-label">Action Name:</label>
+            <div class="controls">
+                <label wicket:id="action-name"></label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Description:</label>
+            <div class="controls">
+                <label wicket:id="action-desc"></label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Subsystem Name:</label>
+            <div class="controls">
+                <label wicket:id="action-subname"></label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Grant user privileges: </label>
+            <div class="controls">
+                <input type="checkbox" wicket:id="selected" />
+            </div>
+        </div>
+
+        <h5>Table of the selected action for copying</h5>
+        <div class="control-group">
+            <label class="control-label">Action Name:</label>
+            <div class="controls">
+                <label wicket:id="action-name-for-copy"></label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Description:</label>
+            <div class="controls">
+                <label wicket:id="action-desc-for-copy"></label>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Subsystem Name:</label>
+            <div class="controls">
+                <label wicket:id="action-subname-for-copy"></label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button wicket:id="copy" class="btn btn-primary">Copy</button>
+            <button wicket:id="cancel" class="btn">Cancel</button>
+        </div>
+
+    </form>
 </body>
 </html>

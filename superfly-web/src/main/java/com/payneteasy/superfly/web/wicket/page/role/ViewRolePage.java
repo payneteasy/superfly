@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
@@ -39,15 +40,14 @@ public class ViewRolePage extends BasePage {
 		super(ListRolesPage.class, param);
 		
 		final Long roleId = param.get("roleid").toLong();
-		//BACK
-		Form<Void> formBack = new Form<Void>("back-form");
-		formBack.add(new Button("btn-back"){
-			@Override
-			public void onSubmit() {
-				setResponsePage(ListRolesPage.class);
-			}
-		}.setDefaultFormProcessing(false));
-		add(formBack);
+
+        //BACK
+        add(new Link<Void>("btn-back") {
+            @Override
+            public void onClick() {
+                setResponsePage(ListRolesPage.class);
+            }
+        });
 		
 		//FILTER
 		final Filter filter = new Filter();

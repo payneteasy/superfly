@@ -71,6 +71,7 @@ html, body{
     .s-filter-items > li{
         display: inline-block;
         margin-left: 20px;
+        vertical-align: top;
     }
     .s-filter-items > li:first-child {margin-left: 0;}
 
@@ -189,7 +190,9 @@ html, body{
         padding-top: 200px;
     }
 
-
+div.wicket-modal div.w_caption{
+    height: 2.6em;
+}
 
 .s-dropdown{
     display: inline;

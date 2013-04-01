@@ -1,55 +1,52 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Group</title>
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
-<div class="cont-box">
-    <h4>Add to the group of actions</h4>
-	<div class="filters">
-	<form wicket:id="filters-form"><span>Action name: 
-	    <input wicket:id="action-name-substr" /></span> &nbsp;
-	    <input type="submit" value="Filter" class="button"/>
+
+    <h5>Add to the group of actions</h5>
+	<div class="well s-filter">
+     <form wicket:id="filters-form" class="form-inline">
+         <ul class="s-filter-items">
+             <li>
+                 <input type="text" wicket:id="action-name-substr" placeholder="Action Name"/>
+             </li>
+             <li>
+                 <input type="submit" value="Filter" class="btn"/>
+             </li>
+         </ul>
 	 </form>
 	</div>
-	<form wicket:id="form">
+
+<form wicket:id="form">
+    <input type=submit wicket:id="btn-cancel" value="Cancel" class="btn"/>&nbsp;&nbsp;
+    <input type=submit value="Apply" class="btn btn-primary"/>
    <div wicket:id="group">
-	<table class="data">
-		<thead>
-			<tr>
-				<th><input type="checkbox" wicket:id="groupselector"></input></th>
-				<th><a wicket:id="order-by-name">Name</a></th>
-				<th>Subsystem</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="dataView" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-				<td class="checkbox-cell"><input type="checkbox" wicket:id="selected"></td>
-				<td><span wicket:id="name"></span></td>
-				<td><span wicket:id="ssys-name"></span></td>
-			</tr>
-			<tr>
-			  <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
-			</tr>
-		</tbody>
-	</table>
-</div> 
-	<input type=submit wicket:id="btn-cancel" value="Cancel" class="button"/>&nbsp;&nbsp;
-	<input type=submit value="Apply" class="button"/></form>
-</div>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" wicket:id="groupselector" /></th>
+                    <th><a wicket:id="order-by-name">Name</a></th>
+                    <th>Subsystem</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr wicket:id="dataView" >
+                    <td class="checkbox-cell"><input type="checkbox" wicket:id="selected"></td>
+                    <td><span wicket:id="name"></span></td>
+                    <td><span wicket:id="ssys-name"></span></td>
+                </tr>
+                <tr>
+                  <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+
 </wicket:extend>
 </body>
 </html>

@@ -130,6 +130,7 @@ public class ListRolesPage extends BasePage {
 						ChangeRoleGroupsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
 				item.add(new BookmarkablePageLink<Page>("role-actions",
 						ChangeRoleActionsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
+
 				item.add(new SubmitLink("delete-role"){
 
 					@Override

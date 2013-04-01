@@ -2,23 +2,23 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Add role</title>
 </head>
 <body>
 <wicket:extend>
-<div class="cont-box">
-  <h4>Please, provide new Role name, Principal name and Subsystem</h4>
-	<form wicket:id="form">
-	 <div wicket:id="subsystem"></div>
-	 <div wicket:id="roleName"></div>
-	 <div wicket:id="principalName"></div>
-	<div>
-	  <input type="submit" wicket:id="add-role"value="Add" class="button"/> 
-	  <input type="submit"value="Cancel" wicket:id="cancel" class="button"/>
+
+<form wicket:id="form" class="form-horizontal s-form-horizontal">
+    <h5>Please, provide new Role name, Principal name and Subsystem</h5>
+    <wicket:container wicket:id="subsystem"></wicket:container>
+	 <wicket:container wicket:id="roleName"></wicket:container>
+	 <wicket:container wicket:id="principalName"></wicket:container>
+
+	<div class="form-actions">
+	  <button wicket:id="add-role" class="btn btn-primary">Add role</button>
+	  <button wicket:id="cancel" class="btn">Cancel</button>
 	</div>
-	</form>
-</div>	
+</form>
+
 </wicket:extend>
 </body>
 </html>
