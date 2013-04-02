@@ -1,7 +1,5 @@
 package com.payneteasy.superfly;
 
-import javax.naming.NamingException;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
@@ -10,8 +8,11 @@ import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.NamingException;
+
 public class Start {
-	 private static final Logger LOG = LoggerFactory.getLogger(Start.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Start.class);
+    private static final String PROPERTY_OVERRIDE_WEB_XML = "override-web-xml";
 
 	    /**
 	     * -Dwicket.configuration=development or deployment
@@ -57,6 +58,10 @@ public class Start {
 	                "org.mortbay.jetty.plus.webapp.Configuration",
 	                "org.mortbay.jetty.webapp.JettyWebXmlConfiguration"
 	        });
+
+            String overrideWebXml = System.getProperty(PROPERTY_OVERRIDE_WEB_XML, "src/test/resources/jetty/override-web.xml");
+            LOG.info("Override web.xml is "+overrideWebXml + "( to override use -D"+PROPERTY_OVERRIDE_WEB_XML+")");
+	        superfly.setOverrideDescriptor(overrideWebXml);
 	        
 	        server.addHandler(superfly);
 
