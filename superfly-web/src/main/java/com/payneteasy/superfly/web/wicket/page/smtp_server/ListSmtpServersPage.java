@@ -54,9 +54,11 @@ public class ListSmtpServersPage extends AbstractSmtpServerPage {
                 item.add(new AjaxLink<Void>("test-link") {
 					@Override
 					public void onClick(AjaxRequestTarget target) {
-						testWindow.setContent(new TestPanel(testWindow.getContentId(),
-								server.getId(), testWindow, getFeedbackPanel()));
+                        TestPanel testPanel = new TestPanel(testWindow.getContentId(),
+                                server.getId(), testWindow, getFeedbackPanel());
+                        testWindow.setContent(testPanel);
 						testWindow.show(target);
+                        target.focusComponent(testPanel.getAddressField());
 					}
 				});
             }

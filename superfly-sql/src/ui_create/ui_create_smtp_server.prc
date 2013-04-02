@@ -6,15 +6,16 @@ create procedure ui_create_smtp_server(i_server_name varchar(32),
                                        i_username varchar(64),
                                        i_password varchar(64),
                                        i_from_address varchar(64),
+                                       i_is_ssl varchar(1),
                                        out o_ssrv_id int(10)
 )
  main_sql:
   begin
     insert into smtp_servers
           (
-             server_name, host, port, username, password, from_address
+             server_name, host, port, username, password, from_address, is_ssl
           )
-    values (i_server_name, i_host, i_port, i_username, i_password, i_from_address);
+    values (i_server_name, i_host, i_port, i_username, i_password, i_from_address, i_is_ssl);
 
     set o_ssrv_id   = last_insert_id();
 

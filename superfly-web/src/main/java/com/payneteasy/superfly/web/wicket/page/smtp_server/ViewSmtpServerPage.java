@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.smtp_server;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -28,6 +29,7 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
         add(new Label("port", server.getPort() == null ? "-" : String.valueOf(server.getPort())));
         add(new Label("username", server.getUsername() == null ? "-" : server.getUsername()));
         add(new Label("password", server.getPassword() == null ? "-" : server.getPassword()));
+        add(new Label("ssl", new ResourceModel(server.isSsl() ? "yes" : "no")));
 
         add(new BookmarkablePageLink<Void>("back-link", ListSmtpServersPage.class));
     }

@@ -43,15 +43,17 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
             server = null;
         }
         if (server != null) {
+            boolean ssl = server.isSsl();
             JavaMailSenderImpl sender = new JavaMailSenderImpl();
             Properties props = new Properties();
             props.put("mail.transport.protocol", "smtp");
-            props.put("mail.smtp.host", server.getHost());
+            props.put("mail.host", server.getHost());
             props.put("mail.smtp.port", server.getPort() == null ? "25" : String.valueOf(server.getPort()));
-            props.put("mail.smtp.user", server.getUsername());
-            props.put("mail.smtp.password", server.getPassword());
-            props.put("mail.smtp.auth", "true");
+            props.put("mail.user", server.getUsername());
+            props.put("mail.password", server.getPassword());
             props.put("mail.debug", System.getProperty("mail.debug", "false"));
+            props.put(ssl ? "mail.smtps.auth" : "mail.smtp.auth", "true");
+            props.put("mail.transport.protocol", ssl ? "smtps" : "smtp");
     		Session session = Session.getInstance(props, new Authenticator() {
     			@Override
     			protected PasswordAuthentication getPasswordAuthentication() {
@@ -59,6 +61,7 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
     			}
     		});
             sender.setSession(session);
+            sender.setProtocol(ssl ? "smtps" : "smtp");
             return new ConfiguredSender(sender, server.getFrom());
         } else {
             logger.warn("No SMTP server found for key {}", key);

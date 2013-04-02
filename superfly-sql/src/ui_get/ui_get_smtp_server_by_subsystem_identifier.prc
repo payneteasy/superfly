@@ -9,7 +9,8 @@ create procedure ui_get_smtp_server_by_subsystem_identifier(i_subsystem_name var
            port,
            username,
            password,
-           from_address
+           from_address,
+           is_ssl
       from smtp_servers, subsystems
       where ssrv_id = ssrv_ssrv_id and subsystem_name = i_subsystem_name;
   end
@@ -23,6 +24,7 @@ call save_routine_information('ui_get_smtp_server_by_subsystem_identifier',
                                         'port int',
                                         'username varchar',
                                         'password varchar',
-                                        'from_address varchar'
+                                        'from_address varchar',
+                                        'is_ssl varchar'
                               )
      );

@@ -21,6 +21,8 @@ public class TestPanel extends Panel {
 	
 	@SpringBean
 	private EmailService emailService;
+
+    private RequiredTextField<String> addressField;
 	
 	public TestPanel(String id, final long serverId, final ModalWindow window,
 			final FeedbackPanel feedbackPanel) {
@@ -30,7 +32,9 @@ public class TestPanel extends Panel {
 		add(form);
 		
 		final IModel<String> addressModel = new Model<String>();
-		form.add(new RequiredTextField<String>("address", addressModel));
+        addressField = new RequiredTextField<String>("address", addressModel);
+        addressField.setOutputMarkupId(true);
+        form.add(addressField);
 		
 		form.add(new AjaxLink<Void>("cancel-link") {
 			@Override
@@ -58,4 +62,8 @@ public class TestPanel extends Panel {
 			}
 		});
 	}
+
+    public RequiredTextField<String> getAddressField() {
+        return addressField;
+    }
 }

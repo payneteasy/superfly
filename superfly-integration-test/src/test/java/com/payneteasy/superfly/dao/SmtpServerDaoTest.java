@@ -78,9 +78,12 @@ public class SmtpServerDaoTest extends AbstractDaoTest {
     @Test
 	public void testCreateSmtpServer() {
         UISmtpServer server = createServer("the server name");
+        server.setSsl(true);
         RoutineResult result = smtpServerDao.createSmtpServer(server);
         assertRoutineResult(result);
 		assertNotNull("ID must be generated", server.getId());
+        server = smtpServerDao.getSmtpServer(server.getId());
+        assertTrue(server.isSsl());
 	}
 
     private UISmtpServer createServer(String name) {
