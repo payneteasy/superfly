@@ -46,7 +46,7 @@ public class TestPanel extends Panel {
 			@Override
 			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				try {
-					emailService.sendTestMesage(serverId, addressModel.getObject());
+					emailService.sendTestMessage(serverId, addressModel.getObject());
 					info("Test message sent");
 					target.add(feedbackPanel);
 				} catch (RuntimeException e) {
