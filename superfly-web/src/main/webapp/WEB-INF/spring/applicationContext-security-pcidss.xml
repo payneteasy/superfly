@@ -9,6 +9,7 @@
     <sec:http security="none" pattern="/css/**"/>
     <sec:http security="none" pattern="/login*"/>
     <sec:http security="none" pattern="/sso/**"/>
+    <sec:http security="none" pattern="/management/version.txt"/>
 		
     <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
