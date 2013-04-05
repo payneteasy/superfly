@@ -552,5 +552,13 @@ public interface UserDao {
      */
     @AStoredProcedure(name="exchange_subsystem_token")
     AuthSession exchangeSubsystemToken(String subsystemToken);
+
+    /**
+     * Makes a user complete.
+     *
+     * @param username  name of the user to complete
+     */
+    @AStoredProcedure(name="complete_user")
+    void completeUser(String username);
 }
 

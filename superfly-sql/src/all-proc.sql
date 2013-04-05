@@ -291,5 +291,7 @@ create table mysql_routines_return_arguments (
 \. delete/delete_expired_tokens.prc
 \. delete/delete_sso_session.prc
 
+\. save/complete_user.prc
+
 
 commit;

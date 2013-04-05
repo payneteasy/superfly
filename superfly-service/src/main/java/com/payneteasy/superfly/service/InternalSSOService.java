@@ -139,4 +139,11 @@ public interface InternalSSOService {
      * @param sessionIds    IDs of sessions to touch
      */
     void touchSessions(List<Long> sessionIds);
+
+    /**
+     * Makes a user complete.
+     *
+     * @param username  name of the user to complete
+     */
+    void completeUser(String username);
 }

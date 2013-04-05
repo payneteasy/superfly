@@ -74,4 +74,13 @@ public class SSOServiceImplTest {
         Assert.assertNull(user);
         verify(internalSSOService);
     }
+
+    @Test
+    public void testCompleteUser() {
+        internalSSOService.completeUser("username");
+        expectLastCall();
+        replay(internalSSOService);
+        ssoService.completeUser("username");
+        verify(internalSSOService);
+    }
 }

@@ -60,6 +60,10 @@ public interface SSOService {
 
 	/**
 	 * Registers user and gives him requested principal.
+     * User is created in incomplete state. In that state, if
+     * a registration with the same username is made, existing user
+     * is destroyed. To complete a user, call #completeUser() method.
+     * Also, user is completed when he logs in.
 	 * 
 	 * @param username
 	 *            name of the user
@@ -79,6 +83,7 @@ public interface SSOService {
 	 * @throws MessageSendException
 	 * @since 1.1
 	 * @see RoleGrantSpecification
+     * @see #completeUser(String)
 	 */
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants,
@@ -180,4 +185,14 @@ public interface SSOService {
      * @param sessionIds    IDs of sessions to touch
      */
     void touchSessions(List<Long> sessionIds);
+
+    /**
+     * Makes a user complete. This protects a registered user
+     * from being overwritten.
+     *
+     * @param username  name of the user to complete
+     * @see #registerUser(String, String, String, String, RoleGrantSpecification[], String, String, String, String, String)
+     * @since 1.5
+     */
+    void completeUser(String username);
 }

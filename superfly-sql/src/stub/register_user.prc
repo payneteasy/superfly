@@ -17,15 +17,25 @@ create procedure register_user(i_user_name         varchar(32),
                               )
  main_sql:
   begin
-	select user_id from users where user_name = i_user_name into o_user_id;
+    declare v_completed varchar(1);
+
+	select user_id, completed from users where user_name = i_user_name into o_user_id, v_completed;
 	
 	if o_user_id is not null then
-		select 'duplicate' status, 'User already exists' error_message;
-		leave main_sql;
+        if v_completed = 'N' then
+            -- removing old uncompleted user
+            delete from user_roles where user_user_id = o_user_id;
+            delete from user_history where user_user_id = o_user_id;
+            delete from users where user_id = o_user_id;
+            set o_user_id = null;
+        else
+            select 'duplicate' status, 'User already exists' error_message;
+            leave main_sql;
+		end if;
 	end if;
   
-    insert into users(user_name, user_password, email, is_account_locked, `name`, surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt, create_date, public_key)
-         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key);
+    insert into users(user_name, user_password, email, is_account_locked, `name`, surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt, create_date, public_key, completed)
+         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key, 'N');
 
     set o_user_id   = last_insert_id();
 

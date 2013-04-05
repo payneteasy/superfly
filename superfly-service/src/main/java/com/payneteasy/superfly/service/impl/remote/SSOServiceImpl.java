@@ -208,4 +208,9 @@ public class SSOServiceImpl implements SSOService {
         internalSSOService.touchSessions(sessionIds);
     }
 
+    @Override
+    public void completeUser(String username) {
+        internalSSOService.completeUser(username);
+    }
+
 }

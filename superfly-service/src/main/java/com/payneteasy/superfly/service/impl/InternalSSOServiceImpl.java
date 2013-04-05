@@ -338,4 +338,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
         }
     }
+
+    @Override
+    public void completeUser(String username) {
+        userDao.completeUser(username);
+    }
 }
