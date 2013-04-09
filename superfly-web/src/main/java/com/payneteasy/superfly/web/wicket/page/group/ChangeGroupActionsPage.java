@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.group;
 
 import java.util.List;
 
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.Page;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -48,10 +49,9 @@ public class ChangeGroupActionsPage extends BasePage {
 			protected String getHeaderItemName() {
 				return "Actions";
 			}
-        	
         });
-		add(new BookmarkablePageLink<Page>("back", ListGroupsPage.class,
-				parameters));
+        add(new BookmarkablePageLink<Page>("back-to-view", ViewGroupPage.class, PageParametersBuilder.fromPair("gid", group.getId())));
+		add(new BookmarkablePageLink<Page>("back-to-list", ListGroupsPage.class, parameters));
 	}
 
 	@Override

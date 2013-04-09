@@ -15,6 +15,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
+import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -48,16 +49,16 @@ public class ListRolesPage extends BasePage {
 		Form<RoleFilter> filtersForm = new Form<RoleFilter>("filters-form");
 		add(filtersForm);
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
-				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						stickyFilters, "subsystem"),
-				subsystemService.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer());
+				"subsystem-filter"
+                , new PropertyModel<UISubsystemForFilter>(stickyFilters, "subsystem")
+                , subsystemService.getSubsystemsForFilter()
+                , new SubsystemChoiceRenderer()
+        );
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
 		
 		final ObjectHolder<List<UIRoleForList>> rolesHolder = new ObjectHolder<List<UIRoleForList>>();
 		final InitializingModel<Collection<UIRoleForList>> rolesCheckGroupModel = new InitializingModel<Collection<UIRoleForList>>() {
-
 			@Override
 			protected Collection<UIRoleForList> getInitialValue() {
 				final Collection<UIRoleForList> checkedRoles = new HashSet<UIRoleForList>();
@@ -99,16 +100,13 @@ public class ListRolesPage extends BasePage {
 			}
 
 		};
-		final Form<Void> form = new Form<Void>("form") {
-		};
+		final Form<Void> form = new Form<Void>("form");
 		add(form);
-		final CheckGroup<UIRoleForList> group = new CheckGroup<UIRoleForList>(
-				"group", rolesCheckGroupModel);
+		final CheckGroup<UIRoleForList> group = new CheckGroup<UIRoleForList>("group", rolesCheckGroupModel);
 		form.add(group);
 		group.add(new CheckGroupSelector("master-checkbox", group));
 		
-		DataView<UIRoleForList> rolesDateView = new PagingDataView<UIRoleForList>(
-				"roleList", rolesDataProvider) {
+		DataView<UIRoleForList> rolesDateView = new PagingDataView<UIRoleForList>("roleList", rolesDataProvider) {
 
 			@Override
 			protected void populateItem(Item<UIRoleForList> item) {
@@ -116,20 +114,14 @@ public class ListRolesPage extends BasePage {
 				
 				PageParameters pageParams = new PageParameters();
 				pageParams.set("roleid", String.valueOf(role.getId()));
-				
-				BookmarkablePageLink<ViewRolePage> viewRoleLink = new BookmarkablePageLink<ViewRolePage>(
-						"view-role-link", ViewRolePage.class, pageParams);
-				item.add(viewRoleLink);
-				viewRoleLink.add(new Label("role-name", role.getName()));
+
+				item.add(new Label("role-name", role.getName()));
 				item.add(new Label("principal-name",role.getPrincipalName()));
 				item.add(new Label("subsystem-name", role.getSubsystem()));
 				item.add(new Check<UIRoleForList>("selected", item.getModel(),group));
-				item.add(new BookmarkablePageLink<Page>("role-edit",
-						EditRolePage.class, PageParametersBuilder.fromPair("id", role.getId())));
-				item.add(new BookmarkablePageLink<Page>("role-groups",
-						ChangeRoleGroupsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
-				item.add(new BookmarkablePageLink<Page>("role-actions",
-						ChangeRoleActionsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
+				item.add(new BookmarkablePageLink<Page>("role-edit", EditRolePage.class, PageParametersBuilder.fromPair("id", role.getId())));
+				item.add(new BookmarkablePageLink<Page>("role-groups", ChangeRoleGroupsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
+				item.add(new BookmarkablePageLink<Page>("role-actions", ChangeRoleActionsPage.class, PageParametersBuilder.fromPair("id", role.getId())));
 
 				item.add(new SubmitLink("delete-role"){
 
@@ -153,17 +145,17 @@ public class ListRolesPage extends BasePage {
 									}
 								});
 					}
-					
 				});
+
+                WicketComponentHelper.clickTableRow(item, ViewRolePage.class, pageParams, this);
 			}
 
 		};
 		group.add(rolesDateView);
 		group.add(new OrderByLink("order-by-roleName", "roleName", rolesDataProvider));
 		group.add(new OrderByLink("order-by-principalName", "principalName", rolesDataProvider));
-		group.add(new OrderByLink("order-by-subsystemName", "subsystemName",
-				rolesDataProvider));
-		//group.add(new PagingNavigator("paging-navigator", rolesDateView));
+		group.add(new OrderByLink("order-by-subsystemName", "subsystemName", rolesDataProvider));
+
 		group.add(new SuperflyPagingNavigator("paging-navigator", rolesDateView));
 		
 		form.add(new Button("delete-role"){

@@ -61,11 +61,13 @@ public interface RoleService {
 	RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
 			List<Long> actionToRemoveIds);
 
-	List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId);
 
-	List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+    int getMappedRoleGroupsCount(long roleId);
+
+	List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId);
 }

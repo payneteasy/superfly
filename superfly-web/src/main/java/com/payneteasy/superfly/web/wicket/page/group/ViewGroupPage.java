@@ -7,6 +7,7 @@ import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -59,8 +60,7 @@ public class ViewGroupPage extends BasePage {
 		// SORTABLE DATA PROVIDER
 		
 		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
-				fieldName) {
+		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(fieldName) {
 			
             private static final long serialVersionUID = 1L;
 
@@ -95,9 +95,11 @@ public class ViewGroupPage extends BasePage {
 		add(actionDataView);
 		add(new OrderByLink("order-by-ActionID", "actionId", actionDataProvider));
 		add(new OrderByLink("order-by-ActionName", "actionName", actionDataProvider));
-		//add(new PagingNavigator("paging-navigator", actionDataView));
+
 		add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
-		
+
+        add(new BookmarkablePageLink("group-actions", ChangeGroupActionsPage.class, PageParametersBuilder.fromPair("gid", groupId)));
+
 	}
 	
 

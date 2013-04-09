@@ -14,6 +14,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
+import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
@@ -47,15 +48,15 @@ public class ListActionsPage extends BasePage {
 		add(filtersForm);	
 		
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
-				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						stickyFilters, "subsystem"),
-				subsystemService.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer());
+				"subsystem-filter"
+                , new PropertyModel<UISubsystemForFilter>(stickyFilters, "subsystem")
+                , subsystemService.getSubsystemsForFilter()
+                , new SubsystemChoiceRenderer()
+        );
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
       
-		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",
-				new PropertyModel<String>(stickyFilters, "actionNameSubstring")){
+		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new PropertyModel<String>(stickyFilters, "actionNameSubstring")){
 			@Override
 			protected Iterator<String> getChoices(String input) {
 				if (Strings.isEmpty(input))
@@ -100,8 +101,7 @@ public class ListActionsPage extends BasePage {
 		};
 		
 		String[] fieldName = { "actionId","actionName", "actionDescription","actionLog","subsystemId" ,"subsystemName"};
-		SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(
-				fieldName) {
+		SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
 
 			public Iterator<? extends UIActionForList> iterator(long first,
                     long count) {
@@ -109,17 +109,13 @@ public class ListActionsPage extends BasePage {
 				String actionForFilter = stickyFilters.getActionNameSubstring();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
-					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null,
-							subsystem == null ? null : null);
+					List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null, subsystem == null ? null : null);
 					actionsHolder.setObject(actions);
 					actionsCheckGroupModel.clearInitialized();
 					return actions.iterator();
 				} else {
 					subsystemId.add(subsystem.getId());
-					List<UIActionForList> actions = actionService.getActions(first, count,
-							getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null,
-							subsystem == null ? null : subsystemId);
+					List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null, subsystem == null ? null : subsystemId);
 					actionsHolder.setObject(actions);
 					actionsCheckGroupModel.clearInitialized();
 					return actions.iterator();
@@ -138,11 +134,9 @@ public class ListActionsPage extends BasePage {
 			}
 
 		};
-		final Form<Void> form = new Form<Void>("form") {
-		};
+		final Form<Void> form = new Form<Void>("form");
 		add(form);
-		final CheckGroup<UIActionForList> group = new CheckGroup<UIActionForList>(
-				"group", actionsCheckGroupModel);
+		final CheckGroup<UIActionForList> group = new CheckGroup<UIActionForList>("group", actionsCheckGroupModel);
 		form.add(group);
 		group.add(new CheckGroupSelector("master-checkbox", group));
 		
@@ -154,29 +148,11 @@ public class ListActionsPage extends BasePage {
 				item.add(new Label("action-name",action.getName()));
 				item.add(new Label("action-description",action.getDescroption()));
 				item.add(new Label("subsystem-name",action.getSubsystemName()));
-				Link<Void> switchLogLevel = new Link<Void>("switch-loglevel") {
-
-					@Override
-					public void onClick() {
-						List<Long> logLevelOn = new ArrayList<Long>();
-						List<Long> logLevelOff = new ArrayList<Long>();
-						if (action.isLogAction()) {
-							logLevelOff.add(action.getId());
-							actionService.changeActionsLogLevel(null, logLevelOff);
-						} else {
-							logLevelOn.add(action.getId());
-							actionService.changeActionsLogLevel(logLevelOn, null);
-						}
-						
-					}
-
-				};
-				switchLogLevel.add(new Label("log-action", action
-						.isLogAction() ? "yes" : "NO"));
-				item.add(switchLogLevel);
 				item.add(new Check<UIActionForList>("selected", item.getModel(),group));
 				item.add(new BookmarkablePageLink<Page>("copy-action",
 						CopyActionPropertiesPage.class, PageParametersBuilder.fromPair("id", action.getId())));
+
+                WicketComponentHelper.tableRowInfoCondition(item, action.isLogAction());
 				
 			}
 			
@@ -204,11 +180,9 @@ public class ListActionsPage extends BasePage {
 	    });
                 
 		group.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-		group.add(new OrderByLink("order-by-actionDescription", "actionDescription",
-				actionDataProvider));
+		group.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
 		group.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
-		group.add(new OrderByLink("order-by-actionLog","actionLog",actionDataProvider));
-		//group.add(new PagingNavigator("paging-navigator", actionsDataView));
+
 		group.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
 
 	}

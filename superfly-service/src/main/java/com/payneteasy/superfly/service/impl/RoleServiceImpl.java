@@ -171,15 +171,20 @@ public class RoleServiceImpl implements RoleService {
 						: DaoConstants.DESC, roleId, actionName);
 	}
 
-	public List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+	public List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId) {
-		return roleDao.getMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
-				: DaoConstants.DESC, roleId);
+		return roleDao.getMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC: DaoConstants.DESC, roleId);
 	}
 
-	public List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean ascending,
+    @Override
+    public int getMappedRoleGroupsCount(long roleId) {
+        return roleDao.getMappedRoleGroupsCount(roleId);
+    }
+
+
+    public List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean ascending,
 			long roleId) {
 		return roleDao.getUnMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
 				: DaoConstants.DESC, roleId);

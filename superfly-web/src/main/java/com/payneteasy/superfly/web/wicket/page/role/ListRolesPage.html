@@ -42,10 +42,10 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr wicket:id="roleList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+					<tr wicket:id="roleList">
 						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 						<td>
-							<a href="#" wicket:id="view-role-link"><span wicket:id="role-name">bond</span></a>
+							<span wicket:id="role-name">bond</span>
 						</td>
 						<td><span wicket:id="principal-name">bond</span></td>
 						<td><span wicket:id="subsystem-name">bond</span></td>
@@ -54,9 +54,9 @@
                                 <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
                                 <ul class="dropdown-menu s-dropdown-menu">
                                     <li><a href="#" wicket:id="role-edit">Edit</a></li>
+                                    <li><a href="#" wicket:id="role-groups">Grant Groups</a></li>
+                                    <li><a href="#" wicket:id="role-actions">Grant Actions</a></li>
                                     <li><a href="#" wicket:id="delete-role">Delete</a></li>
-                                    <li><a href="#" wicket:id="role-groups">Groups</a></li>
-                                    <li><a href="#" wicket:id="role-actions">GrantActions</a></li>
                                 </ul>
                             </div>
 						</td>

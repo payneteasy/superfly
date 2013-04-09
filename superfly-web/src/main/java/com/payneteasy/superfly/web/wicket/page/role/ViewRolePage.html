@@ -7,14 +7,12 @@
 </head>
 <body>
 <wicket:extend>
-    <div class="well s-filter">
-        <form wicket:id="filter-form" class="form-inline">
-            <ul class="s-filter-items">
-                <li><input type="text" wicket:id="action-name-substr" placeholder="Action name"/></li>
-                <li><input type="submit" value="Filter" class="btn"/></li>
-            </ul>
-        </form>
+    <div class="s-legend-btn">
+        <a href="#" wicket:id="role-groups" class="btn btn-primary">Grant Groups</a>
+        <a href="#" wicket:id="role-actions" class="btn btn-warning">Grant Actions</a>
     </div>
+
+
 
     <p>
         <strong>Role name: </strong>
@@ -26,27 +24,52 @@
         <strong>Subsystem:</strong>
         <span wicket:id="roleSubsystem">some-subsystem</span>&nbsp;&nbsp;
 
-        <input type="submit" wicket:id="btn-back" value="Back to role's list" class="btn"/>
+        <a href="#" wicket:id="btn-back">Back to role's list</a>
     </p>
 
+    <div class="row-fluid">
+        <div class="span6">
+            <input type="text" id="group-query" class="s-mapping-input" autocomplete="off" placeholder="Search in Grant Groups"/>
 
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr>
-				<th><a wicket:id="order-by-ActionID">ID</a></th>
-				<th><a wicket:id="order-by-ActionName">Grant Action Name</a></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="dataView">
-				<td><span wicket:id="action-id">[Name]</span></td>
-				<td><span wicket:id="action-name">[Subsystem]</span></td>
-			</tr>
-			<tr>
-			   <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
-			</tr>
-		</tbody>
-	</table>
+            <div class="s-mapping-table">
+                <div class="s-mapping-header row-fluid">
+                    <div class="span2 s-offset05">Group Id</div>
+                    <div class="span8">Group Name</div>
+                </div>
+                <ul id="groups-list" class="s-mapping-body unstyled">
+                    <li class="s-mapping-row row-fluid" wicket:id="grant-groups">
+                        <div class="span2 s-offset05" wicket:id="group-id"></div>
+                        <div class="span8" wicket:id="group-name"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="span6">
+
+            <input type="text" id="action-query" class="s-mapping-input" autocomplete="off" placeholder="Search in Grant Actions"/>
+
+            <div class="s-mapping-table">
+                <div class="s-mapping-header row-fluid">
+                    <div class="span2 s-offset05">Action Id</div>
+                    <div class="span8">Action Name</div>
+                </div>
+                <ul id="actions-list" class="s-mapping-body unstyled">
+                    <li class="s-mapping-row row-fluid" wicket:id="grant-actions">
+                        <div class="span2 s-offset05" wicket:id="action-id"></div>
+                        <div class="span8" wicket:id="action-name"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/jquery.livesearch.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#group-query").fastLiveFilter('#groups-list').focus();
+            $("#action-query").fastLiveFilter('#actions-list');
+        });
+    </script>
 
 </wicket:extend>
 </body>

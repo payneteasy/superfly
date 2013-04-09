@@ -15,8 +15,18 @@ import java.util.List;
  * Date: 09.04.13 Time: 13:18
  */
 public class WicketComponentHelper {
-    public static void clickTableRow(ListItem listItem, Class<? extends Page> page, PageParameters pageParameters, Component component){
-        listItem.add(new AttributeModifier("onclick", new Model<String>("javascript:return rowClick('" + component.urlFor(UserDetailsPage.class, pageParameters) + "', event);")));
+    public static void clickTableRow(ListItem listItem, Class<? extends Page> pageClass, PageParameters pageParameters, Component component){
+        listItem.add(new AttributeModifier("onclick", new Model<String>("javascript:return rowClick('" + component.urlFor(pageClass, pageParameters) + "', event);")));
         listItem.add(new AttributeAppender("class", new Model<String>("tabelRowPointer"), " "));
+    }
+
+    public static void tableRowInfoCondition(ListItem listItem, boolean condition){
+        if(condition){
+            tableRowInfo(listItem);
+        }
+    }
+
+    public static void tableRowInfo(ListItem listItem){
+        listItem.add(new AttributeAppender("class", new Model<String>("info"), " "));
     }
 }

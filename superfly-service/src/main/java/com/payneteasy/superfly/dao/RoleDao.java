@@ -95,12 +95,16 @@ public interface RoleDao {
 			String actionToRemoveIds);
 
 	@AStoredProcedure(name = "ui_get_mapped_role_groups_list")
-	List<UIGroupForCheckbox> getMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+	List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, String orderType,
 			long roleId);
 
+    @AStoredProcedure(name = "ui_get_mapped_role_groups_list_count")
+    int getMappedRoleGroupsCount(long roleId);
+
+
 	@AStoredProcedure(name = "ui_get_unmapped_role_groups_list")
-	List<UIGroupForCheckbox> getUnMappedRoleGroups(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+	List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
+			long recordsCount, int orderFieldNumber, String orderType,
 			long roleId);
 }

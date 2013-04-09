@@ -6,6 +6,10 @@
 </head>
 <body>
 <wicket:extend>
+    <div class="s-legend-btn">
+        <a href="#" wicket:id="group-actions" class="btn btn-primary">Add Actions to group</a>
+    </div>
+
     <div class="well s-filter">
 	  <form wicket:id="filter-form" class="form-inline">
           <ul class="s-filter-items">
@@ -17,8 +21,9 @@
 
 <p>
     <strong>Group name: </strong><span wicket:id="groupName"></span>&nbsp;&nbsp;<strong>Subsystem: </strong>
-    <span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" class="btn">Back to list groupss</a>
+    <span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" >Back to list groupss</a>
 </p>
+
 	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>

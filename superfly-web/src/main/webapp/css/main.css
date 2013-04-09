@@ -125,6 +125,15 @@ html, body{
     }
 
 /*      COMPONENTS              */
+.row-fluid .s-offset05 {
+    margin-left: 5%;
+    *margin-left: 5%;
+}
+.row-fluid .s-offset05:first-child {
+    margin-left: 4.547008547008547%;
+    *margin-left: 4.440625568285142%;
+}
+
 .s-legend-btn{
     position: absolute;
     top: 65px;
