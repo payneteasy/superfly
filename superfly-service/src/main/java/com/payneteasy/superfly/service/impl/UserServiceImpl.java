@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 		userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
 	}
 
-	public UIUser getUser(long userId) {
+	public UIUserDetails getUser(long userId) {
 		return userDao.getUser(userId);
 	}
 

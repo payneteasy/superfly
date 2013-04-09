@@ -9,10 +9,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import com.payneteasy.superfly.model.ui.user.UIUserForList;
-import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.model.ui.user.*;
 
 /**
  * Service to work with users.
@@ -61,7 +58,7 @@ public interface UserService {
 	 * @param userId	ID of the user to return
 	 * @return user of null if not found
 	 */
-	UIUser getUser(long userId);
+	UIUserDetails getUser(long userId);
 	
 	/**
 	 * Creates a user.

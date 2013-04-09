@@ -96,7 +96,7 @@ public class SuperflyApplication extends BaseApplication {
 
     @Override
 	public Class<? extends Page> getHomePage() {
-		return HomePage.class;
+		return ListUsersPage.class;
 	}
 
     // TODO: test temp password changing! (and request coding strategy)

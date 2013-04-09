@@ -11,10 +11,8 @@
      <div class="row-fluid s-mapping">
 
          <div class="span5">
-             <div class="input-append" wicket:id="search-unmapped-container">
-                 <input type="text" wicket:id="unmapped-str">
-                 <button class="btn btn-info" wicket:id="unmapped-search-button" type="button">Search</button>
-             </div>
+
+            <input type="text" id="unmapped-query" class="s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
             <!--table     -->
              <wicket:container wicket:id="checkgroup-unmapped">
@@ -23,12 +21,12 @@
                          <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-unmap"/></div>
                          <div class="span11">Granted <span wicket:id="unmapped-item-name"></span></div>
                      </div>
-                     <div class="s-mapping-body">
-                         <div class="s-mapping-row row-fluid" wicket:id="unmapped-list">
+                     <ul id="unmapped-list" class="s-mapping-body unstyled">
+                         <li class="s-mapping-row row-fluid" wicket:id="unmapped-list">
                              <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
                              <div class="span11" wicket:id="mapped-name"></div>
-                         </div>
-                     </div>
+                         </li>
+                     </ul>
                  </div>
              </wicket:container>
          </div>
@@ -40,30 +38,37 @@
          </div>
 
          <div class="span5">
-             <div class="input-append" wicket:id="search-mapped-container">
-                 <input  type="text" wicket:id="mapped-str">
-                 <button class="btn btn-info" wicket:id="mapped-search-button" type="button">Search</button>
-             </div>
+
+             <input type="text" id="mapped-query" class="s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
              <!--table-->
              <wicket:container wicket:id="checkgroup-mapped">
-                 <div  class="s-mapping-table">
+                 <div class="s-mapping-table">
                      <div class="s-mapping-header row-fluid">
                          <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-map"/></div>
                          <div class="span11">Granted <span wicket:id="mapped-item-name"></span></div>
                      </div>
-                     <div class="s-mapping-body">
-                         <div class="s-mapping-row row-fluid" wicket:id="mapped-list">
+
+                     <ul id="mapped-list" class="s-mapping-body unstyled">
+                         <li class="s-mapping-row row-fluid" wicket:id="mapped-list">
                              <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
                              <div class="span11" wicket:id="mapped-name"></div>
-                         </div>
-                     </div>
+                         </li>
+                     </ul>
+
                  </div>
              </wicket:container>
          </div>
      </div>
 
 </form>
+    <script type="text/javascript" src="js/jquery.livesearch.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#unmapped-query").fastLiveFilter('#unmapped-list').focus();
+            $("#mapped-query").fastLiveFilter('#mapped-list');
+        });
+    </script>
 </wicket:panel>
 </body>
 </html>

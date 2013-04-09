@@ -67,11 +67,6 @@ public class ChangeUserGrantActionsPage extends BasePage {
 			}
 
 			@Override
-			protected boolean isVisibleSearchePanel() {
-				return true;
-			}
-
-			@Override
 			protected String getHeaderItemName() {
 				return "Actions";
 			}

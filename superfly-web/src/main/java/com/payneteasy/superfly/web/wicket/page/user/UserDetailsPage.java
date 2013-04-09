@@ -3,7 +3,13 @@ package com.payneteasy.superfly.web.wicket.page.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.payneteasy.superfly.common.utils.StringUtils;
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.user.UIUserDetails;
+import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -34,29 +40,20 @@ public class UserDetailsPage extends BasePage {
 		super(ListUsersPage.class, params);
 
 		final long userId = params.get("userId").toLong();
-		final UIUser thisuser = userService.getUser(userId);
-		add(new Label("user-name", thisuser.getUsername()));
 
-		IModel<String> publicKeyDisplayModel = new AbstractReadOnlyModel<String>() {
-			@Override
-			public String getObject() {
-				if (thisuser.getPublicKey() == null || thisuser.getPublicKey().trim().length() == 0) {
-					return "No key saved";
-				} else {
-					return thisuser.getPublicKey();
-				}
-			}
-		};
-		Label publicKeyLabel = new Label("public-key", publicKeyDisplayModel);
-		add(publicKeyLabel);
-		publicKeyLabel.setMarkupId("public_key_holder");
-		publicKeyLabel.setOutputMarkupId(true);
+        final IModel<UIUserDetails> uiUserDetailsIModel = new AbstractReadOnlyModel<UIUserDetails>() {
+            @Override
+            public UIUserDetails getObject() {
+                return userService.getUser(userId);
+            }
+        };
 
-		UIUserWithRolesAndActions user = userService.getUserRoleActions(userId, null, null, null);
+		final UIUserWithRolesAndActions user = userService.getUserRoleActions(userId, null, null, null);
 		final List<UIRoleWithActions> roleWithAction = user.getRoles();
 		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
 		sort.setRoleWithAction(roleWithAction);
 
+//        LEFT SIDE
 		ListView<String> subRolesList = new ListView<String>("sub-list", sort.getSubsystemsName()) {
 			@Override
 			protected void populateItem(ListItem<String> item) {
@@ -93,20 +90,64 @@ public class UserDetailsPage extends BasePage {
                                 parameters.set("userId", String.valueOf(userId));
                                 setResponsePage(UserDetailsPage.class, parameters);
                             }
-
                         });
 					}
-
 				});
-
 			}
-
 		};
 		add(subRolesList);
 
+
+//        RIGHT SIDE
+        add(new LabelValueRow<UIUserDetails>("username", uiUserDetailsIModel.getObject(), "user.create.username"));
+        add(new LabelValueRow<UIUserDetails>("email", uiUserDetailsIModel.getObject(), "user.create.email"));
+        add(new LabelValueRow<UIUserDetails>("accountLocked", uiUserDetailsIModel.getObject(), "user.create.isAccountLocked"));
+        add(new LabelValueRow<UIUserDetails>("name", uiUserDetailsIModel.getObject(), "user.create.name"));
+        add(new LabelValueRow<UIUserDetails>("surname", uiUserDetailsIModel.getObject(), "user.create.surname"));
+        add(new LabelValueRow<UIUserDetails>("secretQuestion", uiUserDetailsIModel.getObject(), "user.create.secret-question"));
+        add(new LabelValueRow<UIUserDetails>("secretAnswer", uiUserDetailsIModel.getObject(), "user.create.secret-answer"));
+        add(new LabelValueRow<UIUserDetails>("publicKey", uiUserDetailsIModel.getObject(), "user.create.publicKey"));
+
+
+        //ADD SUBSYSTEM
 		PageParameters param = new PageParameters();
 		param.set("userId", String.valueOf(userId));
 		add(new BookmarkablePageLink<AppendSubsystemWithRolePage>("add-sub", AppendSubsystemWithRolePage.class, param));
+
+//        LOCK USER
+        Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
+            @Override
+            public void onClick() {
+                if (uiUserDetailsIModel.getObject().isAccountLocked()) {
+                    String newPassword = userService.unlockUser(uiUserDetailsIModel.getObject().getId(), uiUserDetailsIModel.getObject().isAccountSuspended());
+                    String message = "User unlocked: " + uiUserDetailsIModel.getObject().getUsername();
+                    if (newPassword != null) {
+                        message += "; temporary password is " + newPassword;
+                    }
+                    info(message);
+                } else {
+                    RoutineResult result = userService.lockUser(uiUserDetailsIModel.getObject().getId());
+                    if (result.isOk()) {
+                        info("User locked: " + uiUserDetailsIModel.getObject().getUsername() + "; please be aware that some sessions could be expired");
+                    } else {
+                        error("Error while trying to lock a user: " + result.getErrorMessage());
+                    }
+                }
+            }
+        };
+        switchLockedStatusLink.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
+            @Override
+            public String getObject() {
+                return uiUserDetailsIModel.getObject().isAccountLocked()?"btn-warning":"btn-danger";
+            }
+        }, " "));
+        switchLockedStatusLink.add(new Label("switch-info", new AbstractReadOnlyModel<String>() {
+            @Override
+            public String getObject() {
+                return uiUserDetailsIModel.getObject().isAccountLocked()?"Unlock user": "Lock user";
+            }
+        }));
+        add(switchLockedStatusLink);
 	}
 
 	@Override

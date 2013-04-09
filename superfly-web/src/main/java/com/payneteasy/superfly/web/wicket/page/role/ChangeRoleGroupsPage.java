@@ -44,11 +44,6 @@ public class ChangeRoleGroupsPage extends BasePage {
 			}
 
 			@Override
-			protected boolean isVisibleSearchePanel() {
-				return false;
-			}
-
-			@Override
 			protected String getHeaderItemName() {
 				return "Groups";
 			}

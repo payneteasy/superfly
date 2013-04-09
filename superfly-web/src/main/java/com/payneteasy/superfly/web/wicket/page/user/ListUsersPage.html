@@ -18,7 +18,7 @@
 		<form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
-                    <input wicket:id="username-filter" placeholder="Username prefix"/>
+                    <input wicket:id="username-filter" type="text" placeholder="Username prefix"/>
                 </li>
                 <li>
                     <span>Role:</span>
@@ -49,7 +49,6 @@
 			<tr class="s-table-head">
 				<th><a wicket:id="order-by-username">Username</a></th>
 				<th>Email</th>
-				<th><a wicket:id="order-by-locked">Locked</a></th>
 				<th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
 				<th><a wicket:id="order-by-last-login-date">Last login date</a></th>
 				<th title="Next OTP counter">NC</th>
@@ -63,9 +62,6 @@
 				</td>
 				<td>
 				    <span wicket:id="email">email</span>
-				</td>
-				<td>
-					<a href="#" wicket:id="switch-locked-status" class="btn btn-warning"><span wicket:id="locked-status">Yes</span></a>
 				</td>
 				<td align="center">
 					<span wicket:id="logins-failed">777</span>
@@ -83,7 +79,6 @@
                             <li><a href="#" wicket:id="edit-user">Edit</a></li>
                             <li><a href="#" wicket:id="clone-user">Clone</a></li>
                             <li><a href="#" wicket:id="reset-password-link">Reset password</a></li>
-                            <li><a href="#" wicket:id="add-subsystem">Append subsystem</a></li>
                             <li><a href="#" wicket:id="download-hotp-table">OTP table</a></li>
                             <li><a href="#" wicket:id="reset-table-link">Reset table</a></li>
                         </ul>

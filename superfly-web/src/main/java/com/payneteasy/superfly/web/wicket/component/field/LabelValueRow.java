@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.component.field;
 
+import com.payneteasy.superfly.common.utils.StringUtils;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -18,8 +19,13 @@ public class LabelValueRow<T> extends Panel{
         IModel<String> valueModel = new AbstractReadOnlyModel<String>() {
             @Override
             public String getObject() {
-                String value = String.valueOf(model.getObject());
-                return value;
+                if(model.getObject() instanceof Boolean){
+                    return StringUtils.yesNoString((Boolean) model.getObject());
+                }
+                if(model.getObject() instanceof String){
+                    return StringUtils.emptyStringIfNull((String) model.getObject());
+                }
+                return StringUtils.emptyStringIfObjectNull(model.getObject());
             }
         };
         

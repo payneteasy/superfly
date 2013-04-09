@@ -6,12 +6,7 @@ import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import com.payneteasy.superfly.model.ui.user.UIUserForList;
-import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
-import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.model.ui.user.*;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 
 /**
@@ -99,7 +94,7 @@ public interface UserDao {
 	 * @return user of null if not found
 	 */
 	@AStoredProcedure(name = "ui_get_user")
-	UIUser getUser(long userId);
+    UIUserDetails getUser(long userId);
 
 	/**
 	 * Creates a user.

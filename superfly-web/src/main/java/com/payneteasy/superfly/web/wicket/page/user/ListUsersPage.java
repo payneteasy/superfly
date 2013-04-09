@@ -15,10 +15,22 @@ import com.payneteasy.superfly.web.wicket.component.label.DateLabels;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.json.JSONException;
+import org.apache.wicket.ajax.json.JSONObject;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AbstractAjaxBehavior;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,6 +40,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -44,217 +57,220 @@ import java.util.Iterator;
 
 /**
  * Displays a list of users.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 @Secured("ROLE_ADMIN")
 public class ListUsersPage extends BasePage {
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private RoleService roleService;
-	@SpringBean
-	private SubsystemService subsystemService;
-	@SpringBean
-	private HOTPProvider hotpProvider;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private RoleService roleService;
+    @SpringBean
+    private SubsystemService subsystemService;
+    @SpringBean
+    private HOTPProvider hotpProvider;
 
-	public ListUsersPage() {
-		super(ListUsersPage.class);
+    public ListUsersPage() {
+        super(ListUsersPage.class);
 
         final ModalWindow resetHotpWindow = new ModalWindow("reset-hotp-window");
         add(resetHotpWindow);
 
-		// filters
-		final UserFilters userFilters = new UserFilters();
-		Form<UserFilters> filtersForm = new Form<UserFilters>("filters-form");
-		add(filtersForm);
-		filtersForm.add(new TextField<String>("username-filter",
-				new PropertyModel<String>(userFilters, "usernamePrefix")));
-		DropDownChoice<UIRoleForFilter> roleDropdown = new DropDownChoice<UIRoleForFilter>("role-filter",
-				new PropertyModel<UIRoleForFilter>(userFilters, "role"),
-				roleService.getRolesForFilter(), new RoleChoiceRenderer());
-		roleDropdown.setNullValid(true);
-		filtersForm.add(roleDropdown);
-		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>("subsystem-filter",
-				new PropertyModel<UISubsystemForFilter>(userFilters, "subsystem"),
-				subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
-		subsystemDropdown.setNullValid(true);
-		filtersForm.add(subsystemDropdown);
-		
-		// data provider + sortability
-		String[] fieldNames = {"userId", "username", "password", "locked",
-				"loginsFailed", "lastLoginDate"};
-		SortableDataProvider<UIUserForList, String> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
-			public Iterator<? extends UIUserForList> iterator(long first, long count) {
-				UIRoleForFilter role = userFilters.getRole();
-				UISubsystemForFilter subsystem = userFilters.getSubsystem();
-				return userService.getUsers(userFilters.getUsernamePrefix(),
-						role == null ? null : role.getId(), null,
-						subsystem == null ? null : subsystem.getId(),
-						first, count, getSortFieldIndex(), isAscending()).iterator();
-			}
+        // filters
+        final UserFilters userFilters = new UserFilters();
+        Form<UserFilters> filtersForm = new Form<UserFilters>("filters-form");
+        add(filtersForm);
+        filtersForm.add(new TextField<String>("username-filter", new PropertyModel<String>(userFilters, "usernamePrefix")));
 
-			public long size() {
-				UIRoleForFilter role = userFilters.getRole();
-				UISubsystemForFilter subsystem = userFilters.getSubsystem();
-				return userService.getUsersCount(userFilters.getUsernamePrefix(),
-						role == null ? null : role.getId(), null,
-						subsystem == null ? null : subsystem.getId());
-			}
+        DropDownChoice<UIRoleForFilter> roleDropdown = new DropDownChoice<UIRoleForFilter>(
+                "role-filter"
+                , new PropertyModel<UIRoleForFilter>(userFilters, "role")
+                , roleService.getRolesForFilter(), new RoleChoiceRenderer()
+        );
+        roleDropdown.setNullValid(true);
+        filtersForm.add(roleDropdown);
 
-		};
-		
-		// data itself
-		DataView<UIUserForList> usersDataView = new PagingDataView<UIUserForList>("usersList", usersDataProvider) {
-			@Override
-			protected void populateItem(Item<UIUserForList> item) {
-				final UIUserForList user = item.getModelObject();
-				final PageParameters actionsParameters = new PageParameters();
-				actionsParameters.set("userId", String.valueOf(user.getId()));
-				item.add(new Label("user-name", user.getUsername()));
-				Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
-					@Override
-					public void onClick() {
-						if (user.isAccountLocked()) {
-							String newPassword = userService.unlockUser(user.getId(), user.isAccountSuspended());
-							String message = "User unlocked: " + user.getUsername();
-							if (newPassword != null) {
-								message += "; temporary password is " + newPassword;
-							}
-							info(message);
-						} else {
-							RoutineResult result = userService.lockUser(user.getId());
-							if (result.isOk()) {
-								info("User locked: " + user.getUsername() + "; please be aware that some sessions could be expired");
-							} else {
-								error("Error while trying to lock a user: " + result.getErrorMessage());
-							}
-						}
-					}
-				};
-				switchLockedStatusLink.add(new Label("locked-status", user.isAccountLocked() ? "Yes" : "No"));
-				item.add(switchLockedStatusLink);
-				item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
-				item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
-				item.add(new Label("next-otp-counter", String.valueOf(user.getNextOtpCounter())));
-				item.add(new Label("email",user.getEmail()));
+        DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
+                "subsystem-filter"
+                , new PropertyModel<UISubsystemForFilter>(userFilters, "subsystem")
+                , subsystemService.getSubsystemsForFilter(), new SubsystemChoiceRenderer()
+        );
+        subsystemDropdown.setNullValid(true);
+        filtersForm.add(subsystemDropdown);
+
+        // data provider + sortability
+        String[] fieldNames = {"userId", "username", "password", "locked", "loginsFailed", "lastLoginDate"};
+
+        SortableDataProvider<UIUserForList, String> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
+            public Iterator<? extends UIUserForList> iterator(long first, long count) {
+                UIRoleForFilter role = userFilters.getRole();
+                UISubsystemForFilter subsystem = userFilters.getSubsystem();
+                return userService.getUsers(userFilters.getUsernamePrefix(),
+                        role == null ? null : role.getId(), null,
+                        subsystem == null ? null : subsystem.getId(),
+                        first, count, getSortFieldIndex(), isAscending()).iterator();
+            }
+
+            public long size() {
+                UIRoleForFilter role = userFilters.getRole();
+                UISubsystemForFilter subsystem = userFilters.getSubsystem();
+                return userService.getUsersCount(userFilters.getUsernamePrefix(),
+                        role == null ? null : role.getId(), null,
+                        subsystem == null ? null : subsystem.getId());
+            }
+        };
+        usersDataProvider.setSort(new SortParam<String>("loginsFailed", true)); //by default
+
+        // data itself
+        DataView<UIUserForList> usersDataView = new PagingDataView<UIUserForList>("usersList", usersDataProvider) {
+            @Override
+            protected void populateItem(Item<UIUserForList> item) {
+                item.setOutputMarkupId(true);
+                final UIUserForList user = item.getModelObject();
+                final PageParameters actionsParameters = new PageParameters();
+                actionsParameters.set("userId", String.valueOf(user.getId()));
+                item.add(new Label("user-name", user.getUsername()));
+
+                checkAccountForLocked(item, user);
+
+                item.add(new Label("logins-failed", String.valueOf(user.getLoginsFailed())));
+                item.add(DateLabels.forDateTime("last-login-date", user.getLastLoginDate()));
+                item.add(new Label("next-otp-counter", String.valueOf(user.getNextOtpCounter())));
+                item.add(new Label("email", user.getEmail()));
 
 //                ACTIONS
-                BookmarkablePageLink<UserDetailsPage> viewUserLink = new BookmarkablePageLink<UserDetailsPage>("add-subsystem", UserDetailsPage.class, actionsParameters);
-                item.add(viewUserLink);
-				item.add(new BookmarkablePageLink<EditUserPage>("edit-user", EditUserPage.class, actionsParameters));
-				item.add(new BookmarkablePageLink<CloneUserPage>("clone-user", CloneUserPage.class, actionsParameters));
-				Link<String> resetLink = new Link<String>("reset-password-link") {
-					@Override
-					public void onClick() {
-						setResponsePage(ResetPasswordUserPage.class, actionsParameters);
-					}
-				};
-				item.add(resetLink);
-				
-				Link<Void> downloadHotpTableLink = new Link<Void>("download-hotp-table") {
-					@Override
-					public void onClick() {
-						ByteArrayOutputStream os = new ByteArrayOutputStream();
-						try {
-							hotpProvider.outputSequenceForDownload(user.getUsername(), os);
-						} catch (IOException e) {
-							throw new IllegalStateException(e);
-						}
-						final byte[] bytes = os.toByteArray();
-						IResourceStream resourceStream = new AbstractResourceStream() {
-                            @Override
-                            public Time lastModifiedTime() {
-                                return Time.now();
-                            }
+                item.add(new BookmarkablePageLink<EditUserPage>("edit-user", EditUserPage.class, actionsParameters));
+                item.add(new BookmarkablePageLink<CloneUserPage>("clone-user", CloneUserPage.class, actionsParameters));
+                Link<String> resetLink = new Link<String>("reset-password-link") {
+                    @Override
+                    public void onClick() {
+                        setResponsePage(ResetPasswordUserPage.class, actionsParameters);
+                    }
+                };
+                item.add(resetLink);
 
-                            @Override
-                            public Bytes length() {
-                                return Bytes.bytes(bytes.length);
-                            }
+                downloadHtopTable(item, user);
 
-                            @Override
-                            public InputStream getInputStream() throws ResourceStreamNotFoundException {
-                                return new ByteArrayInputStream(bytes);
-                            }
+                resetHoptTable(item, user, resetHotpWindow);
 
-                            @Override
-                            public String getContentType() {
-                                return "application/vnd.ms-excel";
-                            }
+                WicketComponentHelper.clickTableRow(item, UserDetailsPage.class, actionsParameters, this);
 
-                            @Override
-                            public void close() throws IOException {
-                            }
-						};
-						getRequestCycle().replaceAllRequestHandlers(new ResourceStreamRequestHandler(resourceStream,
-                                hotpProvider.getSequenceForDownloadFileName(user.getUsername())));
-					}
-					
-				};
-				downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
-				item.add(downloadHotpTableLink);
-				
-				AjaxLink<Void> resetTableLink = new AjaxLink<Void>("reset-table-link") {
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-                        resetHotpWindow.setContent(new ResetOtpTablePanel(resetHotpWindow.getContentId(),
-                                user.getId(), resetHotpWindow, getFeedbackPanel()));
-                        resetHotpWindow.show(target);
-					}
-				};
-				resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
-				item.add(resetTableLink);
-			}
-		};
-		add(usersDataView);
+            }
+        };
+        add(usersDataView);
 
-		// ordering, paging...
-		add(new OrderByLink("order-by-username", "username", usersDataProvider));
-		add(new OrderByLink("order-by-locked", "locked", usersDataProvider));
-		add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
-		add(new OrderByLink("order-by-last-login-date", "lastLoginDate", usersDataProvider));
-		
-		//add(new PagingNavigator("paging-navigator", usersDataView));
-		add(new SuperflyPagingNavigator("paging-navigator", usersDataView));
-		
-		add(new BookmarkablePageLink<CreateUserPage>("add-user", CreateUserPage.class));
-	}
-	
-	@Override
-	protected String getTitle() {
-		return "Users";
-	}
+        // ordering, paging...
+        add(new OrderByLink("order-by-username", "username", usersDataProvider));
+        add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
+        add(new OrderByLink("order-by-last-login-date", "lastLoginDate", usersDataProvider));
 
-	@SuppressWarnings("unused")
-	private class UserFilters implements Serializable {
-		private String usernamePrefix;
-		private UIRoleForFilter role;
-		private UISubsystemForFilter subsystem;
+        //add(new PagingNavigator("paging-navigator", usersDataView));
+        add(new SuperflyPagingNavigator("paging-navigator", usersDataView));
 
-		public String getUsernamePrefix() {
-			return usernamePrefix;
-		}
+        add(new BookmarkablePageLink<CreateUserPage>("add-user", CreateUserPage.class));
+    }
 
-		public void setUsernamePrefix(String usernamePrefix) {
-			this.usernamePrefix = usernamePrefix;
-		}
 
-		public UIRoleForFilter getRole() {
-			return role;
-		}
 
-		public void setRole(UIRoleForFilter role) {
-			this.role = role;
-		}
+    @Override
+    protected String getTitle() {
+        return "Users";
+    }
 
-		public UISubsystemForFilter getSubsystem() {
-			return subsystem;
-		}
+    //PRIVATE METHODS
+    private void checkAccountForLocked(Item<UIUserForList> item, UIUserForList user) {
+        if(user.isAccountLocked()){
+            item.add(new AttributeModifier("class", new Model<String>("error")));
+        }
+    }
 
-		public void setSubsystem(UISubsystemForFilter subsystem) {
-			this.subsystem = subsystem;
-		}
-	}
+    private void resetHoptTable(Item<UIUserForList> item, final UIUserForList user, final ModalWindow resetHotpWindow) {
+        AjaxLink<Void> resetTableLink = new AjaxLink<Void>("reset-table-link") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                resetHotpWindow.setContent(new ResetOtpTablePanel(resetHotpWindow.getContentId(),
+                        user.getId(), resetHotpWindow, getFeedbackPanel()));
+                resetHotpWindow.show(target);
+            }
+        };
+        resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
+        item.add(resetTableLink);
+    }
+
+    private void downloadHtopTable(Item<UIUserForList> item, final UIUserForList user) {
+        Link<Void> downloadHotpTableLink = new Link<Void>("download-hotp-table") {
+            @Override
+            public void onClick() {
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                try {
+                    hotpProvider.outputSequenceForDownload(user.getUsername(), os);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
+                final byte[] bytes = os.toByteArray();
+                IResourceStream resourceStream = new AbstractResourceStream() {
+                    @Override
+                    public Time lastModifiedTime() {
+                        return Time.now();
+                    }
+
+                    @Override
+                    public Bytes length() {
+                        return Bytes.bytes(bytes.length);
+                    }
+
+                    @Override
+                    public InputStream getInputStream() throws ResourceStreamNotFoundException {
+                        return new ByteArrayInputStream(bytes);
+                    }
+
+                    @Override
+                    public String getContentType() {
+                        return "application/vnd.ms-excel";
+                    }
+
+                    @Override
+                    public void close() throws IOException {
+                    }
+                };
+                getRequestCycle().replaceAllRequestHandlers(new ResourceStreamRequestHandler(resourceStream,
+                        hotpProvider.getSequenceForDownloadFileName(user.getUsername())));
+            }
+        };
+        downloadHotpTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
+        item.add(downloadHotpTableLink);
+    }
+
+    @SuppressWarnings("unused")
+    private class UserFilters implements Serializable {
+        private String usernamePrefix;
+        private UIRoleForFilter role;
+        private UISubsystemForFilter subsystem;
+
+        public String getUsernamePrefix() {
+            return usernamePrefix;
+        }
+
+        public void setUsernamePrefix(String usernamePrefix) {
+            this.usernamePrefix = usernamePrefix;
+        }
+
+        public UIRoleForFilter getRole() {
+            return role;
+        }
+
+        public void setRole(UIRoleForFilter role) {
+            this.role = role;
+        }
+
+        public UISubsystemForFilter getSubsystem() {
+            return subsystem;
+        }
+
+        public void setSubsystem(UISubsystemForFilter subsystem) {
+            this.subsystem = subsystem;
+        }
+    }
 
 }
