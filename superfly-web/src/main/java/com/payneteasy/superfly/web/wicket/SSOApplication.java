@@ -9,9 +9,9 @@ public class SSOApplication extends BaseApplication {
 	@Override
 	protected void customInit() {
         // SSO (i.e., real single sign-on) login
-        mountBookmarkablePage("/login", SSOLoginPage.class);
+        mountBookmarkablePageWithParameters("/login", SSOLoginPage.class);
         // single sign-out
-        mountBookmarkablePage("/logout", SSOLogoutPage.class);
+        mountBookmarkablePageWithParameters("/logout", SSOLogoutPage.class);
 	}
 
 	@Override
