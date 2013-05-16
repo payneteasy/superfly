@@ -24,8 +24,12 @@ public class PageInterceptingRequestMapper implements IRequestMapper {
     @Override
     public IRequestHandler mapRequest(Request request) {
         IRequestHandler handler = delegate.mapRequest(request);
-        return PageInterceptingRequestMapperLogic.resolve(request, handler,
-                interceptionDecisions, interceptorPageClass);
+        if (handler == null) {
+            return handler;
+        } else {
+            return PageInterceptingRequestMapperLogic.resolve(request, handler,
+                    interceptionDecisions, interceptorPageClass);
+        }
     }
 
     @Override
