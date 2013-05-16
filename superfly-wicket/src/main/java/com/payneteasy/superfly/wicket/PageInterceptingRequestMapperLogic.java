@@ -1,9 +1,6 @@
 package com.payneteasy.superfly.wicket;
 
-import org.apache.wicket.core.request.handler.BookmarkablePageRequestHandler;
-import org.apache.wicket.core.request.handler.IComponentRequestHandler;
-import org.apache.wicket.core.request.handler.IPageRequestHandler;
-import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.*;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.component.IRequestablePage;
@@ -29,7 +26,7 @@ public class PageInterceptingRequestMapperLogic {
                 }
             }
             if (!alreadyChanging) {
-                handler = new BookmarkablePageRequestHandler(new PageProvider(interceptorPageClass));
+                handler = new RenderPageRequestHandler(new PageProvider(interceptorPageClass));
             }
         }
         return handler;
