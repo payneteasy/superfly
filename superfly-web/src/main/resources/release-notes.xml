@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <news>
-    <release number="1.5-1" date="2013.05.30">
+    <release number="1.5" date="2013.05.30">
         <item type="task">
             <name>UI design and usability</name>
             <description>
@@ -42,7 +42,7 @@
         </item>
     </release>
 
-    <release number="1.4-1" date="2013.02.05">
+    <release number="1.4" date="2013.02.05">
         <item type="task">
             <name>Redirect-based Single Sign-on functionality</name>
             <description>
