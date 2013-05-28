@@ -80,6 +80,11 @@
 	        <groupId>com.thoughtworks.xstream</groupId>
 	        <artifactId>xstream</artifactId>
 	    </dependency>
+
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+        </dependency>
 	    
 		<!-- WICKET DEPENDENCIES -->
 		<dependency>

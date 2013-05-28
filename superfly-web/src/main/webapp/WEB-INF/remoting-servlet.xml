@@ -8,6 +8,7 @@
             <props>
                 <prop key="/sso.service">ssoServiceExporter</prop>
                 <prop key="/sso.xremoting.service">ssoServiceXRemotingExporter</prop>
+                <prop key="/sso.hessian.service">ssoServiceHessianExporter</prop>
             </props>
         </property>
     </bean>
