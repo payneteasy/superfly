@@ -45,7 +45,7 @@ public abstract class BasePage extends SessionAccessorPage {
 	private void init() {
 		add(userContainer("user-container"));
 
-		add(new BookmarkablePageLink<HomePage>("self-link", HomePage.class));
+		add(new BookmarkablePageLink<Void>("self-link", getApplication().getHomePage()));
 		
 		add(new Label("page-title", getTitle()));
 		add(new Label("page-head-title", getHeadTitle()));

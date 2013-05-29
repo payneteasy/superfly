@@ -2,7 +2,6 @@ package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.page.HomePage;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.springframework.security.access.annotation.Secured;
@@ -25,7 +24,7 @@ public class ChangePasswordPage extends BasePage {
 
             @Override
             protected void onPasswordChanged() {
-                getRequestCycle().setResponsePage(HomePage.class);
+                getRequestCycle().setResponsePage(getApplication().getHomePage());
                 WebSession.get().invalidate();
                 SecurityContextHolder.clearContext();
             }
