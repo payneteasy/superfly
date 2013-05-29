@@ -17,6 +17,7 @@ create table mysql_routines_return_arguments (
 \. int/int_check_user_password.prc
 \. int/int_get_user_actions.sql
 
+\. get/authenticate.sql
 \. get/get_user_actions.sql
 
 \. get/get_user_salt.sql

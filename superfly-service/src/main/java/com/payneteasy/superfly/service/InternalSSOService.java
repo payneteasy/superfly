@@ -37,6 +37,19 @@ public interface InternalSSOService {
 	SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
 			String sessionInfo);
 
+    /**
+   	 * Returns the same data as if user was successfully authenticated,
+     * but no actual authentication is made. This could be useful for
+     * impersonation feature.
+   	 *
+   	 * @param username
+   	 *            username to get user
+   	 * @param subsystemIdentifier
+   	 *            identifier of a subsystem
+   	 * @return user object on success or null when retrieval fails
+   	 */
+   	SSOUser pseudoAuthenticate(String username, String subsystemIdentifier);
+
 	/**
 	 * Saves system data.
 	 * 

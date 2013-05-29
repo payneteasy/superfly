@@ -68,4 +68,20 @@ public class SSOAction implements Serializable {
 		return name;
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SSOAction ssoAction = (SSOAction) o;
+
+        if (name != null ? !name.equals(ssoAction.name) : ssoAction.name != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

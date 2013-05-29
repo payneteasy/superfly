@@ -30,9 +30,21 @@ public interface UserDao {
 	 *            session info
 	 * @return session
 	 */
-	@AStoredProcedure(name = "get_user_actions")
+	@AStoredProcedure(name = "authenticate")
 	AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
 			String sessionInfo);
+
+    /**
+   	 * Returns user's role and action as if he was successfully authenticated.
+   	 *
+   	 * @param username
+   	 *            username to use
+   	 * @param subsystemName
+   	 *            name of the subsystem used to use
+   	 * @return session
+   	 */
+   	@AStoredProcedure(name = "get_user_actions")
+   	AuthSession pseudoAuthenticate(String username, String subsystemName);
 
 	/**
 	 * Returns a list of users with actions given to them through a role with a

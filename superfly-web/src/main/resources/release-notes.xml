@@ -31,6 +31,13 @@
             </description>
         </item>
         <item type="task">
+            <name>Impersonation support</name>
+            <description>
+                It is now possible to get user's roles+actions without checking password.
+                This may be useful for impersonation functionality.
+            </description>
+        </item>
+        <item type="task">
             <name>Scripts for generating certificates</name>
             <description>
             </description>

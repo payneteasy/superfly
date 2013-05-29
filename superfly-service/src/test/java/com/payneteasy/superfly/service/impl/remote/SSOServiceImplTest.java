@@ -83,4 +83,14 @@ public class SSOServiceImplTest {
         ssoService.completeUser("username");
         verify(internalSSOService);
     }
+
+    @Test
+    public void testPseudoAuthenticate() {
+        SSOUser user = new SSOUser("username", Collections.<SSORole, SSOAction[]>emptyMap(), Collections.<String, String>emptyMap());
+        expect(internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(user);
+        replay(internalSSOService);
+        SSOUser user2 = ssoService.pseudoAuthenticate("username", "subsystemIdentifier");
+        Assert.assertSame(user, user2);
+        verify(internalSSOService);
+    }
 }

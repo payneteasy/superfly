@@ -26,6 +26,21 @@ public interface SSOService {
 	 */
 	SSOUser authenticate(String username, String password, AuthenticationRequestInfo authRequestInfo);
 
+    /**
+   	 * Returns the same data as if user was successfully authenticated,
+     * but no actual authentication is made. This could be useful for
+     * impersonation feature.
+   	 *
+   	 * @param username
+   	 *            username to get user
+   	 * @param subsystemIdentifier
+   	 *            identifier of a subsystem
+   	 * @return user object on success or null when retrieval fails (for
+   	 *         instance, no such user)
+     * @since 1.5
+   	 */
+   	SSOUser pseudoAuthenticate(String username, String subsystemIdentifier);
+
 	/**
 	 * Sends data about this system to SSO server.
 	 * 

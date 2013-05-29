@@ -98,22 +98,4 @@ public class SuperflyApplication extends BaseApplication {
 		return ListUsersPage.class;
 	}
 
-    // TODO: test temp password changing! (and request coding strategy)
-//	@Override
-//	protected IRequestCycleProcessor newRequestCycleProcessor() {
-//		return new PageInterceptingWebRequestCycleProcessor(ChangePasswordPage.class,
-//				new InterceptionDecisions() {
-//					public boolean shouldIntercept(RequestCycle requestCycle,
-//							IRequestParameters requestParameters) {
-//						return SecurityUtils.isTempPassword();
-//					}
-//				}) {
-//            @Override
-//            public IRequestCodingStrategy newRequestCodingStrategy() {
-//                return new SessionStoreUrlWebRequestCodingStrategy(
-//                        new WebRequestCodingStrategy());
-//            }
-//        };
-//	}
-    
 }

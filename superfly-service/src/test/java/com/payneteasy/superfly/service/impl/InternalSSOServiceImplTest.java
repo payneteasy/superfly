@@ -1,16 +1,11 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.crypto.pgp.PGPCrypto;
 import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
-import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.AuthSession;
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.*;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
@@ -277,6 +272,43 @@ public class InternalSSOServiceImplTest {
         expectLastCall();
         replay(userDao);
         internalSSOService.completeUser("username");
+        verify(userDao);
+    }
+
+    @Test
+    public void testPseudoAuthenticateSuccess() {
+        AuthSession session = new AuthSession("username", 1L);
+        AuthRole authRole = new AuthRole("role1");
+        AuthAction action1 = new AuthAction();
+        action1.setActionName("a1");
+        AuthAction action2 = new AuthAction();
+        action2.setActionName("a2");
+        authRole.setActions(Arrays.asList(action1, action2));
+        session.setRoles(Collections.singletonList(authRole));
+
+        expect(userDao.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(session);
+        replay(userDao);
+
+        SSOUser user = internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier");
+        Assert.assertEquals("username", user.getName());
+        Assert.assertEquals("1", user.getSessionId());
+        Assert.assertEquals(1, user.getActionsMap().size());
+        SSORole role = user.getActionsMap().keySet().iterator().next();
+        Assert.assertEquals("role1", role.getName());
+        SSOAction[] actions = user.getActionsMap().get(role);
+        Assert.assertArrayEquals(new SSOAction[]{new SSOAction("a1", false), new SSOAction("a2", false)}, actions);
+
+        verify(userDao);
+    }
+
+    @Test
+    public void testPseudoAuthenticateNoSuchUser() {
+        expect(userDao.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(null);
+        replay(userDao);
+
+        SSOUser user = internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier");
+        Assert.assertNull(user);
+
         verify(userDao);
     }
 
