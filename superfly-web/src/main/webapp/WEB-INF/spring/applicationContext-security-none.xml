@@ -21,7 +21,8 @@
 		-->
 		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
 		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
-        
+		<sec:intercept-url pattern="/remoting/sso.hessian.service" access="ROLE_SUBSYSTEM"/>
+
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
         
         <sec:logout />
