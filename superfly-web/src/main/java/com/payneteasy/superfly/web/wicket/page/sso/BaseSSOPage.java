@@ -37,7 +37,7 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         if (StringUtils.hasText(customModel.getObject())) {
             return customModel;
         } else {
-            return new Model<String>("../../css/sso-login-form.css");
+            return new Model<String>("../css/sso-login-form.css");
         }
     }
 
