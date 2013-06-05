@@ -25,6 +25,8 @@ public class SSOLogoutPage extends BaseSSOPage {
             sessionService.deleteSSOSession(ssoSessionId);
         }
 
-        SSOUtils.redirect(this, returnUrl);
+        if (StringUtils.hasText(returnUrl)) {
+            SSOUtils.redirect(this, returnUrl);
+        }
     }
 }
