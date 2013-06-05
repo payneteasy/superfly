@@ -30,7 +30,7 @@ public class SSOLogoutPage extends BaseSSOPage {
         if (StringUtils.hasText(subsystemIdentifier)) {
             UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemIdentifier);
             if (subsystem != null && StringUtils.hasText(subsystem.getSubsystemUrl())) {
-                SSOUtils.redirect(this, subsystem.getCallbackUrl());
+                SSOUtils.redirect(this, subsystem.getSubsystemUrl());
             }
         }
     }
