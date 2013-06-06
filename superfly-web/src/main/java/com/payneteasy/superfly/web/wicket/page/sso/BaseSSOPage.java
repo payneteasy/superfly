@@ -28,7 +28,7 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
 
         IModel<String> cssUrlModel = createCssUrlModel();
         WebMarkupContainer cssUrlContainer = new WebMarkupContainer("login-css-url");
-        cssUrlContainer.add(new AttributeModifier("href", true, cssUrlModel));
+        cssUrlContainer.add(new AttributeModifier("href", cssUrlModel));
         cssUrlContainer.setVisible(StringUtils.hasText(cssUrlModel.getObject()));
         add(cssUrlContainer);
     }

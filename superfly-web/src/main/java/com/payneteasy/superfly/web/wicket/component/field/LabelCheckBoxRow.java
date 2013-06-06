@@ -21,7 +21,7 @@ public class LabelCheckBoxRow extends Panel {
 
         // label
         Label label = new Label("label-id", new ResourceModel(labelResourceKey));
-        label.add(new AttributeModifier("for", true, new Model<String>(id)));
+        label.add(new AttributeModifier("for", new Model<String>(id)));
         add(label);
 
         // field
