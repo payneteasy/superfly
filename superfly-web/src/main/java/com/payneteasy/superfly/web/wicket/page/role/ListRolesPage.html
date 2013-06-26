@@ -4,37 +4,34 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Roles</title>
-
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
 	<div><span wicket:id="confirmPanel"></span></div>
-	<div class="filters">
-		<form wicket:id="filters-form">
-			<span>Subsystem:
-				<select wicket:id="subsystem-filter">
-					<option>Subsystem 1</option>
-					<option>Subsystem 2</option>
-					<option>Subsystem 3</option>
-				</select>
-			</span>
-			<input type="submit" value="Filter" class="button"/>
+
+	<div class="well s-filter">
+		<form wicket:id="filters-form" class="form-inline">
+            <ul class="s-filter-items">
+                <li>
+                    <span>Subsystem:</span>
+                    <select wicket:id="subsystem-filter">
+                        <option>Subsystem 1</option>
+                        <option>Subsystem 2</option>
+                        <option>Subsystem 3</option>
+                    </select>
+                </li>
+                <li><input type="submit" value="Filter" class="btn"/></li>
+			</ul>
 		</form>
 	</div>
+
 	<form wicket:id="form">
+        <div class="s-legend-btn">
+            <input type="submit" wicket:id="add-role" value="Add Role" class="btn btn-primary"/>
+            <input type="submit" wicket:id="delete-role" value="Delete selected" class="btn btn-warning"/>
+        </div>
 		<div wicket:id="group">
-			<table class="data">
+			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
 						<th><input type="checkbox" wicket:id="master-checkbox" /></th>
@@ -45,18 +42,23 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr wicket:id="roleList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+					<tr wicket:id="roleList">
 						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
 						<td>
-							<a href="#" wicket:id="view-role-link"><span wicket:id="role-name">bond</span></a>
+							<span wicket:id="role-name">bond</span>
 						</td>
 						<td><span wicket:id="principal-name">bond</span></td>
 						<td><span wicket:id="subsystem-name">bond</span></td>
-						<td>
-							<a href="#" wicket:id="role-edit">Edit</a>
-							<a href="#" wicket:id="delete-role">Delete</a>
-							<a href="#" wicket:id="role-groups">Groups</a>
-							<a href="#" wicket:id="role-actions">GrantActions</a>
+						<td class="s-td-action">
+                            <div class="dropdown s-dropdown">
+                                <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
+                                <ul class="dropdown-menu s-dropdown-menu">
+                                    <li><a href="#" wicket:id="role-edit">Edit</a></li>
+                                    <li><a href="#" wicket:id="role-groups">Grant Groups</a></li>
+                                    <li><a href="#" wicket:id="role-actions">Grant Actions</a></li>
+                                    <li><a href="#" wicket:id="delete-role">Delete</a></li>
+                                </ul>
+                            </div>
 						</td>
 					</tr>
 					<tr>
@@ -64,10 +66,6 @@
 					</tr>
 				</tbody>
 			</table>
-		</div>
-		<div>
-			<input type="submit" wicket:id="add-role" value="Add" class="button"/>
-			<input type="submit" wicket:id="delete-role" value="Delete" class="button"/>
 		</div>
 	</form>
 </wicket:extend>

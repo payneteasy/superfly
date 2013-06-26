@@ -1,38 +1,36 @@
 package com.payneteasy.superfly.security;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
+import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
-	
-	private SuperflyHOTPAuthenticationProcessingFilter procFilter;
 
+    @Before
 	public void setUp() {
-		super.setUp();
-		procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
+        SuperflyHOTPAuthenticationProcessingFilter procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
 		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
         procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
-	
+
+    @Test
 	public void testAuthenticate() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();
@@ -42,7 +40,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 					public Authentication answer() throws Throwable {
 						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
 						CheckHOTPToken token = (CheckHOTPToken) compound.getCurrentAuthenticationRequest();
-						assertEquals("pete", token.getName());
+                        assertEquals("pete", token.getName());
 						assertEquals("123456", token.getCredentials().toString());
 						return new HOTPCheckedToken(createSSOUserWithOneRole());
 					}
@@ -53,11 +51,13 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 		
 		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
 		filter.doFilter(request, response, chain);
-		assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(), SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
+        assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(),
+                SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
 		
 		verify(request, response, chain, authenticationManager);
 	}
 
+    @Test
 	public void testBadCredentials() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();

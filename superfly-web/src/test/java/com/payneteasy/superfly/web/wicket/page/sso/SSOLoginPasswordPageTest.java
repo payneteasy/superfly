@@ -10,11 +10,13 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
-import junit.framework.Assert;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author rpuch
@@ -25,8 +27,8 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
     private SubsystemService subsystemService;
     private SettingsService settingsService;
 
+    @Before
     public void setUp() {
-        super.setUp();
         userService = EasyMock.createStrictMock(UserService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
@@ -61,36 +63,39 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         return subsystem;
     }
 
+    @Test
     public void testNoLoginData() {
         tester.startPage(SSOLoginPasswordPage.class);
         tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "No login data found");
     }
 
+    @Test
     public void testSuccessNoHOTP() {
         expect(userService.getUserLoginStatus("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
         expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         expect(settingsService.isHotpDisabled()).andReturn(true).anyTimes();
         replay(userService, sessionService, subsystemService, settingsService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
         FormTester form = tester.newFormTester("form");
         form.setValue("username", "known-user");
         form.setValue("password", "password");
         form.submit();
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(userService, sessionService, subsystemService, settingsService);
     }
 
+    @Test
     public void testSuccessAndHOTP() {
         expect(userService.getUserLoginStatus("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
@@ -98,7 +103,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         expect(settingsService.isHotpDisabled()).andReturn(false);
         replay(userService, settingsService, subsystemService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
         FormTester form = tester.newFormTester("form");
@@ -106,17 +111,18 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         form.setValue("password", "password");
         form.submit();
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
-        Assert.assertEquals("known-user", tester.getWicketSession().getSsoLoginData().getUsername());
+        assertEquals("known-user", tester.getSession().getSsoLoginData().getUsername());
 
         verify(userService, settingsService, subsystemService);
     }
 
+    @Test
     public void testFailure() {
         expect(userService.getUserLoginStatus("unknown-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.FAILED);
         replay(userService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
         FormTester form = tester.newFormTester("form");
@@ -129,12 +135,13 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         verify(userService);
     }
 
+    @Test
     public void testTempPassword() {
         expect(userService.getUserLoginStatus("known-user", "expired-password", "test-subsystem"))
                 .andReturn(UserLoginStatus.TEMP_PASSWORD);
         replay(userService);
 
-        tester.getWicketSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
         FormTester form = tester.newFormTester("form");

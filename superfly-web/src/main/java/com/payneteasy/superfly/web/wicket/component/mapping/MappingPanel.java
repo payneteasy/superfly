@@ -36,69 +36,6 @@ public abstract class MappingPanel extends Panel {
 		Form<MappingModel<MappingService>> form = new Form<MappingModel<MappingService>>("form-mapping",
 				new Model<MappingModel<MappingService>>(mappingModel));
 		add(form);
-		WebMarkupContainer searchMappedContainer = new WebMarkupContainer("search-mapped-container");
-		WebMarkupContainer searchUnMappedContainer = new WebMarkupContainer("search-unmapped-container");
-		form.add(searchMappedContainer.setVisible(isVisibleSearchePanel()));
-		form.add(searchUnMappedContainer.setVisible(isVisibleSearchePanel()));
-		
-		final AutoCompleteTextField<String> acMapped = new AutoCompleteTextField<String>("mapped-str",
-				new PropertyModel<String>(mappingModel, "searchMappedString")){
-			@Override
-			protected Iterator<String> getChoices(String input) {
-				if (Strings.isEmpty(input))
-                {
-                    return Collections.<String>emptyList().iterator();
-                }
-				List<String> choices = new ArrayList<String>(10);
-				List<? extends MappingService> list = getMappedItems(null);
-				for(MappingService ms: list){
-					final String name = ms.getItemName();
-					if(name.toUpperCase().contains(input.toUpperCase())){
-						choices.add(name);
-						if(choices.size()==10){
-							break;
-						}
-					}
-				}
-				return choices.iterator();
-			}
-			
-		};
-		searchMappedContainer.add(acMapped);
-		final AutoCompleteTextField<String> acUnMapped = new AutoCompleteTextField<String>("unmapped-str",
-				new PropertyModel<String>(mappingModel, "searchUnMappedString")){
-			@Override
-			protected Iterator<String> getChoices(String input) {
-				if (Strings.isEmpty(input))
-                {
-                    return Collections.<String>emptyList().iterator();
-                }
-				List<String> choices = new ArrayList<String>(10);
-				List<? extends MappingService> list = getUnMappedItems(null);
-				for(MappingService ms: list){
-					final String name = ms.getItemName();
-					if(name.toUpperCase().contains(input.toUpperCase())){
-						choices.add(name);
-						if(choices.size()==10){
-							break;
-						}
-					}
-				}
-				return choices.iterator();
-			}
-			
-		};
-		searchUnMappedContainer.add(acUnMapped);
-		searchMappedContainer.add(new SubmitLink("mapped-search-button") {
-			public void onSubmit() {
-				mappedListView.removeAll();
-			}
-		});
-		searchUnMappedContainer.add(new SubmitLink("unmapped-search-button") {
-			public void onSubmit() {
-				unmappedListView.removeAll();
-			}
-		});
 
 		final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<MappingService>("checkgroup-mapped",
 				mappingModel.getSelectedInMapped());
@@ -173,8 +110,6 @@ public abstract class MappingPanel extends Panel {
 	protected abstract List<? extends MappingService> getUnMappedItems(String searchLabel);
 
 	protected abstract void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId);
-	
-	protected abstract boolean isVisibleSearchePanel();
 	
 	protected abstract String getHeaderItemName();
 

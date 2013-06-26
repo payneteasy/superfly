@@ -14,21 +14,21 @@ public class SuperflyPagingNavigator extends Panel{
         thePageable = aPageable;
 
         addLink(new LinkInfo("paging-first") {
-            int getPage() { return 0; }
+            long getPage() { return 0; }
             boolean isVisible() { return aPageable.getCurrentPage()>1; }
         });
 
         addLink(new LinkInfo("paging-previous") {
-            int getPage() { return aPageable.getCurrentPage()-1; }
+            long getPage() { return aPageable.getCurrentPage()-1; }
             boolean isVisible() { return aPageable.getCurrentPage()>0; }
         });
 
         addLabel(new LabelInfo("paging-from") {
-            int getPage() { return aPageable.getCurrentPage() * aPageable.getItemsPerPage() + 1; }
+            long getPage() { return aPageable.getCurrentPage() * aPageable.getItemsPerPage() + 1; }
         });
 
         addLabel(new LabelInfo("paging-to") {
-            int getPage() {
+            long getPage() {
                 if(aPageable.getCurrentPage() == aPageable.getPageCount() - 1) {
                     return aPageable.getItemCount();
                 } else {
@@ -38,16 +38,16 @@ public class SuperflyPagingNavigator extends Panel{
         });
 
         addLabel(new LabelInfo("paging-count") {
-            int getPage() { return aPageable.getItemCount(); }
+            long getPage() { return aPageable.getItemCount(); }
         });
 
         addLink(new LinkInfo("paging-next") {
-            int getPage() { return aPageable.getCurrentPage() + 1; }
+            long getPage() { return aPageable.getCurrentPage() + 1; }
             boolean isVisible() { return aPageable.getCurrentPage() < aPageable.getPageCount() - 1 ; }
         });
 
         addLink(new LinkInfo("paging-last") {
-            int getPage() { return aPageable.getPageCount() - 1; }
+            long getPage() { return aPageable.getPageCount() - 1; }
             boolean isVisible() { return aPageable.getCurrentPage() < aPageable.getPageCount() - 2 ; }
         });
 
@@ -98,7 +98,7 @@ public class SuperflyPagingNavigator extends Panel{
             return theId;
         }
 
-        abstract int getPage();
+        abstract long getPage();
 
         private final String theId;
     }
@@ -113,7 +113,7 @@ public class SuperflyPagingNavigator extends Panel{
             return theId;
         }
 
-        abstract int getPage();
+        abstract long getPage();
 
         abstract boolean isVisible() ;
 

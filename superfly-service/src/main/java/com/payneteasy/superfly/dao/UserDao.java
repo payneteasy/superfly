@@ -6,12 +6,7 @@ import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import com.payneteasy.superfly.model.ui.user.UIUserForList;
-import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
-import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.model.ui.user.*;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 
 /**
@@ -35,9 +30,21 @@ public interface UserDao {
 	 *            session info
 	 * @return session
 	 */
-	@AStoredProcedure(name = "get_user_actions")
+	@AStoredProcedure(name = "authenticate")
 	AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
 			String sessionInfo);
+
+    /**
+   	 * Returns user's role and action as if he was successfully authenticated.
+   	 *
+   	 * @param username
+   	 *            username to use
+   	 * @param subsystemName
+   	 *            name of the subsystem used to use
+   	 * @return session
+   	 */
+   	@AStoredProcedure(name = "get_user_actions")
+   	AuthSession pseudoAuthenticate(String username, String subsystemName);
 
 	/**
 	 * Returns a list of users with actions given to them through a role with a
@@ -72,7 +79,7 @@ public interface UserDao {
 	 * @return users
 	 */
 	@AStoredProcedure(name = "ui_get_users_list")
-	List<UIUserForList> getUsers(int startFrom, int recordsCount, int orderFieldNumber, String orderType,
+	List<UIUserForList> getUsers(long startFrom, long recordsCount, int orderFieldNumber, String orderType,
 			String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
 
 	/**
@@ -89,7 +96,7 @@ public interface UserDao {
 	 * @return users count
 	 */
 	@AStoredProcedure(name = "ui_get_users_list_count")
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
+    long getUsersCount(String userNamePrefix, Long roleId, Long complectId, Long subsystemId);
 
 	/**
 	 * Returns a user for editing.
@@ -99,7 +106,7 @@ public interface UserDao {
 	 * @return user of null if not found
 	 */
 	@AStoredProcedure(name = "ui_get_user")
-	UIUser getUser(long userId);
+    UIUserDetails getUser(long userId);
 
 	/**
 	 * Creates a user.
@@ -552,5 +559,13 @@ public interface UserDao {
      */
     @AStoredProcedure(name="exchange_subsystem_token")
     AuthSession exchangeSubsystemToken(String subsystemToken);
+
+    /**
+     * Makes a user complete.
+     *
+     * @param username  name of the user to complete
+     */
+    @AStoredProcedure(name="complete_user")
+    void completeUser(String username);
 }
 

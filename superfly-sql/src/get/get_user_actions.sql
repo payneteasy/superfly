@@ -1,20 +1,18 @@
 drop procedure if exists get_user_actions;
 delimiter $$
 create procedure get_user_actions(i_user_name varchar(32),
-                                  i_user_password text,
-                                  i_subsystem_name varchar(32),
-                                  i_ip_address varchar(15),
-                                  i_session_info text
+                                  i_subsystem_name varchar(32)
 )
  main_sql:
   begin
     declare v_user_id   int(10);
 
-    set v_user_id = int_check_user_password(i_user_name, i_user_password, i_ip_address, i_session_info);
+    select user_id
+      into v_user_id
+      from users u
+     where     u.user_name = i_user_name;
 
     if v_user_id is null then
-      commit; -- to save unauthorized_access INSERT
-
       select null
         from dual
        where false;
@@ -25,9 +23,9 @@ create procedure get_user_actions(i_user_name varchar(32),
     call int_get_user_actions(
         v_user_id,
         i_subsystem_name,
-        i_ip_address,
-        i_session_info,
-        'N',
+        null,
+        null,
+        'Y',
         null
     );
   

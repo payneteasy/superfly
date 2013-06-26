@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.easymock.EasyMock;
+import org.junit.Before;
 
 public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
 	protected HttpServletRequest request;
@@ -19,12 +20,14 @@ public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
 	protected FilterChain chain;
 	protected HttpSession session;
 	protected Filter filter;
-	
-	public void setUp() {
+
+    @Before
+	public void initFilterTest() {
 		request = EasyMock.createMock(HttpServletRequest.class);
 		expect(request.getContextPath()).andReturn("").anyTimes();
 		expect(request.getMethod()).andReturn("POST").anyTimes();
 		response = EasyMock.createMock(HttpServletResponse.class);
+        expect(response.isCommitted()).andReturn(false).anyTimes();
 		chain = EasyMock.createMock(FilterChain.class);
 		session = EasyMock.createMock(HttpSession.class);
 	}

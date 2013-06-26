@@ -2,7 +2,7 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-        <version>1.4-4-SNAPSHOT</version>
+        <version>1.5-1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.payneteasy.superfly</groupId>
@@ -25,19 +25,17 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<optional>true</optional>
-			<version>3.0.1.RELEASE</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<optional>true</optional>
-			<version>3.0.2.RELEASE</version>
+            <version>${spring.security.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<optional>true</optional>
-			<version>3.0.2.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
@@ -74,8 +75,8 @@ public class ListSubsystemsPage extends BasePage {
 				item.add(new Label("subsytem-name", subWrapperItem.getObject()
 						.getName()));
 				item.add(new BookmarkablePageLink("subsystem-edit",
-						EditSubsystemPage.class).setParameter("id",
-						subWrapperItem.getObject().getId()));
+						EditSubsystemPage.class, PageParametersBuilder.fromPair("id",
+                        subWrapperItem.getObject().getId())));
 				item.add(new Check<SelectObjectWrapper<UISubsystemForList>>(
 						"selected", item.getModel()));
 				item.add(new Label("subsystem-callback", subWrapperItem

@@ -7,14 +7,14 @@ import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 
 public interface ActionService {
-	List<UIActionForList> getActions(int startFrom, int recordsCount,
+	List<UIActionForList> getActions(long startFrom, long recordsCount,
 			int orderFieldNumber, boolean asc, String actionNamePrefix,
 			String description, List<Long> subsystemIds);
 
 	void changeActionsLogLevel(List<Long> actnListLogOn,
 			List<Long> actnListLogOff);
 
-	int getActionCount(String actionName, String description,
+	long getActionCount(String actionName, String description,
 			List<Long> subsystemIds);
 	
 	List<UIActionForFilter> getActionForFilter();

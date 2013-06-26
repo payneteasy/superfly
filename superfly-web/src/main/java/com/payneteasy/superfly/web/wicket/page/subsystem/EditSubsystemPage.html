@@ -7,22 +7,21 @@
 </head>
 <body>
 <wicket:extend>
-<div class="cont-box">
-<form wicket:id="form">
-	<div wicket:id="name"></div>
-    <div wicket:id="title"></div>
-    <div wicket:id="callbackUrl"></div>
-    <div wicket:id="subsystemUrl"></div>
-    <div wicket:id="landingUrl"></div>
-    <div wicket:id="loginFormCssUrl"></div>
-    <div wicket:id="allowListUsers"></div>
-    <div wicket:id="smtpServer"></div>
-	<div>
-	 <input type="submit" value="Save" wicket:id="form-submit" class="button" /> 
-	 <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
+<form wicket:id="form" class="form-horizontal s-form-horizontal">
+	<wicket:container wicket:id="name"></wicket:container>
+    <wicket:container wicket:id="title"></wicket:container>
+    <wicket:container wicket:id="callbackUrl"></wicket:container>
+    <wicket:container wicket:id="subsystemUrl"></wicket:container>
+    <wicket:container wicket:id="landingUrl"></wicket:container>
+    <wicket:container wicket:id="loginFormCssUrl"></wicket:container>
+    <wicket:container wicket:id="allowListUsers"></wicket:container>
+    <wicket:container wicket:id="smtpServer"></wicket:container>
+
+	<div class="form-actions">
+	 <button wicket:id="form-submit" class="btn btn-primary">Edit Subsystem</button>
+	 <button wicket:id="cancel" class="btn">Cancel</button>
 	</div>
 </form>
-</div>
 </wicket:extend>
 </body>
 </html>

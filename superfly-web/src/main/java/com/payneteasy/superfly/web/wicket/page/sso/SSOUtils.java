@@ -7,12 +7,14 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.request.target.basic.RedirectRequestTarget;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,6 @@ public class SSOUtils {
     public static void redirectToLoginErrorPage(Component component, IModel<String> errorModel) {
         component.getRequestCycle().setResponsePage(
                 new SSOLoginErrorPage(errorModel));
-        component.getRequestCycle().setRedirect(true);
     }
 
     public static void saveLoginData(SessionAccessorPage page, SSOLoginData loginData) {
@@ -87,8 +88,8 @@ public class SSOUtils {
     }
 
     public static void redirect(Page page, String url) {
-        RedirectRequestTarget requestTarget = new RedirectRequestTarget(url);
-        page.getRequestCycle().setRequestTarget(requestTarget);
+        IRequestHandler requestTarget = new RedirectRequestHandler(url);
+        page.getRequestCycle().replaceAllRequestHandlers(requestTarget);
     }
 
     public static String getSsoSessionIdFromCookie(WebRequest request) {
@@ -111,6 +112,7 @@ public class SSOUtils {
         SSOSession ssoSession = sessionService.createSSOSession(username);
         Cookie cookie = new Cookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, ssoSession.getIdentifier());
         cookie.setMaxAge(SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE);
+        cookie.setPath(getApplicationRootPath(page));
         ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
 
         SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(
@@ -124,6 +126,12 @@ public class SSOUtils {
             // checked user access, but just in case...
             SSOUtils.redirectToCantLoginErrorPage(page, loginData);
         }
+    }
+
+    private static String getApplicationRootPath(SessionAccessorPage page) {
+        String contextPath = ((ServletWebRequest) page.getRequest()).getContextPath();
+        String filterPath = ((ServletWebRequest) page.getRequest()).getFilterPath();
+        return contextPath + filterPath;
     }
 
 }

@@ -28,13 +28,13 @@ public class ActionServiceImpl implements ActionService {
 				.collectionToCommaDelimitedString(actnListLogOff));
 	}
 
-	public int getActionCount(String actionName, String description,
+	public long getActionCount(String actionName, String description,
 			List<Long> subsystemIds) {
 		return actionDao.getActionCount(actionName, description, StringUtils
 				.collectionToCommaDelimitedString(subsystemIds));
 	}
 
-	public List<UIActionForList> getActions(int startFrom, int recordsCount,
+	public List<UIActionForList> getActions(long startFrom, long recordsCount,
 			int orderFieldNumber, boolean asc, String actionNamePrefix,
 			String description, List<Long> subsystemIds) {
 		return actionDao.getActions(startFrom, recordsCount, orderFieldNumber,

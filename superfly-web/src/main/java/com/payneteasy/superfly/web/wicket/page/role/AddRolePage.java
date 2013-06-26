@@ -1,19 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
-import java.io.Serializable;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RequiredTextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
@@ -22,6 +8,16 @@ import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
 
 @Secured("ROLE_ADMIN")
 public class AddRolePage extends BasePage {
@@ -54,14 +50,11 @@ public class AddRolePage extends BasePage {
 				role.setSubsystemId(roleFilter.getSubsystem().getId());
 				roleService.createRole(role);
 				PageParameters params = new PageParameters();
-				params.add("id", String.valueOf(role.getRoleId()));
-				params
-						.add("idSubsystem", String.valueOf(role
-								.getSubsystemId()));
-				params.add("wizard", "true");
+				params.set("id", String.valueOf(role.getRoleId()));
+				params.set("idSubsystem", String.valueOf(role.getSubsystemId()));
+				params.set("wizard", "true");
 				getRequestCycle().setResponsePage(AddRoleGroupsPage.class,
-						params);
-				getRequestCycle().setRedirect(true);
+                        params);
 			}
 
 		});

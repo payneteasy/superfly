@@ -2,7 +2,6 @@ package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
-import com.payneteasy.superfly.web.wicket.page.HomePage;
 import com.payneteasy.superfly.web.wicket.page.action.CopyActionPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ChangeGroupActionsPage;
@@ -25,87 +24,78 @@ import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
 import com.payneteasy.superfly.web.wicket.page.user.*;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
-import com.payneteasy.superfly.wicket.PageInterceptingWebRequestCycleProcessor;
-import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
+import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCycleProcessor;
-import org.apache.wicket.request.RequestParameters;
+import org.apache.wicket.core.request.mapper.CryptoMapper;
+import org.apache.wicket.request.Request;
 
 public class SuperflyApplication extends BaseApplication {
 
 	@Override
 	protected void customInit() {
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
+        CryptoMapper requestMapper = new CryptoMapper(getRootRequestMapper(), this);
+        setRootRequestMapper(new PageInterceptingRequestMapper(requestMapper,
+                createInterceptionDecisions(), ChangePasswordPage.class));
 
-        mountBookmarkablePage("/loginbase", LoginPageWithoutHOTP.class);
-        mountBookmarkablePage("/login", LoginPasswordStepPage.class);
-        mountBookmarkablePage("/login-step2", LoginHOTPStepPage.class);
+        mountBookmarkablePageWithPath("/loginbase", LoginPageWithoutHOTP.class);
+        mountBookmarkablePageWithPath("/login", LoginPasswordStepPage.class);
+        mountBookmarkablePageWithPath("/login-step2", LoginHOTPStepPage.class);
 
-        mountBookmarkablePage("/actions", ListActionsPage.class);
-        mountBookmarkablePage("/actions/copyAction", CopyActionPropertiesPage.class);
+        mountBookmarkablePageWithPath("/actions", ListActionsPage.class);
+        mountBookmarkablePageWithPath("/actions/copyAction", CopyActionPropertiesPage.class);
         
-        mountBookmarkablePage("/groups", ListGroupsPage.class);
-        mountBookmarkablePage("/groups/cloneGroup", CloneGroupPage.class);
-        mountBookmarkablePage("/groups/changeGroupActions", ChangeGroupActionsPage.class);
-        mountBookmarkablePage("/groups/view", ViewGroupPage.class);
-        mountBookmarkablePage("/groups/add/addActions", GroupActionsPage.class);
-        mountBookmarkablePage("/groups/add", GroupPropertiesPage.class);
+        mountBookmarkablePageWithPath("/groups", ListGroupsPage.class);
+        mountBookmarkablePageWithPath("/groups/cloneGroup", CloneGroupPage.class);
+        mountBookmarkablePageWithPath("/groups/changeGroupActions", ChangeGroupActionsPage.class);
+        mountBookmarkablePageWithPath("/groups/view", ViewGroupPage.class);
+        mountBookmarkablePageWithPath("/groups/add/addActions", GroupActionsPage.class);
+        mountBookmarkablePageWithPath("/groups/add", GroupPropertiesPage.class);
         
-        mountBookmarkablePage("/roles", ListRolesPage.class);
-        mountBookmarkablePage("/roles/view", ViewRolePage.class);
-        mountBookmarkablePage("/roles/update", EditRolePage.class);
-        mountBookmarkablePage("/roles/add", AddRolePage.class);
-        mountBookmarkablePage("/roles/add/addActions", AddRoleActionsPage.class);
-        mountBookmarkablePage("/roles/add/addGroups", AddRoleGroupsPage.class);
-        mountBookmarkablePage("/roles/changeActions", ChangeRoleActionsPage.class);
-        mountBookmarkablePage("/roles/changeGroups", ChangeRoleGroupsPage.class);
+        mountBookmarkablePageWithPath("/roles", ListRolesPage.class);
+        mountBookmarkablePageWithPath("/roles/view", ViewRolePage.class);
+        mountBookmarkablePageWithPath("/roles/update", EditRolePage.class);
+        mountBookmarkablePageWithPath("/roles/add", AddRolePage.class);
+        mountBookmarkablePageWithPath("/roles/add/addActions", AddRoleActionsPage.class);
+        mountBookmarkablePageWithPath("/roles/add/addGroups", AddRoleGroupsPage.class);
+        mountBookmarkablePageWithPath("/roles/changeActions", ChangeRoleActionsPage.class);
+        mountBookmarkablePageWithPath("/roles/changeGroups", ChangeRoleGroupsPage.class);
         
-        mountBookmarkablePage("/subsystems", ListSubsystemsPage.class);
-        mountBookmarkablePage("/subsystems/add", AddSubsystemPage.class);
-        mountBookmarkablePage("/subsystems/update", EditSubsystemPage.class);
+        mountBookmarkablePageWithPath("/subsystems", ListSubsystemsPage.class);
+        mountBookmarkablePageWithPath("/subsystems/add", AddSubsystemPage.class);
+        mountBookmarkablePageWithPath("/subsystems/update", EditSubsystemPage.class);
         
         
-        mountBookmarkablePage("/users", ListUsersPage.class);
-        mountBookmarkablePage("/users/create", CreateUserPage.class);
-        mountBookmarkablePage("/users/update", EditUserPage.class);
-        mountBookmarkablePage("/users/clone", CloneUserPage.class);
-        mountBookmarkablePage("/users/changeRoles", ChangeUserRolesPage.class);
-        mountBookmarkablePage("/users/changeActions", ChangeUserGrantActionsPage.class);
-        mountBookmarkablePage("/users/view", UserDetailsPage.class);
-        mountBookmarkablePage("/users/addSubsystemWithRole", AddSubsystemWithRolePage.class);
+        mountBookmarkablePageWithPath("/users", ListUsersPage.class);
+        mountBookmarkablePageWithPath("/users/create", CreateUserPage.class);
+        mountBookmarkablePageWithPath("/users/update", EditUserPage.class);
+        mountBookmarkablePageWithPath("/users/clone", CloneUserPage.class);
+        mountBookmarkablePageWithPath("/users/changeRoles", ChangeUserRolesPage.class);
+        mountBookmarkablePageWithPath("/users/changeActions", ChangeUserGrantActionsPage.class);
+        mountBookmarkablePageWithPath("/users/view", UserDetailsPage.class);
+        mountBookmarkablePageWithPath("/users/addSubsystemWithRole", AppendSubsystemWithRolePage.class);
         
-        mountBookmarkablePage("/sessions", ListSessionsPage.class);
-        mountBookmarkablePage("/changepassword", ChangePasswordPage.class);
+        mountBookmarkablePageWithPath("/sessions", ListSessionsPage.class);
+        mountBookmarkablePageWithPath("/changepassword", ChangePasswordPage.class);
 
-        mountBookmarkablePage("smtp-servers", ListSmtpServersPage.class);
-        mountBookmarkablePage("smtp-servers/create", CreateSmtpServerPage.class);
-        mountBookmarkablePage("smtp-servers/update", UpdateSmtpServerPage.class);
-        mountBookmarkablePage("smtp-servers/view", ViewSmtpServerPage.class);
+        mountBookmarkablePageWithPath("smtp-servers", ListSmtpServersPage.class);
+        mountBookmarkablePageWithPath("smtp-servers/create", CreateSmtpServerPage.class);
+        mountBookmarkablePageWithPath("smtp-servers/update", UpdateSmtpServerPage.class);
+        mountBookmarkablePageWithPath("smtp-servers/view", ViewSmtpServerPage.class);
 	}
 
-	@Override
-	public Class<? extends Page> getHomePage() {
-		return HomePage.class;
-	}
-
-	@Override
-	protected IRequestCycleProcessor newRequestCycleProcessor() {
-		return new PageInterceptingWebRequestCycleProcessor(ChangePasswordPage.class,
-				new InterceptionDecisions() {
-					public boolean shouldIntercept(RequestCycle requestCycle,
-							RequestParameters requestParameters) {
-						return SecurityUtils.isTempPassword();
-					}
-				}) {
+    protected InterceptionDecisions createInterceptionDecisions() {
+        return new InterceptionDecisions() {
             @Override
-            public IRequestCodingStrategy newRequestCodingStrategy() {
-                return new SessionStoreUrlWebRequestCodingStrategy(
-                        new WebRequestCodingStrategy());
+            public boolean shouldIntercept(Request requestCycle) {
+                return SecurityUtils.isTempPassword();
             }
         };
+    }
+
+    @Override
+	public Class<? extends Page> getHomePage() {
+		return ListUsersPage.class;
 	}
-    
+
 }

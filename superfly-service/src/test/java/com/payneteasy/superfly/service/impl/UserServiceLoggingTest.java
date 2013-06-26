@@ -10,6 +10,8 @@ import java.util.Collections;
 import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
@@ -29,9 +31,9 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 	
 	private UserService userService;
 	private UserDao userDao;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
 		UserServiceImpl service = new UserServiceImpl();
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		service.setUserDao(userDao);
@@ -47,7 +49,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
         service.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
 		userService = service;
 	}
-	
+
+    @Test
 	public void testCreateUser() throws Exception {
 		userDao.createUser(anyObject(UIUserForCreate.class));
 		EasyMock.expectLastCall().andAnswer(new IAnswer<RoutineResult>() {
@@ -66,7 +69,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCreateUserFail() throws Exception {
 		userDao.createUser(anyObject(UIUserForCreate.class));
 		EasyMock.expectLastCall().andAnswer(new IAnswer<RoutineResult>() {
@@ -85,7 +89,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateUser() throws Exception {
 		userDao.updateUser(anyObject(UIUser.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -98,7 +103,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateUserFail() throws Exception {
 		userDao.updateUser(anyObject(UIUser.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -111,7 +117,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteUser() throws Exception {
 		userDao.deleteUser(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -122,7 +129,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteUserFail() throws Exception {
 		userDao.deleteUser(anyLong());
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -133,7 +141,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testLockUser() throws Exception {
 		userDao.lockUser(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -144,7 +153,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testLockUserFail() throws Exception {
 		userDao.lockUser(anyLong());
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -155,7 +165,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUnlockUser() throws Exception {
 		userDao.unlockUser(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -166,7 +177,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCloneUser() throws Exception {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
 			public RoutineResult answer() throws Throwable {
@@ -182,7 +194,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCloneUserFail() throws Exception {
 		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andReturn(failureResult());
 		loggerSink.info(anyObject(Logger.class), eq("CLONE_USER"), eq(false), eq("1->new-user"));
@@ -192,7 +205,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeUserRoles() throws Exception {
 		userDao.changeUserRoles(anyLong(), anyObject(String.class), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -203,7 +217,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeUserRolesFail() throws Exception {
 		userDao.changeUserRoles(anyLong(), anyObject(String.class), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -214,7 +229,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeUserRoleActions() throws Exception {
 		userDao.changeUserRoleActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -225,7 +241,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeUserRoleActionsFail() throws Exception {
 		userDao.changeUserRoleActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -236,7 +253,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testSuspendUser() throws Exception {
 		userDao.suspendUser(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -247,7 +265,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testSuspendUserFail() throws Exception {
 		userDao.suspendUser(anyLong());
 		EasyMock.expectLastCall().andReturn(failureResult());

@@ -1,10 +1,9 @@
 package com.payneteasy.superfly.web.wicket;
 
-import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginData;
-import org.apache.wicket.Request;
-import org.apache.wicket.protocol.http.WebSession;
-
 import com.payneteasy.superfly.web.wicket.model.StickyFilters;
+import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginData;
+import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.Request;
 
 public class SuperflySession extends WebSession {
 	

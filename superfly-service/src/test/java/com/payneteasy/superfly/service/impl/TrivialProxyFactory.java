@@ -26,7 +26,7 @@ public class TrivialProxyFactory {
 							return (short) 0;
 						}
 						if (method.getReturnType() == int.class) {
-							return (int) 0;
+							return 0;
 						}
 						if (method.getReturnType() == long.class) {
 							return (long) 0;

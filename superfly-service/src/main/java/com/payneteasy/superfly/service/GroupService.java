@@ -13,8 +13,8 @@ public interface GroupService {
 
 	List<UIGroupForList> getGroups();
 
-	List<UIGroupForList> getGroupsForSubsystems(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	List<UIGroupForList> getGroupsForSubsystems(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean orderType,
 			String groupNamePrefix, List<Long> subsystemIds);
 
 	RoutineResult createGroup(UIGroup group);
@@ -27,16 +27,16 @@ public interface GroupService {
 
 	UIGroupForView getGroupById(long id);
 
-	int getGroupsCount(String groupName, List<Long> subsystemIds);
+    long getGroupsCount(String groupName, List<Long> subsystemIds);
 
 	RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
 			List<Long> actionsToUnlink);
 
-	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int stratFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long stratFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring);
 
-	int getAllGroupMappedActionsCount(long groupId, String actionSubstring);
+    long getAllGroupMappedActionsCount(long groupId, String actionSubstring);
 
 	List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int stratFrom,
 			int recordsCount, int orderFieldNumber, boolean orderType,
@@ -44,10 +44,10 @@ public interface GroupService {
 
 	int getAllGroupUnMappedActionsCount(long groupId, String actionSubstring);
 
-	List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring);
 
-	int getAllGroupActionsCount(long groupId, String actionSubstring);
+    long getAllGroupActionsCount(long groupId, String actionSubstring);
 
 }

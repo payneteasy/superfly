@@ -6,7 +6,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebResponse;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.http.WebResponse;
 import org.springframework.util.StringUtils;
 
 /**
@@ -27,7 +28,7 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
 
         IModel<String> cssUrlModel = createCssUrlModel();
         WebMarkupContainer cssUrlContainer = new WebMarkupContainer("login-css-url");
-        cssUrlContainer.add(new AttributeModifier("href", true, cssUrlModel));
+        cssUrlContainer.add(new AttributeModifier("href", cssUrlModel));
         cssUrlContainer.setVisible(StringUtils.hasText(cssUrlModel.getObject()));
         add(cssUrlContainer);
     }
@@ -37,7 +38,8 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         if (StringUtils.hasText(customModel.getObject())) {
             return customModel;
         } else {
-            return new Model<String>("../css/sso-login-form.css");
+            ServletWebRequest request = (ServletWebRequest) getRequest();
+            return new Model<String>(request.getContextPath() + "/css/sso-login-form.css");
         }
     }
 
@@ -46,9 +48,8 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
     }
 
     @Override
-   	protected void configureResponse() {
-   		super.configureResponse();
-   		WebResponse response = getWebRequestCycle().getWebResponse();
+   	protected void configureResponse(WebResponse response) {
+   		super.configureResponse(response);
    		response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
 
    		//for IE

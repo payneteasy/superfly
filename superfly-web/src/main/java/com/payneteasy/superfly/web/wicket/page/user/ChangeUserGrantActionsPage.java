@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.user;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.spring.injection.annot.SpringBean;
@@ -37,9 +37,9 @@ public class ChangeUserGrantActionsPage extends BasePage {
 	public ChangeUserGrantActionsPage(final PageParameters params) {
 		super(ListUsersPage.class, params);
 
-		final long userId = params.getAsLong("userId");
-		final long subId = params.getAsLong("subId");
-		final long roleId = params.getAsLong("roleId");
+		final long userId = params.get("userId").toLong();
+		final long subId = params.get("subId").toLong();
+		final long roleId = params.get("roleId").toLong();
 
 		UIUser user = userService.getUser(userId);
 		UISubsystem subsystem = subsystemService.getSubsystem(subId);
@@ -64,11 +64,6 @@ public class ChangeUserGrantActionsPage extends BasePage {
 			protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
 				userService.changeUserRoleActions(userId, mappedId, unmappedId);
 				setResponsePage(ChangeUserGrantActionsPage.class, params);
-			}
-
-			@Override
-			protected boolean isVisibleSearchePanel() {
-				return true;
 			}
 
 			@Override

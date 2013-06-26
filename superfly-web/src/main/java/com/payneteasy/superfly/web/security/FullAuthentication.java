@@ -13,17 +13,17 @@ import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
  */
 public class FullAuthentication extends EmptyAuthenticationToken {
 	private String username;
-	private Collection<GrantedAuthority> authorities;
+	private Collection<? extends GrantedAuthority> authorities;
 
 	public FullAuthentication(String username,
-			Collection<GrantedAuthority> authorities) {
+			Collection<? extends GrantedAuthority> authorities) {
 		super();
 		this.username = username;
 		this.authorities = authorities;
 	}
 
 	@Override
-	public Collection<GrantedAuthority> getAuthorities() {
+	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 

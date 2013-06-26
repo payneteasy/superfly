@@ -1,12 +1,13 @@
 package com.payneteasy.superfly.security.authentication;
 
 import com.payneteasy.superfly.api.SSOUser;
+import org.junit.Assert;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class SSOUserTransportAuthenticationTokenTest extends TestCase {
+public class SSOUserTransportAuthenticationTokenTest {
+    @Test
 	public void testGetName() {
 		SSOUserTransportAuthenticationToken token = new SSOUserTransportAuthenticationToken(new SSOUser("user", null, null));
-		assertEquals("user", token.getName());
+        Assert.assertEquals("user", token.getName());
 	}
 }

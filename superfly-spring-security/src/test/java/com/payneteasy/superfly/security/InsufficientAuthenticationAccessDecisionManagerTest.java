@@ -1,52 +1,51 @@
 package com.payneteasy.superfly.security;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import junit.framework.TestCase;
-
+import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import org.easymock.EasyMock;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 
-public class InsufficientAuthenticationAccessDecisionManagerTest extends
-		TestCase {
+import static org.easymock.EasyMock.*;
+
+public class InsufficientAuthenticationAccessDecisionManagerTest {
 	
 	private AccessDecisionManager delegate;
 	private InsufficientAuthenticationAccessDecisionManager manager;
-	
+
+    @Before
 	public void setUp() {
 		delegate = EasyMock.createMock(AccessDecisionManager.class);
 		manager = new InsufficientAuthenticationAccessDecisionManager(delegate);
 		manager.setInsufficientAuthenticationClasses(new Class<?>[]{Insuf.class});
 	}
-	
+
+    @Test
 	public void testInsufficientAuthentication() {
 		Insuf auth = new Insuf();
 		try {
 			manager.decide(auth, createFilter(), Collections.<ConfigAttribute>emptySet());
-			fail();
+            Assert.fail();
 		} catch (InsufficientAuthenticationException e) {
 			// expected
-			assertSame(auth, e.getAuthentication());
+            Assert.assertSame(auth, e.getAuthentication());
 		}
 	}
-	
+
+    @Test
 	@SuppressWarnings("unchecked")
 	public void testSufficientAuthentication() {
 		delegate.decide(anyObject(Authentication.class), anyObject(), anyObject(Collection.class));
@@ -54,7 +53,8 @@ public class InsufficientAuthenticationAccessDecisionManagerTest extends
 		manager.decide(new Suf(), createFilter(), Collections.<ConfigAttribute>emptySet());
 		verify(delegate);
 	}
-	
+
+    @Test
 	public void testDefaultConstructor() {
 		new InsufficientAuthenticationAccessDecisionManager();
 	}

@@ -8,6 +8,8 @@ import java.util.Collections;
 
 import com.payneteasy.superfly.model.AuthSession;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.UserDao;
@@ -22,9 +24,9 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 	
 	private LocalSecurityService localSecurityService;
 	private UserDao userDao;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
 		LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
 		userDao = EasyMock.createStrictMock(UserDao.class);
 		service.setUserDao(userDao);
@@ -37,7 +39,8 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		service.setLockoutStrategy(new NoneLockoutStrategy());
 		localSecurityService = service;
 	}
-	
+
+    @Test
 	public void testAuthenticateUser() throws Exception {
 		final AuthRole role = new AuthRole();
 		role.setRoleName("local");
@@ -51,7 +54,8 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testAuthenticateUserFailNotNull() throws Exception {
 		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
 				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
@@ -64,6 +68,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 		EasyMock.verify(loggerSink);
 	}
 
+    @Test
     public void testAuthenticateUserFailWithNull() throws Exception {
    		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
    				anyObject(String.class), anyObject(String.class), anyObject(String.class)))

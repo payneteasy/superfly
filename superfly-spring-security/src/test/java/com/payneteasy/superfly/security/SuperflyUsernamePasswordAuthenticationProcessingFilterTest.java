@@ -1,28 +1,27 @@
 package com.payneteasy.superfly.security;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
 
+    @Before
     public void setUp() {
-		super.setUp();
         SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
         procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
@@ -30,7 +29,8 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
-	
+
+    @Test
 	public void testAuthenticate() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();
@@ -40,7 +40,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 					public Authentication answer() throws Throwable {
 						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
 						UsernamePasswordAuthRequestInfoAuthenticationToken token = (UsernamePasswordAuthRequestInfoAuthenticationToken) compound.getCurrentAuthenticationRequest();
-						assertEquals("192.168.0.4", token.getAuthRequestInfo().getIpAddress());
+                        assertEquals("192.168.0.4", token.getAuthRequestInfo().getIpAddress());
 						assertEquals("my-subsystem", token.getAuthRequestInfo().getSubsystemIdentifier());
 						return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 					}
@@ -50,11 +50,12 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 		replay(request, response, chain, authenticationManager);
 		
 		filter.doFilter(request, response, chain);
-		assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordCheckedToken);
+        assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordCheckedToken);
 		
 		verify(request, response, chain, authenticationManager);
 	}
-	
+
+    @Test
 	public void testBadCredentials() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();

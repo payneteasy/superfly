@@ -2,8 +2,14 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:sec="http://www.springframework.org/schema/security"
 	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <sec:http security="none" pattern="/favicon.ico"/>
+    <sec:http security="none" pattern="/css/**"/>
+    <sec:http security="none" pattern="/login*"/>
+    <sec:http security="none" pattern="/sso/**"/>
+    <sec:http security="none" pattern="/management/version.txt"/>
 		
     <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
@@ -11,11 +17,6 @@
 
     	<sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
     
-        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
-        <sec:intercept-url pattern="/css/**"   filters="none"/>
-        <sec:intercept-url pattern="/login*" filters="none"/>
-        <sec:intercept-url pattern="/sso/**" filters="none"/>
-
 		<!--
 			If you're not planning to use client SSL auth to protect your subsystem
 			calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
@@ -24,6 +25,7 @@
 		-->
 		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
 		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
+        <sec:intercept-url pattern="/remoting/sso.hessian.service" access="ROLE_SUBSYSTEM"/>
         
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
         

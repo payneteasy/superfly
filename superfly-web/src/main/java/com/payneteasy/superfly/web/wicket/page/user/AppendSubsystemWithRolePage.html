@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Add user</title>
+</head>
+<body>
+<wicket:extend>
+
+<div wicket:id="container">
+
+    <form wicket:id="form" class="form-horizontal s-form-horizontal">
+         <wicket:container wicket:id="user-name"></wicket:container>
+
+          <wicket:container wicket:id="subsystem"></wicket:container>
+          <wicket:container wicket:id="role"></wicket:container>
+
+        <div class="form-actions">
+          <button wicket:id="add-sub" class="btn btn-primary">Add</button>
+          <button wicket:id="cancel" class="btn" >Cancel</button>
+        </div>
+
+    </form>
+</div>
+
+<div wicket:id="no-more-sub-container">
+  <wicket:message key="user.no-more-sub"></wicket:message>&nbsp;&nbsp;<a href="#" wicket:id="back">back to user details</a>
+</div>
+
+</wicket:extend>
+</body>
+</html>

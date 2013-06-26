@@ -107,14 +107,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
-			Long complectId, Long subsystemId, int startFrom, int recordsCount,
+			Long complectId, Long subsystemId, long startFrom, long recordsCount,
 			int orderFieldNumber, boolean asc) {
 		return userDao.getUsers(startFrom, recordsCount, orderFieldNumber,
 				asc ? DaoConstants.ASC : DaoConstants.DESC, userNamePrefix,
 				roleId, complectId, subsystemId);
 	}
 
-	public int getUsersCount(String userNamePrefix, Long roleId,
+	public long getUsersCount(String userNamePrefix, Long roleId,
 			Long complectId, Long subsystemId) {
 		return userDao.getUsersCount(userNamePrefix, roleId, complectId,
 				subsystemId);
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 		userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
 	}
 
-	public UIUser getUser(long userId) {
+	public UIUserDetails getUser(long userId) {
 		return userDao.getUser(userId);
 	}
 

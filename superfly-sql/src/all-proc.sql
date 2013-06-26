@@ -17,6 +17,7 @@ create table mysql_routines_return_arguments (
 \. int/int_check_user_password.prc
 \. int/int_get_user_actions.sql
 
+\. get/authenticate.sql
 \. get/get_user_actions.sql
 
 \. get/get_user_salt.sql
@@ -290,6 +291,8 @@ create table mysql_routines_return_arguments (
 \. delete/delete_expired_sso_sessions.prc
 \. delete/delete_expired_tokens.prc
 \. delete/delete_sso_session.prc
+
+\. save/complete_user.prc
 
 
 commit;

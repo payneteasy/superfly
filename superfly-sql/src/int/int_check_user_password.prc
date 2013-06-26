@@ -35,7 +35,7 @@ create function int_check_user_password(
       values (i_user_name, now(), i_ip_address, i_session_info);
     else
       update users u
-         set u.last_login_date = now(), u.logins_failed = null
+         set u.last_login_date = now(), u.logins_failed = null, u.completed = 'Y'
        where u.user_name = i_user_name
              and coalesce(u.is_account_locked, 'N') = 'N';
     end if;

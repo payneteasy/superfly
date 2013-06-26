@@ -17,6 +17,7 @@ public abstract class AbstractSmtpServer implements Serializable {
     private String username;
     private String password;
     private String from;
+    private boolean ssl;
 
     @Column(name = "ssrv_id")
     @Id
@@ -80,5 +81,14 @@ public abstract class AbstractSmtpServer implements Serializable {
 
     public void setFrom(String from) {
         this.from = from;
+    }
+
+    @Column(name = "is_ssl")
+    public boolean isSsl() {
+        return ssl;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
     }
 }

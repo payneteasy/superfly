@@ -1,12 +1,12 @@
 package com.payneteasy.superfly.web.security;
 
-import java.util.Collection;
-
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 
 public class SecurityUtils {
     public static boolean isUserInRole(String aRole) {
@@ -14,7 +14,7 @@ public class SecurityUtils {
         if (null == authentication) {
             return false;
         }
-        Collection<GrantedAuthority> authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return false;
         }
@@ -33,7 +33,7 @@ public class SecurityUtils {
         if (null == authentication) {
             return null;
         }
-        Collection<GrantedAuthority> authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return null;
         }

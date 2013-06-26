@@ -9,6 +9,8 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
 
@@ -20,8 +22,8 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
 
+    @Before
     public void setUp() {
-        super.setUp();
         internalSSOService = EasyMock.createStrictMock(InternalSSOService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
@@ -44,29 +46,31 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         return super.getBean(type);
     }
 
+    @Test
     public void testNoLoginData() {
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginErrorPage.class);
         tester.assertLabel("message", "No login data found");
     }
 
+    @Test
     public void testSuccess() {
         expect(internalSSOService.authenticateHOTP("test-subsystem", "known-user", "111111"))
                 .andReturn(true);
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
-                .andReturn(new SubsystemTokenData("abcdef", "http://localhost/landing-url"));
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
         replay(internalSSOService, sessionService, subsystemService);
 
         SSOLoginData loginData = createLoginData();
-        tester.getWicketSession().setSsoLoginData(loginData);
+        tester.getSession().setSsoLoginData(loginData);
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         FormTester form = tester.newFormTester("form");
         form.setValue("hotp", "111111");
         form.submit();
-        tester.assertRedirected("http://localhost/landing-url?subsystemToken=abcdef&targetUrl=/target");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(internalSSOService, sessionService, subsystemService);
@@ -86,12 +90,13 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         return loginData;
     }
 
+    @Test
     public void testFailure() {
         expect(internalSSOService.authenticateHOTP("test-subsystem", "known-user", "222222"))
                         .andReturn(false);
         replay(internalSSOService);
 
-        tester.getWicketSession().setSsoLoginData(createLoginData());
+        tester.getSession().setSsoLoginData(createLoginData());
         tester.startPage(SSOLoginHOTPPage.class);
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         FormTester form = tester.newFormTester("form");

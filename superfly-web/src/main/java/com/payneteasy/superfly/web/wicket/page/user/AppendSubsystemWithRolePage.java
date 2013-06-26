@@ -1,29 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
@@ -38,9 +14,25 @@ import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceR
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
+import org.springframework.security.access.annotation.Secured;
+
+import java.util.*;
 
 @Secured("ROLE_ADMIN")
-public class AddSubsystemWithRolePage extends BasePage {
+public class AppendSubsystemWithRolePage extends BasePage {
 	@SpringBean
 	private UserService userService;
 	@SpringBean
@@ -49,12 +41,9 @@ public class AddSubsystemWithRolePage extends BasePage {
 	private SubsystemService subsystemService;
 	private boolean isVisible=true;
 
-	public AddSubsystemWithRolePage(PageParameters params) {
+	public AppendSubsystemWithRolePage(PageParameters params) {
 		super(ListUsersPage.class, params);
-		final long userId = params.getAsLong("userId");
-		UIUser user = userService.getUser(userId);
-		
-		add(new LabelValueRow<String>("user-name", new Model(user.getUsername()), "user.name"));
+		final long userId = params.get("userId").toLong();
 		
 		WebMarkupContainer container = new WebMarkupContainer("container");
 		add(container);
@@ -119,6 +108,10 @@ public class AddSubsystemWithRolePage extends BasePage {
 		Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>("form");
 		container.add(form);
 
+//        USER INFO
+        UIUser user = userService.getUser(userId);
+        form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
+
 		LabelDropDownChoiceRow<UISubsystemForList> makes = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", makeChoices, new SubsystemInCreateUserChoiceRender());
 		makes.getDropDownChoice().setRequired(true);
 		
@@ -132,7 +125,7 @@ public class AddSubsystemWithRolePage extends BasePage {
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
-				target.addComponent(models);
+				target.add(models);
 			}
 			
 		});
@@ -143,15 +136,13 @@ public class AddSubsystemWithRolePage extends BasePage {
 				UIRoleForList role = models.getDropDownChoice().getModelObject();
 				userService.addSubsystemWithRole(userId, role.getId());
 				PageParameters param = new PageParameters();
-				param.add("userId", String.valueOf(userId));
+				param.set("userId", String.valueOf(userId));
 				getRequestCycle().setResponsePage(UserDetailsPage.class, param);
-				getRequestCycle().setRedirect(true);
-
 			}
 
 		});
 		final PageParameters param = new PageParameters();
-		param.add("userId", String.valueOf(userId));
+		param.set("userId", String.valueOf(userId));
 		form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class, param));
 		
 		WebMarkupContainer noMoreSubContainer = new WebMarkupContainer("no-more-sub-container");

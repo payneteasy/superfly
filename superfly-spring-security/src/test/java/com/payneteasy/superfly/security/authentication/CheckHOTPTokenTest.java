@@ -1,12 +1,13 @@
 package com.payneteasy.superfly.security.authentication;
 
 import com.payneteasy.superfly.api.SSOUser;
+import org.junit.Assert;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class CheckHOTPTokenTest extends TestCase {
+public class CheckHOTPTokenTest {
+    @Test
 	public void testGetCredentials() {
 		CheckHOTPToken token = new CheckHOTPToken(new SSOUser("user", null, null), "hotp");
-		assertEquals("hotp", token.getCredentials());
+		Assert.assertEquals("hotp", token.getCredentials());
 	}
 }

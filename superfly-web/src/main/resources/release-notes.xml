@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <news>
-    <release number="1.4-1" date="2013.02.05">
+    <release number="1.5" date="2013.05.30">
+        <item type="task">
+            <name>UI design and usability</name>
+            <description>
+            </description>
+        </item>
+        <item type="task">
+            <name>Upgraded to new frameworks/libraries versions</name>
+            <description>
+                JUnit 4, Spring 3.1, Spring Security 3.1, Wicket 6
+            </description>
+        </item>
+        <item type="task">
+            <name>Mail sending via STMP+SSL</name>
+            <description>
+            </description>
+        </item>
+        <item type="task">
+            <name>Two-phase user register</name>
+            <description>
+                Aimed to avoid problems with user registration. When
+                a subsystem registers a user in Superfly and then fails
+                to register them locally, it made repeated registration
+                impossible because Superfly already had such a user.
+                Now, after subsystem registers a user in Superfly AND locally,
+                it calls second phase call making an incomplete user (created
+                on phase 1) complete.
+                Incomplete user allows to be registered again.
+            </description>
+        </item>
+        <item type="task">
+            <name>Impersonation support</name>
+            <description>
+                It is now possible to get user's roles+actions without checking password.
+                This may be useful for impersonation functionality.
+            </description>
+        </item>
+        <item type="task">
+            <name>Scripts for generating certificates</name>
+            <description>
+            </description>
+        </item>
+        <item type="task">
+            <name>Small bugfixes and improvements</name>
+            <description>
+            </description>
+        </item>
+    </release>
+
+    <release number="1.4" date="2013.02.05">
         <item type="task">
             <name>Redirect-based Single Sign-on functionality</name>
             <description>

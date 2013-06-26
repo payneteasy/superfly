@@ -33,7 +33,7 @@
     </context-param>
     <context-param>
     	<param-name>configuration</param-name>
-    	<param-value>development</param-value>
+    	<param-value>deployment</param-value>
     </context-param>
 	<context-param>
 		<param-name>webAppRootKey</param-name>
@@ -76,6 +76,10 @@
 		<param-name>superfly-hotpTableSize</param-name>
 		<param-value>100</param-value>
 	</context-param>
+    <context-param>
+   		<param-name>superfly-enable-hotp-emails</param-name>
+   		<param-value>true</param-value>
+   	</context-param>
 	
 	<context-param>
 		<param-name>disable-hotp</param-name>
@@ -127,6 +131,16 @@
         <servlet-name>remoting</servlet-name>
         <url-pattern>/remoting/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>version</servlet-name>
+        <servlet-class>com.payneteasy.superfly.web.servlet.VersionNumberServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>version</servlet-name>
+        <url-pattern>/management/version.txt</url-pattern>
+    </servlet-mapping>
     
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
@@ -143,7 +157,7 @@
         </init-param>
         <init-param>
         	<param-name>ignorePaths</param-name>
-        	<param-value>/remoting/,/sso/</param-value>
+        	<param-value>/remoting/,/sso/,/management/version.txt</param-value>
         </init-param>
     </filter>
 

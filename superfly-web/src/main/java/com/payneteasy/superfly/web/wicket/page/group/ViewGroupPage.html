@@ -1,23 +1,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Group details</title>
 </head>
 <body>
 <wicket:extend>
-    <div class="filters">
-	  <form wicket:id="filter-form">Action name contains: <input wicket:id="action-name-substr" /> &nbsp;
-	  <input type="submit" value="Filter" class="button"/>
-	</form>
+    <div class="s-legend-btn">
+        <a href="#" wicket:id="group-actions" class="btn btn-primary">Add Actions to group</a>
+    </div>
+
+    <div class="well s-filter">
+	  <form wicket:id="filter-form" class="form-inline">
+          <ul class="s-filter-items">
+              <li><input type="text" wicket:id="action-name-substr" placeholder="Action name"/></li>
+              <li><input type="submit" value="Filter" class="btn"/></li>
+          </ul>
+	  </form>
 	</div>
+
 <p>
-<b>Group name:</b> &nbsp;<span wicket:id="groupName"></span>&nbsp;&nbsp;&nbsp;<b>Subsystem:</b> &nbsp;
-<span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;|&nbsp;<a href="#" wicket:id="back-to-groups">Back to list groupss</a>
-<br/>
+    <strong>Group name: </strong><span wicket:id="groupName"></span>&nbsp;&nbsp;<strong>Subsystem: </strong>
+    <span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" >Back to list groupss</a>
 </p>
-	<table class="data">
+
+	<table class="table table-bordered table-hover">
 		<thead>
 			<tr>
 				<th><a wicket:id="order-by-ActionID">ID</a></th>

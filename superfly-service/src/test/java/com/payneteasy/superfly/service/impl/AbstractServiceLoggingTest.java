@@ -1,18 +1,17 @@
 package com.payneteasy.superfly.service.impl;
 
 
-import junit.framework.TestCase;
-
-import org.easymock.EasyMock;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.service.LoggerSink;
+import org.easymock.EasyMock;
+import org.junit.Before;
 
-public abstract class AbstractServiceLoggingTest extends TestCase {
+public abstract class AbstractServiceLoggingTest {
 	
 	protected LoggerSink loggerSink;
-	
-	public void setUp() {
+
+    @Before
+	public void init() {
 		loggerSink = EasyMock.createStrictMock(LoggerSink.class);
 	}
 	

@@ -8,6 +8,8 @@ import static org.easymock.EasyMock.eq;
 import java.util.Collections;
 
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 import com.payneteasy.superfly.dao.RoleDao;
@@ -19,9 +21,9 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 	
 	private RoleService roleService;
 	private RoleDao roleDao;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
 		RoleServiceImpl service = new RoleServiceImpl();
 		roleDao = EasyMock.createStrictMock(RoleDao.class);
 		service.setRoleDao(roleDao);
@@ -29,7 +31,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setLoggerSink(loggerSink);
 		roleService = service;
 	}
-	
+
+    @Test
 	public void testCreateRole() throws Exception {
 		roleDao.createRole(anyObject(UIRole.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -43,7 +46,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCreateRoleFail() throws Exception {
 		roleDao.createRole(anyObject(UIRole.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -57,7 +61,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateRole() throws Exception {
 		roleDao.updateRole(anyObject(UIRole.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -71,7 +76,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateRoleFail() throws Exception {
 		roleDao.updateRole(anyObject(UIRole.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -85,7 +91,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteRole() throws Exception {
 		roleDao.deleteRole(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -96,7 +103,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteRoleFail() throws Exception {
 		roleDao.deleteRole(anyLong());
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -107,7 +115,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeRoleGroups() throws Exception {
 		roleDao.changeRoleGroups(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -118,7 +127,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeRoleGroupsFail() throws Exception {
 		roleDao.changeRoleGroups(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -129,7 +139,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeRoleActions() throws Exception {
 		roleDao.changeRoleActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -140,7 +151,8 @@ public class RoleServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeRoleActionsFail() throws Exception {
 		roleDao.changeRoleActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());

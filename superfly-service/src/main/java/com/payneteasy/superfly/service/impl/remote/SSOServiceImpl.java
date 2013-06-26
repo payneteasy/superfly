@@ -56,7 +56,14 @@ public class SSOServiceImpl implements SSOService {
 				authRequestInfo.getSessionInfo());
 	}
 
-	/**
+    /**
+   	 * @see SSOService#pseudoAuthenticate(String, String)
+   	 */
+    public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
+        return internalSSOService.pseudoAuthenticate(username, obtainSubsystemIdentifier(subsystemIdentifier));
+    }
+
+    /**
 	 * @see SSOService#sendSystemData(String, com.payneteasy.superfly.api.ActionDescription[])
 	 */
 	public void sendSystemData(String systemIdentifier,
@@ -206,6 +213,11 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void touchSessions(List<Long> sessionIds) {
         internalSSOService.touchSessions(sessionIds);
+    }
+
+    @Override
+    public void completeUser(String username) {
+        internalSSOService.completeUser(username);
     }
 
 }

@@ -9,7 +9,8 @@ create procedure ui_get_smtp_server(i_ssrv_id int(10))
            port,
            username,
            password,
-           from_address
+           from_address,
+           is_ssl
       from smtp_servers
       where ssrv_id = i_ssrv_id;
   end
@@ -23,6 +24,7 @@ call save_routine_information('ui_get_smtp_server',
                                         'port int',
                                         'username varchar',
                                         'password varchar',
-                                        'from_address varchar'
+                                        'from_address varchar',
+                                        'is_ssl varchar'
                               )
      );

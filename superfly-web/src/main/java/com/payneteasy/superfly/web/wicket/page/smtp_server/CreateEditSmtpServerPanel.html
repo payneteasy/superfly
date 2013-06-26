@@ -6,16 +6,17 @@
 </head>
 <body>
 <wicket:panel>
-    <form wicket:id="form">
-        <div wicket:id="name"></div>
-        <div wicket:id="host"></div>
-        <div wicket:id="port"></div>
-        <div wicket:id="username"></div>
-        <div wicket:id="password"></div>
-        <div wicket:id="from"></div>
-        <div>
-            <input type="submit" class="button" wicket:id="submit-link" value="Save">
-            <input type="submit" class="button" wicket:id="cancel-link" value="Cancel">
+    <form wicket:id="form" class="form-horizontal s-form-horizontal">
+        <wicket:container wicket:id="name"></wicket:container>
+        <wicket:container wicket:id="host"></wicket:container>
+        <wicket:container wicket:id="port"></wicket:container>
+        <wicket:container wicket:id="username"></wicket:container>
+        <wicket:container wicket:id="password"></wicket:container>
+        <wicket:container wicket:id="from"></wicket:container>
+        <wicket:container wicket:id="ssl"></wicket:container>
+        <div class="form-actions">
+            <button class="btn btn-primary" wicket:id="submit-link">Save</button>
+            <button class="btn bnt-primary" wicket:id="cancel-link">Cancel</button>
         </div>
     </form>
 </wicket:panel>

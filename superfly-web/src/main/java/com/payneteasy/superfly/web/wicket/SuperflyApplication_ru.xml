@@ -2,6 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+<entry key="yes">Да</entry>
+<entry key="no">Нет</entry>
+
 
 <entry key="PublicKeyValidator.noBeginBlock">Begin block is expected in the public key, i.e. the following: -----BEGIN PGP PUBLIC KEY BLOCK-----</entry>
 <entry key="PublicKeyValidator.noEndBlock">End block is expected in the public key, i.e. the following: -----END PGP PUBLIC KEY BLOCK-----</entry>

@@ -1,27 +1,29 @@
 package com.payneteasy.superfly.spring;
 
-import junit.framework.TestCase;
-
-import org.springframework.beans.factory.ListableBeanFactory;
-
 import com.payneteasy.superfly.service.impl.TrivialProxyFactory;
 import com.payneteasy.superfly.spi.HOTPProvider;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.ListableBeanFactory;
 
-public class HOTPProviderFactoryBeanTest extends TestCase {
+public class HOTPProviderFactoryBeanTest {
 	
 	private HOTPProviderFactoryBean factoryBean;
-	
+
+    @Before
 	public void setUp() throws Exception {
 		factoryBean = new HOTPProviderFactoryBean();
 		factoryBean.setBeanFactory(TrivialProxyFactory.createProxy(ListableBeanFactory.class));
 		factoryBean.setAllowTestProvider(true);
 		factoryBean.afterPropertiesSet();
 	}
-	
+
+    @Test
 	public void testInstantiation() throws Exception {
-		assertEquals(HOTPProvider.class, factoryBean.getObjectType());
+        Assert.assertEquals(HOTPProvider.class, factoryBean.getObjectType());
 		Object object = factoryBean.getObject();
-		assertTrue("Got: " + object, object instanceof TestHOTPProvider);
-		assertTrue(((TestHOTPProvider) object).isInitialized());
+        Assert.assertTrue("Got: " + object, object instanceof TestHOTPProvider);
+        Assert.assertTrue(((TestHOTPProvider) object).isInitialized());
 	}
 }

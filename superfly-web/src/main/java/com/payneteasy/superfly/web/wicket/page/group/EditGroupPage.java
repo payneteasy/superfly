@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.group;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -32,7 +32,7 @@ public class EditGroupPage extends BasePage {
 	public EditGroupPage(PageParameters param) {
 		super(ListGroupsPage.class, param);
 		String msg_text = "Edit Group name";
-		final Long groupId = param.getAsLong("gid");
+		final Long groupId = param.get("gid").toLong();
 
 		GroupWizardModel groupModel = new GroupWizardModel();
 

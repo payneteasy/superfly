@@ -13,4 +13,16 @@ public class StringUtils {
 		}
 		return fragments.toArray(new String[fragments.size()]);
 	}
+
+    public static String yesNoString(boolean condition){
+        return condition?"Yes":"No";
+    }
+
+    public static String emptyStringIfNull(String s){
+        return (s == null || s =="")?"-":s;
+    }
+
+    public static String emptyStringIfObjectNull(Object o){
+        return (o == null)?"-":String.valueOf(o);
+    }
 }

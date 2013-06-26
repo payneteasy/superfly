@@ -3,15 +3,13 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -34,7 +32,6 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
     public SSOLoginHOTPPage() {
         final SSOLoginData loginData = SSOUtils.getSsoLoginData(this);
         if (loginData == null) {
-            RequestCycle.get().setRedirect(true);
             RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<String>("No login data found")));
         }
 

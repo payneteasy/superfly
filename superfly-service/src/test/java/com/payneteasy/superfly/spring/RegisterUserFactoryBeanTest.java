@@ -1,32 +1,37 @@
 package com.payneteasy.superfly.spring;
 
-import junit.framework.TestCase;
-
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.register.pcidss.PCIDSSRegisterUserStrategy;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class RegisterUserFactoryBeanTest extends TestCase{
+import static org.junit.Assert.assertEquals;
+
+public class RegisterUserFactoryBeanTest {
+    @Test
 	public void testNone() throws Exception {
 		RegisterUserStrategyFactoryBean bean = new RegisterUserStrategyFactoryBean();
 		bean.setPolicyName("none");
-		RegisterUserStrategy registerUserStrategy = (RegisterUserStrategy)bean.getObject();
-		assertEquals(registerUserStrategy.getClass(), NoneRegisterUserStrategy.class);
+		RegisterUserStrategy registerUserStrategy = bean.getObject();
+        assertEquals(registerUserStrategy.getClass(), NoneRegisterUserStrategy.class);
 	}
-	
+
+    @Test
 	public void testPCIDSS() throws Exception {
 		RegisterUserStrategyFactoryBean bean = new RegisterUserStrategyFactoryBean();
 		bean.setPolicyName("pcidss");
-		RegisterUserStrategy registerUserStrategy = (RegisterUserStrategy)bean.getObject();
+		RegisterUserStrategy registerUserStrategy = bean.getObject();
 		assertEquals(registerUserStrategy.getClass(), PCIDSSRegisterUserStrategy.class);
 	}
-	
+
+    @Test
 	public void testNull() throws Exception {
 		RegisterUserStrategyFactoryBean bean = new RegisterUserStrategyFactoryBean();
 		bean.setPolicyName(null);
 		try {
 			bean.getObject();
-			fail();
+            Assert.fail();
 		} catch (IllegalArgumentException e) {
 			// expected
 		}

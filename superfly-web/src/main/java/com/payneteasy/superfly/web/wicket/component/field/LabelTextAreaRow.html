@@ -1,8 +1,10 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <wicket:panel>
-    <li class="text-field" wicket:id="row">
-        <label class="field-label-text-area" wicket:id="label-id" for="name">Label name</label>
-        <textarea class="field-input-text-area" wicket:id="field-id"></textarea>
-    </li>
+    <div class="control-group" wicket:id="row">
+        <label class="control-label" wicket:id="label-id" for="name">Label name</label>
+        <div class="controls">
+            <textarea wicket:id="field-id"></textarea>
+        </div>
+    </div>
 </wicket:panel>
 </html>

@@ -1,8 +1,9 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -17,7 +18,6 @@ public class SSOLogoutPage extends BaseSSOPage {
 
     public SSOLogoutPage() {
         WebRequest request = (WebRequest) getRequest();
-        String returnUrl = request.getParameter("returnUrl");
 
         String ssoSessionId = SSOUtils.getSsoSessionIdFromCookie(request);
 
@@ -25,6 +25,13 @@ public class SSOLogoutPage extends BaseSSOPage {
             sessionService.deleteSSOSession(ssoSessionId);
         }
 
-        SSOUtils.redirect(this, returnUrl);
+        String subsystemIdentifier = request.getRequestParameters().getParameterValue("subsystemIdentifier").toString();
+
+        if (StringUtils.hasText(subsystemIdentifier)) {
+            UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemIdentifier);
+            if (subsystem != null && StringUtils.hasText(subsystem.getSubsystemUrl())) {
+                SSOUtils.redirect(this, subsystem.getSubsystemUrl());
+            }
+        }
     }
 }

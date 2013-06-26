@@ -59,17 +59,17 @@ public class ResetOtpTablePanel extends Panel {
                 try {
                     hotpService.resetTableAndSendIfSupported(subsystemModel.getObject().getName(), userId);
                     info("Done");
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 } catch (MessageSendException e) {
                     error("Could not send a message: " + e.getMessage());
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 }
                 window.close(target);
             }
             
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-            	target.addComponent(feedbackPanel2);
+            	target.add(feedbackPanel2);
             }
         });
     }

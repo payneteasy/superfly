@@ -158,6 +158,21 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		return ssoUser;
 	}
 
+    @Override
+    public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
+        SSOUser ssoUser;
+        AuthSession session = userDao.pseudoAuthenticate(username, subsystemIdentifier);
+        boolean ok = session != null && session.getSessionId() != null;
+        loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
+        if (ok) {
+            ssoUser = buildSSOUser(session);
+        } else {
+            logger.warn("No roles for user '{}' during pseudo-login", username);
+            ssoUser = null;
+        }
+        return ssoUser;
+    }
+
     private SSOUser buildSSOUser(AuthSession session) {
         SSOUser ssoUser;
         List<AuthRole> authRoles = session.getRoles();
@@ -337,5 +352,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             }
             sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
         }
+    }
+
+    @Override
+    public void completeUser(String username) {
+        userDao.completeUser(username);
     }
 }

@@ -1,12 +1,14 @@
 package com.payneteasy.superfly.password;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class SHA256SaltGeneratorTest extends TestCase {
+public class SHA256SaltGeneratorTest {
+    @Test
 	public void test() {
 		SHA256RandomGUIDSaltGenerator generator = new SHA256RandomGUIDSaltGenerator();
 		String salt = generator.generate();
-		assertNotNull(salt);
-		assertTrue(salt.length() > 0);
+        Assert.assertNotNull(salt);
+        Assert.assertTrue(salt.length() > 0);
 	}
 }

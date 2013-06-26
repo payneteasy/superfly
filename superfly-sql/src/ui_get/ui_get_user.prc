@@ -13,6 +13,8 @@ create procedure ui_get_user(i_user_id int(10))
          , secret_answer 
          , salt
          , public_key
+         , is_account_suspended
+         , is_account_locked
     from users 
       where user_id = i_user_id;
   end                                                    
@@ -29,6 +31,8 @@ call save_routine_information('ui_get_user',
                                         'secret_question varchar',
                                         'secret_answer varchar',
 										'salt varchar',
-										'public_key varchar'
+										'public_key varchar',
+										'is_account_suspended varchar',
+										'is_account_locked varchar'
                               )
      );

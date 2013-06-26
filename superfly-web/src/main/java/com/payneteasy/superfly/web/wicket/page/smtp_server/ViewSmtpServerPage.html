@@ -2,35 +2,51 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>SMTP server details</title>
 </head>
 <body>
 <wicket:extend>
-	<table class="data">
-		<tr>
-			<td><b>Name:</b></td>
-			<td><span wicket:id="name">name</span></td>
-		</tr>
-		<tr>
-			<td><b>Host:</b></td>
-			<td><span wicket:id="host">host</span></td>
-		</tr>
-		<tr>
-			<td><b>Port:</b></td>
-			<td><span wicket:id="port">port</span></td>
-		</tr>
-		<tr>
-			<td><b>Username:</b></td>
-			<td><span wicket:id="username">username</span></td>
-		</tr>
-		<tr>
-			<td><b>Password:</b></td>
-			<td><span wicket:id="password">password</span></td>
-		</tr>
-	</table>
-
-    <button wicket:id="back-link" class="button">&lt; Back</button>
+      <div class="form-horizontal s-form-horizontal">
+          <div class="control-group">
+              <label class="control-label">Name:</label>
+              <div class="controls">
+                  <label wicket:id="name">name</label>
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label">Host:</label>
+              <div class="controls">
+                  <label wicket:id="host">host</label>
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label">Port:</label>
+              <div class="controls">
+                  <label wicket:id="port">port</label>
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label">Username:</label>
+              <div class="controls">
+                  <label wicket:id="username">username</label>
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label">Password:</label>
+              <div class="controls">
+                  <label wicket:id="password">password</label>
+              </div>
+          </div>
+          <div class="control-group">
+              <label class="control-label">SSL:</label>
+              <div class="controls">
+                  <label wicket:id="ssl">ssl</label>
+              </div>
+          </div>
+          <div class="form-actions">
+              <button wicket:id="back-link" class="btn">&lt; Back</button>
+          </div>
+      </div>
 
 </wicket:extend>
 </body>

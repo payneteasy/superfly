@@ -1,28 +1,27 @@
 package com.payneteasy.superfly.service.impl;
 
 
-import static org.easymock.EasyMock.anyLong;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-
-import java.util.Collections;
-
-import org.easymock.EasyMock;
-import org.slf4j.Logger;
-
 import com.payneteasy.superfly.dao.GroupDao;
 import com.payneteasy.superfly.model.ui.group.UICloneGroupRequest;
 import com.payneteasy.superfly.model.ui.group.UIGroup;
 import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.NotificationService;
+import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+
+import java.util.Collections;
+
+import static org.easymock.EasyMock.*;
 
 public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 	
 	private GroupService groupService;
 	private GroupDao groupDao;
-	
+
+    @Before
 	public void setUp() {
-		super.setUp();
 		GroupServiceImpl service = new GroupServiceImpl();
 		groupDao = EasyMock.createStrictMock(GroupDao.class);
 		service.setGroupDao(groupDao);
@@ -30,7 +29,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		service.setLoggerSink(loggerSink);
 		groupService = service;
 	}
-	
+
+    @Test
 	public void testCreateGroup() throws Exception {
 		groupDao.createGroup(anyObject(UIGroup.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -43,7 +43,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCreateGroupFail() throws Exception {
 		groupDao.createGroup(anyObject(UIGroup.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -56,7 +57,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateGroup() throws Exception {
 		groupDao.updateGroup(anyLong(), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -69,7 +71,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testUpdateGroupFail() throws Exception {
 		groupDao.updateGroup(anyLong(), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -82,7 +85,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteGroup() throws Exception {
 		groupDao.deleteGroup(anyLong());
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -93,7 +97,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testDeleteGroupFail() throws Exception {
 		groupDao.deleteGroup(anyLong());
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -104,7 +109,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCloneGroup() throws Exception {
 		groupDao.cloneGroup(anyObject(UICloneGroupRequest.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -118,7 +124,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testCloneGroupFail() throws Exception {
 		groupDao.cloneGroup(anyObject(UICloneGroupRequest.class));
 		EasyMock.expectLastCall().andReturn(failureResult());
@@ -132,7 +139,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeGroupActions() throws Exception {
 		groupDao.changeGroupActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(okResult());
@@ -143,7 +151,8 @@ public class GroupServiceLoggingTest extends AbstractServiceLoggingTest {
 		
 		EasyMock.verify(loggerSink);
 	}
-	
+
+    @Test
 	public void testChangeGroupActionsFail() throws Exception {
 		groupDao.changeGroupActions(anyLong(), anyObject(String.class), anyObject(String.class));
 		EasyMock.expectLastCall().andReturn(failureResult());

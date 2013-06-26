@@ -6,26 +6,31 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class SuperflySSOAuthenticationProcessingFilterTest extends
 		AbstractAuthenticationProcessingFilterTest {
 
+    @Before
     public void setUp() {
-		super.setUp();
         SuperflySSOAuthenticationProcessingFilter procFilter = new SuperflySSOAuthenticationProcessingFilter();
 		procFilter.setAuthenticationManager(authenticationManager);
         procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
 		procFilter.afterPropertiesSet();
 		filter = procFilter;
 	}
-	
+
+    @Test
 	public void testAuthenticate() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();
@@ -35,7 +40,7 @@ public class SuperflySSOAuthenticationProcessingFilterTest extends
 					public Authentication answer() throws Throwable {
 						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
 						SSOAuthenticationRequest token = (SSOAuthenticationRequest) compound.getCurrentAuthenticationRequest();
-						assertEquals("abcdef", token.getSubsystemToken());
+                        assertEquals("abcdef", token.getSubsystemToken());
 						return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
 					}
 				});
@@ -44,11 +49,12 @@ public class SuperflySSOAuthenticationProcessingFilterTest extends
 		replay(request, response, chain, authenticationManager);
 		
 		filter.doFilter(request, response, chain);
-		assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordCheckedToken);
+        assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordCheckedToken);
 		
 		verify(request, response, chain, authenticationManager);
 	}
-	
+
+    @Test
 	public void testBadCredentials() throws Exception {
 		// expecting some request examination...
 		initExpectationsForAuthentication();

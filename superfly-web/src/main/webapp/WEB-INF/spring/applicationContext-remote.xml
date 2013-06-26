@@ -27,4 +27,9 @@
         <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
     </bean>
 
+    <bean name="ssoServiceHessianExporter" class="org.springframework.remoting.caucho.HessianServiceExporter">
+        <property name="service" ref="ssoService"/>
+        <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+    </bean>
+
 </beans>

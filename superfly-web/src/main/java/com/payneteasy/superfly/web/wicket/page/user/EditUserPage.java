@@ -1,25 +1,21 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.annotation.Secured;
-
-import com.payneteasy.superfly.crypto.PublicKeyCrypto;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
-import com.payneteasy.superfly.web.wicket.page.BasePage;
-import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
-import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 
 /**
  * Page used to edit a user.
@@ -37,7 +33,7 @@ public class EditUserPage extends BasePage {
 	public EditUserPage(PageParameters params) {
 		super(ListUsersPage.class, params);
 
-		long userId = params.getAsLong("userId");
+		long userId = params.get("userId").toLong();
 
 		final UIUser initialUser = userService.getUser(userId);
 		final UIUserWithPassword2 user = new UIUserWithPassword2();
@@ -49,7 +45,6 @@ public class EditUserPage extends BasePage {
 			protected void onSubmit() {
 				userService.updateUser(user);
 				getRequestCycle().setResponsePage(ListUsersPage.class);
-				getRequestCycle().setRedirect(true);
 				info("User updated: " + user.getUsername());
 			}
 		};

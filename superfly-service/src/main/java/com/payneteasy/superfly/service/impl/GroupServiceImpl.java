@@ -67,8 +67,8 @@ public class GroupServiceImpl implements GroupService {
 		return result;
 	}
 
-	public List<UIGroupForList> getGroupsForSubsystems(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	public List<UIGroupForList> getGroupsForSubsystems(long startFrom,
+			long recordsCount, int orderFieldNumber, boolean orderType,
 			String groupNamePrefix, List<Long> subsystemIds) {
 		return this.groupDao.getGroups(startFrom, recordsCount,
 				orderFieldNumber,
@@ -77,7 +77,7 @@ public class GroupServiceImpl implements GroupService {
 				StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
-	public int getGroupsCount(String groupName, List<Long> subsystemIds) {
+	public long getGroupsCount(String groupName, List<Long> subsystemIds) {
 		return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
 	}
 
@@ -103,8 +103,8 @@ public class GroupServiceImpl implements GroupService {
 		return result;		
 	}
 
-	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring) {
 		return groupDao.getAllGroupMappedActions(startFrom, recordsCount, 
 				orderFieldNumber, 
@@ -112,12 +112,12 @@ public class GroupServiceImpl implements GroupService {
 				groupId, actionSubstring);
 	}
 	
-	public int getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
+	public long getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
 		return groupDao.getAllGroupMappedActionsCount(groupId, actionSubstring);
 	}
 	
-	public List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
+	public List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
 			long groupId, String actionSubstring) {
 		return groupDao.getAllGroupActions(startFrom, recordsCount, 
 				orderFieldNumber, 
@@ -125,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
 				groupId, actionSubstring);
 	}
 	
-	public int getAllGroupActionsCount(long groupId, String actionSubstring) {
+	public long getAllGroupActionsCount(long groupId, String actionSubstring) {
 		return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
 	}
 

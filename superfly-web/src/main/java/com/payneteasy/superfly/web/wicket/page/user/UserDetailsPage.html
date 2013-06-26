@@ -2,50 +2,69 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Users</title>
-
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 
 </head>
 <body>
 <wicket:extend>
-	<div class="name">
-		User name : <span wicket:id="user-name">bond</span>&nbsp;|&nbsp;<a href="#" wicket:id="add-sub">add subsystem with role</a>
-	</div>
-	<div>
-		<a href="#" onclick="var e = document.getElementById('public_key_holder'); e.style.display = (e.style.display == 'none' ? 'block' : 'none'); return false;">Public key</a>
-		<div id="public_key_holder" wicket:id="public-key" style="white-space: pre; font-family: monospace; display: none;">
-		</div>
-	</div>
-<table class="dataSubRoles">
-<thead>
-   <tr>
-      <th>Subsystems</th>
-       <th>Actions</th>
-   </tr>
- </thead>
-  <tbody wicket:id="sub-list">
-       <tr onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-        <td><span wicket:id="sub-name">subsystem</span></td>
-        <td><a href="#" wicket:id="add-role"><span class="add-role-img"></span>add role</a></td> 
-       </tr>
-       <tr wicket:id="role-list" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-          <td><a href="#" wicket:id="user-action"><span wicket:id="role-name">some-role</span></a></td>
-          <td><a href="#" wicket:id="delete-role" class="remove-role-img" title="remove role"></a></td>
-       </tr>
-  </tbody>
-</table>
+
+    <div class="s-legend-btn">
+        <a href="" wicket:id="switch-locked-status" class="btn"><span wicket:id="switch-info"></span></a>
+    </div>
+
+<div class="row-fluid">
+
+    <!--LEFT SIDE-->
+    <div class="span5">
+        <div class="s-details-head">
+             <a href="#" class="btn btn-primary" wicket:id="add-sub">Add subsystem with role</a>
+        </div>
+
+        <table class="table table-hover s-table-subRole">
+            <thead>
+            <tr class="s-table-head">
+                <th>Subsystems</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody wicket:id="sub-list">
+            <tr class="warning">
+                <td>
+                    <span wicket:id="sub-name">subsystem</span>
+                </td>
+                <td>
+                    <a href="#" class="btn btn-primary" wicket:id="add-role">Add role</a>
+                </td>
+            </tr>
+            <tr wicket:id="role-list" class="success">
+                <td class="role">
+                    <span wicket:id="role-name">some-role</span>
+                </td>
+                <td>
+                    <a href="#" wicket:id="grant-user-action" class="btn btn-primary">Grant Actions</a>
+                    <a href="#" wicket:id="delete-role"  class="btn btn-warning" title="Remove role">Remove</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+     <!--RIGHT SIDE-->
+    <div class="span4 offset1">
+        <div class="form-horizontal s-form-horizontal">
+            <wicket:container wicket:id="username"></wicket:container>
+            <wicket:container wicket:id="email"></wicket:container>
+            <wicket:container wicket:id="accountLocked"></wicket:container>
+            <wicket:container wicket:id="name"></wicket:container>
+            <wicket:container wicket:id="surname"></wicket:container>
+            <wicket:container wicket:id="secretQuestion"></wicket:container>
+            <wicket:container wicket:id="secretAnswer"></wicket:container>
+            <wicket:container wicket:id="publicKey"></wicket:container>
+        </div>
+    </div>
+
+</div>
+
 </wicket:extend>
 </body>
 </html>

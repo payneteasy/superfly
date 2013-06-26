@@ -1,14 +1,18 @@
 package com.payneteasy.superfly.dao;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class RoleDaoTest extends AbstractDaoTest {
 	private RoleDao roleDao;
@@ -26,9 +30,8 @@ public class RoleDaoTest extends AbstractDaoTest {
 		this.subsystemDao = subsystemDao;
 	}
 
+    @Before
 	public void setUp() throws Exception {
-    	super.setUp();
-    	
     	if (!created) {
     		UISubsystem subsystem = new UISubsystem();
     		subsystem.setName("subsystem-for-role-1");
@@ -47,28 +50,36 @@ public class RoleDaoTest extends AbstractDaoTest {
 	    	created = true;
     	}
     }
-    
+
+    @Test
 	public void testGetAllRoleActions() {
 		roleDao.getAllRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
 	}
 
+    @Test
 	public void testGetAllRoleActionsCount() {
 		roleDao.getAllRoleActionsCount(getAnyRoleId(), null);
 	}
-	
+
+    @Test
 	public void testGetMappedRoleActions() {
 		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
 		roleDao.getMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), "dmi");
 	}
+
+    @Test
     public void testGetUnMappedRoleActions(){
     	roleDao.getUnMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), null);
     	roleDao.getUnMappedRoleActions(0, 10, 1, "asc", getAnyRoleId(), "dsf");
     }
+
+    @Test
 	public void testGetMappedRoleActionsCount() {
 		roleDao.getMappedRoleActionsCount(getAnyRoleId(), null);
 		roleDao.getMappedRoleActionsCount(getAnyRoleId(), "dmi");
 	}
 
+    @Test
 	public void testChangeRoleActions() {
        long roleId = getAnyRoleId();
        roleDao.changeRoleActions(roleId, "1,2,3", "4,5,6");
@@ -76,10 +87,12 @@ public class RoleDaoTest extends AbstractDaoTest {
        roleDao.changeRoleActions(roleId, "", null);
 	}
 
+    @Test
 	public void testGetAllRoleGroups() {
 		roleDao.getAllRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
 
+    @Test
 	public void testUpdateRole() {
 		UIRole role = getAnyRole();
 		role.setPrincipalName("principalNameTest");
@@ -87,6 +100,7 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 	}
 
+    @Test
 	public void testChangeRoleGroups() {
 		long roleId = getAnyRoleId();
 		roleDao.changeRoleGroups(roleId, "1,2,3", "4,5,6");
@@ -96,17 +110,18 @@ public class RoleDaoTest extends AbstractDaoTest {
 
 	private UIRole getAnyRole() {
 		long roleId = getAnyRoleId();
-		UIRole role = roleDao.getRole(roleId);
-		return role;
+        return roleDao.getRole(roleId);
 	}
 
+    @Test
 	public void testGetRolesForFilter() {
 		List<UIRoleForFilter> roles = roleDao.getRolesForFilter(null, null, 0,
 				Integer.MAX_VALUE);
-		assertNotNull("List of roles must not be null", roles);
-		assertTrue("List of roles cannot be empty", roles.size() > 0);
+        assertNotNull("List of roles must not be null", roles);
+        assertTrue("List of roles cannot be empty", roles.size() > 0);
 	}
 
+    @Test
 	public void testGetRolesForList() {
 		List<UIRoleForList> roles;
 		roles = roleDao.getRoles(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
@@ -117,12 +132,14 @@ public class RoleDaoTest extends AbstractDaoTest {
 		assertNotNull("List cannot be null", roles);
 	}
 
+    @Test
 	public void testGetRoleCount() {
-		int count = roleDao.getRoleCount(null, null);
+		long count = roleDao.getRoleCount(null, null);
 		assertTrue("Must get some roles", count > 0);
 		roleDao.getRoleCount("someRoleName", "1,2");
 	}
-	
+
+    @Test
     public void testGetAllRoleGroupsCount(){
     	roleDao.getAllRoleGroupsCount(1);
     }
@@ -131,16 +148,17 @@ public class RoleDaoTest extends AbstractDaoTest {
 		List<UIRoleForList> roles = roleDao
 				.getRoles(0, 1, 1, "asc", null, null);
 		UIRoleForList roleForList = roles.get(0);
-		long roleId = roleForList.getId();
-		return roleId;
+        return roleForList.getId();
 	}
 
+    @Test
 	public void testDeleteRole() {
 		long roleId = getAnyRoleId();
 		RoutineResult result = roleDao.deleteRole(roleId);
 		assertRoutineResult(result);
 	}
 
+    @Test
 	public void testCreateDeleteRole() {
 		UIRole role = new UIRole();
 		role.setRoleName("Test Role Name");
@@ -151,11 +169,13 @@ public class RoleDaoTest extends AbstractDaoTest {
 		result = roleDao.deleteRole(role.getRoleId());
 		assertRoutineResult(result);
 	}
-	
+
+    @Test
 	public void testgetMappedRoleGroups(){
 		roleDao.getMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}
-	
+
+    @Test
 	public void testGetUnMappedRoleGroups(){
 		roleDao.getUnMappedRoleGroups(0, 10, 1, "asc", getAnyRoleId());
 	}

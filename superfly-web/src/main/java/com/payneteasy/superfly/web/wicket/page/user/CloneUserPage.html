@@ -2,25 +2,26 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Add user</title>
 </head>
 <body>
 <wicket:extend>
-<div class="cont-box">
-<form wicket:id="form">
-    <div wicket:id="old-username"></div>
-    <div wicket:id="username"></div>
-    <div wicket:id="email"></div>
-    <div wicket:id="password"></div>
-    <div wicket:id="password2"></div>
-    <div wicket:id="publicKey"></div>
-    <div wicket:id="subsystemForEmail"></div>
-	<div>
-	    <input type="submit" value="Add" class="button"/> 
-	    <input type="submit" value="Cancel" wicket:id="cancel" class="button"/></div>
+
+<form wicket:id="form" class="form-horizontal s-form-horizontal">
+    <wicket:container wicket:id="old-username"></wicket:container>
+    <wicket:container wicket:id="username"></wicket:container>
+    <wicket:container wicket:id="email"></wicket:container>
+    <wicket:container wicket:id="password"></wicket:container>
+    <wicket:container wicket:id="password2"></wicket:container>
+    <wicket:container wicket:id="publicKey"></wicket:container>
+    <wicket:container wicket:id="subsystemForEmail"></wicket:container>
+
+	<div class="form-actions">
+	    <button class="btn btn-primary">Add</button>
+	    <button wicket:id="cancel" class="btn">Cancel</button>
+    </div>
 </form>
-</div>
+
 </wicket:extend>
 </body>
 </html>

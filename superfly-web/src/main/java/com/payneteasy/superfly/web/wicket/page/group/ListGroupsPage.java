@@ -1,29 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.group;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UIGroupForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -37,6 +13,25 @@ import com.payneteasy.superfly.web.wicket.model.StickyFilters;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
+import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class ListGroupsPage extends BasePage {
@@ -57,39 +52,35 @@ public class ListGroupsPage extends BasePage {
 		Form<GroupFilter> filtersForm = new Form<GroupFilter>("filters-form");
 		add(filtersForm);
 		DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
-				"subsystem-filter", new PropertyModel<UISubsystemForFilter>(
-						stickyFilters, "subsystem"),
-				ssysService.getSubsystemsForFilter(),
-				new SubsystemChoiceRenderer());
+				"subsystem-filter"
+                , new PropertyModel<UISubsystemForFilter>(stickyFilters, "subsystem")
+                , ssysService.getSubsystemsForFilter()
+                , new SubsystemChoiceRenderer()
+        );
 		subsystemDropdown.setNullValid(true);
 		filtersForm.add(subsystemDropdown);
+
 		final List<Long> subsystemIds = new ArrayList<Long>();
 		if (stickyFilters.getSubsystem() != null) subsystemIds.add(stickyFilters.getSubsystem().getId());
 
 		// SORTABLE DATA PROVIDER
 		String[] fieldName = { "groupId", "groupName", "groupSubsystemId", "groupSubsystem"};
-		final SortableDataProvider<UIGroupForList> groupDataProvider = new IndexedSortableDataProvider<UIGroupForList>(
-				fieldName) {
+		final SortableDataProvider<UIGroupForList, String> groupDataProvider = new IndexedSortableDataProvider<UIGroupForList>(fieldName) {
 						
-			public Iterator<? extends UIGroupForList> iterator(int first,
-					int count) {
+			public Iterator<? extends UIGroupForList> iterator(long first, long count) {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if (subsystem == null) {
-					List<UIGroupForList> list = groupService.getGroupsForSubsystems(first, count,
-							getSortFieldIndex(), isAscending(), null,
-							subsystem == null ? null : null);
+					List<UIGroupForList> list = groupService.getGroupsForSubsystems(first, count, getSortFieldIndex(), isAscending(), null, subsystem == null ? null : null);
 					return list.iterator();
 				} else {
 					subsystemId.add(subsystem.getId());
-					List<UIGroupForList> list = groupService.getGroupsForSubsystems(first, count,
-							getSortFieldIndex(), isAscending(), null,
-							subsystem == null ? null : subsystemId);
+					List<UIGroupForList> list = groupService.getGroupsForSubsystems(first, count, getSortFieldIndex(), isAscending(), null, subsystem == null ? null : subsystemId);
 					return list.iterator(); 
 				}
 			}
 
-			public int size() {
+			public long size() {
 				UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
 				List<Long> subsystemId = new ArrayList<Long>();
 				if(subsystem==null){
@@ -111,10 +102,7 @@ public class ListGroupsPage extends BasePage {
 				final UIGroupForList group = item.getModelObject();
 				item.add(new Check<UIGroupForList>("selected", item.getModel(), checkGroup));
 				
-				BookmarkablePageLink<ViewGroupPage> viewGroupLink = 
-					new BookmarkablePageLink<ViewGroupPage>("group-view", ViewGroupPage.class).setParameter("gid", group.getId());
-				viewGroupLink.add(new Label("group-name",group.getName()));
-				item.add(viewGroupLink);
+				item.add(new Label("group-name",group.getName()));
 				item.add(new Label("group-ssys",group.getSubsystemName()));
 				item.add(new Link("group-delete"){
 
@@ -126,13 +114,13 @@ public class ListGroupsPage extends BasePage {
 						
 					}					
 				});
-				
-				item.add(new BookmarkablePageLink("group-edit",
-						EditGroupPage.class).setParameter("gid",group.getId()));
-				item.add(new BookmarkablePageLink("group-actions",
-						ChangeGroupActionsPage.class).setParameter("gid",group.getId()));
-				item.add(new BookmarkablePageLink("group-clone",
-						CloneGroupPage.class).setParameter("sid",group.getId()));
+
+//                ACTIONS
+				item.add(new BookmarkablePageLink("group-edit", EditGroupPage.class, PageParametersBuilder.fromPair("gid", group.getId())));
+				item.add(new BookmarkablePageLink("group-actions", ChangeGroupActionsPage.class, PageParametersBuilder.fromPair("gid",group.getId())));
+				item.add(new BookmarkablePageLink("group-clone", CloneGroupPage.class, PageParametersBuilder.fromPair("sid",group.getId())));
+
+                WicketComponentHelper.clickTableRow(item, ViewGroupPage.class, PageParametersBuilder.fromPair("gid", group.getId()), this);
 			}
 			
 		};

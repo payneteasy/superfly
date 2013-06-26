@@ -1,22 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
@@ -28,6 +11,19 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to change roles assigned to a user.
@@ -46,14 +42,11 @@ public class ChangeUserRolesPage extends BasePage {
 	public ChangeUserRolesPage(PageParameters params) {
 		super(ListUsersPage.class, params);
 
-		final long userId = params.getAsLong("userId");
-		final long subId = params.getAsLong("subId");
+		final long userId = params.get("userId").toLong();
+		final long subId = params.get("subId").toLong();
 
-		UIUser user = userService.getUser(userId);
-		UISubsystem subsystem = subsystemService.getSubsystem(subId);
-
-		add(new LabelValueRow<String>("user-name", new Model(user.getUsername()), "user.name"));
-		add(new LabelValueRow<String>("sub-name", new Model(subsystem.getName()), "user.subsystem"));
+        UIUser user = userService.getUser(userId);
+        UISubsystem subsystem = subsystemService.getSubsystem(subId);
 
 		WebMarkupContainer container = new WebMarkupContainer("container");
 		
@@ -87,6 +80,9 @@ public class ChangeUserRolesPage extends BasePage {
 		Form<Void> form = new Form<Void>("form");
 		container.add(form);
 		final ListRole listRole = new ListRole();
+
+        form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
+        form.add(new LabelValueRow<String>("sub-name", new Model<String>(subsystem.getName()), "user.subsystem"));
 		
 		LabelDropDownChoiceRow<UIRoleForCheckbox> role = new LabelDropDownChoiceRow<UIRoleForCheckbox>("role", listRole, "user.role", notSelectedRole, new RoleChoiceRenderer());
 		role.getDropDownChoice().setRequired(true);
@@ -104,13 +100,13 @@ public class ChangeUserRolesPage extends BasePage {
 					error("Error while changing user roles: " + result.getErrorMessage());
 				}
 				PageParameters parameters = new PageParameters();
-				parameters.add("userId", String.valueOf(userId));
+				parameters.set("userId", String.valueOf(userId));
 				setResponsePage(UserDetailsPage.class, parameters);
 			}
 
 		});
 		final PageParameters parameters = new PageParameters();
-		parameters.add("userId", String.valueOf(userId));
+		parameters.set("userId", String.valueOf(userId));
 		form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class, parameters));
 		
 		WebMarkupContainer noMoreRole = new WebMarkupContainer("no-more-roles-container");

@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.smtp_server;
 
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * @author rpuch

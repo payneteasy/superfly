@@ -1,10 +1,12 @@
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <wicket:panel>
-  <li class="text-field-required" wicket:id="container">
-    <label wicket:id="label-id" class="field-label-text" for="name">Label name</label>
-    <select tabindex="0" wicket:id="field-id" class="field-select">
-      <option value="0">null</option>
-    </select>
-  </li>
+    <div class="control-group" wicket:id="container">
+        <label class="control-label" wicket:id="label-id" for="name">Label name</label>
+        <div class="controls">
+            <select tabindex="0" wicket:id="field-id" >
+                <option value="0">null</option>
+            </select>
+        </div>
+    </div>
 </wicket:panel>
 </html>

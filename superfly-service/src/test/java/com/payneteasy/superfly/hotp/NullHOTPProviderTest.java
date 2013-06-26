@@ -1,15 +1,19 @@
 package com.payneteasy.superfly.hotp;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class NullHOTPProviderTest extends TestCase {
+public class NullHOTPProviderTest {
 	private NullHOTPProvider provider;
-	
+
+    @Before
 	public void setUp() {
 		provider = new NullHOTPProvider();
 	}
-	
+
+    @Test
 	public void testAuthenticate() {
-		assertTrue(provider.authenticate(null, "user", "123456"));
+        Assert.assertTrue(provider.authenticate(null, "user", "123456"));
 	}
 }

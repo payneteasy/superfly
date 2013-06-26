@@ -6,7 +6,7 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebRequest;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
@@ -21,8 +21,8 @@ public class SSOLoginPage extends BaseSSOPage {
 
     public SSOLoginPage() {
         WebRequest request = (WebRequest) getRequest();
-        String subsystemIdentifier = request.getParameter("subsystemIdentifier");
-        String targetUrl = request.getParameter("targetUrl");
+        String subsystemIdentifier = request.getRequestParameters().getParameterValue("subsystemIdentifier").toString();
+        String targetUrl = request.getRequestParameters().getParameterValue("targetUrl").toString();
         boolean ok = true;
         if (!StringUtils.hasText(subsystemIdentifier)) {
             SSOUtils.redirectToLoginErrorPage(this, new Model<String>("No subsystemIdentifier parameter specified"));
@@ -63,7 +63,6 @@ public class SSOLoginPage extends BaseSSOPage {
                 loginData.setSubsystemTitle(subsystem.getTitle());
                 loginData.setSubsystemUrl(subsystem.getSubsystemUrl());
                 getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
-                getRequestCycle().setRedirect(true);
             }
         }
     }

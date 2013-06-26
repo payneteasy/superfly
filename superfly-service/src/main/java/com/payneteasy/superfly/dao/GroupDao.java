@@ -13,7 +13,7 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 public interface GroupDao {
 
 	@AStoredProcedure(name = "ui_get_groups_list")
-	List<UIGroupForList> getGroups(int startFrom, int recordsCount,
+	List<UIGroupForList> getGroups(long startFrom, long recordsCount,
 			int orderFieldNumber, String orderType, String groupNamePrefix,
 			String subsystemIds);
 
@@ -24,7 +24,7 @@ public interface GroupDao {
 	RoutineResult deleteGroup(long id);
 
 	@AStoredProcedure(name = "ui_get_groups_list_count")
-	int getGroupsCount(String groupName, String subsystemIds);
+    long getGroupsCount(String groupName, String subsystemIds);
 
 	@AStoredProcedure(name = "ui_get_group")
 	UIGroupForView getGroupById(long id);
@@ -37,12 +37,12 @@ public interface GroupDao {
 			String actionsToUnlink);
 
 	@AStoredProcedure(name = "ui_get_mapped_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
+            long recordsCount, int orderFieldNumber, String orderType,
 			long groupId, String actionNameSubstring);
 
 	@AStoredProcedure(name = "ui_get_mapped_group_actions_list_count")
-	int getAllGroupMappedActionsCount(long groupId, String actionNameSubstring);
+    long getAllGroupMappedActionsCount(long groupId, String actionNameSubstring);
 
 	@AStoredProcedure(name = "ui_get_unmapped_group_actions_list")
 	List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int startFrom,
@@ -53,12 +53,12 @@ public interface GroupDao {
 	int getAllGroupUnMappedActionsCount(long groupId, String actionNameSubstring);
 
 	@AStoredProcedure(name = "ui_get_all_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupActions(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
+	List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+            long recordsCount, int orderFieldNumber, String orderType,
 			long groupId, String actionNameSubstring);
 
 	@AStoredProcedure(name = "ui_get_all_group_actions_list_count")
-	int getAllGroupActionsCount(long groupId, String actionNameSubstring);
+    long getAllGroupActionsCount(long groupId, String actionNameSubstring);
 
 	@AStoredProcedure(name = "ui_clone_group")
 	RoutineResult cloneGroup(UICloneGroupRequest request);

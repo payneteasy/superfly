@@ -2,27 +2,18 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Change role actions</title>
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
 <div class="cont-box">
-<h4>Add to the role of groups</h4>
-	<form wicket:id="form">
+<h5>Add to the role of groups</h5>
+	<form wicket:id="form" >
+        <input type="submit" value="Apply" wicket:id="save-actions-link" class="btn btn-primary"/>
+        <input type="submit" value="Next" wicket:id="next-link" class="btn"/>
+        <input type="submit" value="Cancel" wicket:id="cancel" class="btn"/>
 		<div wicket:id="group">
-		    <table class="data">
+		    <table class="table table-bordered table-hover">
 		    	<thead>
 		    		<tr>
 			    		<th><input type="checkbox" wicket:id="master-checkbox" /></th>
@@ -43,11 +34,7 @@
 				</tbody>
 			</table>
 		</div>
-		<div>
-		  <input type="submit" value="Apply" wicket:id="save-actions-link" class="button"/>
-		  <input type="submit" value="Next" wicket:id="next-link" class="button"/>
-		  <input type="submit" value="Cancel" wicket:id="cancel" class="button"/>
-		</div>
+
 	</form>
 </div>
 </wicket:extend>

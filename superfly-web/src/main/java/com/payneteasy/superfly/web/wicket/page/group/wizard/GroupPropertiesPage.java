@@ -3,12 +3,13 @@ package com.payneteasy.superfly.web.wicket.page.group.wizard;
 import java.util.List;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.*;
 import org.springframework.security.access.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.group.UIGroup;
@@ -37,15 +38,15 @@ public class GroupPropertiesPage extends BasePage {
 	public GroupPropertiesPage(PageParameters param) {
 		super(ListGroupsPage.class, param);
 
-		final Long groupId = param.getAsLong("gid");
+		final StringValue groupIdValue = param.get("gid");
 
 		String msg_text = "Please, provide new Group name and Subsystem";
 		GroupWizardModel groupModel = new GroupWizardModel();
 
 		// edit || create
-		if (groupId != null) {
+		if (!groupIdValue.isNull()) {
 			msg_text = "Edit Group name";
-			UIGroup group = groupService.getGroupById(groupId);
+			UIGroup group = groupService.getGroupById(groupIdValue.toLong());
 			groupModel.setGroupName(group.getName());
 			List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
 			for (UISubsystemForFilter e : list) {
@@ -64,13 +65,13 @@ public class GroupPropertiesPage extends BasePage {
 				UIGroup group = new UIGroup();
 				group.setName(grModel.getGroupName());
 				group.setSubsystemId(grModel.getGroupSubsystem().getId());
-				if (groupId == null) {
+				if (groupIdValue.isNull()) {
 					groupService.createGroup(group);
 					PageParameters params = new PageParameters();
-					params.add("gid", String.valueOf(groupId == null ? group.getId() : groupId));
+					params.set("gid", group.getId());
 					setResponsePage(GroupActionsPage.class, params);
 				} else {
-					group.setId(groupId);
+					group.setId(groupIdValue.toLong());
 					groupService.updateGroup(group);
 					setResponsePage(ListGroupsPage.class);
 				}

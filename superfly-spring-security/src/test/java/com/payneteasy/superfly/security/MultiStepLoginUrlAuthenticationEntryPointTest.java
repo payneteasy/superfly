@@ -1,29 +1,32 @@
 package com.payneteasy.superfly.security;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import junit.framework.TestCase;
-
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
+import static org.junit.Assert.assertSame;
+
+public class MultiStepLoginUrlAuthenticationEntryPointTest {
 	
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private MultiStepLoginUrlAuthenticationEntryPoint entryPoint;
-	
+
+    @Before
 	public void setUp() {
 		request = EasyMock.createNiceMock(HttpServletRequest.class);
 		response = EasyMock.createMock(HttpServletResponse.class);
@@ -37,11 +40,13 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		EasyMock.expect(request.getScheme()).andReturn("http").anyTimes();
 		EasyMock.expect(request.getServerName()).andReturn("localhost").anyTimes();
 	}
-	
+
+    @After
 	public void tearDown() {
 		SecurityContextHolder.clearContext();
 	}
-	
+
+    @Test
 	public void testBadCredentials() throws Exception {
 		initExpectingRedirect("http://localhost/step-one.html");
 		
@@ -57,7 +62,8 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		response.sendRedirect(url);
 		EasyMock.expectLastCall();
 	}
-	
+
+    @Test
 	public void testStep1() throws Exception {
 		initExpectingRedirect("http://localhost/step-one.html");
 		
@@ -67,11 +73,12 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		InsufficientAuthenticationException ex = new InsufficientAuthenticationException("Insufficient!");
 		ex.setAuthentication(auth);
 		entryPoint.commence(request, response, ex);
-		assertNull(SecurityContextHolder.getContext().getAuthentication());
+        Assert.assertNull(SecurityContextHolder.getContext().getAuthentication());
 		
 		EasyMock.verify(response);
 	}
-	
+
+    @Test
 	public void testStep2() throws Exception {
 		initExpectingRedirect("http://localhost/step-two.html");
 		
@@ -83,7 +90,8 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		
 		EasyMock.verify(response);
 	}
-	
+
+    @Test
 	public void testStep2AuthFromException() throws Exception {
 		initExpectingRedirect("http://localhost/step-two.html");
 		
@@ -93,11 +101,12 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest extends TestCase {
 		Step2Authentication auth = new Step2Authentication();
 		ex.setAuthentication(auth);
 		entryPoint.commence(request, response, ex);
-		assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
+        assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
 		
 		EasyMock.verify(response);
 	}
-		
+
+    @Test
 	public void testStep2FromCompound() throws Exception {
 		initExpectingRedirect("http://localhost/step-two.html");
 		

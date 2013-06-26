@@ -9,10 +9,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import com.payneteasy.superfly.model.ui.user.UIUserForList;
-import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.model.ui.user.*;
 
 /**
  * Service to work with users.
@@ -37,8 +34,8 @@ public interface UserService {
 	 * @return users
 	 */
 	List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
-			Long complectId, Long subsystemId, int startFrom,
-			int recordsCount, int orderFieldNumber, boolean asc);
+			Long complectId, Long subsystemId, long startFrom,
+            long recordsCount, int orderFieldNumber, boolean asc);
 
 	/**
 	 * Returns total count of users satisfy to the given conditions.
@@ -52,7 +49,7 @@ public interface UserService {
 	 * 							(ignored if null)
 	 * @return users count
 	 */
-	int getUsersCount(String userNamePrefix, Long roleId, Long complectId,
+    long getUsersCount(String userNamePrefix, Long roleId, Long complectId,
 			Long subsystemId);
 	
 	/**
@@ -61,7 +58,7 @@ public interface UserService {
 	 * @param userId	ID of the user to return
 	 * @return user of null if not found
 	 */
-	UIUser getUser(long userId);
+	UIUserDetails getUser(long userId);
 	
 	/**
 	 * Creates a user.

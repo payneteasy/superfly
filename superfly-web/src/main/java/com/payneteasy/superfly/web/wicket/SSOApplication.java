@@ -2,21 +2,19 @@ package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLogoutPage;
-import com.payneteasy.superfly.wicket.SessionStoreUrlWebRequestCodingStrategy;
 import org.apache.wicket.Page;
-import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCodingStrategy;
-import org.apache.wicket.request.IRequestCycleProcessor;
+import org.apache.wicket.settings.IRequestCycleSettings;
 
 public class SSOApplication extends BaseApplication {
 
 	@Override
 	protected void customInit() {
         // SSO (i.e., real single sign-on) login
-        mountBookmarkablePage("/login", SSOLoginPage.class);
+        mountBookmarkablePageWithParameters("/login", SSOLoginPage.class);
         // single sign-out
-        mountBookmarkablePage("/logout", SSOLogoutPage.class);
+        mountBookmarkablePageWithParameters("/logout", SSOLogoutPage.class);
+
+        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
 	}
 
 	@Override
@@ -24,15 +22,4 @@ public class SSOApplication extends BaseApplication {
 		return SSOLoginPage.class;
 	}
 
-	@Override
-	protected IRequestCycleProcessor newRequestCycleProcessor() {
-		return new WebRequestCycleProcessor() {
-            @Override
-            public IRequestCodingStrategy newRequestCodingStrategy() {
-                return new SessionStoreUrlWebRequestCodingStrategy(
-                        new WebRequestCodingStrategy());
-            }
-        };
-	}
-    
 }

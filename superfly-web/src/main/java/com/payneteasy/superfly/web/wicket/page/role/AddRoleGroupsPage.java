@@ -1,27 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
@@ -32,6 +10,18 @@ import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class AddRoleGroupsPage extends BasePage {
@@ -41,8 +31,8 @@ public class AddRoleGroupsPage extends BasePage {
 
 	public AddRoleGroupsPage(PageParameters params) {
 		super(ListRolesPage.class, params);
-		final long roleId = params.getAsLong("id", -1);
-		isWizard = params.getAsBoolean("wizard", false);
+		final long roleId = params.get("id").toLong(-1);
+		isWizard = params.get("wizard").toBoolean(false);
 		
 		final ObjectHolder<List<UIGroupForCheckbox>> rolesHolder = new ObjectHolder<List<UIGroupForCheckbox>>();
 		final InitializingModel<Collection<UIGroupForCheckbox>> rolesCheckGroupModel = new InitializingModel<Collection<UIGroupForCheckbox>>() {
@@ -62,8 +52,8 @@ public class AddRoleGroupsPage extends BasePage {
 
 		final IDataProvider<UIGroupForCheckbox> rolesProvider = new BaseDataProvider<UIGroupForCheckbox>() {
 
-			public Iterator<? extends UIGroupForCheckbox> iterator(int first,
-					int count) {
+			public Iterator<? extends UIGroupForCheckbox> iterator(long first,
+                    long count) {
 				List<UIGroupForCheckbox> allGroupsForRole = roleService
 						.getAllRoleGroups(first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
@@ -73,7 +63,7 @@ public class AddRoleGroupsPage extends BasePage {
 				return allGroupsForRole.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				return roleService.getAllRoleGroupsCount(roleId);
 			}
 
@@ -109,8 +99,8 @@ public class AddRoleGroupsPage extends BasePage {
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
 		
 		PageParameters pageParams = new PageParameters();
-		pageParams.add("id", String.valueOf(roleId));
-		pageParams.add("wizard", "true");
+		pageParams.set("id", String.valueOf(roleId));
+		pageParams.set("wizard", "true");
 		BookmarkablePageLink<AddRoleActionsPage> nextLink = new BookmarkablePageLink<AddRoleActionsPage>(
 				"next-link", AddRoleActionsPage.class, pageParams);
 		nextLink.setVisible(isWizard);

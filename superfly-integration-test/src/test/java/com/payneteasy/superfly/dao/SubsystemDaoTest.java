@@ -1,14 +1,18 @@
 package com.payneteasy.superfly.dao;
 
-import java.util.List;
-
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class SubsystemDaoTest extends AbstractDaoTest {
 	private SubsystemDao subsystemDao;
@@ -24,6 +28,7 @@ public class SubsystemDaoTest extends AbstractDaoTest {
         this.smtpServerDao = smtpServerDao;
     }
 
+    @Test
     public void testUpdateSubsystem(){
 		UISubsystem subsystem = getAnySubsystem();
 		subsystem.setName("testName");
@@ -35,30 +40,29 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 	
 	private UISubsystem getAnySubsystem(){
 		long subsystemId=getAnySubsystemId();
-		UISubsystem subsystem = subsystemDao.getSubsystem(subsystemId);
-		return subsystem;
+        return subsystemDao.getSubsystem(subsystemId);
 	}
 	
 	private long getAnySubsystemId(){
 		List<UISubsystemForList> subsystems = subsystemDao.getSubsystems();
 		UISubsystemForList subsystemForList = subsystems.get(0);
-		long subsystemId=subsystemForList.getId();
-		return subsystemId;	
+        return subsystemForList.getId();
 	}
 	
 	private String getAnySubsystemName(){
 		List<UISubsystemForList> subsystems = subsystemDao.getSubsystems();
 		UISubsystemForList subsystemForList = subsystems.get(0);
-		String subsystemName = subsystemForList.getName();
-		return subsystemName;	
+        return subsystemForList.getName();
 	}
-	
+
+    @Test
 	public void testGetSubsystems() {
 		List<UISubsystemForList> list = subsystemDao.getSubsystems();
-		assertNotNull("Subsystems list should not be null", list);
-		assertTrue("Subsystems list should not be empty", list.size() > 0);
+        assertNotNull("Subsystems list should not be null", list);
+        assertTrue("Subsystems list should not be empty", list.size() > 0);
 	}
-	
+
+    @Test
 	public void testCreateSubsystem() {
         UISmtpServer server = new UISmtpServer();
         server.setName("for-addition-to-subsystem");
@@ -90,21 +94,25 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 		subsystemDao.createSubsystem(subsystem);
 		assertNotNull("ID must be generated", subsystem.getId());
 	}
-	
+
+    @Test
 	public void testGetSubsystemsForFilter() {
 		List<UISubsystemForFilter> list = subsystemDao.getSubsystemsForFilter();
 		assertNotNull("Subsystems list should not be null", list);
 		assertTrue("Subsystems list should not be empty", list.size() > 0);
 	}
-	
+
+    @Test
 	public void testGetSubsystem() {
 		subsystemDao.getSubsystem(getAnySubsystemId());
 	}
-	
+
+    @Test
 	public void testGetSubsystemByName() {
 		subsystemDao.getSubsystemByName(getAnySubsystemName());
 	}
-	
+
+    @Test
 	public void testGetSubsystemsAllowingToListUsers() {
 		subsystemDao.getSubsystemsAllowingToListUsers();
 	}

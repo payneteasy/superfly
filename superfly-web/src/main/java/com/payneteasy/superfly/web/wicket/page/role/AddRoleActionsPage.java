@@ -1,31 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Check;
-import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForRole;
@@ -36,6 +10,21 @@ import com.payneteasy.superfly.web.wicket.model.InitializingModel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.io.Serializable;
+import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class AddRoleActionsPage extends BasePage {
@@ -45,8 +34,8 @@ public class AddRoleActionsPage extends BasePage {
 	public AddRoleActionsPage(PageParameters params) {
 		super(ListRolesPage.class, params);
 		
-		final long roleId = params.getAsLong("id", -1);
-		final boolean isWizard = params.getAsBoolean("wizard", false);
+		final long roleId = params.get("id").toLong(-1);
+		final boolean isWizard = params.get("wizard").toBoolean(false);
 		
 		final Filters filters = new Filters();
 		final Form<Filters> filtersForm = new Form<Filters>("filters-form",
@@ -73,7 +62,7 @@ public class AddRoleActionsPage extends BasePage {
 		final IDataProvider<UIActionForCheckboxForRole> actionsProvider = new BaseDataProvider<UIActionForCheckboxForRole>() {
 
 			public Iterator<? extends UIActionForCheckboxForRole> iterator(
-					int first, int count) {
+                    long first, long count) {
 				List<UIActionForCheckboxForRole> allRoleActions = roleService
 						.getAllRoleActions(first, count,
 								DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
@@ -84,7 +73,7 @@ public class AddRoleActionsPage extends BasePage {
 				return allRoleActions.iterator();
 			}
 
-			public int size() {
+			public long size() {
 				return roleService.getAllRoleActionsCount(roleId, filters
 						.getActionNameSubstring());
 			}
@@ -124,8 +113,8 @@ public class AddRoleActionsPage extends BasePage {
 		form.add(new BookmarkablePageLink<Page>("cancel", ListRolesPage.class));
 		
 		PageParameters pageParams = new PageParameters();
-		pageParams.add("id", String.valueOf(roleId));
-		pageParams.add("wizard", "true");
+		pageParams.set("id", String.valueOf(roleId));
+		pageParams.set("wizard", "true");
 		BookmarkablePageLink<AddRoleGroupsPage> backLink = new BookmarkablePageLink<AddRoleGroupsPage>(
 				"back-link", AddRoleGroupsPage.class, pageParams);
 		backLink.setVisible(isWizard);

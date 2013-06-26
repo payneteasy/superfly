@@ -21,6 +21,8 @@ public class TestPanel extends Panel {
 	
 	@SpringBean
 	private EmailService emailService;
+
+    private RequiredTextField<String> addressField;
 	
 	public TestPanel(String id, final long serverId, final ModalWindow window,
 			final FeedbackPanel feedbackPanel) {
@@ -30,7 +32,9 @@ public class TestPanel extends Panel {
 		add(form);
 		
 		final IModel<String> addressModel = new Model<String>();
-		form.add(new RequiredTextField<String>("address", addressModel));
+        addressField = new RequiredTextField<String>("address", addressModel);
+        addressField.setOutputMarkupId(true);
+        form.add(addressField);
 		
 		form.add(new AjaxLink<Void>("cancel-link") {
 			@Override
@@ -42,20 +46,24 @@ public class TestPanel extends Panel {
 			@Override
 			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				try {
-					emailService.sendTestMesage(serverId, addressModel.getObject());
+					emailService.sendTestMessage(serverId, addressModel.getObject());
 					info("Test message sent");
-					target.addComponent(feedbackPanel);
+					target.add(feedbackPanel);
 				} catch (RuntimeException e) {
 					logger.error(e.getMessage(), e);
 					error(e.getMessage());
-					target.addComponent(feedbackPanel);
+					target.add(feedbackPanel);
 				}
 				window.close(target);
 			}
 			
 			public void onError(AjaxRequestTarget target, Form<?> form) {
-				target.addComponent(feedbackPanel);
+				target.add(feedbackPanel);
 			}
 		});
 	}
+
+    public RequiredTextField<String> getAddressField() {
+        return addressField;
+    }
 }

@@ -1,5 +1,13 @@
 package com.payneteasy.superfly.web.security;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.authorization.Action;
+import org.apache.wicket.authorization.IAuthorizationStrategy;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.request.component.IRequestableComponent;
+import org.apache.wicket.util.io.IOUtils;
+import org.springframework.security.access.annotation.Secured;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,15 +15,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.authorization.Action;
-import org.apache.wicket.authorization.IAuthorizationStrategy;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.springframework.security.access.annotation.Secured;
-
 public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrategy {
-	
-	private static final String DEV_FILE_PATH = "src/main/resources/components-security.properties";
+
+    private static final String DEV_FILE_PATH = "src/main/resources/components-security.properties";
 	private static final String PROD_FILE_PATH = "components-security.properties";
 	
 	/**
@@ -23,10 +25,12 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
 	 */
 	private Properties cachedProperties = null;
 
-    public <T extends Component> boolean isInstantiationAuthorized(Class<T> componentClass) {
+    @Override
+    public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
         return true;
     }
 
+    @Override
     public boolean isActionAuthorized(Component component, Action action) {
         boolean ret ;
         String path = component.getPage().getClass().getSimpleName()+"."+component.getId()+"."+action.getName();
@@ -89,13 +93,7 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
 		} catch (IOException e) {
 		    throw new IllegalStateException("Error reading from file " +file+": "+e.getMessage());
 		} finally {
-		    try {
-		        if (in != null) {
-					in.close();
-				}
-		    } catch (IOException e) {
-		        throw new IllegalStateException("Error closing file " +file+": "+e.getMessage(), e);
-		    }
+            IOUtils.closeQuietly(in);
 		}
     }
 }

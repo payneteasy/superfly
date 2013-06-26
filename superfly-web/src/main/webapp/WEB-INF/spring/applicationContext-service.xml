@@ -228,6 +228,7 @@
 	<bean id="emailService" class="com.payneteasy.superfly.email.impl.EmailServiceImpl">
 		<property name="velocityEngine" ref="velocityEngine"/>
         <property name="javaMailSenderPool" ref="javaMailSenderPool"/>
+        <property name="enableHotpEmails" value="#{contextParameters['superfly-enable-hotp-emails']}"/>
 	</bean>
 
 	<bean id="javaMailSenderPool" class="com.payneteasy.superfly.service.impl.JavaMailSenderPoolImpl">

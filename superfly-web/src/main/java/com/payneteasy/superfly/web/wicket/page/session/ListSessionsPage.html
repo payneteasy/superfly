@@ -2,33 +2,21 @@
 <html xmlns:wicket>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
 <title>Sessions</title>
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
 </head>
 <body>
 <wicket:extend>
 	<h3>Invalid sessions</h3>
-	<table class="data">
+	<table class="table table-bordered table-hover">
 		<thead>
-			<tr>
+			<tr class="s-table-head">
 				<th>Session ID</th>
 				<th>User</th>
 				<th>Callback URI</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="invalid-sessions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+			<tr wicket:id="invalid-sessions">
 				<td>
 					<span wicket:id="session-id">12345</span>
 				</td>
@@ -41,21 +29,20 @@
 			</tr>
 		</tbody>
 	</table>
-	<div>
-		<input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="button"/>
-	</div>
-	
-	<h3>Expired sessions</h3>
-	<table class="data">
+
+	<input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="btn btn-primary"/>
+
+    <h3>Expired sessions</h3>
+	<table class="table table-bordered table-hover">
 		<thead>
-			<tr>
+			<tr class="s-table-head">
 				<th>Session ID</th>
 				<th>User</th>
 				<th>Callback URI</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="expired-sessions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+			<tr wicket:id="expired-sessions">
 				<td>
 					<span wicket:id="session-id">12345</span>
 				</td>
@@ -68,9 +55,7 @@
 			</tr>
 		</tbody>
 	</table>
-	<div>
-		<input type="submit" value="Delete expired sessions" wicket:id="delete-expired-sessions-link" class="button"/>
-	</div>
+    <input type="submit" value="Delete expired sessions" wicket:id="delete-expired-sessions-link" class="btn btn-primary"/>
 </wicket:extend>
 </body>
 </html>

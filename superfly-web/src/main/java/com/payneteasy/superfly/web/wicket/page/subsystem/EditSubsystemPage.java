@@ -4,7 +4,7 @@ import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -32,7 +32,7 @@ public class EditSubsystemPage extends BasePage {
 	public EditSubsystemPage(PageParameters parameters) {
 		super(ListSubsystemsPage.class, parameters);
 		
-		long subsystemId = parameters.getAsLong("id", -1L);
+		long subsystemId = parameters.get("id").toLong(-1L);
 		final UISubsystem subsystem = subsystemService.getSubsystem(subsystemId);
 		
 		Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<UISubsystem>(subsystem)) {

@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -31,7 +31,7 @@ public class ResetPasswordUserPage extends BasePage {
 	public ResetPasswordUserPage(final PageParameters parameters) {
 		super(ListUsersPage.class, parameters);
 		
-		final long userId = parameters.getAsLong("userId");
+		final long userId = parameters.get("userId").toLong();
 		final UIUser user = userService.getUser(userId);
 //		System.out.println("POLICY NAME "+resetPasswordStrategy.getPolicyName());
 		Form<Void> form = new Form<Void>("form");
@@ -51,7 +51,7 @@ public class ResetPasswordUserPage extends BasePage {
 
 			public void onClick(AjaxRequestTarget aTarget) {
 				setNewPassword(passwordGenerator.generate());
-				aTarget.addComponent(label);
+				aTarget.add(label);
 			}
 		});
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));

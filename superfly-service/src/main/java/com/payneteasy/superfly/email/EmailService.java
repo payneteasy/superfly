@@ -36,5 +36,5 @@ public interface EmailService {
 	 * @param serverId	id of the server to test
 	 * @throws RuntimeMessagingException
 	 */
-	void sendTestMesage(long serverId, String email) throws RuntimeMessagingException;
+	void sendTestMessage(long serverId, String email) throws RuntimeMessagingException;
 }

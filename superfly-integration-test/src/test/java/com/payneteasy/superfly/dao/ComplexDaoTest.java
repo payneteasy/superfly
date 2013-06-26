@@ -7,7 +7,9 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
-import junit.framework.Assert;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -52,6 +54,7 @@ public class ComplexDaoTest extends AbstractDaoTest {
         this.actionDao = actionDao;
     }
 
+    @Before
     public void setUp() {
         if (!created) {
             subsystem = new UISubsystem();
@@ -87,6 +90,7 @@ public class ComplexDaoTest extends AbstractDaoTest {
         }
     }
 
+    @Test
     public void test() {
         SSOSession ssoSession = sessionDao.createSSOSession(user.getUsername(), "abcdef");
         Assert.assertTrue(ssoSession.getId() > 0);

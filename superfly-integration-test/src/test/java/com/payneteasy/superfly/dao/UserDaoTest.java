@@ -9,9 +9,16 @@ import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class UserDaoTest extends AbstractDaoTest {
 
@@ -39,9 +46,8 @@ public class UserDaoTest extends AbstractDaoTest {
         this.roleDao = roleDao;
     }
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
-
         if (!created) {
        		subsystem = new UISubsystem();
        		subsystem.setName("subsystem-for-user");
@@ -74,17 +80,20 @@ public class UserDaoTest extends AbstractDaoTest {
        	}
     }
 
+    @Test
 	public void testAddSubsystemWithRole() {
         RoutineResult result = userDao.addSubsystemWithRole(1L, role.getRoleId());
         assertRoutineResult(result);
 	}
 
+    @Test
 	public void testAuthenticate() {
 		AuthSession session = userDao.authenticate("user-1", "abc",
 				subsystem.getName(), null, null);
-		assertNotNull("Must authenticate successfully", session);
+        assertNotNull("Must authenticate successfully", session);
 	}
 
+    @Test
 	public void testGetUsersAndActions() {
         // TODO
 //		List<UserWithActions> users = userDao.getUsersAndActions("superfly");
@@ -92,27 +101,31 @@ public class UserDaoTest extends AbstractDaoTest {
 //		assertTrue("Must authenticate successfully", users.size() > 0);
 	}
 
+    @Test
 	public void testGetUsers() {
 		List<UIUserForList> users;
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
 				"asc", null, null, null, null);
-		assertNotNull("List cannot be null", users);
+        assertNotNull("List cannot be null", users);
 		users = userDao.getUsers(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
 				"asc", "someprefix", 1L, 2L, 1L);
-		assertNotNull("List cannot be null", users);
+        assertNotNull("List cannot be null", users);
 	}
 
+    @Test
 	public void testGetUsersCount() {
-		int count = userDao.getUsersCount(null, null, null, null);
-		assertTrue("Must get some users", count > 0);
+		long count = userDao.getUsersCount(null, null, null, null);
+        assertTrue("Must get some users", count > 0);
 		userDao.getUsersCount("someprefix", 1L, 2L, 1L);
 	}
 
+    @Test
 	public void testGetUser() {
 		UIUser user = userDao.getUser(-111L);
-		assertNull("Must not find a user with ID=111", user);
+        Assert.assertNull("Must not find a user with ID=111", user);
 	}
 
+    @Test
 	public void testRegisterUser() {
 		UserRegisterRequest registerUser = new UserRegisterRequest();
 		registerUser.setUsername("testRegName");
@@ -129,6 +142,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		assertRoutineResult(result);
 	}
 
+    @Test
 	public void testCreateUser() {
 		UIUserForCreate user = new UIUserForCreate();
 		user.setUsername("testusercreate1");
@@ -150,6 +164,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		 */
 	}
 
+    @Test
 	public void testUpdateUser() {
 		UIUser user = getAnyUser();
 		user.setPassword("password");
@@ -160,18 +175,17 @@ public class UserDaoTest extends AbstractDaoTest {
 
 	private UIUser getAnyUser() {
 		long userId = getAnyUserId();
-		UIUser user = userDao.getUser(userId);
-		return user;
+        return userDao.getUser(userId);
 	}
 
 	private long getAnyUserId() {
 		List<UIUserForList> users = userDao.getUsers(0, 1, 1, "asc", null,
 				null, null, null);
 		UIUserForList userForList = users.get(0);
-		long userId = userForList.getId();
-		return userId;
+        return userForList.getId();
 	}
 
+    @Test
 	public void testDeleteUser() {
 		long userId = getAnyUserId();
 		RoutineResult result = userDao.deleteUser(userId);
@@ -181,18 +195,21 @@ public class UserDaoTest extends AbstractDaoTest {
 		// assertNull("User must not be found as it has been deleted", user);
 	}
 
+    @Test
 	public void testLockUser() {
 		long userId = getAnyUserId();
 		RoutineResult result = userDao.lockUser(userId);
 		assertRoutineResult(result);
 	}
 
+    @Test
 	public void testUnlockUser() {
 		long userId = getAnyUserId();
 		RoutineResult result = userDao.unlockUser(userId);
 		assertRoutineResult(result);
 	}
 
+    @Test
 	public void testCloneUser() {
 		long userId = getAnyUserId();
 		UICloneUserRequest request = new UICloneUserRequest();
@@ -209,36 +226,42 @@ public class UserDaoTest extends AbstractDaoTest {
 		assertNotNull("User must be cloned", newUser);
 	}
 
+    @Test
 	public void testGetMappedUserRoles() {
 		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
 		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
 		userDao.getMappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
 	}
 
+    @Test
 	public void testGetAllUserRoles() {
 		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
 		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
 		userDao.getAllUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
 	}
 
+    @Test
 	public void testGetAllUserRolesCount() {
 		userDao.getAllUserRolesCount(getAnyUserId(), null);
 		userDao.getAllUserRolesCount(getAnyUserId(), "");
 		userDao.getAllUserRolesCount(getAnyUserId(), "1,2,3");
 	}
 
+    @Test
 	public void testGetUnmappedUserRoles() {
 		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), null);
 		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "");
 		userDao.getUnmappedUserRoles(0, 10, 1, "asc", getAnyUserId(), "1,2,3");
 	}
 
+    @Test
 	public void testGetUnmappedUserRolesCount() {
 		userDao.getUnmappedUserRolesCount(getAnyUserId(), null);
 		userDao.getUnmappedUserRolesCount(getAnyUserId(), "");
 		userDao.getUnmappedUserRolesCount(getAnyUserId(), "1,2,3");
 	}
 
+    @Test
 	public void testChangeUserRoles() {
 		long userId = getAnyUserId();
 		userDao.changeUserRoles(userId, "1,2,3", "4,5,6", "1,2");
@@ -246,6 +269,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.changeUserRoles(userId, "", null, null);
 	}
 
+    @Test
 	public void testGetAllUserActions() {
 		userDao.getAllUserActions(0, 10, 1, "asc", getAnyUserId(), null, null);
 		// the following looks for 'admin'
@@ -253,12 +277,14 @@ public class UserDaoTest extends AbstractDaoTest {
 				"dmi");
 	}
 
+    @Test
 	public void testGetAllUserActionsCount() {
 		userDao.getAllUserActionsCount(getAnyUserId(), null, null);
 		// the following looks for 'admin'
 		userDao.getAllUserActionsCount(getAnyUserId(), "1,2,3", "dmi");
 	}
 
+    @Test
 	public void testGetUnmappedUserActions() {
 		userDao.getUnmappedUserActions(0, 10, 1, "asc", getAnyUserId(), null, 1,
 				null);
@@ -267,12 +293,14 @@ public class UserDaoTest extends AbstractDaoTest {
 				"1,2,3", 1, "dmi");
 	}
 
+    @Test
 	public void testGetUnmappedUserActionsCount() {
 		userDao.getUnmappedUserActionsCount(getAnyUserId(), null, 1, null);
 		// the following looks for 'admin'
 		userDao.getUnmappedUserActionsCount(getAnyUserId(), "1,2,3", 1, "dmi");
 	}
 
+    @Test
 	public void testChangeUserRoleActions() {
 		long userId = getAnyUserId();
 		userDao.changeUserRoleActions(userId, "1,2,3", "4,5,6");
@@ -280,6 +308,7 @@ public class UserDaoTest extends AbstractDaoTest {
 		userDao.changeUserRoleActions(userId, "", null);
 	}
 
+    @Test
 	public void testGetUserRoleActions() {
 		long userId = getAnyUserId();
 		userDao.getUserRoleActions(userId, null, null, null);
@@ -289,6 +318,7 @@ public class UserDaoTest extends AbstractDaoTest {
 				"this substring is expected to not exist");
 	}
 
+    @Test
     public void testGetUserLoginStatus() {
    		String status;
         status = userDao.getUserLoginStatus("user-1", "abc",

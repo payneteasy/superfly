@@ -1,50 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:wicket>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="css/main.css" />
-<title>Users</title>
-<wicket:head>
-<script type="text/javascript">
-   function highlight(obj) {
-      obj.prevClassName = obj.className;
-      obj.className = 'highlight';
-   }
-   function rollback(obj) {
-      obj.className = obj.prevClassName;
-   }
-</script> 
-</wicket:head>
+    <title>Users</title>
 </head>
 <body>
 <wicket:extend>
+
+    <div class="s-legend-btn">
+        <input type="submit" wicket:id="add-user" value="Add User" class="btn btn-primary"/>
+    </div>
+
+
     <div wicket:id="reset-hotp-window"></div>
-	<div class="filters">
-		<form wicket:id="filters-form">
-			<span>Username prefix: <input wicket:id="username-filter"/></span>
-			<span>Role:
-				<select wicket:id="role-filter">
-					<option>Role 1</option>
-					<option>Role 2</option>
-					<option>Role 3</option>
-				</select>
-			</span>
-			<span>Subsystem:
-				<select wicket:id="subsystem-filter">
-					<option>Subsystem 1</option>
-					<option>Subsystem 2</option>
-					<option>Subsystem 3</option>
-				</select>
-			</span>
-			<input type="submit" value="Filter" class="button"/>
+
+    <!--FILTER-->
+	<div class="well s-filter">
+		<form wicket:id="filters-form" class="form-inline">
+            <ul class="s-filter-items">
+                <li>
+                    <input wicket:id="username-filter" type="text" placeholder="Username prefix"/>
+                </li>
+                <li>
+                    <span>Role:</span>
+                    <select wicket:id="role-filter">
+                        <option>Role 1</option>
+                        <option>Role 2</option>
+                        <option>Role 3</option>
+                    </select>
+                </li>
+                <li>
+                    <span>Subsystem:</span>
+                    <select wicket:id="subsystem-filter">
+                        <option>Subsystem 1</option>
+                        <option>Subsystem 2</option>
+                        <option>Subsystem 3</option>
+                    </select>
+                </li>
+                <li>
+                    <input type="submit" value="Filter" class="btn"/>
+                </li>
+            </ul>
 		</form>
 	</div>
-	<table class="data">
+
+    <!--TABLE-->
+	<table class="table table-bordered table-hover">
 		<thead>
-			<tr>
+			<tr class="s-table-head">
 				<th><a wicket:id="order-by-username">Username</a></th>
 				<th>Email</th>
-				<th><a wicket:id="order-by-locked">Locked</a></th>
 				<th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
 				<th><a wicket:id="order-by-last-login-date">Last login date</a></th>
 				<th title="Next OTP counter">NC</th>
@@ -52,15 +56,12 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr wicket:id="usersList" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+			<tr wicket:id="usersList">
 				<td>
-					<a href="#" wicket:id="view-user"><span wicket:id="user-name">bond</span></a>
+					<span wicket:id="user-name">bond</span>
 				</td>
 				<td>
 				    <span wicket:id="email">email</span>
-				</td>
-				<td>
-					<a href="#" wicket:id="switch-locked-status"><span wicket:id="locked-status">Yes</span></a>
 				</td>
 				<td align="center">
 					<span wicket:id="logins-failed">777</span>
@@ -71,12 +72,17 @@
 				<td align="center">
 					<span wicket:id="next-otp-counter">3</span>
 				</td>
-				<td>
-					<a href="#" wicket:id="edit-user">Edit</a>
-					<a href="#" wicket:id="clone-user">Clone</a>
-					<a href="#" wicket:id="reset-password-link" onclick="return confirm('Are you sure you want to reset password?');">Reset password</a>
-					<a href="#" wicket:id="download-hotp-table">OTP table</a>
-					<a href="#" wicket:id="reset-table-link" onclick="return confirm('Are you sure you want to reset OTP table?');">Reset table</a>
+				<td class="s-td-action">
+                    <div class="dropdown s-dropdown">
+                        <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
+                        <ul class="dropdown-menu s-dropdown-menu">
+                            <li><a href="#" wicket:id="edit-user">Edit</a></li>
+                            <li><a href="#" wicket:id="clone-user">Clone</a></li>
+                            <li><a href="#" wicket:id="reset-password-link">Reset password</a></li>
+                            <li><a href="#" wicket:id="download-hotp-table">OTP table</a></li>
+                            <li><a href="#" wicket:id="reset-table-link">Reset table</a></li>
+                        </ul>
+                    </div>
 				</td>
 			</tr>
 			<tr>
@@ -84,8 +90,7 @@
 			</tr>
 		</tbody>
 	</table>
-	
-	<input type="submit" wicket:id="add-user" value="Add" class="button"/>
+
 </wicket:extend>
 </body>
 </html>

@@ -1,18 +1,21 @@
 package com.payneteasy.superfly.spring;
 
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class AccountPolicyFactoryBeanTest extends TestCase {
+public class AccountPolicyFactoryBeanTest {
 	private AccountPolicyFactoryBean factoryBean;
-	
+
+    @Before
 	public void setUp() {
 		factoryBean = new AccountPolicyFactoryBean();
 	}
-	
+
+    @Test
 	public void testNone() throws Exception {
 		factoryBean.setPolicyName("none");
-		assertTrue(factoryBean.getObject() instanceof SimpleAccountPolicy);
+        Assert.assertTrue(factoryBean.getObject() instanceof SimpleAccountPolicy);
 	}
 }

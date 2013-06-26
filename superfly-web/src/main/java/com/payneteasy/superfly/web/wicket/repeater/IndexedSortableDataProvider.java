@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
@@ -16,7 +17,7 @@ import org.apache.wicket.model.Model;
  * @author Roman Puchkovskiy
  * @param <T>	provided type
  */
-public abstract class IndexedSortableDataProvider<T extends Serializable> extends SortableDataProvider<T> {
+public abstract class IndexedSortableDataProvider<T extends Serializable> extends SortableDataProvider<T, String> {
 	private Map<String, Integer> fieldNameToIndex;
 	
 	/**
@@ -32,7 +33,7 @@ public abstract class IndexedSortableDataProvider<T extends Serializable> extend
 		for (int i = 0; i < sortFields.length; i++) {
 			fieldNameToIndex.put(sortFields[i], i + 1);
 		}
-		setSort(sortFields[0], true);
+		setSort(sortFields[0], SortOrder.ASCENDING);
 	}
 
 	/**
