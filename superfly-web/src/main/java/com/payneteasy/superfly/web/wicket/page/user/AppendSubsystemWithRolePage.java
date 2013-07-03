@@ -23,10 +23,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.*;
@@ -39,9 +39,8 @@ public class AppendSubsystemWithRolePage extends BasePage {
 	private RoleService roleService;
 	@SpringBean
 	private SubsystemService subsystemService;
-	private boolean isVisible=true;
 
-	public AppendSubsystemWithRolePage(PageParameters params) {
+    public AppendSubsystemWithRolePage(PageParameters params) {
 		super(ListUsersPage.class, params);
 		final long userId = params.get("userId").toLong();
 		
@@ -71,11 +70,12 @@ public class AppendSubsystemWithRolePage extends BasePage {
 				newSub.add(old);
 			}
 		}
-		
+
+        boolean visible = true;
         if(newSub.isEmpty()){
-        	isVisible=false;
+        	visible =false;
         }
-        container.setVisible(isVisible);
+        container.setVisible(visible);
         
 		for (UISubsystemForList sub : newSub) {
 			List<Long> listIdsub = new ArrayList<Long>();
@@ -85,7 +85,7 @@ public class AppendSubsystemWithRolePage extends BasePage {
 		}
 
 		// models for DropDrownChoice
-		IModel<List<? extends UISubsystemForList>> makeChoices = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
+		IModel<List<? extends UISubsystemForList>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
 			@Override
 			public List<UISubsystemForList> getObject() {
 				Set<UISubsystemForList> keys = modelsMap.keySet();
@@ -94,9 +94,9 @@ public class AppendSubsystemWithRolePage extends BasePage {
 			}
 
 		};
-		final IModel<List<? extends UIRoleForList>> modelChoices = new AbstractReadOnlyModel<List<? extends UIRoleForList>>() {
+		final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
 			@Override
-			public List<UIRoleForList> getObject() {
+			public List<UIRoleForList> load() {
 				List<UIRoleForList> models = modelsMap.get(subsystem);
 				if (models == null) {
 					models = Collections.emptyList();
@@ -112,20 +112,21 @@ public class AppendSubsystemWithRolePage extends BasePage {
         UIUser user = userService.getUser(userId);
         form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
 
-		LabelDropDownChoiceRow<UISubsystemForList> makes = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", makeChoices, new SubsystemInCreateUserChoiceRender());
-		makes.getDropDownChoice().setRequired(true);
+		LabelDropDownChoiceRow<UISubsystemForList> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", subsystemsModel, new SubsystemInCreateUserChoiceRender());
+		subsystemsRow.getDropDownChoice().setRequired(true);
 		
-		final LabelDropDownChoiceRow<UIRoleForList> models = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", modelChoices, new RoleInCreateUserChoiceRender());
-		models.getDropDownChoice().setRequired(true);
-		models.setOutputMarkupId(true);
+		final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
+		rolesRow.getDropDownChoice().setRequired(true);
+		rolesRow.setOutputMarkupId(true);
 		
-		form.add(makes);
-		form.add(models);
-		makes.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
+		form.add(subsystemsRow);
+		form.add(rolesRow);
+		subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
-				target.add(models);
+                rolesModel.detach();
+				target.add(rolesRow);
 			}
 			
 		});
@@ -133,7 +134,7 @@ public class AppendSubsystemWithRolePage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				UIRoleForList role = models.getDropDownChoice().getModelObject();
+				UIRoleForList role = rolesRow.getDropDownChoice().getModelObject();
 				userService.addSubsystemWithRole(userId, role.getId());
 				PageParameters param = new PageParameters();
 				param.set("userId", String.valueOf(userId));
@@ -146,7 +147,7 @@ public class AppendSubsystemWithRolePage extends BasePage {
 		form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class, param));
 		
 		WebMarkupContainer noMoreSubContainer = new WebMarkupContainer("no-more-sub-container");
-		noMoreSubContainer.setVisible(!isVisible);
+		noMoreSubContainer.setVisible(!visible);
 		noMoreSubContainer.add(new BookmarkablePageLink<Page>("back", UserDetailsPage.class, param));
 		add(noMoreSubContainer);
 	}
