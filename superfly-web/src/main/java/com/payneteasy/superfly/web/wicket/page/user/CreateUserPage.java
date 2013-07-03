@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
@@ -65,9 +66,9 @@ public class CreateUserPage extends BasePage {
 			}
 
 		};
-		final IModel<List<? extends UIRoleForList>> rolesModel = new AbstractReadOnlyModel<List<? extends UIRoleForList>>() {
+		final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
 			@Override
-			public List<UIRoleForList> getObject() {
+			public List<UIRoleForList> load() {
 				List<UIRoleForList> models = subsystemsToRoles.get(subsystem);
 				if (models == null) {
 					models = Collections.emptyList();
@@ -101,22 +102,23 @@ public class CreateUserPage extends BasePage {
 		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
 		form.add(publicKeyField);
 
-		LabelDropDownChoiceRow<UISubsystemForFilter> makes = new LabelDropDownChoiceRow<UISubsystemForFilter>(
+		LabelDropDownChoiceRow<UISubsystemForFilter> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForFilter>(
 				"subsystem", this, "user.create.choice-subsystem",
 				subsystemsModel, new SubsystemChoiceRenderer());
-		makes.getDropDownChoice().setRequired(true);
+		subsystemsRow.getDropDownChoice().setRequired(true);
 		
-		final LabelDropDownChoiceRow<UIRoleForList> models = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
-		models.getDropDownChoice().setRequired(true);
-		models.setOutputMarkupId(true);
+		final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
+		rolesRow.getDropDownChoice().setRequired(true);
+		rolesRow.setOutputMarkupId(true);
 		
-		form.add(makes);
-		form.add(models);
-		makes.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
+		form.add(subsystemsRow);
+		form.add(rolesRow);
+		subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
-				target.add(models);
+                rolesModel.detach();
+				target.add(rolesRow);
 			}
 			
 		});
@@ -133,7 +135,7 @@ public class CreateUserPage extends BasePage {
 
 			@Override
 			public void onSubmit() {
-				UIRoleForList role = models.getDropDownChoice().getModelObject();
+				UIRoleForList role = rolesRow.getDropDownChoice().getModelObject();
 				user.setRoleId(role.getId());
                 UserCreationResult result = userService.createUser(user, subsystem == null ? null : subsystem.getName());
                 if (result.getMailSendError() != null) {
