@@ -206,7 +206,9 @@ public class UserServiceImpl implements UserService {
 
 		RoutineResult result = createUserStrategy.cloneUser(request);
         UserCloningResult userCloningResult = new UserCloningResult();
-        userCloningResult.setCloneId(request.getId());
+        if (request.getId() != null) {
+            userCloningResult.setCloneId(request.getId());
+        }
 
 		if (result.isOk()) {
             try {
