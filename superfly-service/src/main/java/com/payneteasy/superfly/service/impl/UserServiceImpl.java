@@ -192,9 +192,9 @@ public class UserServiceImpl implements UserService {
 		return newPassword;
 	}
 
-	public Long cloneUser(long templateUserId, String newUsername,
+	public UserCloningResult cloneUser(long templateUserId, String newUsername,
 			String newPassword, String newEmail, String newPublicKey,
-            String subsystemForEmailIdentifier) throws MessageSendException {
+            String subsystemForEmailIdentifier) {
 		UICloneUserRequest request = new UICloneUserRequest();
 		request.setTemplateUserId(templateUserId);
 		request.setUsername(newUsername);
@@ -205,13 +205,19 @@ public class UserServiceImpl implements UserService {
 		request.setPublicKey(newPublicKey);
 
 		RoutineResult result = createUserStrategy.cloneUser(request);
+        UserCloningResult userCloningResult = new UserCloningResult();
+        userCloningResult.setCloneId(request.getId());
 
 		if (result.isOk()) {
-			hotpService.sendTableIfSupported(subsystemForEmailIdentifier, request.getId());
-			notificationService.notifyAboutUsersChanged();
+            try {
+                hotpService.sendTableIfSupported(subsystemForEmailIdentifier, request.getId());
+            } catch (MessageSendException e) {
+                userCloningResult.setMailSendError(e.getMessage());
+            }
+            notificationService.notifyAboutUsersChanged();
 		}
 		loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
-		return request.getId();
+		return userCloningResult;
 	}
 
 	public List<UIRoleForCheckbox> getAllUserRoles(long userId,

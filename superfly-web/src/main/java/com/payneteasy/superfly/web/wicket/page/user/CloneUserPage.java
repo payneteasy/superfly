@@ -1,9 +1,9 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UserCloningResult;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -14,11 +14,11 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 import org.apache.wicket.Page;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
@@ -51,13 +51,12 @@ public class CloneUserPage extends BasePage {
 		Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
 			@Override
 			protected void onSubmit() {
-				try {
-					userService.cloneUser(userId, user.getUsername(), user.getPassword(),
-                            user.getEmail(), user.getPublicKey(),
-                            user.getSubsystemForEmail() == null ? null : user.getSubsystemForEmail().getName());
-				} catch (MessageSendException e) {
-					error("Could not send a message: " + e.getMessage());
-				}
+                UserCloningResult result = userService.cloneUser(userId, user.getUsername(), user.getPassword(),
+                        user.getEmail(), user.getPublicKey(),
+                        user.getSubsystemForEmail() == null ? null : user.getSubsystemForEmail().getName());
+                if (result.getMailSendError() != null) {
+                    warn("Could not send a message: " + result.getMailSendError());
+                }
 				getRequestCycle().setResponsePage(ListUsersPage.class);
 				info("User cloned: " + oldUser.getUsername() + " to " + user.getUsername());
 			}

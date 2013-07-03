@@ -109,8 +109,8 @@ public interface UserService {
 	 * @return new user ID
 	 * @throws MessageSendException 
 	 */
-	Long cloneUser(long templateUserId, String newUsername, String newPassword,
-			String newEmail, String newPublicKey, String subsystemForEmailIdentifier) throws MessageSendException;
+	UserCloningResult cloneUser(long templateUserId, String newUsername, String newPassword,
+			String newEmail, String newPublicKey, String subsystemForEmailIdentifier);
 	
 	/**
 	 * Returns a list of roles for the given user. Each role is 'mapped' or
