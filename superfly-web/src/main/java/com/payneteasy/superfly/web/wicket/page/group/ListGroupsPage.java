@@ -183,11 +183,6 @@ public class ListGroupsPage extends BasePage {
 					}
 					setResponsePage(ListGroupsPage.class);
 				}
-
-				public void onCancel() {
-					getPage().get("confirmPanel").replaceWith(
-							new EmptyPanel("confirmPanel"));
-				}
 			});
 	}
 	

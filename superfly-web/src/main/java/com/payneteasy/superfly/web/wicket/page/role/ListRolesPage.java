@@ -138,11 +138,6 @@ public class ListRolesPage extends BasePage {
 										}
 										this.getPage().setResponsePage(ListRolesPage.class);
 									}
-
-									public void onCancel() {
-										this.getPage().get("confirmPanel").replaceWith(
-												new EmptyPanel("confirmPanel"));
-									}
 								});
 					}
 				});
@@ -184,11 +179,6 @@ public class ListRolesPage extends BasePage {
 									info("Deleted roles; please be aware that some sessions could be invalidated");
 								}
 								this.getPage().setResponsePage(ListRolesPage.class);
-							}
-
-							public void onCancel() {
-								this.getPage().get("confirmPanel").replaceWith(
-										new EmptyPanel("confirmPanel"));
 							}
 						});
 			}

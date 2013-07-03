@@ -103,15 +103,6 @@ public class ListSubsystemsPage extends BasePage {
 										this.getPage().setResponsePage(
 												ListSubsystemsPage.class);
 									}
-
-									public void onCancel() {
-										this
-												.getPage()
-												.get("confirmPanel")
-												.replaceWith(
-														new EmptyPanel(
-																"confirmPanel"));
-									}
 								});
 					}
 
@@ -155,11 +146,6 @@ public class ListSubsystemsPage extends BasePage {
 								}
 								this.getPage().setResponsePage(
 										ListSubsystemsPage.class);
-							}
-
-							public void onCancel() {
-								this.getPage().get("confirmPanel").replaceWith(
-										new EmptyPanel("confirmPanel"));
 							}
 						});
 			}
