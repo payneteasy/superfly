@@ -66,7 +66,7 @@ public interface UserService {
 	 * @param user	user to create
 	 * @throws MessageSendException 
 	 */
-	RoutineResult createUser(UIUserForCreate user, String subsystemIdentifier) throws MessageSendException;
+	UserCreationResult createUser(UIUserForCreate user, String subsystemIdentifier);
 
 	/**
 	 * Updates a user.

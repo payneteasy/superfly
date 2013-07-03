@@ -1,10 +1,9 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
-import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.user.UserCreationResult;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
@@ -136,21 +135,17 @@ public class CreateUserPage extends BasePage {
 			public void onSubmit() {
 				UIRoleForList role = models.getDropDownChoice().getModelObject();
 				user.setRoleId(role.getId());
-                RoutineResult result = null;
-				try {
-					result = userService.createUser(user, subsystem == null ? null : subsystem.getName());
-				} catch (MessageSendException e) {
-					error("Could not send a message: " + e.getMessage());
-				}
-                if (result != null) {
-                    if (result.isOk()) {
-                        getRequestCycle().setResponsePage(ListUsersPage.class);
-                        info("User created: " + user.getUsername());
-                    } else if (result.isDuplicate()) {
-                        error("User with this username already exists, please peak another one");
-                    } else {
-                        error("Can't create user");
-                    }
+                UserCreationResult result = userService.createUser(user, subsystem == null ? null : subsystem.getName());
+                if (result.getMailSendError() != null) {
+                    warn("Could not send a message: " + result.getMailSendError());
+                }
+                if (result.getResult().isOk()) {
+                    getRequestCycle().setResponsePage(ListUsersPage.class);
+                    info("User created: " + user.getUsername());
+                } else if (result.getResult().isDuplicate()) {
+                    error("User with this username already exists, please pick another one");
+                } else {
+                    error("Can't create user");
                 }
 			}
 

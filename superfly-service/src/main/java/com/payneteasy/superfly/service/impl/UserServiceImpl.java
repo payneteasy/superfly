@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
 				subsystemId);
 	}
 
-	public RoutineResult createUser(UIUserForCreate user, String subsystemIdentifier) throws MessageSendException {
+	public UserCreationResult createUser(UIUserForCreate user, String subsystemIdentifier) {
 		UIUserForCreate userForDao = new UIUserForCreate();
 		copyUserAndEncryptPassword(user, userForDao);
 		userForDao.setHotpSalt(hotpSaltGenerator.generate());
@@ -128,14 +128,21 @@ public class UserServiceImpl implements UserService {
 		RoutineResult result = createUserStrategy.createUser(userForDao);
 
 		loggerSink.info(logger, "CREATE_USER", result.isOk(), userForDao.getUsername());
+
+        UserCreationResult userCreationResult = new UserCreationResult();
+        userCreationResult.setResult(result);
 		
 		if (result.isOk()) {
-			hotpService.sendTableIfSupported(
-                    subsystemIdentifier,
-                    userForDao.getId());
-		}
+            try {
+                hotpService.sendTableIfSupported(
+                        subsystemIdentifier,
+                        userForDao.getId());
+            } catch (MessageSendException e) {
+                userCreationResult.setMailSendError(e.getMessage());
+            }
+        }
 		
-		return result;
+		return userCreationResult;
 		// we're not notifying about this as user does not yet have any roles
 		// or actions
 	}
