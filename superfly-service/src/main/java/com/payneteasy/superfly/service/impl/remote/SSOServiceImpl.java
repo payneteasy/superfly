@@ -165,6 +165,7 @@ public class SSOServiceImpl implements SSOService {
 		userForDescription.setSecretQuestion(user.getSecretQuestion());
 		userForDescription.setSecretAnswer(user.getSecretAnswer());
 		userForDescription.setPublicKey(user.getPublicKey());
+        userForDescription.setOrganization(user.getOrganization());
 		internalSSOService.updateUserForDescription(userForDescription);
 	}
 
