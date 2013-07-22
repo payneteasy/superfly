@@ -16,6 +16,7 @@ public class UserDescription implements Serializable {
 	private String secretQuestion;
 	private String secretAnswer;
 	private String publicKey;
+    private String organization;
 
 	/**
 	 * Returns a username.
@@ -142,4 +143,20 @@ public class UserDescription implements Serializable {
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
+
+    /**
+     * Returns user's organization
+     * @return organization
+     */
+    public String getOrganization() {
+        return organization;
+    }
+
+    /**
+     * Sets user organization
+     * @param organization to set
+     */
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 }

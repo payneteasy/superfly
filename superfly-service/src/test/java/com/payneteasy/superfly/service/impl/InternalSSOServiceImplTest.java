@@ -97,7 +97,7 @@ public class InternalSSOServiceImplTest {
 		hotpService.sendTableIfSupported("subsystem", 1L);
 		expectLastCall();
 		replay(userDao, hotpService);
-		internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{},"user", "user", "question", "answer", null);
+		internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{},"user", "user", "question", "answer", null,"test organization");
 		verify(userDao, hotpService);
 	}
 
@@ -122,7 +122,7 @@ public class InternalSSOServiceImplTest {
 			internalSSOService.registerUser("username", "password", "email.domain.com",
 					"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
 					"secretQuestion", "secretAnswer",
-					"not a key, just junk!");
+					"not a key, just junk!","test organization");
 			fail();
 		} catch (BadPublicKeyException e) {
 			// expected
@@ -137,7 +137,7 @@ public class InternalSSOServiceImplTest {
 			internalSSOService.registerUser("username", "password", "email.domain.com",
 					"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
 					"secretQuestion", "secretAnswer",
-					"-----BEGIN PGP PUBLIC KEY BLOCK-----not a key, just junk!-----END PGP PUBLIC KEY BLOCK-----");
+					"-----BEGIN PGP PUBLIC KEY BLOCK-----not a key, just junk!-----END PGP PUBLIC KEY BLOCK-----","test organization");
 			fail();
 		} catch (BadPublicKeyException e) {
 			// expected
@@ -161,7 +161,7 @@ public class InternalSSOServiceImplTest {
 		internalSSOService.registerUser("username", "password", "email.domain.com",
 				"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
 				"secretQuestion", "secretAnswer",
-				null);
+				null,"test organization");
 		verify(userDao);
 		
 		reset(userDao);
@@ -178,7 +178,7 @@ public class InternalSSOServiceImplTest {
 		internalSSOService.registerUser("username", "password", "email.domain.com",
 				"subsystem", new RoleGrantSpecification[]{}, "name", "surname",
 				"secretQuestion", "secretAnswer",
-				"");
+				"","test organization");
 		verify(userDao);
 	}
 

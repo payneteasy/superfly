@@ -79,6 +79,8 @@ public class EditUserPage extends BasePage {
 
 		form.add(new LabelTextFieldRow<String>(user,"secretAnswer","user.create.secret-answer", true));
 
+        form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
+
 		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
 	}
 

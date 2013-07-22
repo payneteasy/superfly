@@ -103,7 +103,7 @@ public interface SSOService {
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants,
 			String name, String surname, String secretQuestion, String secretAnswer,
-			String publicKey)
+			String publicKey,String organization)
 			throws UserExistsException, PolicyValidationException,
 			BadPublicKeyException, MessageSendException;
 	

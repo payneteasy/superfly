@@ -235,7 +235,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	public void registerUser(String username, String password, String email, String subsystemIdentifier,
 			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-			String secretAnswer, String publicKey) throws UserExistsException, PolicyValidationException,
+			String secretAnswer, String publicKey,String organization) throws UserExistsException, PolicyValidationException,
 			BadPublicKeyException, MessageSendException {
 
 		UserRegisterRequest registerUser = new UserRegisterRequest();
@@ -251,6 +251,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 		registerUser.setSecretQuestion(secretQuestion);
 		registerUser.setSecretAnswer(secretAnswer);
 		registerUser.setPublicKey(publicKey);
+        registerUser.setOrganization(organization);
 
 		// validate password policy
 		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao

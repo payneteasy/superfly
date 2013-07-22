@@ -13,6 +13,7 @@ public class UserForDescription implements Serializable {
 	private String secretQuestion;
 	private String secretAnswer;
 	private String publicKey;
+    private String organization;
 
 	@Column(name = "user_id")
 	public long getUserId() {
@@ -85,4 +86,13 @@ public class UserForDescription implements Serializable {
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
+
+    @Column(name="user_organization")
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 }
