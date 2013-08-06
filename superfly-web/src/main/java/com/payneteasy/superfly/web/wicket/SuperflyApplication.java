@@ -27,6 +27,7 @@ import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
 import org.apache.wicket.core.request.mapper.CryptoMapper;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 
 public class SuperflyApplication extends BaseApplication {
@@ -35,8 +36,7 @@ public class SuperflyApplication extends BaseApplication {
 	protected void customInit() {
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         CryptoMapper requestMapper = new CryptoMapper(getRootRequestMapper(), this);
-        setRootRequestMapper(new PageInterceptingRequestMapper(requestMapper,
-                createInterceptionDecisions(), ChangePasswordPage.class));
+        setRootRequestMapper(wrapWithInterceptingMapper(requestMapper));
 
         mountBookmarkablePageWithPath("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePageWithPath("/login", LoginPasswordStepPage.class);
@@ -91,6 +91,12 @@ public class SuperflyApplication extends BaseApplication {
                 return SecurityUtils.isTempPassword();
             }
         };
+    }
+
+    @Override
+    protected IRequestMapper wrapWithInterceptingMapper(IRequestMapper mapper) {
+        return new PageInterceptingRequestMapper(mapper,
+                createInterceptionDecisions(), ChangePasswordPage.class);
     }
 
     @Override

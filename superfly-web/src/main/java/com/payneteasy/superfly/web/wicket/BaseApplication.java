@@ -5,6 +5,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
@@ -25,11 +26,11 @@ public abstract class BaseApplication extends WebApplication {
     private IPageParametersEncoder parametersEncoder = new PageParametersEncoder();
 
     protected final void mountBookmarkablePageWithPath(String path, Class<? extends WebPage> pageClass) {
-        mount(new MountedMapper(path, pageClass, pathParametersEncoder));
+        mount(wrapWithInterceptingMapper(new MountedMapper(path, pageClass, pathParametersEncoder)));
     }
 
     protected final void mountBookmarkablePageWithParameters(String path, Class<? extends WebPage> pageClass) {
-        mount(new MountedMapper(path, pageClass, parametersEncoder));
+        mount(wrapWithInterceptingMapper(new MountedMapper(path, pageClass, parametersEncoder)));
     }
 
 	@Override
@@ -51,6 +52,10 @@ public abstract class BaseApplication extends WebApplication {
 	}
 
     protected abstract void customInit();
+
+    protected IRequestMapper wrapWithInterceptingMapper(IRequestMapper mapper) {
+        return mapper;
+    }
 
 	@Override
 	public Session newSession(Request request, Response response) {

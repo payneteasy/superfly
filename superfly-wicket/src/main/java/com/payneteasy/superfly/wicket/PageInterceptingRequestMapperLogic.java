@@ -28,7 +28,8 @@ public class PageInterceptingRequestMapperLogic {
                     }
                 }
             }
-            if (!alreadyChanging) {
+            boolean bufferedResponse = (localHandler instanceof BufferedResponseRequestHandler);
+            if (!alreadyChanging && !bufferedResponse) {
                 result = new RenderPageRequestHandler(new PageProvider(interceptorPageClass));
             }
         }
