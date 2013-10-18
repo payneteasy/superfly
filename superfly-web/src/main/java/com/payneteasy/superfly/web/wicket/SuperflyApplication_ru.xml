@@ -71,6 +71,7 @@
 <entry key="user.create.secret-answer.Required">Secret answer is required</entry>
 <entry key="user.create.choice-subsystem">Subsystem</entry>
 <entry key="user.create.choice-subsystem.Required">Subsystem is required</entry>
+<entry key="user.create.organization">Организация</entry>
 <entry key="user.create.choice-roles">Role</entry>
 <entry key="user.create.choice-roles.Required">Role is required</entry>
 

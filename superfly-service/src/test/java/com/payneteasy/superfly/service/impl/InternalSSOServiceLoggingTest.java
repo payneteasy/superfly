@@ -57,7 +57,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 		loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(true), eq("new-user"));
 		EasyMock.replay(loggerSink, userDao);
 
-		internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
+		internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
 
 		EasyMock.verify(loggerSink);
 	}
@@ -72,7 +72,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
 		try {
 			internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
+					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
 		} catch (UserExistsException e) {
 			// expected
 		}
@@ -90,7 +90,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
 		try {
 			internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null);
+					new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
 		} catch (IllegalStateException e) {
 			// expected
 		}

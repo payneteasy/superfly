@@ -25,6 +25,7 @@ public class UIUser implements Serializable {
     private String salt;
     private String publicKey;
     private UISubsystemForFilter subsystemForEmail;
+    private String organization;
 
 	@Column(name = "user_id")
 	@Id
@@ -124,5 +125,14 @@ public class UIUser implements Serializable {
 
     public void setSubsystemForEmail(UISubsystemForFilter subsystemForEmail) {
         this.subsystemForEmail = subsystemForEmail;
+    }
+
+    @Column(name="user_organization")
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 }

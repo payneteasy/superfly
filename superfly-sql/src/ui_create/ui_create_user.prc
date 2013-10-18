@@ -12,6 +12,7 @@ create procedure ui_create_user(i_user_name varchar(32),
                                 i_hotp_salt varchar(64),
                                 i_is_password_temp varchar(1),
                                 i_public_key text,
+                                i_user_organization varchar(255),
                                 out o_user_id int(10)
 )
  main_sql:
@@ -27,7 +28,7 @@ create procedure ui_create_user(i_user_name varchar(32),
           (
              user_name, user_password, email, is_account_locked, name, 
              surname, secret_question, secret_answer, salt, hotp_salt, is_password_temp, create_date,
-             public_key, completed
+             public_key, completed , user_organization
           )
     values (i_user_name, i_user_password, i_user_email,'N', 
             i_name, 
@@ -37,7 +38,7 @@ create procedure ui_create_user(i_user_name varchar(32),
             i_salt, 
             i_hotp_salt, 
             i_is_password_temp , now(),
-            i_public_key, 'Y');
+            i_public_key, 'Y', i_user_organization);
 
     set o_user_id   = last_insert_id();
 

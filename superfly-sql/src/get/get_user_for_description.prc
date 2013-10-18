@@ -11,6 +11,7 @@ create procedure get_user_for_description(i_username varchar(32))
          , secret_question
          , secret_answer
          , public_key
+         , user_organization
     from users 
       where user_name = i_username;
   end                                                    
@@ -25,6 +26,7 @@ call save_routine_information('get_user_for_description',
                                         'surname varchar',
                                         'secret_question varchar',
                                         'secret_answer varchar',
-										'public_key varchar'
+					'public_key varchar',
+                                        'user_organization varchar' 
                               )
      );

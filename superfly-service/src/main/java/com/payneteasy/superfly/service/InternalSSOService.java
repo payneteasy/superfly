@@ -86,12 +86,14 @@ public interface InternalSSOService {
 	 *            which roles to grant
 	 * @param publicKey
 	 * 			  user's public key
-	 * @throws UserExistsException
+     * @param organization
+     * 			  user's organization
+     * @throws UserExistsException
 	 * @throws BadPublicKeyException 
 	 * @throws MessageSendException 
 	 */
 	void registerUser(String username, String password, String email, String subsystemIdentifier,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey)
+			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey,String organization)
 			throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
 
 	/**
