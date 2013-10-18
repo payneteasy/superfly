@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>superfly-parent</artifactId>
 		<groupId>com.payneteasy.superfly</groupId>
-        <version>1.6-1-SNAPSHOT</version>
+        <version>1.6-1</version>
 	</parent>
 	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-wicket</artifactId>
