@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 import org.springframework.asm.AnnotationVisitor;
 import org.springframework.asm.MethodVisitor;
 import org.springframework.asm.Type;
-import org.springframework.asm.commons.EmptyVisitor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.MethodMetadata;
 
@@ -47,9 +46,9 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 		MethodVisitor visitor;
 		final String methodKey = name + ":" + desc;
 		if (!visitMethodAnnotations) {
-			visitor = new EmptyVisitor();
+			visitor = new EmptyMethodVisitor();
 		} else {
-			visitor = new EmptyVisitor() {
+			visitor = new EmptyMethodVisitor() {
 				@Override
 				public AnnotationVisitor visitAnnotation(final String methodAnnotDesc, boolean methodAnnotVisible) {
 					final String annotationClassName = Type.getType(methodAnnotDesc).getClassName();
@@ -124,7 +123,7 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 		return result;
 	}
 	
-	private final class AnnotationValueExtractingVisitor extends EmptyVisitor {
+	private final class AnnotationValueExtractingVisitor extends EmptyAnnotationVisitor {
 		private final Map<String, List<Object>> attributes;
 		private final String annotationClassName;
 		private final AnnotationMetadataHolder annotationMetadataHolder;
@@ -152,14 +151,13 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 				Class annotationClass = classLoader.loadClass(annotationClassName);
 				// Check declared default values of attributes in the annotation type.
 				Method[] annotationAttributes = annotationClass.getMethods();
-				for (int i = 0; i < annotationAttributes.length; i++) {
-					Method annotationAttribute = annotationAttributes[i];
-					String attributeName = annotationAttribute.getName();
-					Object defaultValue = annotationAttribute.getDefaultValue();
-					if (defaultValue != null && !attributes.containsKey(attributeName)) {
-						attributes.put(attributeName, Collections.singletonList(defaultValue));
-					}
-				}
+                for (Method annotationAttribute : annotationAttributes) {
+                    String attributeName = annotationAttribute.getName();
+                    Object defaultValue = annotationAttribute.getDefaultValue();
+                    if (defaultValue != null && !attributes.containsKey(attributeName)) {
+                        attributes.put(attributeName, Collections.singletonList(defaultValue));
+                    }
+                }
 				// Register annotations that the annotation type is annotated with.
 				Annotation[] metaAnnotations = annotationClass.getAnnotations();
 				Set<String> metaAnnotationTypeNames = new HashSet<String>();

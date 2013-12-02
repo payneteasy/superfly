@@ -24,19 +24,19 @@ public class MultipleAnnotationValuesMetadataReader implements MethodReadingMeta
 	
 	public ClassMetadata getClassMetadata() {
 		ClassMetadataReadingVisitor visitor = new ClassMetadataReadingVisitor();
-		this.classReader.accept(visitor, true);
+		this.classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 		return visitor;
 	}
 	
 	public AnnotationMetadata getAnnotationMetadata() {
 		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader, false);
-		this.classReader.accept(visitor, true);
+		this.classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 		return visitor;
 	}
 
 	public MethodAnnotationMetadataSource getMethodAnnotationMetadataSource() {
 		MultipleValuesAnnotationMetadataReadingVisitor visitor = new MultipleValuesAnnotationMetadataReadingVisitor(this.classLoader, true);
-		this.classReader.accept(visitor, true);
+		this.classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 		return visitor;
 	}
 
