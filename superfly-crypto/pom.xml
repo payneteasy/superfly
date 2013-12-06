@@ -5,8 +5,7 @@
 		<groupId>com.payneteasy.superfly</groupId>
         <version>1.6-3-SNAPSHOT</version>
 	</parent>
-	<groupId>com.payneteasy.superfly</groupId>
-	<artifactId>superfly-crypto</artifactId>
+    <artifactId>superfly-crypto</artifactId>
 	<name>Superfly helper crypto services</name>
 	<description>Contains crypto services like OpenPGP-compatible encryption</description>
 	<dependencies>
