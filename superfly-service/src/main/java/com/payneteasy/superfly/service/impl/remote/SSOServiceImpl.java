@@ -48,6 +48,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#authenticate(String, String, AuthenticationRequestInfo)
 	 */
+    @Override
 	public SSOUser authenticate(String username, String password,
 			AuthenticationRequestInfo authRequestInfo) {
 		return internalSSOService.authenticate(username, password,
@@ -59,6 +60,7 @@ public class SSOServiceImpl implements SSOService {
     /**
    	 * @see SSOService#pseudoAuthenticate(String, String)
    	 */
+    @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         return internalSSOService.pseudoAuthenticate(username, obtainSubsystemIdentifier(subsystemIdentifier));
     }
@@ -66,6 +68,7 @@ public class SSOServiceImpl implements SSOService {
     /**
 	 * @see SSOService#sendSystemData(String, com.payneteasy.superfly.api.ActionDescription[])
 	 */
+    @Override
 	public void sendSystemData(String systemIdentifier,
 			ActionDescription[] actionDescriptions) {
 		internalSSOService.saveSystemData(obtainSubsystemIdentifier(systemIdentifier),
@@ -75,6 +78,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#getUsersWithActions(String)
 	 */
+    @Override
 	public List<SSOUserWithActions> getUsersWithActions(
 			String subsystemIdentifier) {
 		return internalSSOService.getUsersWithActions(
@@ -83,7 +87,10 @@ public class SSOServiceImpl implements SSOService {
 	
 	/**
 	 * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String, String)
+     * @deprecated use #registerUser(UserRegisterRequest) instead
 	 */
+    @Override
+    @Deprecated
 	public void registerUser(String username, String password, String email,
 			String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
 			String name, String surname, String secretQuestion, String secretAnswer,
@@ -94,9 +101,29 @@ public class SSOServiceImpl implements SSOService {
 				name, surname, secretQuestion, secretAnswer, publicKey,organization);
 	}
 
+    /**
+   	 * @see SSOService#registerUser(com.payneteasy.superfly.api.UserRegisterRequest)
+   	 */
+    @Override
+   	public void registerUser(UserRegisterRequest registerRequest)
+   			throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
+   		internalSSOService.registerUser(registerRequest.getUsername(),
+                registerRequest.getPassword(),
+                registerRequest.getEmail(),
+   				obtainSubsystemIdentifier(registerRequest.getSubsystemHint()),
+                registerRequest.getRoleGrants(),
+   				registerRequest.getFirstName(),
+                registerRequest.getLastName(),
+                registerRequest.getSecretQuestion(),
+                registerRequest.getSecretAnswer(),
+                registerRequest.getPublicKey(),
+                registerRequest.getOrganization());
+   	}
+
 	/**
 	 * @see SSOService#authenticateUsingHOTP(String, String)
 	 */
+    @Override
 	public boolean authenticateUsingHOTP(String username, String hotp) {
 		String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
 		return internalSSOService.authenticateHOTP(subsystemIdentifier, username, hotp);
@@ -106,6 +133,7 @@ public class SSOServiceImpl implements SSOService {
 		return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
 	}
 
+    @Override
 	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
 		internalSSOService.changeTempPassword(userName, password);
 	}
@@ -113,6 +141,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#getUserDescription(String)
 	 */
+    @Override
 	public UserDescription getUserDescription(String username) {
         UserDescription result;
 		UserForDescription user = internalSSOService.getUserDescription(username);
@@ -135,6 +164,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#resetAndSendOTPTable(String)
 	 */
+    @Override
 	public void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException {
 		resetAndSendOTPTable(null, username);
 	}
@@ -142,6 +172,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#resetAndSendOTPTable(String, String)
 	 */
+    @Override
 	public void resetAndSendOTPTable(String subsystemIdentifier, String username) throws UserNotFoundException, MessageSendException {
 		UserForDescription user = internalSSOService.getUserDescription(username);
 		if (user == null) {
@@ -153,6 +184,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#updateUserDescription(UserDescription)
 	 */
+    @Override
 	public void updateUserDescription(UserDescription user)
 			throws UserNotFoundException, BadPublicKeyException {
 		UserForDescription userForDescription = internalSSOService.getUserDescription(user.getUsername());
@@ -172,6 +204,7 @@ public class SSOServiceImpl implements SSOService {
 	/**
 	 * @see SSOService#resetPassword(String, String)
 	 */
+    @Override
 	public void resetPassword(String username, String newPassword)
 			throws UserNotFoundException, PolicyValidationException {
 		UserForDescription user = internalSSOService.getUserDescription(username);

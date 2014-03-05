@@ -103,9 +103,33 @@ public interface SSOService {
 	void registerUser(String username, String password, String email, String subsystemHint,
 			RoleGrantSpecification[] roleGrants,
 			String name, String surname, String secretQuestion, String secretAnswer,
-			String publicKey,String organization)
+			String publicKey, String organization)
 			throws UserExistsException, PolicyValidationException,
 			BadPublicKeyException, MessageSendException;
+
+    /**
+   	 * Registers user and gives him requested principal.
+     * User is created in incomplete state. In that state, if
+     * a registration with the same username is made, existing user
+     * is destroyed. To complete a user, call #completeUser() method.
+     * Also, user is completed when he logs in.
+   	 *
+   	 * @param registerRequest
+   	 *            register request containing all the
+     *            data needed to register a user
+     *
+   	 * @throws UserExistsException
+   	 *             if user with such a name already exists
+   	 * @throws PolicyValidationException
+   	 * @throws BadPublicKeyException
+   	 * @throws MessageSendException
+   	 * @since 1.1
+   	 * @see RoleGrantSpecification
+     * @see #completeUser(String)
+   	 */
+   	void registerUser(UserRegisterRequest registerRequest)
+            throws UserExistsException, PolicyValidationException,
+   			BadPublicKeyException, MessageSendException;
 	
     /**
      * 
@@ -206,7 +230,7 @@ public interface SSOService {
      * from being overwritten.
      *
      * @param username  name of the user to complete
-     * @see #registerUser(String, String, String, String, RoleGrantSpecification[], String, String, String, String, String)
+     * @see #registerUser(UserRegisterRequest)
      * @since 1.5
      */
     void completeUser(String username);
