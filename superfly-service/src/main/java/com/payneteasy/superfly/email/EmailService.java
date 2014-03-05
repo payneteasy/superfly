@@ -10,7 +10,8 @@ public interface EmailService {
 	 * Sends a message containing an HOTP table.
 	 *
      * @param subsystemIdentifier   identifier of subsystem
-     * through which smtp-server to send message
+     *                              through which smtp-server
+     *                              to send message
 	 * @param to		            to address
 	 * @param fileName	            file name
 	 * @param table		            table content
@@ -37,4 +38,17 @@ public interface EmailService {
 	 * @throws RuntimeMessagingException
 	 */
 	void sendTestMessage(long serverId, String email) throws RuntimeMessagingException;
+
+    /**
+   	 * Sends a message containing an encrypted password.
+   	 *
+     * @param subsystemIdentifier       identifier of subsystem
+     *                                  through which smtp-server to
+     *                                  send message
+   	 * @param to		                to address
+   	 * @param fileName	                file name
+   	 * @param encryptedPasswordBytes    encrypted password data
+   	 * @throws RuntimeMessagingException if something is wrong
+   	 */
+    void sendPassword(String subsystemIdentifier, String to, String fileName, byte[] encryptedPasswordBytes);
 }

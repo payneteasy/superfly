@@ -23,7 +23,7 @@ public class DefaultResetPasswordStrategy implements ResetPasswordStrategy {
 	}
 
 	public void resetPassword(long userId, String username, String password) {
-        RoutineResult result = userDao.resetPassword(userId, password==null ? password : userPasswordEncoder.encode(password, username));
+        RoutineResult result = userDao.resetPassword(userId, password==null ? null : userPasswordEncoder.encode(password, username));
         loggerSink.info(logger, "RESET_PASSWORD", result.isOk(), String.format("%s", username));
 	}
 

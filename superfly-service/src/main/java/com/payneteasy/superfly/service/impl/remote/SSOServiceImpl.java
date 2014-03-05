@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.service.impl.remote;
 
 import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
@@ -9,6 +11,9 @@ import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +29,8 @@ public class SSOServiceImpl implements SSOService {
 	private HOTPService hotpService;
 	private ResetPasswordStrategy resetPasswordStrategy;
 	private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();
+    private EmailService emailService;
+    private PublicKeyCrypto publicKeyCrypto;
 
 	@Required
 	public void setInternalSSOService(InternalSSOService internalSSOService) {
@@ -45,7 +52,17 @@ public class SSOServiceImpl implements SSOService {
 		this.subsystemIdentifierObtainer = subsystemIdentifierObtainer;
 	}
 
-	/**
+    @Required
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
+
+    @Required
+    public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
+        this.publicKeyCrypto = publicKeyCrypto;
+    }
+
+    /**
 	 * @see SSOService#authenticate(String, String, AuthenticationRequestInfo)
 	 */
     @Override
@@ -207,12 +224,50 @@ public class SSOServiceImpl implements SSOService {
     @Override
 	public void resetPassword(String username, String newPassword)
 			throws UserNotFoundException, PolicyValidationException {
-		UserForDescription user = internalSSOService.getUserDescription(username);
-		if (user == null) {
-			throw new UserNotFoundException(username);
-		}
-		resetPasswordStrategy.resetPassword(user.getUserId(), username, newPassword);
+        doResetPassword(username, newPassword, false);
 	}
+
+    private void doResetPassword(String username, String newPassword, boolean sendPasswordByEmail) throws UserNotFoundException {
+        UserForDescription user = internalSSOService.getUserDescription(username);
+        if (user == null) {
+            throw new UserNotFoundException(username);
+        }
+        resetPasswordStrategy.resetPassword(user.getUserId(), username, newPassword);
+        if (sendPasswordByEmail && user.getPublicKey() != null) {
+            // TODO: we could factor this code out to some
+            // service method to use it also when resetting password
+            // using Superfly UI and other means, but it's not clear
+            // how to get SMTP server when subsystem is not known
+            // This is to be resolved later
+            String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API?
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final String fileName = "password.txt";
+            try {
+                publicKeyCrypto.encrypt(getStringBytes(newPassword), fileName, user.getPublicKey(), baos);
+            } catch (IOException e) {
+                // should not happen as we encrypt in memory
+                throw new IllegalStateException("Should not happen", e);
+            }
+            emailService.sendPassword(subsystemIdentifier, user.getEmail(), fileName, baos.toByteArray());
+        }
+    }
+
+    private byte[] getStringBytes(String s) {
+        try {
+            return s.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("We don't have utf-8");
+        }
+    }
+
+    /**
+   	 * @see SSOService#resetPassword(com.payneteasy.superfly.api.PasswordReset)
+   	 */
+    @Override
+   	public void resetPassword(PasswordReset reset)
+   			throws UserNotFoundException, PolicyValidationException {
+   		doResetPassword(reset.getUsername(), reset.getPassword(), reset.isSendByEmail());
+   	}
 
     @Override
     public List<UserStatus> getUserStatuses(List<String> userNames) {

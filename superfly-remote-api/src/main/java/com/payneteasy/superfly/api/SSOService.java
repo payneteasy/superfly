@@ -123,7 +123,7 @@ public interface SSOService {
    	 * @throws PolicyValidationException
    	 * @throws BadPublicKeyException
    	 * @throws MessageSendException
-   	 * @since 1.1
+   	 * @since 1.6-3
    	 * @see RoleGrantSpecification
      * @see #completeUser(String)
    	 */
@@ -194,6 +194,16 @@ public interface SSOService {
      * @since 1.2-4
      */
     void resetPassword(String username, String newPassword) throws UserNotFoundException, PolicyValidationException;
+
+    /**
+     * Resets user's password if policy requires this.
+     *
+     * @param reset     describes password reset
+     * @throws UserNotFoundException		if not such user exists
+     * @throws PolicyValidationException	if password is bad
+     * @since 1.6-3
+     */
+    void resetPassword(PasswordReset reset) throws UserNotFoundException, PolicyValidationException;
 
     /**
      * Finds users by list of their logins and returns their status information.

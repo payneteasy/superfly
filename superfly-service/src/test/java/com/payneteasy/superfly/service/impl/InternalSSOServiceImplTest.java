@@ -6,6 +6,7 @@ import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.*;
+import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.*;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;

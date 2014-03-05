@@ -19,7 +19,7 @@ public class StringUtils {
     }
 
     public static String emptyStringIfNull(String s){
-        return (s == null || s =="")?"-":s;
+        return (s == null || s.equals(""))?"-":s;
     }
 
     public static String emptyStringIfObjectNull(Object o){
