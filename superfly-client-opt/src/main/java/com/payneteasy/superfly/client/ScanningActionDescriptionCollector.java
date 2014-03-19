@@ -43,7 +43,6 @@ public class ScanningActionDescriptionCollector implements
 	private String[] basePackages = new String[0];
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
-	private MethodReadingMetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
 	private Class<? extends Annotation> annotationClass;
 	private ValuesExtractor valuesExtractor = new DefaultValuesExtractor();
 	private Set<String> notCollectedActions = Collections.singleton("action_temp_password");
@@ -62,10 +61,6 @@ public class ScanningActionDescriptionCollector implements
 		this.resourcePattern = resourcePattern;
 	}
 
-	public void setMetadataReaderFactory(MethodReadingMetadataReaderFactory metadataReaderFactory) {
-		this.metadataReaderFactory = metadataReaderFactory;
-	}
-
 	public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
 		this.annotationClass = annotationClass;
 	}
@@ -79,10 +74,11 @@ public class ScanningActionDescriptionCollector implements
 	}
 
 	public List<ActionDescription> collect() throws CollectionException {
+        MethodReadingMetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
 		Set<String> names = new HashSet<String>();
 		for (String basePackage : basePackages) {
 			try {
-				processPackage(basePackage, names);
+				processPackage(basePackage, names, metadataReaderFactory);
 			} catch (IOException e) {
 				throw new CollectionException(e);
 			}
@@ -95,14 +91,15 @@ public class ScanningActionDescriptionCollector implements
 		return buildDescriptions(names);
 	}
 
-	protected void processPackage(String basePackage, Set<String> names)
+	protected void processPackage(String basePackage, Set<String> names,
+            MethodReadingMetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 				resolveBasePackage(basePackage) + "/" + this.resourcePattern;
 		Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath);
 		for (Resource resource : resources) {
 			if (resource.isReadable()) {
-				MethodReadingMetadataReader metadataReader = this.metadataReaderFactory.getMethodReadingMetadataReader(resource);
+				MethodReadingMetadataReader metadataReader = metadataReaderFactory.getMethodReadingMetadataReader(resource);
 				
 				// class annotations
 				Map<String, Object> attributes = metadataReader
