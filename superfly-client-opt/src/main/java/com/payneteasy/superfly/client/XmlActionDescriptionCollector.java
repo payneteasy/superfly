@@ -1,9 +1,7 @@
 package com.payneteasy.superfly.client;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.client.exception.CollectionException;
 import org.apache.commons.digester.Digester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +10,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.xml.sax.SAXException;
 
-import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.client.exception.CollectionException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ActionDescriptionCollector implementation which returns a list of actions
@@ -42,14 +42,24 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 		digester.addObjectCreate("actions/action", ActionDescriptionBean.class);
 		digester.addSetProperties("actions/action");
 		digester.addSetNext("actions/action", "add", ActionDescriptionBean.class.getName());
-		
+
+        InputStream is = null;
 		try {
-			digester.parse(resource.getInputStream());
+            is = resource.getInputStream();
+            digester.parse(is);
 		} catch (IOException e) {
 			throw new CollectionException(e);
 		} catch (SAXException e) {
 			throw new CollectionException(e);
-		}
+		} finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
 		
 		List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
 		for (ActionDescriptionBean bean : list) {
