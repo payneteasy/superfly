@@ -62,7 +62,13 @@ create procedure ui_check_expired_sessions(i_ssys_id int(10),
                      on ra.actn_actn_id = a.actn_id
                         and a.ssys_ssys_id = ss.ssys_id
                where s.session_expired = 'N' and s.ssys_ssys_id = v_ssys_id
-              group by s.sess_id) ract,
+              group by s.sess_id) ract
+         set ses.actions_expired    = 'Y'
+       where     ses.sess_id = ract.sess_id
+             and ses.ssys_ssys_id = v_ssys_id
+             and coalesce(ses.action_list, '-1') != coalesce(ract.ract_list, '-1');
+
+      update sessions ses,
              (select s.sess_id,
                      group_concat(concat(r.role_id, ':', a.actn_id)
                                     order by r.role_id, a.actn_id
@@ -96,13 +102,9 @@ create procedure ui_check_expired_sessions(i_ssys_id int(10),
                where s.session_expired = 'N' and s.ssys_ssys_id = v_ssys_id
               group by s.sess_id) act
          set ses.actions_expired    = 'Y'
-       where     ses.sess_id = ract.sess_id
-             and ses.sess_id = act.sess_id
+       where     ses.sess_id = act.sess_id
              and ses.ssys_ssys_id = v_ssys_id
-             and(coalesce(ses.role_action_list, '-1') !=
-                   coalesce(ract.ract_list, '-1')
-                 or coalesce(ses.action_list, '-1') !=
-                     coalesce(act.act_list, '-1'));
+             and coalesce(ses.action_list, '-1') != coalesce(act.act_list, '-1');
     else
       update sessions ses,
              (select s.sess_id,
