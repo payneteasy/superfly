@@ -621,6 +621,16 @@
 					<ajdtVersion>none</ajdtVersion>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.1</version>
+                <configuration>
+                    <!-- this is to disable JDK-supplied doclint which is too strict
+                     causes the build to fail -->
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	
