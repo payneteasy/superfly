@@ -29,7 +29,7 @@ keytool -importkeystore \
         -srckeystore "$name.p12" -srcstoretype PKCS12 -srcstorepass changeit \
         -alias "$name" && \
 # importing CA cert
-keytool -importcert -file $dir/cacert.der -keystore "$name.store" -alias ssoca -storepass changeit
+#keytool -importcert -file $dir/cacert.der -keystore "$name.store" -alias ssoca -storepass changeit
 
 echo
 echo "Java key store saved in the following file: $name.store"
