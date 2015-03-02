@@ -8,6 +8,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
+            /WEB-INF/spring-context.xml
         	/WEB-INF/superfly-client.xml
         	/WEB-INF/spring-security-2.0.xml
         </param-value>
