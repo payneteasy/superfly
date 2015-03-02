@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.client;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,7 +23,7 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  */
 public class SuperflyDataSender {
 	
-	private Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
+	private static final Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
 	
 	private SSOService ssoService;
 	private ActionDescriptionCollector actionDescriptionCollector;
@@ -89,11 +91,26 @@ public class SuperflyDataSender {
 
 	public void send() {
 		try {
-			ssoService.sendSystemData(getSubsystemIdentifier(),
-					obtainActionDescriptions());
+            final ActionDescription[] actionDescriptions = obtainActionDescriptions();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Sending the following actions: {}", getActionsStringForLog(actionDescriptions));
+            }
+            ssoService.sendSystemData(getSubsystemIdentifier(),
+                    actionDescriptions);
 		} catch (CollectionException e) {
 			logger.error("Cannot send subsystem data", e);
 		}
 	}
+
+    private String getActionsStringForLog(ActionDescription[] actionDescriptions) {
+        List<String> names = new ArrayList<String>(actionDescriptions.length);
+        for (ActionDescription description : actionDescriptions) {
+            names.add(description.getName());
+        }
+
+        Collections.sort(names);
+
+        return names.toString();
+    }
 
 }
