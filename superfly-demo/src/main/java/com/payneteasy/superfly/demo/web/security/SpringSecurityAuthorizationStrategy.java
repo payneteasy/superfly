@@ -1,19 +1,19 @@
 package com.payneteasy.superfly.demo.web.security;
 
+import com.payneteasy.superfly.demo.web.utils.SecurityUtils;
+import org.apache.wicket.Component;
+import org.apache.wicket.authorization.Action;
+import org.apache.wicket.authorization.IAuthorizationStrategy;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.request.component.IRequestableComponent;
+import org.springframework.security.annotation.Secured;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.authorization.Action;
-import org.apache.wicket.authorization.IAuthorizationStrategy;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.springframework.security.annotation.Secured;
-
-import com.payneteasy.superfly.demo.web.utils.SecurityUtils;
 
 public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrategy {
 	
@@ -25,7 +25,7 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
 	 */
 	private Properties cachedProperties = null;
 
-    public <T extends Component> boolean isInstantiationAuthorized(Class<T> componentClass) {
+    public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
         return true;
     }
 
