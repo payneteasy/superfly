@@ -111,7 +111,7 @@
 		<!-- Delay is to allow superfly server to launch before this triggers,
 			it's only relevant for configuration when both superfly server and
 			its client application live in the same container -->
-		<property name="delay" value="30000"/>
+		<property name="delay" value="500"/>
 	</bean>
     
 </beans>
