@@ -30,12 +30,12 @@
         <module>superfly-integration-test</module>
 	</modules>
 	
-	<url>http://code.google.com/p/superfly/</url>
+	<url>https://github.com/rpuch/superfly</url>
 
 	<scm>
-		<connection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</connection>
-		<developerConnection>scm:svn:https://superfly.googlecode.com/svn/trunk/superfly/</developerConnection>
-		<url>http://superfly.googlecode.com/</url>
+		<connection>scm:git:git@github.com:rpuch/superfly.git</connection>
+		<developerConnection>scm:git:git@github.com:rpuch/superfly.git</developerConnection>
+		<url>https://github.com/rpuch/superfly</url>
 	</scm>
 	
 	<licenses>
