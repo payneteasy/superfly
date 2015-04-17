@@ -5,3 +5,4 @@ target
 *.ipr
 .classpath
 .project
+.settings
