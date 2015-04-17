@@ -5,7 +5,6 @@
         <version>1.6-6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-spring-security</artifactId>
 	<name>Spring Security Extension for Superfly</name>
 	<description>Module for Spring Security which enables application to use Superfly authentication/authorization declaratively through Spring Security</description>
@@ -40,6 +39,11 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -30,12 +30,12 @@
 
 package com.payneteasy.httpclient.contrib.ssl;
 
-import java.security.cert.X509Certificate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;
-import org.apache.commons.logging.Log; 
-import org.apache.commons.logging.LogFactory;
+import java.security.cert.X509Certificate;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager
     private X509TrustManager defaultTrustManager = null;
 
     /** Log object for this class. */
-    private static final Log LOG = LogFactory.getLog(AuthSSLX509TrustManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthSSLX509TrustManager.class);
 
     /**
      * Constructor for AuthSSLX509TrustManager.

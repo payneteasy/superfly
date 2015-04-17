@@ -30,6 +30,21 @@
 
 package com.payneteasy.httpclient.contrib.ssl;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509KeyManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -47,15 +62,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
-
-import org.apache.commons.httpclient.ConnectTimeoutException;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-import org.apache.commons.logging.Log; 
-import org.apache.commons.logging.LogFactory;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
 
 /**
  * <p>
@@ -172,7 +178,7 @@ import javax.net.ssl.*;
 public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory {
 
     /** Log object for this class. */
-    private static final Log LOG = LogFactory.getLog(AuthSSLProtocolSocketFactory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthSSLProtocolSocketFactory.class);
 
     private URL keystoreUrl = null;
     private String keystorePassword = null;

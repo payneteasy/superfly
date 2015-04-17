@@ -1,14 +1,13 @@
 package com.payneteasy.httpclient.contrib.ssl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.X509KeyManager;
 import java.net.Socket;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-
-import javax.net.ssl.X509KeyManager;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This is mainly to have ability to add logging.
@@ -20,7 +19,7 @@ public class AuthSSLX509KeyManager implements X509KeyManager {
     private X509KeyManager defaultKeyManager = null;
 
     /** Log object for this class. */
-    private static final Log LOG = LogFactory.getLog(AuthSSLX509KeyManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthSSLX509KeyManager.class);
 
 	public AuthSSLX509KeyManager(X509KeyManager keyManager) {
 		super();

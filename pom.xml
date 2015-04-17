@@ -276,6 +276,11 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>servlet-api</artifactId>
 				<version>2.5</version>
@@ -311,6 +316,10 @@
 						<artifactId>spring-tx</artifactId>
 					</exclusion>
 					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-expression</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
 					</exclusion>
@@ -325,6 +334,14 @@
                         <artifactId>commons-logging</artifactId>
                         <groupId>commons-logging</groupId>
                     </exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-expression</artifactId>
+					</exclusion>
                 </exclusions>
             </dependency>
             <dependency>
@@ -336,6 +353,10 @@
                         <artifactId>commons-logging</artifactId>
                         <groupId>commons-logging</groupId>
                     </exclusion>
+					<exclusion>
+						<groupId>org.springframework</groupId>
+						<artifactId>spring-aop</artifactId>
+					</exclusion>
                 </exclusions>
             </dependency>
 <!-- 
@@ -373,11 +394,6 @@
  -->
 		    <dependency>
 		    	<groupId>org.aspectj</groupId>
-		    	<artifactId>aspectjrt</artifactId>
-		    	<version>${aspectj.version}</version>
-		    </dependency>
-		    <dependency>
-		    	<groupId>org.aspectj</groupId>
 		    	<artifactId>aspectjweaver</artifactId>
 		    	<version>${aspectj.version}</version>
 		    </dependency>
@@ -390,11 +406,23 @@
 		    	<groupId>commons-digester</groupId>
 		    	<artifactId>commons-digester</artifactId>
 		    	<version>2.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 		    </dependency>
 		    <dependency>
 		    	<groupId>commons-httpclient</groupId>
 		    	<artifactId>commons-httpclient</artifactId>
 		    	<version>3.1</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 		    </dependency>
 		    <dependency>
 		    	<groupId>commons-codec</groupId>
@@ -406,7 +434,12 @@
 		    	<artifactId>commons-collections</artifactId>
 		    	<version>3.2.1</version>
 		    </dependency>
-		    
+		    <dependency>
+		    	<groupId>commons-beanutils</groupId>
+		    	<artifactId>commons-beanutils</artifactId>
+		    	<version>1.9.2</version>
+		    </dependency>
+
 		    <dependency>
 		        <groupId>com.googlecode.xremoting</groupId>
 		        <artifactId>xremoting-core</artifactId>
@@ -457,6 +490,12 @@
 				<artifactId>wicket-datetime</artifactId>
 				<version>${wicket.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>2.2.2</version>
+			</dependency>
 		    
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -486,6 +525,12 @@
 				<artifactId>jetty</artifactId>
 				<version>${jetty.version}</version>
 				<scope>provided</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.mortbay.jetty</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.mortbay.jetty</groupId>
@@ -557,6 +602,98 @@
 						<groupId>org.codehaus.xfire</groupId>
 						<artifactId>xfire-all</artifactId>
 					</exclusion>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jaxen</groupId>
+						<artifactId>jaxen</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jtidy</groupId>
+						<artifactId>jtidy</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>saxpath</groupId>
+						<artifactId>saxpath</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>cglib</groupId>
+						<artifactId>cglib-full</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>opensymphony</groupId>
+						<artifactId>oscore</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>opensymphony</groupId>
+						<artifactId>propertyset</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>atlassian-bonnie</groupId>
+						<artifactId>atlassian-bonnie</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>atlassian-profiling</groupId>
+						<artifactId>atlassian-profiling</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jotm</groupId>
+						<artifactId>jotm-iiop_stubs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xml-apis</groupId>
+						<artifactId>xml-apis</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xmlParserAPIs</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>sitemesh</groupId>
+						<artifactId>sitemesh</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.atlassian.mail</groupId>
+						<artifactId>atlassian-mail</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>oscore</groupId>
+						<artifactId>oscore</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>velocity</groupId>
+						<artifactId>velocity-dep</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>axis</groupId>
+						<artifactId>axis-jaxrpc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>seraph</groupId>
+						<artifactId>seraph</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>atlassian-plugins</groupId>
+						<artifactId>atlassian-plugins</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>wsdl4j</groupId>
+						<artifactId>wsdl4j</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.atlassian.core</groupId>
+						<artifactId>atlassian-core</artifactId>
+					</exclusion>
 	      	    </exclusions>
 	    	</dependency>
 	    	
@@ -570,6 +707,12 @@
                 <groupId>ca.juliusdavies</groupId>
                 <artifactId>not-yet-commons-ssl</artifactId>
                 <version>0.3.9</version>
+				<exclusions>
+					<exclusion>
+						<groupId>log4j</groupId>
+						<artifactId>log4j</artifactId>
+					</exclusion>
+				</exclusions>
             </dependency>
 	    	
 	        <dependency>
@@ -577,6 +720,12 @@
 	        	<artifactId>easymock</artifactId>
 	        	<version>3.0</version>
 	        	<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>cglib</groupId>
+						<artifactId>cglib-nodep</artifactId>
+					</exclusion>
+				</exclusions>
 	        </dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -593,9 +742,31 @@
         	<artifactId>easymock</artifactId>
         	<scope>test</scope>
         </dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 	
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.4</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>extra-enforcer-rules</artifactId>
+							<version>1.0-beta-3</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -631,12 +802,35 @@
                     <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
+
+			<plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-enforcer-plugin</artifactId>
+       <executions>
+           <execution>
+               <id>enforce-ban-duplicate-classes</id>
+               <goals>
+                   <goal>enforce</goal>
+               </goals>
+               <configuration>
+                   <rules>
+                       <banDuplicateClasses>
+                           <findAllDuplicates>true</findAllDuplicates>
+                           <dependencies>
+						   </dependencies>
+                       </banDuplicateClasses>
+                   </rules>
+                   <fail>true</fail>
+               </configuration>
+           </execution>
+       </executions>
+   </plugin>
 		</plugins>
 	</build>
 	
 	<properties>
 		<jdbcproc.version>1.1-4</jdbcproc.version>
-		<slf4j.version>1.4.2</slf4j.version>
+		<slf4j.version>1.7.12</slf4j.version>
 		<spring.version>3.2.5.RELEASE</spring.version>
 		<spring.security.version>3.1.4.RELEASE</spring.security.version>
 		<spring.security_2.version>2.0.4</spring.security_2.version>

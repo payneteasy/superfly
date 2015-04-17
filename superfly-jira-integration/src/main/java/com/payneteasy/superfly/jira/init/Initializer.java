@@ -1,17 +1,17 @@
 package com.payneteasy.superfly.jira.init;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import com.atlassian.core.util.StringUtils;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.client.SuperflyDataSender;
 import com.payneteasy.superfly.common.store.GroupStoreLocator;
 import com.payneteasy.superfly.common.store.UserStore;
 import com.payneteasy.superfly.common.store.UserStoreLocator;
+import com.payneteasy.superfly.common.utils.StringUtils;
 import com.payneteasy.superfly.jira.SuperflyContextLocator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class that's used to initialize a Superfly-related machinery to allow Jira
@@ -77,7 +77,7 @@ public class Initializer {
 	}
 	
 	protected String[] obtainGroups() {
-		return StringUtils.splitCommaSeparatedString(groupsCommaDelimitedList);
+		return StringUtils.commaDelimitedListToStringArray(groupsCommaDelimitedList);
 	}
 	
 	protected void initSuperflyContext() {
