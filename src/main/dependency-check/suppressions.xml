@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://www.owasp.org/index.php/OWASP_Dependency_Check_Suppression">
+   <!-- this is our module, not PGP in which these vulnerabilities are found -->
+   <suppress>
+      <notes><![CDATA[
+      file name: superfly-crypto-1.6-6-SNAPSHOT.jar
+      ]]></notes>
+      <sha1>851212e5584b21d22ec32a88f0fc5a60321adee3</sha1>
+      <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name: superfly-crypto-1.6-6-SNAPSHOT.jar
+      ]]></notes>
+      <sha1>f70cca6343136ff015ae059b3f2dd728b57397de</sha1>
+      <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
+   </suppress>
+</suppressions>

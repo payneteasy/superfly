@@ -884,11 +884,9 @@
 					<plugin>
 						<groupId>org.owasp</groupId>
 						<artifactId>dependency-check-maven</artifactId>
-<!--
 						<configuration>
 							<suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
 						</configuration>
--->
 						<reportSets>
 							<reportSet>
 								<reports>
