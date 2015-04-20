@@ -1,10 +1,10 @@
 package com.payneteasy.superfly.password;
 
-import java.io.UnsupportedEncodingException;
+import org.apache.commons.codec.binary.Hex;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import org.apache.commons.codec.binary.Hex;
 
 /**
  * Uses a {@link MessageDigest} to encode passwords. Please note that algorighm
@@ -33,11 +33,7 @@ public class MessageDigestPasswordEncoder extends AbstractPasswordEncoder {
 
 	protected byte[] computeDigest(String saltedPassword, MessageDigest md) {
 		byte[] digest;
-		try {
-			digest = md.digest(saltedPassword.getBytes("utf-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException(e);
-		}
+		digest = md.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
 		return digest;
 	}
 

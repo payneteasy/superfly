@@ -18,9 +18,9 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
 	}
 
 	public String generate() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < passwordLength; i++) {
-			char ch = 0;
+			char ch;
 			do {
 				int n = random.nextInt(62);
 				if (n < 10) {

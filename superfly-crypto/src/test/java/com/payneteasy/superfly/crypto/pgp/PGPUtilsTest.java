@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class PGPUtilsTest {
     @Test
@@ -41,7 +42,7 @@ public class PGPUtilsTest {
 
 	private String readArmoredPublicKey(String fileName) throws IOException {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(fileName);
-		Reader reader = new InputStreamReader(is, "utf-8");
+		Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
 		
 		StringBuilder buf = new StringBuilder();
 		while (true) {

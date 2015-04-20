@@ -94,7 +94,7 @@ import java.util.Random;
  * - Marc
  */
 
-public class RandomGUID extends Object {
+public class RandomGUID {
 
     public String valueBeforeMD5 = "";
     public String valueAfterMD5 = "";
@@ -147,7 +147,7 @@ public class RandomGUID extends Object {
      */
     private void getRandomGUID(boolean secure) {
         MessageDigest md5 = null;
-        StringBuffer sbValueBeforeMD5 = new StringBuffer();
+        StringBuilder sbValueBeforeMD5 = new StringBuilder();
 
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -157,7 +157,7 @@ public class RandomGUID extends Object {
 
         try {
             long time = System.currentTimeMillis();
-            long rand = 0;
+            long rand;
 
             if (secure) {
                 rand = mySecureRand.nextLong();
@@ -181,7 +181,7 @@ public class RandomGUID extends Object {
             md5.update(valueBeforeMD5.getBytes());
 
             byte[] array = md5.digest();
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             for (int j = 0; j < array.length; ++j) {
                 int b = array[j] & 0xFF;
                 if (b < 0x10) sb.append('0');
@@ -203,7 +203,7 @@ public class RandomGUID extends Object {
      */
     public String toString() {
         String raw = valueAfterMD5.toUpperCase();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(raw.substring(0, 8));
         sb.append("-");
         sb.append(raw.substring(8, 12));

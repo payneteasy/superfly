@@ -1,6 +1,20 @@
 package com.payneteasy.superfly.service.impl.remote;
 
-import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.PasswordReset;
+import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOService;
+import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.UserDescription;
+import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.UserNotFoundException;
+import com.payneteasy.superfly.api.UserRegisterRequest;
+import com.payneteasy.superfly.api.UserStatus;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.model.UserWithStatus;
@@ -13,7 +27,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -253,11 +267,7 @@ public class SSOServiceImpl implements SSOService {
     }
 
     private byte[] getStringBytes(String s) {
-        try {
-            return s.getBytes("utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("We don't have utf-8");
-        }
+        return s.getBytes(StandardCharsets.UTF_8);
     }
 
     /**

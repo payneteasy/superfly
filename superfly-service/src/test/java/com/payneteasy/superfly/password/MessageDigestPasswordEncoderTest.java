@@ -6,7 +6,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -33,12 +33,12 @@ public class MessageDigestPasswordEncoderTest {
 	}
 
     @Test
-	public void testSha256() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+	public void testSha256() throws NoSuchAlgorithmException {
 		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
 		encoder.setAlgorithm("SHA-256");
 		String encoded = encoder.encode("password", "salt");
 		MessageDigest md = MessageDigest.getInstance("sha-256");
-		byte[] bytes = md.digest("password{salt}".getBytes("utf-8"));
+		byte[] bytes = md.digest("password{salt}".getBytes(StandardCharsets.UTF_8));
 		String expected = new String(Hex.encodeHex(bytes));
 		assertEquals(expected, encoded);
 	}

@@ -826,6 +826,26 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.gaul</groupId>
+				<artifactId>modernizer-maven-plugin</artifactId>
+				<version>1.3.0</version>
+				<configuration>
+					<javaVersion>${java.version}</javaVersion>
+					<ignorePackages />
+					<failOnViolations>${modernizer.failOnViolations}</failOnViolations>
+				</configuration>
+				<executions>
+					<execution>
+						<id>modernizer</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>modernizer</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -845,6 +865,7 @@
 		<project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 
 		<java.version>1.7</java.version>
+		<modernizer.failOnViolations>true</modernizer.failOnViolations>
 	</properties>
 
 	<profiles>

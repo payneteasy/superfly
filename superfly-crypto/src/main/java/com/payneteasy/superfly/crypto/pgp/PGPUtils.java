@@ -1,17 +1,5 @@
 package com.payneteasy.superfly.crypto.pgp;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.util.Date;
-import java.util.Iterator;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
@@ -32,8 +20,24 @@ import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchProviderException;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.util.Date;
+import java.util.Iterator;
 
 public class PGPUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PGPUtils.class);
 	
 	private static Provider provider = new BouncyCastleProvider();
 	
@@ -65,9 +69,7 @@ public class PGPUtils {
 			ok = key != null && key.isEncryptionKey();
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException(e);
-		} catch (IOException e) {
-			ok = false;
-		} catch (PGPException e) {
+		} catch (IOException | PGPException e) {
 			ok = false;
 		} catch (IllegalArgumentException e) {
 			// this happens if some junk is supplied as a key
@@ -78,8 +80,7 @@ public class PGPUtils {
 	
 	private static byte[] armoredToBytes(String armoredPublicKey)
 			throws UnsupportedEncodingException {
-		byte[] publicKeyBytes = armoredPublicKey.getBytes("utf-8");
-		return publicKeyBytes;
+		return armoredPublicKey.getBytes(StandardCharsets.UTF_8);
 	}
 	
 	private static PGPPublicKey readPublicKey(byte[] bytes)
@@ -149,12 +150,8 @@ public class PGPUtils {
 
 		byte[] outBytes = bOut.toByteArray();
 
-		OutputStream cOut = cPk.open(out, outBytes.length);
-
-		try {
+		try (OutputStream cOut = cPk.open(out, outBytes.length)) {
 			cOut.write(outBytes);
-		} finally {
-			cOut.close();
 		}
 
 		if (armor) {
@@ -245,7 +242,7 @@ public class PGPUtils {
 				System.err.println("no message integrity check");
 			}
 		} catch (PGPException e) {
-			System.err.println(e);
+			LOGGER.error("PGPException", e);
 			if (e.getUnderlyingException() != null) {
 				e.getUnderlyingException().printStackTrace();
 			}

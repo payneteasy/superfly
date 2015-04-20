@@ -70,7 +70,7 @@ public class UserWithActions implements Serializable {
 	
 	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		buf.append(username).append(" (").append(email).append(") ");
 		buf.append(actions);
 		return buf.toString();
