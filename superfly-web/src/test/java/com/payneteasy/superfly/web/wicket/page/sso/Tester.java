@@ -10,7 +10,7 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Assert;
 
 import javax.servlet.http.Cookie;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author rpuch
@@ -25,15 +25,15 @@ public class Tester extends WicketTester {
         // inspecting request because WicketTester automatically
         // puts all cookies from response to request
         boolean has = false;
-        Cookie[] cookies = getRequest().getCookies();
+        List<Cookie> cookies = getLastResponse().getCookies();
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name) && cookie.getValue().equals(value)) {
                 has = true;
                 break;
             }
         }
-        Assert.assertTrue(String.format("Expected to have cookie %s with name %s but had only the following: %s", name, value,
-                Arrays.toString(cookies)), has);
+        Assert.assertTrue(String.format("Expected to have cookie %s with name %s but had only the following: %s",
+                name, value, cookies), has);
     }
 
     @Override
