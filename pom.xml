@@ -720,11 +720,6 @@
 
 		<profile>
 			<id>owasp-dependency-check</id>
-			<build>
-				<plugins>
-					<!-- OWASP dependency check -->
-				</plugins>
-			</build>
 			<reporting>
 				<plugins>
 					<!-- OWASP dependency check -->
