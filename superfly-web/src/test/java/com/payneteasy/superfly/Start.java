@@ -1,14 +1,26 @@
 package com.payneteasy.superfly;
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.plus.webapp.EnvConfiguration;
+import org.eclipse.jetty.plus.webapp.PlusConfiguration;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.webapp.Configuration;
+import org.eclipse.jetty.webapp.FragmentConfiguration;
+import org.eclipse.jetty.webapp.JettyWebXmlConfiguration;
+import org.eclipse.jetty.webapp.MetaInfConfiguration;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebInfConfiguration;
+import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.NamingException;
+import java.util.Collections;
 
 public class Start {
 	private static final Logger LOG = LoggerFactory.getLogger(Start.class);
@@ -34,17 +46,18 @@ public class Start {
 	        connector.setMaxIdleTime(1000 * 60 * 60);
 	        connector.setSoLingerTime(-1);
 	        connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8085")));
-	        
+
 	        SslSocketConnector secureConnector = new SslSocketConnector();
 	        // Set some timeout options to make debugging easier.
 	        secureConnector.setMaxIdleTime(1000 * 60 * 60);
 	        secureConnector.setSoLingerTime(-1);
 	        secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
-	        secureConnector.setKeystore("src/test/resources/superfly_server_ks");
-	        secureConnector.setKeyPassword("changeit");
-	        secureConnector.setTruststore("src/test/resources/ca_ts");
-	        secureConnector.setTrustPassword("changeit");
-	        secureConnector.setNeedClientAuth(true);
+			final SslContextFactory sslContextFactory = secureConnector.getSslContextFactory();
+			sslContextFactory.setKeyStorePath("src/test/resources/superfly_server_ks");
+	        sslContextFactory.setKeyStorePassword("changeit");
+	        sslContextFactory.setTrustStore("src/test/resources/ca_ts");
+	        sslContextFactory.setTrustStorePassword("changeit");
+	        sslContextFactory.setNeedClientAuth(true);
 	        
 	        server.setConnectors(new Connector[]{connector, secureConnector});
 
@@ -52,20 +65,27 @@ public class Start {
 	        superfly.setServer(server);
 	        superfly.setContextPath("/superfly");
 	        superfly.setWar("src/main/webapp");
-	        superfly.setConfigurationClasses(new String[] {
-	                "org.mortbay.jetty.webapp.WebInfConfiguration",
-	                "org.mortbay.jetty.plus.webapp.EnvConfiguration",
-	                "org.mortbay.jetty.plus.webapp.Configuration",
-	                "org.mortbay.jetty.webapp.JettyWebXmlConfiguration"
-	        });
+	        superfly.setConfigurations(new Configuration[]{
+					new WebInfConfiguration(),
+					new WebXmlConfiguration(),
+					new MetaInfConfiguration(),
+					new FragmentConfiguration(),
+					new EnvConfiguration(),
+					new PlusConfiguration(),
+					new JettyWebXmlConfiguration()
+			});
+
+			superfly.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
             String overrideWebXml = System.getProperty(PROPERTY_OVERRIDE_WEB_XML, "src/test/resources/jetty/override-web.xml");
             LOG.info("Override web.xml is "+overrideWebXml + "( to override use -D"+PROPERTY_OVERRIDE_WEB_XML+")");
-	        superfly.setOverrideDescriptor(overrideWebXml);
-	        
-	        server.addHandler(superfly);
+	        superfly.setOverrideDescriptors(Collections.singletonList(overrideWebXml));
 
-	        try {
+			ContextHandlerCollection webapps = new ContextHandlerCollection();
+			webapps.setHandlers(new Handler[]{superfly});
+			server.setHandler(webapps);
+
+			try {
 	            System.out.println(">>> STARTING EMBEDDED JETTY SERVER, PRESS ANY KEY TO STOP");
 	            server.start();
 

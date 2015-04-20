@@ -5,7 +5,6 @@
 		<groupId>com.payneteasy.superfly</groupId>
 		<version>1.6-6-SNAPSHOT</version>
 	</parent>
-	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-client</artifactId>
 	<name>Superfly Client</name>
 	<description>Contains classes used to use Superfly facilities by clients</description>
@@ -28,7 +27,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 	</dependencies>
 </project>

@@ -5,7 +5,6 @@
 		<groupId>com.payneteasy.superfly</groupId>
         <version>1.6-6-SNAPSHOT</version>
 	</parent>
-	<groupId>com.payneteasy.superfly</groupId>
 	<artifactId>superfly-wicket</artifactId>
 	<name>Superfly wicket extensions</name>
 	<description>Classes that allow to integrate Superfly and Wicket</description>
@@ -18,7 +17,7 @@
 		</dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
 	</dependencies>
 </project>
