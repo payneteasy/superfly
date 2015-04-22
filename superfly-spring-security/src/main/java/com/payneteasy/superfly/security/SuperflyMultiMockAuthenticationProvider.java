@@ -3,6 +3,8 @@ package com.payneteasy.superfly.security;
 import java.util.Collections;
 import java.util.Map;
 
+import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
+import com.payneteasy.superfly.security.processor.IdAuthenticationPostProcessor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -37,6 +39,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
 	private String hotp;
 	private ActionsMapBuilder actionsMapBuilder;
 	private boolean enabled = true;
+	private AuthenticationPostProcessor authenticationPostProcessor = new IdAuthenticationPostProcessor();
 	
 	private Map<SSORole, SSOAction[]> cachedMap = null;
 	
@@ -59,6 +62,11 @@ public class SuperflyMultiMockAuthenticationProvider extends
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public void setAuthenticationPostProcessor(
+			AuthenticationPostProcessor authenticationPostProcessor) {
+		this.authenticationPostProcessor = authenticationPostProcessor;
 	}
 
 	public Authentication authenticate(Authentication authentication)
@@ -98,8 +106,10 @@ public class SuperflyMultiMockAuthenticationProvider extends
 				}
 			} else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
 				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
-				return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoRole(),
+				final SSOUserAuthenticationToken ssoUserAuthenticationToken = new SSOUserAuthenticationToken(
+						token.getSsoUser(), token.getSsoRole(),
 						token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
+				return authenticationPostProcessor.postProcess(ssoUserAuthenticationToken);
 			}
 		}
 		return null;
@@ -114,7 +124,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
 			try {
 				cachedMap = actionsMapBuilder.build();
 			} catch (Exception e) {
-				throw new AuthenticationServiceException("Counld not obtain roles and actions", e);
+				throw new AuthenticationServiceException("Could not obtain roles and actions", e);
 			}
 		}
 		return cachedMap;
