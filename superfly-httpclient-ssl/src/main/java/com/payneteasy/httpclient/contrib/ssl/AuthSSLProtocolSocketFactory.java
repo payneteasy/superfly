@@ -393,6 +393,13 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
             doPreConnectSocketStuff(socket);
             SocketAddress localaddr = new InetSocketAddress(localAddress, localPort);
             SocketAddress remoteaddr = new InetSocketAddress(host, port);
+
+            if (timeout > 0 && socket.getSoTimeout() == 0) {
+                // force SO timeout if not set so we don't freeze forever
+                // during a handshake
+                socket.setSoTimeout(timeout);
+            }
+
             socket.bind(localaddr);
             socket.connect(remoteaddr, timeout);
             return socket;
