@@ -1,62 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://www.owasp.org/index.php/OWASP_Dependency_Check_Suppression">
-   <!-- this is our module, not PGP in which these vulnerabilities are found -->
-   <suppress>
-      <notes><![CDATA[
+    <!-- this is our module, not PGP in which these vulnerabilities are found -->
+    <suppress>
+        <notes><![CDATA[
       file name: superfly-crypto-1.6-6-SNAPSHOT.jar
       ]]></notes>
-      <sha1>851212e5584b21d22ec32a88f0fc5a60321adee3</sha1>
-      <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
-   </suppress>
-   <suppress>
-      <notes><![CDATA[
+        <sha1>851212e5584b21d22ec32a88f0fc5a60321adee3</sha1>
+        <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
       file name: superfly-crypto-1.6-6-SNAPSHOT.jar
       ]]></notes>
-      <sha1>f70cca6343136ff015ae059b3f2dd728b57397de</sha1>
-      <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
-   </suppress>
-   <suppress>
-      <notes><![CDATA[
+        <sha1>f70cca6343136ff015ae059b3f2dd728b57397de</sha1>
+        <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
       file name: superfly-crypto-1.6-6-SNAPSHOT.jar
       ]]></notes>
-      <sha1>8ae1efd2f5083030fd84623816bcd3a6c0192999</sha1>
-      <cve>CVE-2001-0265</cve>
-   </suppress>
+        <sha1>8ae1efd2f5083030fd84623816bcd3a6c0192999</sha1>
+        <cve>CVE-2001-0265</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+      file name: superfly-crypto-1.6-9-SNAPSHOT.jar
+      ]]></notes>
+        <sha1>8575fb242603f2f2906bc1dd2679502db30a21fe</sha1>
+        <cve>CVE-2001-0265</cve>
+    </suppress>
 
-   <!-- bcpg supports OpenPGP API, but it does not contain OpenPGP's vulnerability -->
-   <suppress>
-      <notes><![CDATA[
+    <!-- bcpg supports OpenPGP API, but it does not contain OpenPGP's vulnerability -->
+    <suppress>
+        <notes><![CDATA[
       file name: bcpg-jdk15-1.45.jar
       ]]></notes>
-      <sha1>15eab6dce094fa9ea71fa6f6d69056b9fe6e493c</sha1>
-      <cve>CVE-2005-0366</cve>
-   </suppress>
+        <sha1>15eab6dce094fa9ea71fa6f6d69056b9fe6e493c</sha1>
+        <cve>CVE-2005-0366</cve>
+    </suppress>
 
-   <!-- The following is suppressed because multiple same email
-        problem does not affect Superfly -->
-   <suppress>
-      <notes><![CDATA[
+    <!-- The following is suppressed because multiple same email
+         problem does not affect Superfly -->
+    <suppress>
+        <notes><![CDATA[
       file name: mail-1.4.jar
       ]]></notes>
-      <sha1>1aa1579ae5ecd41920c4f355b0a9ef40b68315dd</sha1>
-      <cpe>cpe:/a:sun:javamail:1.4</cpe>
-   </suppress>
+        <sha1>1aa1579ae5ecd41920c4f355b0a9ef40b68315dd</sha1>
+        <cpe>cpe:/a:sun:javamail:1.4</cpe>
+    </suppress>
 
-   <!-- These are suppressed because they relate to AbstractVerifier
-        vulnerability of httpclient 4.x which is not even present
-        in the commons-httpclient 3.x -->
-   <suppress>
-      <notes><![CDATA[
+    <!-- These are suppressed because they relate to AbstractVerifier
+         vulnerability of httpclient 4.x which is not even present
+         in the commons-httpclient 3.x -->
+    <suppress>
+        <notes><![CDATA[
       file name: commons-httpclient-3.1.jar
       ]]></notes>
-      <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-      <cve>CVE-2014-3577</cve>
-   </suppress>
-   <suppress>
-      <notes><![CDATA[
+        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
+        <cve>CVE-2014-3577</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
       file name: commons-httpclient-3.1.jar
       ]]></notes>
-      <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-      <cve>CVE-2012-6153</cve>
-   </suppress>
+        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
+        <cve>CVE-2012-6153</cve>
+    </suppress>
+
+    <!-- Suppressing this because it is about httpclient 4.x, not 3.x.
+        Analogous code we use with 3.x is patched to avoid this vulnerability.
+    -->
+    <suppress>
+        <notes><![CDATA[
+  file name: commons-httpclient-3.1.jar
+  ]]></notes>
+        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
+        <cve>CVE-2015-5262</cve>
+    </suppress>
 </suppressions>

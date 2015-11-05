@@ -553,7 +553,9 @@
             <dependency>
                 <groupId>ca.juliusdavies</groupId>
                 <artifactId>not-yet-commons-ssl</artifactId>
-                <version>0.3.17</version>
+                <!-- This version contains a fix that implements the same thing
+                     as a fix for CVE-2015-5262 -->
+                <version>0.3.17-20151105</version>
                 <exclusions>
                     <exclusion>
                         <groupId>log4j</groupId>
@@ -726,6 +728,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
+                        <version>1.2.10</version>
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
                         </configuration>
