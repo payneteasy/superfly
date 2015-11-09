@@ -33,4 +33,4 @@ All dynamically-generated URLs are made compatible with nginx mod\_security modu
 
 # Gratitudes #
 
-Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for their wonderful profiler.
+Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for their wonderful [Java profiler](http://www.ej-technologies.com/products/jprofiler/overview.html).
