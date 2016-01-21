@@ -2,7 +2,9 @@ package com.payneteasy.superfly.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -76,13 +78,26 @@ public class SuperflyDataSender {
 
 	protected ActionDescription[] obtainActionDescriptions() throws CollectionException {
 		List<ActionDescription> actions = actionDescriptionCollector.collect();
+		actions = leaveUniqueActionsOnly(actions);
 		for (ActionDescription action : actions) {
 			action.setName(applyTransformers(action.getName()));
 		}
 		return actions.toArray(new ActionDescription[actions.size()]);
 	}
 
-	protected String applyTransformers(String name) {
+    private List<ActionDescription> leaveUniqueActionsOnly(List<ActionDescription> actions) {
+        Set<String> seenNames = new HashSet<>();
+        List<ActionDescription> result = new ArrayList<>();
+        for (ActionDescription action : actions) {
+            if (!seenNames.contains(action.getName())) {
+                result.add(action);
+                seenNames.add(action.getName());
+            }
+        }
+        return result;
+    }
+
+    protected String applyTransformers(String name) {
 		for (StringTransformer transformer : transformers) {
 			name = transformer.transform(name);
 		}
