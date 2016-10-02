@@ -10,7 +10,7 @@
     <sec:http security="none" pattern="/login*"/>
     <sec:http security="none" pattern="/sso/**"/>
     <sec:http security="none" pattern="/management/version.txt"/>
-		
+
     <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
         <sec:custom-filter ref="hotpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
@@ -26,7 +26,8 @@
 		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
 		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
         <sec:intercept-url pattern="/remoting/sso.hessian.service" access="ROLE_SUBSYSTEM"/>
-        
+        <sec:intercept-url pattern="/remoting/basic.hessian.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+
         <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
         
         <sec:logout />

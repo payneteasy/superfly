@@ -9,6 +9,8 @@
                 <prop key="/sso.service">ssoServiceExporter</prop>
                 <prop key="/sso.xremoting.service">ssoServiceXRemotingExporter</prop>
                 <prop key="/sso.hessian.service">ssoServiceHessianExporter</prop>
+                <prop key="/oauth2.hessian.service">oauth2ServiceHessianExporter</prop>
+                <prop key="/basic.hessian.service">basicServiceHessianExporter</prop>
             </props>
         </property>
     </bean>

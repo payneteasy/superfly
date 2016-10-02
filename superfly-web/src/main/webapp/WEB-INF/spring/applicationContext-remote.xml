@@ -34,4 +34,18 @@
         <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
     </bean>
 
+    <bean name="oauth2ServiceHessianExporter" class="com.payneteasy.superfly.web.security.securehandler.SecuredHttpRequestHandler">
+        <constructor-arg index="0" ref="ssoServiceHessianExporter"/>
+        <constructor-arg index="1">
+            <bean class="com.payneteasy.superfly.web.security.securehandler.OAuth2AuthorizationParser"/>
+        </constructor-arg>
+    </bean>
+
+    <bean name="basicServiceHessianExporter" class="com.payneteasy.superfly.web.security.securehandler.SecuredHttpRequestHandler">
+        <constructor-arg index="0" ref="ssoServiceHessianExporter"/>
+        <constructor-arg index="1">
+            <bean class="com.payneteasy.superfly.web.security.securehandler.BasicAuthorizationParser"/>
+        </constructor-arg>
+    </bean>
+
 </beans>
