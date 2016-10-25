@@ -1,0 +1,10 @@
+language: java
+jdk: oraclejdk8
+
+before_install:
+  - ls -l /usr/local
+  - cat /etc/mavenrc
+
+cache:
+  directories:
+  - $HOME/.m2
