@@ -14,34 +14,35 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertSame;
 
 public class SSOServiceImplTest {
-	private SSOServiceImpl ssoService;
-	private InternalSSOService internalSSOService;
+    private SSOServiceImpl ssoService;
+    private InternalSSOService internalSSOService;
 
     @Before
-	public void setUp() {
-		internalSSOService = EasyMock.createMock(InternalSSOService.class);
-		ssoService = new SSOServiceImpl();
-		ssoService.setInternalSSOService(internalSSOService);
-	}
+    public void setUp() {
+        internalSSOService = EasyMock.createMock(InternalSSOService.class);
+        ssoService = new SSOServiceImpl();
+        ssoService.setInternalSSOService(internalSSOService);
+    }
 
     @Test
-	public void testAuthenticateHOTP() {
-		// success
-		expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(true);
-		replay(internalSSOService);
+    public void testAuthenticateHOTP() {
+        // success
+        expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(true);
+        replay(internalSSOService);
         Assert.assertTrue(ssoService.authenticateUsingHOTP("pete", "123456"));
-		verify(internalSSOService);
-		
-		EasyMock.reset(internalSSOService);
-		
-		// failure
-		expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(false);
-		replay(internalSSOService);
+        verify(internalSSOService);
+
+        EasyMock.reset(internalSSOService);
+
+        // failure
+        expect(internalSSOService.authenticateHOTP(null, "pete", "123456")).andReturn(false);
+        replay(internalSSOService);
         Assert.assertFalse(ssoService.authenticateUsingHOTP("pete", "123456"));
-		verify(internalSSOService);
-	}
+        verify(internalSSOService);
+    }
 
     @Test
     public void testExchangeSubsystemToken() {
@@ -86,11 +87,23 @@ public class SSOServiceImplTest {
 
     @Test
     public void testPseudoAuthenticate() {
-        SSOUser user = new SSOUser("username", Collections.<SSORole, SSOAction[]>emptyMap(), Collections.<String, String>emptyMap());
+        SSOUser user = new SSOUser("username", Collections.<SSORole, SSOAction[]>emptyMap(),
+                Collections.<String, String>emptyMap());
         expect(internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(user);
         replay(internalSSOService);
         SSOUser user2 = ssoService.pseudoAuthenticate("username", "subsystemIdentifier");
-        Assert.assertSame(user, user2);
+        assertSame(user, user2);
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testChangeUserRole() {
+        internalSSOService.changeUserRole("username", "ROLE_TO");
+        expectLastCall();
+        replay(internalSSOService);
+
+        ssoService.changeUserRole("username", "ROLE_TO");
+
         verify(internalSSOService);
     }
 }

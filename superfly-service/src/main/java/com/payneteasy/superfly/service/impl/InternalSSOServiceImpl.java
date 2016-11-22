@@ -180,7 +180,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             // actually it's empty
             authRoles = Collections.emptyList();
         }
-        Map<SSORole, SSOAction[]> actionsMap = new HashMap<SSORole, SSOAction[]>(authRoles.size());
+        Map<SSORole, SSOAction[]> actionsMap = new HashMap<>(authRoles.size());
         for (AuthRole authRole : authRoles) {
             SSORole ssoRole = new SSORole(authRole.getRoleName());
             SSOAction[] actions = convertToSSOActions(authRole.getActions());
@@ -212,7 +212,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 	}
 
 	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
-		List<ActionToSave> actions = new ArrayList<ActionToSave>(actionDescriptions.length);
+		List<ActionToSave> actions = new ArrayList<>(actionDescriptions.length);
 		for (ActionDescription description : actionDescriptions) {
 			if (!notSavedActions.contains(description.getName().toLowerCase())) {
 				ActionToSave action = new ActionToSave();
@@ -226,7 +226,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
 	public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
 		List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
-		List<SSOUserWithActions> result = new ArrayList<SSOUserWithActions>(users.size());
+		List<SSOUserWithActions> result = new ArrayList<>(users.size());
 		for (UserWithActions user : users) {
 			result.add(convertToSSOUser(user));
 		}
@@ -359,4 +359,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public void completeUser(String username) {
         userDao.completeUser(username);
     }
+
+	@Override
+	public void changeUserRole(String username, String newRole) {
+		userDao.changeUserRole(username, newRole);
+	}
 }
