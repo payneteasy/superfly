@@ -6,6 +6,7 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -23,45 +24,51 @@ import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class AddSubsystemPage extends BasePage {
-	@SpringBean
-	private SubsystemService subsystemService;
+    @SpringBean
+    private SubsystemService subsystemService;
     @SpringBean
     private SmtpServerService smtpServerService;
 
-	public AddSubsystemPage() {
-		super(ListSubsystemsPage.class);
-		
-		final UISubsystem subsystem = new UISubsystem();
-		Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<UISubsystem>(subsystem)) {
-			@Override
-			protected void onSubmit() {
-				subsystemService.createSubsystem(subsystem);
-				setResponsePage(ListSubsystemsPage.class);
-			}
+    public AddSubsystemPage() {
+        super(ListSubsystemsPage.class);
 
-		};
-		add(form);
-		form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.add.name", true));
+        final UISubsystem subsystem = new UISubsystem();
+        Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
+            @Override
+            protected void onSubmit() {
+                subsystemService.createSubsystem(subsystem);
+                setResponsePage(ListSubsystemsPage.class);
+            }
+
+        };
+        add(form);
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.add.name", true));
         form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "title", "subsystem.add.title", true));
-		
-		LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<String>(subsystem, "callbackUrl", "subsystem.add.callback",true);
+
+        LabelTextFieldRow<String> callbackUrlRow = new LabelTextFieldRow<>(subsystem, "callbackUrl",
+                "subsystem.add.callback", true);
         UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"});
         callbackUrlRow.getTextField().add(urlValidator);
-		form.add(callbackUrlRow);
+        form.add(callbackUrlRow);
 
-        LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<String>(subsystem, "subsystemUrl", "subsystem.add.subsystemUrl",true);
+        form.add(new LabelCheckBoxRow("sendCallbacks", subsystem, "subsystem.add.send-callbacks"));
+
+        LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<>(subsystem, "subsystemUrl",
+                "subsystem.add.subsystemUrl", true);
         subsystemUrlRow.getTextField().add(urlValidator);
         form.add(subsystemUrlRow);
 
-        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<String>(subsystem, "landingUrl", "subsystem.add.landingUrl",true);
+        LabelTextFieldRow<String> landingUrlRow = new LabelTextFieldRow<>(subsystem, "landingUrl",
+                "subsystem.add.landingUrl", true);
         landingUrlRow.getTextField().add(urlValidator);
         form.add(landingUrlRow);
 
-        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<String>(subsystem, "loginFormCssUrl", "subsystem.add.loginFormCssUrl");
+        LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<>(subsystem, "loginFormCssUrl",
+                "subsystem.add.loginFormCssUrl");
         loginFormCssUrlRow.getTextField().add(urlValidator);
         form.add(loginFormCssUrlRow);
-		
-		form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
+
+        form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
 
         IModel<List<UISmtpServerForFilter>> smtpServersModel = new LoadableDetachableModel<List<UISmtpServerForFilter>>() {
             @Override
@@ -69,7 +76,7 @@ public class AddSubsystemPage extends BasePage {
                 return smtpServerService.getSmtpServersForFilter();
             }
         };
-        form.add(new LabelDropDownChoiceRow<UISmtpServerForFilter>("smtpServer", subsystem, "subsystem.smtpServer",
+        form.add(new LabelDropDownChoiceRow<>("smtpServer", subsystem, "subsystem.smtpServer",
                 smtpServersModel, new IChoiceRenderer<UISmtpServerForFilter>() {
             public Object getDisplayValue(UISmtpServerForFilter server) {
                 return server == null ? "" : server.getName();
@@ -80,11 +87,12 @@ public class AddSubsystemPage extends BasePage {
             }
         }, true));
 
-		form.add(new BookmarkablePageLink<Page>("cancel", ListSubsystemsPage.class));
-	}
+        form.add(new SubmitLink("submit-link"));
+        form.add(new BookmarkablePageLink<Page>("cancel", ListSubsystemsPage.class));
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Add subsystem";
-	}
+    @Override
+    protected String getTitle() {
+        return "Add subsystem";
+    }
 }

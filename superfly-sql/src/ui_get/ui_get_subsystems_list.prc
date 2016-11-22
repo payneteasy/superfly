@@ -6,6 +6,7 @@ create procedure ui_get_subsystems_list()
     select ssys_id,
            subsystem_name,
            callback_information,
+           send_callbacks,
            fixed,
            allow_list_users
       from subsystems;
@@ -17,6 +18,7 @@ call save_routine_information('ui_get_subsystems_list',
                                         'ssys_id int',
                                         'subsystem_name varchar',
                                         'callback_information varchar',
+                                        'send_callbacks varchar',
                                         'fixed varchar',
                                         'allow_list_users varchar'
                               )

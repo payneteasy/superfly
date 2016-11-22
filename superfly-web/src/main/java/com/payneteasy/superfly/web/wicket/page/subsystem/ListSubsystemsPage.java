@@ -30,140 +30,139 @@ import com.payneteasy.superfly.web.wicket.page.SelectObjectWrapper;
 
 @Secured("ROLE_ADMIN")
 public class ListSubsystemsPage extends BasePage {
-	@SpringBean
-	private SubsystemService subsystemService;
+    @SpringBean
+    private SubsystemService subsystemService;
 
-	@SuppressWarnings("unchecked")
-	public ListSubsystemsPage() {
-		super(ListSubsystemsPage.class);
-		add(new EmptyPanel("confirmPanel"));
+    @SuppressWarnings("unchecked")
+    public ListSubsystemsPage() {
+        super(ListSubsystemsPage.class);
+        add(new EmptyPanel("confirmPanel"));
 
-		List<UISubsystemForList> subsystems = subsystemService.getSubsystems();
-		final List<SelectObjectWrapper<UISubsystemForList>> subsystemWrapper = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
-		for (UISubsystemForList ui : subsystems) {
-			subsystemWrapper
-					.add(new SelectObjectWrapper<UISubsystemForList>(ui));
-		}
-		final InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>> subsystemsCheckGroupModel = new InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>>() {
+        List<UISubsystemForList> subsystems = subsystemService.getSubsystems();
+        final List<SelectObjectWrapper<UISubsystemForList>> subsystemWrapper = new ArrayList<>();
+        for (UISubsystemForList ui : subsystems) {
+            subsystemWrapper.add(new SelectObjectWrapper<>(ui));
+        }
+        final InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>> subsystemsCheckGroupModel = new InitializingModel<Collection<SelectObjectWrapper<UISubsystemForList>>>() {
 
-			@Override
-			protected Collection<SelectObjectWrapper<UISubsystemForList>> getInitialValue() {
-				final Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems = new HashSet<SelectObjectWrapper<UISubsystemForList>>();
-				for (SelectObjectWrapper<UISubsystemForList> subsystem : subsystemWrapper) {
-					if (subsystem.isSelected()) {
-						checkedSubsystems.add(subsystem);
-					}
-				}
-				return checkedSubsystems;
-			}
+            @Override
+            protected Collection<SelectObjectWrapper<UISubsystemForList>> getInitialValue() {
+                final Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems = new HashSet<>();
+                for (SelectObjectWrapper<UISubsystemForList> subsystem : subsystemWrapper) {
+                    if (subsystem.isSelected()) {
+                        checkedSubsystems.add(subsystem);
+                    }
+                }
+                return checkedSubsystems;
+            }
 
-		};
-		Form<Void> form = new Form<Void>("form") {
+        };
+        Form<Void> form = new Form<Void>("form") {
 
-		};
-		final CheckGroup<SelectObjectWrapper<UISubsystemForList>> group = new CheckGroup<SelectObjectWrapper<UISubsystemForList>>(
-				"group", subsystemsCheckGroupModel);
-		form.add(group);
-		final ListView<SelectObjectWrapper<UISubsystemForList>> listView = new ListView<SelectObjectWrapper<UISubsystemForList>>(
-				"list-subsystem", subsystemWrapper) {
+        };
+        final CheckGroup<SelectObjectWrapper<UISubsystemForList>> group = new CheckGroup<>(
+                "group", subsystemsCheckGroupModel);
+        form.add(group);
+        final ListView<SelectObjectWrapper<UISubsystemForList>> listView = new ListView<SelectObjectWrapper<UISubsystemForList>>(
+                "list-subsystem", subsystemWrapper) {
 
-			@Override
-			protected void populateItem(
-					ListItem<SelectObjectWrapper<UISubsystemForList>> item) {
-				final SelectObjectWrapper<UISubsystemForList> subWrapperItem = item
-						.getModelObject();
-				item.add(new Label("subsytem-name", subWrapperItem.getObject()
-						.getName()));
-				item.add(new BookmarkablePageLink("subsystem-edit",
-						EditSubsystemPage.class, PageParametersBuilder.fromPair("id",
+            @Override
+            protected void populateItem(
+                    ListItem<SelectObjectWrapper<UISubsystemForList>> item) {
+                final SelectObjectWrapper<UISubsystemForList> subWrapperItem = item
+                        .getModelObject();
+                item.add(new Label("subsystem-name", subWrapperItem.getObject().getName()));
+                item.add(new BookmarkablePageLink("subsystem-edit",
+                        EditSubsystemPage.class, PageParametersBuilder.fromPair("id",
                         subWrapperItem.getObject().getId())));
-				item.add(new Check<SelectObjectWrapper<UISubsystemForList>>(
-						"selected", item.getModel()));
-				item.add(new Label("subsystem-callback", subWrapperItem
-						.getObject().getCallbackInformation()));
-				item.add(new Label("allow-list-users",
-						item.getModelObject().getObject().isAllowListUsers() ? "Yes" : "No"));
-				item.add(new SubmitLink("delete-subsystem") {
+                item.add(new Check<>("selected", item.getModel()));
+                item.add(new Label("subsystem-callback", subWrapperItem
+                        .getObject().getCallbackInformation()));
+                item.add(new Label("send-callbacks",
+                        item.getModelObject().getObject().isSendCallbacks() ? "Yes" : "No"));
+                item.add(new Label("allow-list-users",
+                        item.getModelObject().getObject().isAllowListUsers() ? "Yes" : "No"));
+                item.add(new SubmitLink("delete-subsystem") {
 
-					@Override
-					public void onSubmit() {
-						this.getPage().get("confirmPanel").replaceWith(
-								new ConfirmPanel("confirmPanel",
-										"You are about to delete "
-												+ " subsystem - "
-												+ subWrapperItem.getObject()
-														.getName()
-												+ " permanently?") {
-									public void onConfirm() {
+                    @Override
+                    public void onSubmit() {
+                        this.getPage().get("confirmPanel").replaceWith(
+                                new ConfirmPanel("confirmPanel",
+                                        "You are about to delete "
+                                                + " subsystem - "
+                                                + subWrapperItem.getObject()
+                                                .getName()
+                                                + " permanently?") {
+                                    public void onConfirm() {
 
-										subsystemService
-												.deleteSubsystem(subWrapperItem
-														.getObject().getId());
+                                        subsystemService
+                                                .deleteSubsystem(subWrapperItem
+                                                        .getObject().getId());
 
-										this.getPage().setResponsePage(
-												ListSubsystemsPage.class);
-									}
-								});
-					}
+                                        this.getPage().setResponsePage(
+                                                ListSubsystemsPage.class);
+                                    }
+                                });
+                    }
 
-				});
-			}
+                });
+            }
 
-		};
-		group.add(listView);
-		group.add(new CheckGroupSelector("master-checkbox", group));
-		form.add(new Button("delete-sub") {
+        };
+        group.add(listView);
+        group.add(new CheckGroupSelector("master-checkbox", group));
+        form.add(new Button("delete-sub") {
 
-			@Override
-			public void onSubmit() {
-				ArrayList<SelectObjectWrapper<UISubsystemForList>> subsystemsWrap = (ArrayList<SelectObjectWrapper<UISubsystemForList>>) listView
-						.getModelObject();
-				Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems = subsystemsCheckGroupModel
-						.getObject();
-				final ArrayList<SelectObjectWrapper<UISubsystemForList>> listWrap = new ArrayList<SelectObjectWrapper<UISubsystemForList>>();
-				for (SelectObjectWrapper<UISubsystemForList> ui : subsystemsWrap) {
-					if (checkedSubsystems.contains(ui)) {
-						listWrap.add(ui);
-					}
-				}
-				if (listWrap.size() == 0)
-					return;
-				this.getPage().get("confirmPanel").replaceWith(
-						new ConfirmPanel("confirmPanel",
-								"You are about to delete "
-										+ " subsystem(s) permanently?") {
-							public void onConfirm() {
-								boolean someSuccess = false;
-								for (SelectObjectWrapper<UISubsystemForList> ui : listWrap) {
-									RoutineResult result = subsystemService.deleteSubsystem(
-											ui.getObject().getId());
-									if (result.isOk()) {
-										someSuccess = true;
-									}
-								}
-								if (someSuccess) {
-									info("Deleted subsystems; please be aware that some sessions could be expired");
-								}
-								this.getPage().setResponsePage(
-										ListSubsystemsPage.class);
-							}
-						});
-			}
+            @Override
+            public void onSubmit() {
+                ArrayList<SelectObjectWrapper<UISubsystemForList>> subsystemsWrap = (ArrayList<SelectObjectWrapper<UISubsystemForList>>) listView
+                        .getModelObject();
+                Collection<SelectObjectWrapper<UISubsystemForList>> checkedSubsystems = subsystemsCheckGroupModel
+                        .getObject();
+                final ArrayList<SelectObjectWrapper<UISubsystemForList>> listWrap = new ArrayList<>();
+                for (SelectObjectWrapper<UISubsystemForList> ui : subsystemsWrap) {
+                    if (checkedSubsystems.contains(ui)) {
+                        listWrap.add(ui);
+                    }
+                }
+                if (listWrap.size() == 0)
+                    return;
+                this.getPage().get("confirmPanel").replaceWith(
+                        new ConfirmPanel("confirmPanel",
+                                "You are about to delete "
+                                        + " subsystem(s) permanently?") {
+                            public void onConfirm() {
+                                boolean someSuccess = false;
+                                for (SelectObjectWrapper<UISubsystemForList> ui : listWrap) {
+                                    RoutineResult result = subsystemService.deleteSubsystem(
+                                            ui.getObject().getId());
+                                    if (result.isOk()) {
+                                        someSuccess = true;
+                                    }
+                                }
+                                if (someSuccess) {
+                                    info("Deleted subsystems; please be aware that some sessions could be expired");
+                                }
+                                this.getPage().setResponsePage(
+                                        ListSubsystemsPage.class);
+                            }
+                        });
+            }
 
-		});
-		form.add(new Button("add-subsystem") {
+        });
+        form.add(new Button("add-subsystem") {
 
-			@Override
-			public void onSubmit() {
-				setResponsePage(AddSubsystemPage.class);
-			}
+            @Override
+            public void onSubmit() {
+                setResponsePage(AddSubsystemPage.class);
+            }
 
-		}.setDefaultFormProcessing(false));
-		add(form);
-	}
+        }.setDefaultFormProcessing(false));
+        add(form);
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Subsystems";
-	}
+    @Override
+    protected String getTitle() {
+        return "Subsystems";
+    }
 }

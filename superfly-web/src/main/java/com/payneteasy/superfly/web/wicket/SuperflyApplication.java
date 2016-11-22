@@ -29,11 +29,12 @@ import org.apache.wicket.Page;
 import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
+import org.apache.wicket.settings.IRequestCycleSettings;
 
 public class SuperflyApplication extends BaseApplication {
 
-	@Override
-	protected void customInit() {
+    @Override
+    protected void customInit() {
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
         CryptoMapper requestMapper = new CryptoMapper(getRootRequestMapper(), this);
         setRootRequestMapper(wrapWithInterceptingMapper(requestMapper));
@@ -44,14 +45,14 @@ public class SuperflyApplication extends BaseApplication {
 
         mountBookmarkablePageWithPath("/actions", ListActionsPage.class);
         mountBookmarkablePageWithPath("/actions/copyAction", CopyActionPropertiesPage.class);
-        
+
         mountBookmarkablePageWithPath("/groups", ListGroupsPage.class);
         mountBookmarkablePageWithPath("/groups/cloneGroup", CloneGroupPage.class);
         mountBookmarkablePageWithPath("/groups/changeGroupActions", ChangeGroupActionsPage.class);
         mountBookmarkablePageWithPath("/groups/view", ViewGroupPage.class);
         mountBookmarkablePageWithPath("/groups/add/addActions", GroupActionsPage.class);
         mountBookmarkablePageWithPath("/groups/add", GroupPropertiesPage.class);
-        
+
         mountBookmarkablePageWithPath("/roles", ListRolesPage.class);
         mountBookmarkablePageWithPath("/roles/view", ViewRolePage.class);
         mountBookmarkablePageWithPath("/roles/update", EditRolePage.class);
@@ -60,12 +61,12 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePageWithPath("/roles/add/addGroups", AddRoleGroupsPage.class);
         mountBookmarkablePageWithPath("/roles/changeActions", ChangeRoleActionsPage.class);
         mountBookmarkablePageWithPath("/roles/changeGroups", ChangeRoleGroupsPage.class);
-        
+
         mountBookmarkablePageWithPath("/subsystems", ListSubsystemsPage.class);
         mountBookmarkablePageWithPath("/subsystems/add", AddSubsystemPage.class);
         mountBookmarkablePageWithPath("/subsystems/update", EditSubsystemPage.class);
-        
-        
+
+
         mountBookmarkablePageWithPath("/users", ListUsersPage.class);
         mountBookmarkablePageWithPath("/users/create", CreateUserPage.class);
         mountBookmarkablePageWithPath("/users/update", EditUserPage.class);
@@ -74,7 +75,7 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePageWithPath("/users/changeActions", ChangeUserGrantActionsPage.class);
         mountBookmarkablePageWithPath("/users/view", UserDetailsPage.class);
         mountBookmarkablePageWithPath("/users/addSubsystemWithRole", AppendSubsystemWithRolePage.class);
-        
+
         mountBookmarkablePageWithPath("/sessions", ListSessionsPage.class);
         mountBookmarkablePageWithPath("/changepassword", ChangePasswordPage.class);
 
@@ -82,7 +83,9 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePageWithPath("smtp-servers/create", CreateSmtpServerPage.class);
         mountBookmarkablePageWithPath("smtp-servers/update", UpdateSmtpServerPage.class);
         mountBookmarkablePageWithPath("smtp-servers/view", ViewSmtpServerPage.class);
-	}
+
+        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.REDIRECT_TO_RENDER);
+    }
 
     protected InterceptionDecisions createInterceptionDecisions() {
         return new InterceptionDecisions() {
@@ -100,8 +103,8 @@ public class SuperflyApplication extends BaseApplication {
     }
 
     @Override
-	public Class<? extends Page> getHomePage() {
-		return ListUsersPage.class;
-	}
+    public Class<? extends Page> getHomePage() {
+        return ListUsersPage.class;
+    }
 
 }

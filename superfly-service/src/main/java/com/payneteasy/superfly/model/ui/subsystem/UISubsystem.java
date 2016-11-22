@@ -12,6 +12,7 @@ public class UISubsystem implements Serializable {
 	private String name;
     private String title;
 	private String callbackUrl;
+    private boolean sendCallbacks = true;
 	private boolean allowListUsers;
     private UISmtpServerForFilter smtpServer;
     private String subsystemUrl;
@@ -54,7 +55,16 @@ public class UISubsystem implements Serializable {
 		this.callbackUrl = callbackUrl;
 	}
 
-	@Column(name = "allow_list_users")
+    @Column(name = "send_callbacks")
+    public boolean isSendCallbacks() {
+        return sendCallbacks;
+    }
+
+    public void setSendCallbacks(boolean sendCallbacks) {
+        this.sendCallbacks = sendCallbacks;
+    }
+
+    @Column(name = "allow_list_users")
 	public boolean isAllowListUsers() {
 		return allowListUsers;
 	}
