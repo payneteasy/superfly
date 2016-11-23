@@ -25,22 +25,22 @@ import com.payneteasy.superfly.service.SessionService;
 
 @Transactional
 public class SessionServiceImpl implements SessionService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
-	
-	private SessionDao sessionDao;
-	private Notifier notifier;
+
+    private static final Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
+
+    private SessionDao sessionDao;
+    private Notifier notifier;
     private LoggerSink loggerSink;
 
-	@Required
-	public void setSessionDao(SessionDao sessionDao) {
-		this.sessionDao = sessionDao;
-	}
+    @Required
+    public void setSessionDao(SessionDao sessionDao) {
+        this.sessionDao = sessionDao;
+    }
 
-	@Required
-	public void setNotifier(Notifier notifier) {
-		this.notifier = notifier;
-	}
+    @Required
+    public void setNotifier(Notifier notifier) {
+        this.notifier = notifier;
+    }
 
     @Required
     public void setLoggerSink(LoggerSink loggerSink) {
@@ -48,57 +48,59 @@ public class SessionServiceImpl implements SessionService {
     }
 
     public List<UISession> getExpiredSessions() {
-		return sessionDao.getExpiredSessions();
-	}
+        return sessionDao.getExpiredSessions();
+    }
 
-	public List<UISession> getInvalidSessions() {
-		return sessionDao.getInvalidSessions();
-	}
+    public List<UISession> getInvalidSessions() {
+        return sessionDao.getInvalidSessions();
+    }
 
-	public RoutineResult expireInvalidSessions() {
-		return sessionDao.expireInvalidSessions();
-	}
-	
-	public List<UISession> deleteExpiredSessionsAndNotify() {
-		return deleteExpiredSessionsAndNotify(null);
-	}
+    public RoutineResult expireInvalidSessions() {
+        return sessionDao.expireInvalidSessions();
+    }
 
-	public List<UISession> deleteExpiredSessionsAndNotify(Date beforeWhat) {
-		List<UISession> sessions = sessionDao.deleteExpiredSessions(beforeWhat);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Deleted " + sessions.size() + " sessions"
-					+ (sessions.size() > 0 ? ", going to notify subsystems" : ""));
-		}
-		if (!sessions.isEmpty()) {
-			Map<String, List<String>> callbackUriToSessionIds = new HashMap<String, List<String>>();
-			for (UISession session : sessions) {
-				if (session.getCallbackInformation() != null) {
-					String uri = session.getCallbackInformation();
-					List<String> sessionIds = callbackUriToSessionIds.get(uri);
-					if (sessionIds == null) {
-						sessionIds = new ArrayList<String>();
-						callbackUriToSessionIds.put(uri, sessionIds);
-					}
-					sessionIds.add(String.valueOf(session.getId()));
-				}
-			}
-			List<LogoutNotification> notifications = new ArrayList<LogoutNotification>(callbackUriToSessionIds.size());
-			for (Entry<String, List<String>> entry : callbackUriToSessionIds.entrySet()) {
-				LogoutNotification notification = new LogoutNotification();
-				notification.setCallbackUri(entry.getKey());
-				notification.setSessionIds(entry.getValue());
-				notifications.add(notification);
-			}
-			notifier.notifyAboutLogout(notifications);
-		}
-		return sessions;
-	}
+    public List<UISession> deleteExpiredSessionsAndNotify() {
+        return deleteExpiredSessionsAndNotify(null);
+    }
 
-	public List<UISession> deleteExpiredAndOldSessionsAndNotify(int seconds) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.SECOND, -seconds);
-		return deleteExpiredSessionsAndNotify(calendar.getTime());
-	}
+    public List<UISession> deleteExpiredSessionsAndNotify(Date beforeWhat) {
+        List<UISession> sessions = sessionDao.deleteExpiredSessions(beforeWhat);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Deleted " + sessions.size() + " sessions"
+                    + (sessions.size() > 0 ? ", going to notify subsystems" : ""));
+        }
+        if (!sessions.isEmpty()) {
+            Map<String, List<String>> callbackUriToSessionIds = new HashMap<>();
+            for (UISession session : sessions) {
+                if (session.getCallbackInformation() != null && session.isSendCallbacks()) {
+                    String uri = session.getCallbackInformation();
+                    List<String> sessionIds = callbackUriToSessionIds.get(uri);
+                    if (sessionIds == null) {
+                        sessionIds = new ArrayList<>();
+                        callbackUriToSessionIds.put(uri, sessionIds);
+                    }
+                    sessionIds.add(String.valueOf(session.getId()));
+                }
+            }
+            List<LogoutNotification> notifications = new ArrayList<>(callbackUriToSessionIds.size());
+            for (Entry<String, List<String>> entry : callbackUriToSessionIds.entrySet()) {
+                LogoutNotification notification = new LogoutNotification();
+                notification.setCallbackUri(entry.getKey());
+                notification.setSessionIds(entry.getValue());
+                notifications.add(notification);
+            }
+            if (!notifications.isEmpty()) {
+                notifier.notifyAboutLogout(notifications);
+            }
+        }
+        return sessions;
+    }
+
+    public List<UISession> deleteExpiredAndOldSessionsAndNotify(int seconds) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, -seconds);
+        return deleteExpiredSessionsAndNotify(calendar.getTime());
+    }
 
     @Override
     public SSOSession getValidSSOSession(String ssoSessionIdentifier) {

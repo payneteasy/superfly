@@ -14,29 +14,31 @@ import com.payneteasy.superfly.service.NotificationService;
 
 @Transactional
 public class NotificationServiceImpl implements NotificationService {
-	
-	private Notifier notifier;
-	private SubsystemDao subsystemDao;
 
-	@Required
-	public void setNotifier(Notifier notifier) {
-		this.notifier = notifier;
-	}
+    private Notifier notifier;
+    private SubsystemDao subsystemDao;
 
-	@Required
-	public void setSubsystemDao(SubsystemDao subsystemDao) {
-		this.subsystemDao = subsystemDao;
-	}
+    @Required
+    public void setNotifier(Notifier notifier) {
+        this.notifier = notifier;
+    }
 
-	public void notifyAboutUsersChanged() {
-		List<SubsystemToNotify> subsystems = subsystemDao.getSubsystemsAllowingToListUsers();
-		List<UsersChangedNotification> notifications = new ArrayList<UsersChangedNotification>(subsystems.size());
-		for (SubsystemToNotify subsystem : subsystems) {
-			UsersChangedNotification notification = new UsersChangedNotification();
-			notification.setCallbackUri(subsystem.getCallbackInformation());
-			notifications.add(notification);
-		}
-		notifier.notifyAboutUsersChanged(notifications);
-	}
+    @Required
+    public void setSubsystemDao(SubsystemDao subsystemDao) {
+        this.subsystemDao = subsystemDao;
+    }
+
+    public void notifyAboutUsersChanged() {
+        List<SubsystemToNotify> subsystems = subsystemDao.getSubsystemsAllowingToListUsers();
+        List<UsersChangedNotification> notifications = new ArrayList<>(subsystems.size());
+        for (SubsystemToNotify subsystem : subsystems) {
+            if (subsystem.isSendCallbacks()) {
+                UsersChangedNotification notification = new UsersChangedNotification();
+                notification.setCallbackUri(subsystem.getCallbackInformation());
+                notifications.add(notification);
+            }
+        }
+        notifier.notifyAboutUsersChanged(notifications);
+    }
 
 }

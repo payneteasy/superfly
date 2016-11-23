@@ -90,7 +90,7 @@ public class ListSessionsPage extends BasePage {
 		item.add(new Label("session-id", String.valueOf(session.getId())));
 		PageParameters params = new PageParameters();
 		params.set("userId", String.valueOf(session.getUserId()));
-		BookmarkablePageLink<UserDetailsPage> userLink = new BookmarkablePageLink<UserDetailsPage>(
+		BookmarkablePageLink<UserDetailsPage> userLink = new BookmarkablePageLink<>(
 				"user-link", UserDetailsPage.class, params);
 		item.add(userLink);
 		userLink.add(new Label("username", session.getUsername()));
