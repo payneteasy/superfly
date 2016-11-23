@@ -324,7 +324,7 @@ public class InternalSSOServiceImplTest {
     @Test
     public void testChangeUserRole() {
         userDao.changeUserRole("username", "ROLE_TO");
-        expectLastCall();
+        expectLastCall().andReturn(new RoutineResult("OK", null));
         replay(userDao);
 
         internalSSOService.changeUserRole("username", "ROLE_TO");

@@ -19,6 +19,14 @@ public class RoutineResult implements Serializable {
 	private String status;
 	private String errorMessage;
 
+	public RoutineResult() {
+	}
+
+	public RoutineResult(String status, String errorMessage) {
+		this.status = status;
+		this.errorMessage = errorMessage;
+	}
+
 	@Column(name = "status")
 	public String getStatus() {
 		return status;
