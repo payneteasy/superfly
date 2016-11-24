@@ -90,7 +90,7 @@ public class Start {
 	            server.start();
 
 	            while (System.in.available() == 0) {
-	                Thread.sleep(5000);
+	                Thread.sleep(500);
 	            }
 	            server.stop();
 	            server.join();
