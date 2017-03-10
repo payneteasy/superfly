@@ -15,7 +15,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.springframework.asm.AnnotationVisitor;
+import org.springframework.asm.FieldVisitor;
 import org.springframework.asm.MethodVisitor;
+import org.springframework.asm.SpringAsmInfo;
 import org.springframework.asm.Type;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.MethodMetadata;
@@ -23,6 +25,7 @@ import org.springframework.core.type.MethodMetadata;
 import com.payneteasy.superfly.client.classreading.AnnotationAttributesSource;
 import com.payneteasy.superfly.client.classreading.AnnotationMetadataHolder;
 import com.payneteasy.superfly.client.classreading.MethodAnnotationMetadataSource;
+import org.springframework.util.MultiValueMap;
 
 public class MultipleValuesAnnotationMetadataReadingVisitor
 		extends ClassMetadataReadingVisitor implements AnnotationMetadata,
@@ -122,6 +125,40 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 		}
 		return result;
 	}
+
+	class EmptyAnnotationVisitor extends AnnotationVisitor {
+
+		public EmptyAnnotationVisitor() {
+			super(SpringAsmInfo.ASM_VERSION);
+		}
+
+		@Override
+		public AnnotationVisitor visitAnnotation(String name, String desc) {
+			return this;
+		}
+
+		@Override
+		public AnnotationVisitor visitArray(String name) {
+			return this;
+		}
+	}
+
+
+	class EmptyMethodVisitor extends MethodVisitor {
+
+		public EmptyMethodVisitor() {
+			super(SpringAsmInfo.ASM_VERSION);
+		}
+	}
+
+
+	class EmptyFieldVisitor extends FieldVisitor {
+
+		public EmptyFieldVisitor() {
+			super(SpringAsmInfo.ASM_VERSION);
+		}
+
+	}
 	
 	private final class AnnotationValueExtractingVisitor extends EmptyAnnotationVisitor {
 		private final Map<String, List<Object>> attributes;
@@ -217,7 +254,18 @@ public class MultipleValuesAnnotationMetadataReadingVisitor
 		return null;
 	}
 
-	public boolean hasAnnotatedMethods(String annotationType) {
+    @Override
+    public MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType) {
+        return null;
+    }
+
+    @Override
+    public MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType,
+            boolean classValuesAsString) {
+        return null;
+    }
+
+    public boolean hasAnnotatedMethods(String annotationType) {
 		// TODO Auto-generated method stub
 		return false;
 	}
