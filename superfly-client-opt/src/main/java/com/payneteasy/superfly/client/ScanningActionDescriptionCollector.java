@@ -27,7 +27,7 @@ import com.payneteasy.superfly.client.exception.CollectionException;
 
 /**
  * ActionDescriptionCollector implementation which scans classes in the given
- * packages looking for a given annotation (by default Secured) and extracts
+ * packages looking for a given annotation (by default @Secured) and extracts
  * action names from its attributes.
  * Descriptions of the resulting actions are null.
  * 
@@ -75,7 +75,7 @@ public class ScanningActionDescriptionCollector implements
 
 	public List<ActionDescription> collect() throws CollectionException {
         MethodReadingMetadataReaderFactory metadataReaderFactory = new MultipleAnnotationValuesCachingMetadataReaderFactory(this.resourcePatternResolver);
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		for (String basePackage : basePackages) {
 			try {
 				processPackage(basePackage, names, metadataReaderFactory);
@@ -123,9 +123,7 @@ public class ScanningActionDescriptionCollector implements
 			Object value = attributes.get(null);
 			if (value != null) {
 				String[] values = valuesExtractor.extract(value);
-				for (String v : values) {
-					names.add(v);
-				}
+				Collections.addAll(names, values);
 			}
 		}
 	}
@@ -135,7 +133,7 @@ public class ScanningActionDescriptionCollector implements
 	}
 	
 	protected List<ActionDescription> buildDescriptions(Set<String> names) {
-		List<ActionDescription> descriptions = new ArrayList<ActionDescription>(names.size());
+		List<ActionDescription> descriptions = new ArrayList<>(names.size());
 		for (String name : names) {
 			if (!notCollectedActions.contains(name.toLowerCase())) {
 				descriptions.add(new ActionDescription(name));
