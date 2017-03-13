@@ -1,69 +1,74 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>superfly-client-opt</artifactId>
-	<name>Superfly Client optional support</name>
-	<description>Optional Superfly-related client features (like SSL support)</description>
-	<dependencies>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<scope>test</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-remote-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-httpclient-ssl</artifactId>
-		</dependency>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-client-opt</artifactId>
+    <name>Superfly Client optional support</name>
+    <description>Optional Superfly-related client features (like SSL support)</description>
+    <dependencies>
         <dependency>
-			<groupId>javax.servlet</groupId>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>test</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-remote-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-httpclient-ssl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>ca.juliusdavies</groupId>
             <artifactId>not-yet-commons-ssl</artifactId>
         </dependency>
-		
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
