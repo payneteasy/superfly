@@ -19,70 +19,70 @@ import static org.junit.Assert.assertTrue;
 
 
 public class SuperflyHOTPAuthenticationProcessingFilterTest extends
-		AbstractAuthenticationProcessingFilterTest {
+        AbstractAuthenticationProcessingFilterTest {
 
     @Before
-	public void setUp() {
+    public void setUp() {
         SuperflyHOTPAuthenticationProcessingFilter procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
-		procFilter.setAuthenticationManager(authenticationManager);
-		procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
+        procFilter.setAuthenticationManager(authenticationManager);
+        procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
         procFilter.afterPropertiesSet();
-		filter = procFilter;
-	}
+        filter = procFilter;
+    }
 
     @Test
-	public void testAuthenticate() throws Exception {
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
-				.andAnswer(new IAnswer<Authentication>() {
-					public Authentication answer() throws Throwable {
-						CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
-						CheckHOTPToken token = (CheckHOTPToken) compound.getCurrentAuthenticationRequest();
+    public void testAuthenticate() throws Exception {
+        // expecting some request examination...
+        initExpectationsForAuthentication();
+        // expecting authentication attempt
+        expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
+                .andAnswer(new IAnswer<Authentication>() {
+                    public Authentication answer() throws Throwable {
+                        CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
+                        CheckHOTPToken token = (CheckHOTPToken) compound.getCurrentAuthenticationRequest();
                         assertEquals("pete", token.getName());
-						assertEquals("123456", token.getCredentials().toString());
-						return new HOTPCheckedToken(createSSOUserWithOneRole());
-					}
-				});
-		// expecting a redirect to a success
-		expectRedirectTo("/");
-		replay(request, response, chain, authenticationManager);
-		
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		filter.doFilter(request, response, chain);
+                        assertEquals("123456", token.getCredentials().toString());
+                        return new HOTPCheckedToken(createSSOUserWithOneRole());
+                    }
+                });
+        // expecting a redirect to a success
+        expectRedirectTo("/");
+        replay(request, response, chain, authenticationManager);
+
+        SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
+        filter.doFilter(request, response, chain);
         assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(),
                 SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
-		
-		verify(request, response, chain, authenticationManager);
-	}
+
+        verify(request, response, chain, authenticationManager);
+    }
 
     @Test
-	public void testBadCredentials() throws Exception {
-		// expecting some request examination...
-		initExpectationsForAuthentication();
-		// expecting authentication attempt
-		expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
-				.andThrow(new BadCredentialsException("must fail here"));
-		// expecting a redirect to a failure page
-		expectRedirectTo("/login-failed");
-		replay(request, response, chain, authenticationManager);
+    public void testBadCredentials() throws Exception {
+        // expecting some request examination...
+        initExpectationsForAuthentication();
+        // expecting authentication attempt
+        expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
+                .andThrow(new BadCredentialsException("must fail here"));
+        // expecting a redirect to a failure page
+        expectRedirectTo("/login-failed");
+        replay(request, response, chain, authenticationManager);
 
-		SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
-		filter.doFilter(request, response, chain);
-		
-		verify(request, response, chain, authenticationManager);
-	}
-	
-	protected UsernamePasswordCheckedToken createInputAuthentication() {
-		return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
-	}
+        SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
+        filter.doFilter(request, response, chain);
 
-	private void initExpectationsForAuthentication() {
-		expect(request.getRequestURI()).andReturn("/j_superfly_hotp_security_check").anyTimes();
-		expect(request.getParameter("j_hotp")).andReturn("123456").anyTimes();
-		expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
-		expect(request.getSession()).andReturn(session).anyTimes();
-		expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
-	}
+        verify(request, response, chain, authenticationManager);
+    }
+
+    protected UsernamePasswordCheckedToken createInputAuthentication() {
+        return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
+    }
+
+    private void initExpectationsForAuthentication() {
+        expect(request.getRequestURI()).andReturn("/j_superfly_hotp_security_check").anyTimes();
+        expect(request.getParameter("j_hotp")).andReturn("123456").anyTimes();
+        expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
+        expect(request.getSession()).andReturn(session).anyTimes();
+        expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
+    }
 }

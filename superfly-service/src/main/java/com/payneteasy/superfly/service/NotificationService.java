@@ -6,9 +6,9 @@ package com.payneteasy.superfly.service;
  * @author Roman Puchkovskiy
  */
 public interface NotificationService {
-	/**
-	 * Notifies all systems interested in this about the fact that users have
-	 * changed.
-	 */
-	void notifyAboutUsersChanged();
+    /**
+     * Notifies all systems interested in this about the fact that users have
+     * changed.
+     */
+    void notifyAboutUsersChanged();
 }

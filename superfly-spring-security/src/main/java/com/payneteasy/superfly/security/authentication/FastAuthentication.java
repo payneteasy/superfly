@@ -10,5 +10,5 @@ import org.springframework.security.core.Authentication;
  *
  */
 public interface FastAuthentication extends Authentication {
-	boolean hasAuthority(String name);
+    boolean hasAuthority(String name);
 }

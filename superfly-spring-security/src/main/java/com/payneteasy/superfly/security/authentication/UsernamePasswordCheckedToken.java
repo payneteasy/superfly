@@ -8,11 +8,11 @@ import com.payneteasy.superfly.api.SSOUser;
  * @author Roman Puchkovskiy
  */
 public class UsernamePasswordCheckedToken extends
-		SSOUserTransportAuthenticationToken {
-	private static final long serialVersionUID = -7096904519277638358L;
+        SSOUserTransportAuthenticationToken {
+    private static final long serialVersionUID = -7096904519277638358L;
 
-	public UsernamePasswordCheckedToken(SSOUser ssoUser) {
-		super(ssoUser);
-	}
+    public UsernamePasswordCheckedToken(SSOUser ssoUser) {
+        super(ssoUser);
+    }
 
 }

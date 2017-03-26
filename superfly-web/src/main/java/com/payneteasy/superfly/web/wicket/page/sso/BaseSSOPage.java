@@ -48,14 +48,14 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
     }
 
     @Override
-   	protected void configureResponse(WebResponse response) {
-   		super.configureResponse(response);
-   		response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
+       protected void configureResponse(WebResponse response) {
+           super.configureResponse(response);
+           response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
 
-   		//for IE
-   		response.setHeader("Expires", "-1");
-   		response.setHeader("Pragma", "no-cache");
-   	}
+           //for IE
+           response.setHeader("Expires", "-1");
+           response.setHeader("Pragma", "no-cache");
+       }
 
     protected boolean isSubsystemInfoShown() {
         return true;

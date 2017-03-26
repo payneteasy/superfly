@@ -10,18 +10,18 @@ import org.springframework.security.AuthenticationException;
  * @see TwoStepAuthenticationProcessingFilter
  */
 public class StepTwoException extends AuthenticationException {
-	private static final long serialVersionUID = -5091470653099959408L;
+    private static final long serialVersionUID = -5091470653099959408L;
 
-	public StepTwoException(String msg) {
-		super(msg);
-	}
+    public StepTwoException(String msg) {
+        super(msg);
+    }
 
-	public StepTwoException(String msg, Throwable t) {
-		super(msg, t);
-	}
+    public StepTwoException(String msg, Throwable t) {
+        super(msg, t);
+    }
 
-	public StepTwoException(String msg, Object extraInformation) {
-		super(msg, extraInformation);
-	}
+    public StepTwoException(String msg, Object extraInformation) {
+        super(msg, extraInformation);
+    }
 
 }

@@ -8,11 +8,11 @@ import java.lang.annotation.Annotation;
  * @author Roman Puchkovskiy
  */
 public interface ValuesExtractor {
-	/**
-	 * Performs extraction.
-	 * 
-	 * @param annotation	annotation from which to extract
-	 * @return values
-	 */
-	String[] extract(Annotation annotation);
+    /**
+     * Performs extraction.
+     *
+     * @param annotation    annotation from which to extract
+     * @return values
+     */
+    String[] extract(Annotation annotation);
 }

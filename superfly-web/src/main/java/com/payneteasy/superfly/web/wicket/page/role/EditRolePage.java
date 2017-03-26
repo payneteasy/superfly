@@ -17,33 +17,33 @@ import org.springframework.security.access.annotation.Secured;
 
 @Secured("ROLE_ADMIN")
 public class EditRolePage extends BasePage {
-	@SpringBean
-	private RoleService roleService;
+    @SpringBean
+    private RoleService roleService;
 
-	public EditRolePage(PageParameters parameters) {
-		super(ListRolesPage.class, parameters);
-		 long roleId = parameters.get("id").toLong(-1L);
-		 final UIRole role  = roleService.getRole(roleId);
-		 setDefaultModel(new CompoundPropertyModel<UIRole>(role));
-		 Form form = new Form("form"){
+    public EditRolePage(PageParameters parameters) {
+        super(ListRolesPage.class, parameters);
+         long roleId = parameters.get("id").toLong(-1L);
+         final UIRole role  = roleService.getRole(roleId);
+         setDefaultModel(new CompoundPropertyModel<UIRole>(role));
+         Form form = new Form("form"){
 
-			@Override
-			protected void onSubmit() {
-			roleService.updateRole(role);
-			setResponsePage(ListRolesPage.class);
-			}
-			 
-		 };
-		 add(form);
-		 form.add(new LabelValueRow<String>("role-name", new Model<String>(role.getRoleName()), "role.create.name"));
-		 form.add(new LabelTextFieldRow<String>(role, "principalName", "role.create.principal-name", true));		 
-		 form.add(new Button("form-submit"));
-	     form.add(new BookmarkablePageLink<Page>("form-cancel", ListRolesPage.class));
-	}
+            @Override
+            protected void onSubmit() {
+            roleService.updateRole(role);
+            setResponsePage(ListRolesPage.class);
+            }
 
-	@Override
-	protected String getTitle() {
-		return "Edit role";
-	}
+         };
+         add(form);
+         form.add(new LabelValueRow<String>("role-name", new Model<String>(role.getRoleName()), "role.create.name"));
+         form.add(new LabelTextFieldRow<String>(role, "principalName", "role.create.principal-name", true));
+         form.add(new Button("form-submit"));
+         form.add(new BookmarkablePageLink<Page>("form-cancel", ListRolesPage.class));
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Edit role";
+    }
 
 }

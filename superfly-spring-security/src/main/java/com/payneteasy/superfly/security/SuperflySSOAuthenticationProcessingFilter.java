@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Roman Puchkovskiy
  */
 public class SuperflySSOAuthenticationProcessingFilter extends
-		AbstractSingleStepAuthenticationProcessingFilter {
+        AbstractSingleStepAuthenticationProcessingFilter {
 
     private String subsystemTokenParameter = "subsystemToken";
     private String targetUrlParameter = "targetUrl";
@@ -29,33 +29,33 @@ public class SuperflySSOAuthenticationProcessingFilter extends
     }
 
     public SuperflySSOAuthenticationProcessingFilter() {
-		super("/j_superfly_sso_security_check");
-	}
-	
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException {
-		Authentication authRequest;
-		
-		String subsystemToken = obtainSubsystemToken(request);
-		String targetUrl = obtainTargetUrl(request);
-		
-		authRequest = createSSOAuthRequest(request, subsystemToken);
-		
-		return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
-	}
+        super("/j_superfly_sso_security_check");
+    }
 
-	protected String obtainSubsystemToken(HttpServletRequest request) {
-		return request.getParameter(subsystemTokenParameter);
-	}
-	
-	protected String obtainTargetUrl(HttpServletRequest request) {
-		return request.getParameter(targetUrlParameter);
-	}
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException {
+        Authentication authRequest;
 
-	protected Authentication createSSOAuthRequest(
+        String subsystemToken = obtainSubsystemToken(request);
+        String targetUrl = obtainTargetUrl(request);
+
+        authRequest = createSSOAuthRequest(request, subsystemToken);
+
+        return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
+    }
+
+    protected String obtainSubsystemToken(HttpServletRequest request) {
+        return request.getParameter(subsystemTokenParameter);
+    }
+
+    protected String obtainTargetUrl(HttpServletRequest request) {
+        return request.getParameter(targetUrlParameter);
+    }
+
+    protected Authentication createSSOAuthRequest(
             HttpServletRequest request, String subsystemToken) {
         return new SSOAuthenticationRequest(subsystemToken);
-	}
+    }
 
 }

@@ -34,143 +34,143 @@ import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class CopyActionPropertiesPage extends BasePage {
-	@SpringBean
-	private ActionService actionService;
+    @SpringBean
+    private ActionService actionService;
 
-	public CopyActionPropertiesPage(final PageParameters parameters) {
-		super(ListActionsPage.class, parameters);
-		final long actionId = parameters.get("id").toLong(-1);
+    public CopyActionPropertiesPage(final PageParameters parameters) {
+        super(ListActionsPage.class, parameters);
+        final long actionId = parameters.get("id").toLong(-1);
 
-		// modalWindow
-		final ModalWindow modalWindow;
-		add(modalWindow = new ModalWindow("modalWindow"));
-//		modalWindow.setPageMapName("modal-name");
-		modalWindow.setCookieName("modal-cookie");
-		modalWindow.setPageCreator(new ModalWindow.PageCreator() {
-			public Page createPage() {
-				return new CopyActionWindow(CopyActionPropertiesPage.this, modalWindow, parameters);
-			}
-		});
-		modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
-			public void onClose(AjaxRequestTarget target) {
-				if (!parameters.get("copy").isNull()) {
-					setResponsePage(ListActionsPage.class);
-				}
+        // modalWindow
+        final ModalWindow modalWindow;
+        add(modalWindow = new ModalWindow("modalWindow"));
+//        modalWindow.setPageMapName("modal-name");
+        modalWindow.setCookieName("modal-cookie");
+        modalWindow.setPageCreator(new ModalWindow.PageCreator() {
+            public Page createPage() {
+                return new CopyActionWindow(CopyActionPropertiesPage.this, modalWindow, parameters);
+            }
+        });
+        modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            public void onClose(AjaxRequestTarget target) {
+                if (!parameters.get("copy").isNull()) {
+                    setResponsePage(ListActionsPage.class);
+                }
 
-			}
-		});
-		modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
-			public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-				return true;
-			}
-		});
+            }
+        });
+        modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+            public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+                return true;
+            }
+        });
 
-		final ActionFilter actionFilter = new ActionFilter();
-		Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
-		add(filtersForm);
-		final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model("")) {
+        final ActionFilter actionFilter = new ActionFilter();
+        Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
+        add(filtersForm);
+        final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model("")) {
 
-			@Override
-			protected Iterator<String> getChoices(String input) {
-				if (Strings.isEmpty(input)) {
-					return Collections.<String>emptyList().iterator();
-				}
-				List<String> choices = new ArrayList<String>(20);
-				List<UIActionForFilter> action = actionService.getActionForFilter();
-				for (UIActionForFilter uia : action) {
-					final String name = uia.getActionName();
-					if (name.toUpperCase().startsWith(input.toUpperCase())) {
-						choices.add(name);
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                    return Collections.<String>emptyList().iterator();
+                }
+                List<String> choices = new ArrayList<String>(20);
+                List<UIActionForFilter> action = actionService.getActionForFilter();
+                for (UIActionForFilter uia : action) {
+                    final String name = uia.getActionName();
+                    if (name.toUpperCase().startsWith(input.toUpperCase())) {
+                        choices.add(name);
 
-						if (choices.size() == 20) {
-							break;
-						}
-					}
-				}
-				return choices.iterator();
-			}
-		};
-		filtersForm.add(autoTextNameAction);
+                        if (choices.size() == 20) {
+                            break;
+                        }
+                    }
+                }
+                return choices.iterator();
+            }
+        };
+        filtersForm.add(autoTextNameAction);
 
-		UIAction action = actionService.getAction(actionId);
-		final long subId = action.getSubsystemId();
-		filtersForm.add(new Label("name-action", action == null ? null : action.getActionName()));
-		filtersForm.add(new Label("name-description", action == null ? null : action.getActionDescription()));
-		filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));
+        UIAction action = actionService.getAction(actionId);
+        final long subId = action.getSubsystemId();
+        filtersForm.add(new Label("name-action", action == null ? null : action.getActionName()));
+        filtersForm.add(new Label("name-description", action == null ? null : action.getActionDescription()));
+        filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));
 
-		String[] fieldName = { "actionId", "actionName", "actionDescription" };
-		SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
+        String[] fieldName = { "actionId", "actionName", "actionDescription" };
+        SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
 
-			public Iterator<? extends UIActionForList> iterator(long first, long count) {
-				String actionForFilter = autoTextNameAction.getModelObject();
-				List<Long> subsystemId = new ArrayList<Long>();
-				subsystemId.add(subId);
-				List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(),
-						actionForFilter == null ? null : actionForFilter, null, subsystemId);
-				return actions.iterator();
-			}
+            public Iterator<? extends UIActionForList> iterator(long first, long count) {
+                String actionForFilter = autoTextNameAction.getModelObject();
+                List<Long> subsystemId = new ArrayList<Long>();
+                subsystemId.add(subId);
+                List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(),
+                        actionForFilter == null ? null : actionForFilter, null, subsystemId);
+                return actions.iterator();
+            }
 
-			public long size() {
-				List<Long> subsystemId = new ArrayList<Long>();
-				subsystemId.add(subId);
-				return actionService.getActionCount(null, null, subsystemId);
+            public long size() {
+                List<Long> subsystemId = new ArrayList<Long>();
+                subsystemId.add(subId);
+                return actionService.getActionCount(null, null, subsystemId);
 
-			}
+            }
 
-		};
-		final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList", actionDataProvider) {
+        };
+        final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList", actionDataProvider) {
 
-			@Override
-			protected void populateItem(Item<UIActionForList> item) {
-				final UIActionForList action = item.getModelObject();
-				AjaxLink selectActionForCopy = new AjaxLink("select-action") {
+            @Override
+            protected void populateItem(Item<UIActionForList> item) {
+                final UIActionForList action = item.getModelObject();
+                AjaxLink selectActionForCopy = new AjaxLink("select-action") {
 
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-						parameters.set("copyId", action.getId());
-						modalWindow.show(target);
-					}
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        parameters.set("copyId", action.getId());
+                        modalWindow.show(target);
+                    }
 
-				};
-				selectActionForCopy.add(new Label("action-name", action.getName()));
-				item.add(selectActionForCopy);
-				item.add(new Label("action-description", action.getDescroption()));
-			}
+                };
+                selectActionForCopy.add(new Label("action-name", action.getName()));
+                item.add(selectActionForCopy);
+                item.add(new Label("action-description", action.getDescroption()));
+            }
 
-		};
-		filtersForm.add(actionDataView);
-		filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-		filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
-		filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
-		filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
+        };
+        filtersForm.add(actionDataView);
+        filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
+        filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
+        filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
+        filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
 
-	}
+    }
 
-	@SuppressWarnings("unused")
-	private class ActionFilter implements Serializable {
-		private UIActionForFilter actionForFilter;
-		private long actionId;
+    @SuppressWarnings("unused")
+    private class ActionFilter implements Serializable {
+        private UIActionForFilter actionForFilter;
+        private long actionId;
 
-		public long getActionId() {
-			return actionId;
-		}
+        public long getActionId() {
+            return actionId;
+        }
 
-		public void setActionId(long actionId) {
-			this.actionId = actionId;
-		}
+        public void setActionId(long actionId) {
+            this.actionId = actionId;
+        }
 
-		public UIActionForFilter getActionForFilter() {
-			return actionForFilter;
-		}
+        public UIActionForFilter getActionForFilter() {
+            return actionForFilter;
+        }
 
-		public void setActionForFilter(UIActionForFilter actionForFilter) {
-			this.actionForFilter = actionForFilter;
-		}
-	}
+        public void setActionForFilter(UIActionForFilter actionForFilter) {
+            this.actionForFilter = actionForFilter;
+        }
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Copy action";
-	}
+    @Override
+    protected String getTitle() {
+        return "Copy action";
+    }
 
 }

@@ -18,41 +18,41 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedTo
  * @author Roman Puchkovskiy
  */
 public class SuperflyUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
-	
-	private SSOService ssoService;
 
-	@Required
-	public void setSsoService(SSOService ssoService) {
-		this.ssoService = ssoService;
-	}
+    private SSOService ssoService;
 
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
-		if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
-			UsernamePasswordAuthRequestInfoAuthenticationToken authRequest = (UsernamePasswordAuthRequestInfoAuthenticationToken) authentication;
-			if (authRequest.getCredentials() == null) {
-				throw new BadCredentialsException("Null credentials");
-			}
-			SSOUser ssoUser = ssoService.authenticate(authRequest.getName(),
-					authRequest.getCredentials().toString(),
-					authRequest.getAuthRequestInfo());
-			if (ssoUser == null) {
-				throw new BadCredentialsException("Bad credentials");
-			}
-			if (ssoUser.getActionsMap().isEmpty()) {
-				throw new BadCredentialsException("No roles");
-			}
-			return createAuthentication(ssoUser);
-		}
-		return null;
-	}
+    @Required
+    public void setSsoService(SSOService ssoService) {
+        this.ssoService = ssoService;
+    }
 
-	public boolean supports(Class<?> authentication) {
-		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication);
-	}
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
+            UsernamePasswordAuthRequestInfoAuthenticationToken authRequest = (UsernamePasswordAuthRequestInfoAuthenticationToken) authentication;
+            if (authRequest.getCredentials() == null) {
+                throw new BadCredentialsException("Null credentials");
+            }
+            SSOUser ssoUser = ssoService.authenticate(authRequest.getName(),
+                    authRequest.getCredentials().toString(),
+                    authRequest.getAuthRequestInfo());
+            if (ssoUser == null) {
+                throw new BadCredentialsException("Bad credentials");
+            }
+            if (ssoUser.getActionsMap().isEmpty()) {
+                throw new BadCredentialsException("No roles");
+            }
+            return createAuthentication(ssoUser);
+        }
+        return null;
+    }
 
-	protected Authentication createAuthentication(SSOUser ssoUser) {
-		return new UsernamePasswordCheckedToken(ssoUser);
-	}
+    public boolean supports(Class<?> authentication) {
+        return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication);
+    }
+
+    protected Authentication createAuthentication(SSOUser ssoUser) {
+        return new UsernamePasswordCheckedToken(ssoUser);
+    }
 
 }

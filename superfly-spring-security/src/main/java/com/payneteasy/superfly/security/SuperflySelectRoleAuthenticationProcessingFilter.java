@@ -24,54 +24,54 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  * @author Roman Puchkovskiy
  */
 public class SuperflySelectRoleAuthenticationProcessingFilter extends
-		AbstractSingleStepAuthenticationProcessingFilter {
-	
-	private String roleParameter = "j_role";
+        AbstractSingleStepAuthenticationProcessingFilter {
 
-	protected SuperflySelectRoleAuthenticationProcessingFilter() {
-		super("/j_superfly_select_role");
-	}
+    private String roleParameter = "j_role";
 
-	public void setRoleParameter(String roleParameter) {
-		this.roleParameter = roleParameter;
-	}
+    protected SuperflySelectRoleAuthenticationProcessingFilter() {
+        super("/j_superfly_select_role");
+    }
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException,
-			IOException, ServletException {
-		String roleKey = obtainRoleKey(request);
-		SSOUser ssoUser = (SSOUser) request.getSession().getAttribute(
-				SSOUserTransportAuthenticationToken.SESSION_KEY);
-		request.getSession().removeAttribute(
-				SSOUserTransportAuthenticationToken.SESSION_KEY);
-		if (ssoUser == null) {
-			throw new BadCredentialsException("Session expired");
-		}
-		SSORole selectedRole = null;
-		for (SSORole role : ssoUser.getActionsMap().keySet()) {
-			if (role.getName().equals(roleKey)) {
-				selectedRole = role;
-				break;
-			}
-		}
-		if (selectedRole == null) {
-			throw new BadCredentialsException("Unknown role: " + roleKey);
-		}
-		
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
-		
-		Authentication authRequest = createUserRoleAuthRequest(ssoUser, selectedRole);
-		return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
-	}
-	
-	protected String obtainRoleKey(HttpServletRequest request) {
-		return request.getParameter(roleParameter);
-	}
-	
-	protected Authentication createUserRoleAuthRequest(SSOUser ssoUser, SSORole role) {
-		return new SSOUserAndSelectedRoleAuthenticationToken(ssoUser, role);
-	}
+    public void setRoleParameter(String roleParameter) {
+        this.roleParameter = roleParameter;
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException,
+            IOException, ServletException {
+        String roleKey = obtainRoleKey(request);
+        SSOUser ssoUser = (SSOUser) request.getSession().getAttribute(
+                SSOUserTransportAuthenticationToken.SESSION_KEY);
+        request.getSession().removeAttribute(
+                SSOUserTransportAuthenticationToken.SESSION_KEY);
+        if (ssoUser == null) {
+            throw new BadCredentialsException("Session expired");
+        }
+        SSORole selectedRole = null;
+        for (SSORole role : ssoUser.getActionsMap().keySet()) {
+            if (role.getName().equals(roleKey)) {
+                selectedRole = role;
+                break;
+            }
+        }
+        if (selectedRole == null) {
+            throw new BadCredentialsException("Unknown role: " + roleKey);
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
+
+        Authentication authRequest = createUserRoleAuthRequest(ssoUser, selectedRole);
+        return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
+    }
+
+    protected String obtainRoleKey(HttpServletRequest request) {
+        return request.getParameter(roleParameter);
+    }
+
+    protected Authentication createUserRoleAuthRequest(SSOUser ssoUser, SSORole role) {
+        return new SSOUserAndSelectedRoleAuthenticationToken(ssoUser, role);
+    }
 
 }

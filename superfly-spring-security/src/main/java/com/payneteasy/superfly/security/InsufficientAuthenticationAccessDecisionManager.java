@@ -17,40 +17,40 @@ import org.springframework.security.core.Authentication;
  * @author Roman Puchkovskiy
  */
 public class InsufficientAuthenticationAccessDecisionManager extends
-		DelegatingDecisionManager {
-	
-	private Class<?>[] insufficientAuthenticationClasses;
-	
-	public void setInsufficientAuthenticationClasses(Class<?>[] classes) {
-		insufficientAuthenticationClasses = classes;
-	}
-	
-	public InsufficientAuthenticationAccessDecisionManager() {
-	}
-	
-	public InsufficientAuthenticationAccessDecisionManager(
-			AccessDecisionManager delegate) {
-		super(delegate);
-	}
+        DelegatingDecisionManager {
 
-	@Override
-	public void decide(Authentication authentication, Object object,
-			Collection<ConfigAttribute> configAttributes)
-			throws AccessDeniedException, InsufficientAuthenticationException {
-		boolean insufficient = false;
-		for (Class<?> clazz : insufficientAuthenticationClasses) {
-			if (clazz.isAssignableFrom(authentication.getClass())) {
-				insufficient = true;
-				break;
-			}
-		}
-		if (insufficient) {
-			InsufficientAuthenticationException ex = new InsufficientAuthenticationException(authentication.getClass().getName());
-			ex.setAuthentication(authentication);
-			throw ex;
-		}
-		// sufficient authentication, just proceed
-		getDelegate().decide(authentication, object, configAttributes);
-	}
+    private Class<?>[] insufficientAuthenticationClasses;
+
+    public void setInsufficientAuthenticationClasses(Class<?>[] classes) {
+        insufficientAuthenticationClasses = classes;
+    }
+
+    public InsufficientAuthenticationAccessDecisionManager() {
+    }
+
+    public InsufficientAuthenticationAccessDecisionManager(
+            AccessDecisionManager delegate) {
+        super(delegate);
+    }
+
+    @Override
+    public void decide(Authentication authentication, Object object,
+            Collection<ConfigAttribute> configAttributes)
+            throws AccessDeniedException, InsufficientAuthenticationException {
+        boolean insufficient = false;
+        for (Class<?> clazz : insufficientAuthenticationClasses) {
+            if (clazz.isAssignableFrom(authentication.getClass())) {
+                insufficient = true;
+                break;
+            }
+        }
+        if (insufficient) {
+            InsufficientAuthenticationException ex = new InsufficientAuthenticationException(authentication.getClass().getName());
+            ex.setAuthentication(authentication);
+            throw ex;
+        }
+        // sufficient authentication, just proceed
+        getDelegate().decide(authentication, object, configAttributes);
+    }
 
 }

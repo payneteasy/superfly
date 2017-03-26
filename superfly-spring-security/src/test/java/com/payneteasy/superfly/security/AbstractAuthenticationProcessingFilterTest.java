@@ -13,31 +13,31 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public abstract class AbstractAuthenticationProcessingFilterTest extends
-		AbstractFilterTest {
+        AbstractFilterTest {
 
-	protected AuthenticationManager authenticationManager;
+    protected AuthenticationManager authenticationManager;
 
     @Before
-	public void initAPFTest() {
-		authenticationManager = EasyMock.createMock(AuthenticationManager.class);
-	}
+    public void initAPFTest() {
+        authenticationManager = EasyMock.createMock(AuthenticationManager.class);
+    }
 
     @After
-	public void cleanAPFTest() throws Exception {
-		SecurityContextHolder.clearContext();
-	}
+    public void cleanAPFTest() throws Exception {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
-	public void testDoNothing() throws Exception {
-		expect(request.getRequestURI()).andReturn("/").anyTimes();
-		// expecting that chain will just proceed
-		chain.doFilter(request, response);
-		expectLastCall();
-		replay(request, response, chain);
-		
-		filter.doFilter(request, response, chain);
-		
-		verify(request, response, chain);
-	}
+    public void testDoNothing() throws Exception {
+        expect(request.getRequestURI()).andReturn("/").anyTimes();
+        // expecting that chain will just proceed
+        chain.doFilter(request, response);
+        expectLastCall();
+        replay(request, response, chain);
+
+        filter.doFilter(request, response, chain);
+
+        verify(request, response, chain);
+    }
 
 }

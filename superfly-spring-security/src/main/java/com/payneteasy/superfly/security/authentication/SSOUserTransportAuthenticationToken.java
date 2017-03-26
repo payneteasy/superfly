@@ -13,23 +13,23 @@ import com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter;
  * @see TwoStepAuthenticationProcessingFilter
  */
 public class SSOUserTransportAuthenticationToken extends EmptyAuthenticationToken {
-	private static final long serialVersionUID = -5726837452086192434L;
+    private static final long serialVersionUID = -5726837452086192434L;
 
-	public static final String SESSION_KEY = "superfly-sso-user-transport-token";
-	
-	private SSOUser ssoUser;
+    public static final String SESSION_KEY = "superfly-sso-user-transport-token";
 
-	public SSOUserTransportAuthenticationToken(SSOUser ssoUser) {
-		this.ssoUser = ssoUser;
-	}
+    private SSOUser ssoUser;
 
-	public SSOUser getSsoUser() {
-		return ssoUser;
-	}
+    public SSOUserTransportAuthenticationToken(SSOUser ssoUser) {
+        this.ssoUser = ssoUser;
+    }
 
-	@Override
-	public String getName() {
-		return getSsoUser().getName();
-	}
+    public SSOUser getSsoUser() {
+        return ssoUser;
+    }
+
+    @Override
+    public String getName() {
+        return getSsoUser().getName();
+    }
 
 }

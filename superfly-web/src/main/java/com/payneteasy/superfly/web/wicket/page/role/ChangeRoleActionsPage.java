@@ -17,45 +17,45 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
 public class ChangeRoleActionsPage extends BasePage {
-	@SpringBean
-	private RoleService roleService;
+    @SpringBean
+    private RoleService roleService;
 
-	public ChangeRoleActionsPage(final PageParameters parameters) {
-		super(ListRolesPage.class, parameters);
+    public ChangeRoleActionsPage(final PageParameters parameters) {
+        super(ListRolesPage.class, parameters);
 
-		final long roleId = parameters.get("id").toLong();
-		UIRole role = roleService.getRole(roleId);
-		add(new Label("role-name", role.getRoleName()));
-		
-		add(new MappingPanel("mapping-panel", roleId) {
+        final long roleId = parameters.get("id").toLong();
+        UIRole role = roleService.getRole(roleId);
+        add(new Label("role-name", role.getRoleName()));
 
-			@Override
-			protected List<? extends MappingService> getMappedItems(String searchLabel) {
-				return roleService.getMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId, searchLabel);
-			}
+        add(new MappingPanel("mapping-panel", roleId) {
 
-			@Override
-			protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
-				return roleService.getUnMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId, searchLabel);
-			}
+            @Override
+            protected List<? extends MappingService> getMappedItems(String searchLabel) {
+                return roleService.getMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId, searchLabel);
+            }
 
-			@Override
-			protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
-				roleService.changeRoleActions(roleId, mappedId, unmappedId);
-				setResponsePage(ChangeRoleActionsPage.class, parameters);
-			}
+            @Override
+            protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
+                return roleService.getUnMappedRoleActions(0, Integer.MAX_VALUE, 5, true, roleId, searchLabel);
+            }
 
-			@Override
-			protected String getHeaderItemName() {
-				return "Actions";
-			}
+            @Override
+            protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
+                roleService.changeRoleActions(roleId, mappedId, unmappedId);
+                setResponsePage(ChangeRoleActionsPage.class, parameters);
+            }
 
-		});
-		add(new BookmarkablePageLink<Page>("back", ListRolesPage.class, parameters));
-	}
+            @Override
+            protected String getHeaderItemName() {
+                return "Actions";
+            }
 
-	@Override
-	protected String getTitle() {
-		return "Change grant actions";
-	}
+        });
+        add(new BookmarkablePageLink<Page>("back", ListRolesPage.class, parameters));
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Change grant actions";
+    }
 }

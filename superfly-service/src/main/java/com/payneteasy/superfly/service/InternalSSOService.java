@@ -19,92 +19,92 @@ import com.payneteasy.superfly.model.ui.user.UserForDescription;
  * @author Roman Puchkovskiy
  */
 public interface InternalSSOService {
-	/**
-	 * Authenticates a user.
-	 * 
-	 * @param username
-	 *            user name
-	 * @param password
-	 *            user password
-	 * @param subsystemIdentifier
-	 *            identifier of a subsystem from which user tries to log in
-	 * @param userIpAddress
-	 *            ID address of a user who tries to log in
-	 * @param sessionInfo
-	 *            session info
-	 * @return SSOUser instance on success or null on failure
-	 */
-	SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
-			String sessionInfo);
+    /**
+     * Authenticates a user.
+     *
+     * @param username
+     *            user name
+     * @param password
+     *            user password
+     * @param subsystemIdentifier
+     *            identifier of a subsystem from which user tries to log in
+     * @param userIpAddress
+     *            ID address of a user who tries to log in
+     * @param sessionInfo
+     *            session info
+     * @return SSOUser instance on success or null on failure
+     */
+    SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
+            String sessionInfo);
 
     /**
-   	 * Returns the same data as if user was successfully authenticated,
+        * Returns the same data as if user was successfully authenticated,
      * but no actual authentication is made. This could be useful for
      * impersonation feature.
-   	 *
-   	 * @param username
-   	 *            username to get user
-   	 * @param subsystemIdentifier
-   	 *            identifier of a subsystem
-   	 * @return user object on success or null when retrieval fails
-   	 */
-   	SSOUser pseudoAuthenticate(String username, String subsystemIdentifier);
+        *
+        * @param username
+        *            username to get user
+        * @param subsystemIdentifier
+        *            identifier of a subsystem
+        * @return user object on success or null when retrieval fails
+        */
+       SSOUser pseudoAuthenticate(String username, String subsystemIdentifier);
 
-	/**
-	 * Saves system data.
-	 * 
-	 * @param subsystemIdentifier
-	 *            identifier of the system
-	 *            descriptions of roles
-	 * @param actionDescriptions
-	 *            descriptions of actions
-	 */
-	void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions);
+    /**
+     * Saves system data.
+     *
+     * @param subsystemIdentifier
+     *            identifier of the system
+     *            descriptions of roles
+     * @param actionDescriptions
+     *            descriptions of actions
+     */
+    void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions);
 
-	/**
-	 * Returns a list of users with their actions granted through role with the
-	 * given principal.
-	 * 
-	 * @param subsystemIdentifier
-	 *            identifier of the subsystem from which users will be obtained
-	 * @return users with actions
-	 */
-	List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
+    /**
+     * Returns a list of users with their actions granted through role with the
+     * given principal.
+     *
+     * @param subsystemIdentifier
+     *            identifier of the subsystem from which users will be obtained
+     * @return users with actions
+     */
+    List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
 
-	/**
-	 * Registers a user.
-	 * 
-	 * @param username
-	 *            name
-	 * @param password
-	 *            user's password
-	 * @param email
-	 *            user's email
-	 * @param subsystemIdentifier
-	 *            identifier of a subsystem to which he's to be given a role
-	 * @param roleGrants
-	 *            which roles to grant
-	 * @param publicKey
-	 * 			  user's public key
+    /**
+     * Registers a user.
+     *
+     * @param username
+     *            name
+     * @param password
+     *            user's password
+     * @param email
+     *            user's email
+     * @param subsystemIdentifier
+     *            identifier of a subsystem to which he's to be given a role
+     * @param roleGrants
+     *            which roles to grant
+     * @param publicKey
+     *               user's public key
      * @param organization
-     * 			  user's organization
+     *               user's organization
      * @throws UserExistsException
-	 * @throws BadPublicKeyException 
-	 * @throws MessageSendException 
-	 */
-	void registerUser(String username, String password, String email, String subsystemIdentifier,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey,String organization)
-			throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
+     * @throws BadPublicKeyException
+     * @throws MessageSendException
+     */
+    void registerUser(String username, String password, String email, String subsystemIdentifier,
+            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey,String organization)
+            throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
 
-	/**
-	 * Authenticates using HOTP (HMAC-based One Time Password).
-	 * 
-	 * @param username	username
-	 * @param hotp		HOTP
-	 * @return authentication result
-	 */
-	boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
-	
+    /**
+     * Authenticates using HOTP (HMAC-based One Time Password).
+     *
+     * @param username    username
+     * @param hotp        HOTP
+     * @return authentication result
+     */
+    boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
+
     /**
      * 
      * @param userName user name
@@ -115,17 +115,17 @@ public interface InternalSSOService {
     /**
      * Returns a user description.
      * 
-     * @param username	username
+     * @param username    username
      * @return description
      */
-	UserForDescription getUserDescription(String username);
+    UserForDescription getUserDescription(String username);
 
-	/**
-	 * Updates user's fields.
-	 * 
-	 * @param user	user's fields
-	 */
-	void updateUserForDescription(UserForDescription user) throws BadPublicKeyException;
+    /**
+     * Updates user's fields.
+     *
+     * @param user    user's fields
+     */
+    void updateUserForDescription(UserForDescription user) throws BadPublicKeyException;
 
     /**
      * Finds users by comma-separated list of their logins and returns their status information.
@@ -168,5 +168,5 @@ public interface InternalSSOService {
      * @param username    name of the user to work with
      * @param newRole     role to grant
      */
-	void changeUserRole(String username, String newRole);
+    void changeUserRole(String username, String newRole);
 }

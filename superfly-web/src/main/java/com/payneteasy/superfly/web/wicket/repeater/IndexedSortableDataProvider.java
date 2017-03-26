@@ -15,55 +15,55 @@ import org.apache.wicket.model.Model;
  * by which a sorting is made. Fields are indexed from 1.
  * 
  * @author Roman Puchkovskiy
- * @param <T>	provided type
+ * @param <T>    provided type
  */
 public abstract class IndexedSortableDataProvider<T extends Serializable> extends SortableDataProvider<T, String> {
-	private Map<String, Integer> fieldNameToIndex;
-	
-	/**
-	 * Constructs an instance initializing a mapping between field indices and
-	 * their names.
-	 * 
-	 * @param sortFields	names of fields in the proper order (they will get
-	 * 						indexes beginning with 1)
-	 */
-	public IndexedSortableDataProvider(String[] sortFields) {
-		super();
-		fieldNameToIndex = new HashMap<String, Integer>();
-		for (int i = 0; i < sortFields.length; i++) {
-			fieldNameToIndex.put(sortFields[i], i + 1);
-		}
-		setSort(sortFields[0], SortOrder.ASCENDING);
-	}
+    private Map<String, Integer> fieldNameToIndex;
 
-	/**
-	 * @see SortableDataProvider#model(Object)
-	 */
-	public IModel<T> model(T object) {
-		return new Model<T>(object);
-	}
+    /**
+     * Constructs an instance initializing a mapping between field indices and
+     * their names.
+     *
+     * @param sortFields    names of fields in the proper order (they will get
+     *                         indexes beginning with 1)
+     */
+    public IndexedSortableDataProvider(String[] sortFields) {
+        super();
+        fieldNameToIndex = new HashMap<String, Integer>();
+        for (int i = 0; i < sortFields.length; i++) {
+            fieldNameToIndex.put(sortFields[i], i + 1);
+        }
+        setSort(sortFields[0], SortOrder.ASCENDING);
+    }
 
-	/**
-	 * Returns an index of the currently selected sort field.
-	 * 
-	 * @return field index (beginning with 1) or 1 if not found in mapping
-	 */
-	protected int getSortFieldIndex() {
-		SortParam sp = getSort();
-		Integer index = fieldNameToIndex.get(sp.getProperty());
-		if (index == null) {
-			index = 1;
-		}
-		return index;
-	}
-	
-	/**
-	 * Returns true if data is currently sorted ascendingly.
-	 * 
-	 * @return true if ascending, else false
-	 */
-	protected boolean isAscending() {
-		return getSort().isAscending();
-	}
+    /**
+     * @see SortableDataProvider#model(Object)
+     */
+    public IModel<T> model(T object) {
+        return new Model<T>(object);
+    }
+
+    /**
+     * Returns an index of the currently selected sort field.
+     *
+     * @return field index (beginning with 1) or 1 if not found in mapping
+     */
+    protected int getSortFieldIndex() {
+        SortParam sp = getSort();
+        Integer index = fieldNameToIndex.get(sp.getProperty());
+        if (index == null) {
+            index = 1;
+        }
+        return index;
+    }
+
+    /**
+     * Returns true if data is currently sorted ascendingly.
+     *
+     * @return true if ascending, else false
+     */
+    protected boolean isAscending() {
+        return getSort().isAscending();
+    }
 
 }

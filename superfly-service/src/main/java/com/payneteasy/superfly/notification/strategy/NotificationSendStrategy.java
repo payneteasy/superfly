@@ -10,19 +10,19 @@ import com.payneteasy.superfly.notification.UsersChangedNotification;
  * @author Roman Puchkovskiy
  */
 public interface NotificationSendStrategy {
-	/**
-	 * Sends a logout notification.
-	 * 
-	 * @param notification	notificatino to send
-	 * @throws NotificationException
-	 */
-	void send(LogoutNotification notification) throws NotificationException;
-	
-	/**
-	 * Sends a 'users changed' notification.
-	 * 
-	 * @param notification	notificatino to send
-	 * @throws NotificationException
-	 */
-	void send(UsersChangedNotification notification) throws NotificationException;
+    /**
+     * Sends a logout notification.
+     *
+     * @param notification    notificatino to send
+     * @throws NotificationException
+     */
+    void send(LogoutNotification notification) throws NotificationException;
+
+    /**
+     * Sends a 'users changed' notification.
+     *
+     * @param notification    notificatino to send
+     * @throws NotificationException
+     */
+    void send(UsersChangedNotification notification) throws NotificationException;
 }

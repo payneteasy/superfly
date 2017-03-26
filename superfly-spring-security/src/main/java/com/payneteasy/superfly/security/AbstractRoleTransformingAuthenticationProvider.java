@@ -9,24 +9,24 @@ import org.springframework.security.authentication.AuthenticationProvider;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractRoleTransformingAuthenticationProvider implements
-		AuthenticationProvider {
+        AuthenticationProvider {
 
-	protected StringTransformer[] roleNameTransformers = new StringTransformer[]{};
-	protected RoleSource roleSource = createDefaultRoleSource();
+    protected StringTransformer[] roleNameTransformers = new StringTransformer[]{};
+    protected RoleSource roleSource = createDefaultRoleSource();
 
-	public void setRoleNameTransformers(StringTransformer[] roleNameTransformers) {
-		this.roleNameTransformers = roleNameTransformers;
-	}
+    public void setRoleNameTransformers(StringTransformer[] roleNameTransformers) {
+        this.roleNameTransformers = roleNameTransformers;
+    }
 
-	public void setRoleSource(RoleSource roleSource) {
-		this.roleSource = roleSource;
-	}
+    public void setRoleSource(RoleSource roleSource) {
+        this.roleSource = roleSource;
+    }
 
-	protected RoleSource createDefaultRoleSource() {
-		RoleSource[] sources = new RoleSource[2];
-		sources[0] = new SSOActionRoleSource();
-		sources[1] = new SSORoleRoleSource();
-		return new CompoundRoleSource(sources);
-	}
+    protected RoleSource createDefaultRoleSource() {
+        RoleSource[] sources = new RoleSource[2];
+        sources[0] = new SSOActionRoleSource();
+        sources[1] = new SSORoleRoleSource();
+        return new CompoundRoleSource(sources);
+    }
 
 }

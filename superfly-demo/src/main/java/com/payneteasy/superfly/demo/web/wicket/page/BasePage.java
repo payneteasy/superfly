@@ -10,16 +10,16 @@ import com.payneteasy.superfly.demo.web.utils.SecurityUtils;
 
 public abstract class BasePage extends WebPage {
 
-	public BasePage(PageParameters parameters) {
-		super(parameters);
-		
-		add(new Label("user_name", SecurityUtils.getUsername()));
-		
-		add(new BookmarkablePageLink<Page>("page1", Page1.class));
-		add(new BookmarkablePageLink<Page>("page2", Page2.class));
-		add(new BookmarkablePageLink<Page>("page3", Page3.class));
-		add(new BookmarkablePageLink<Page>("admin-page", AdminPage.class));
-		add(new BookmarkablePageLink<Page>("user-page", UserPage.class));
-	}
+    public BasePage(PageParameters parameters) {
+        super(parameters);
+
+        add(new Label("user_name", SecurityUtils.getUsername()));
+
+        add(new BookmarkablePageLink<Page>("page1", Page1.class));
+        add(new BookmarkablePageLink<Page>("page2", Page2.class));
+        add(new BookmarkablePageLink<Page>("page3", Page3.class));
+        add(new BookmarkablePageLink<Page>("admin-page", AdminPage.class));
+        add(new BookmarkablePageLink<Page>("user-page", UserPage.class));
+    }
 
 }

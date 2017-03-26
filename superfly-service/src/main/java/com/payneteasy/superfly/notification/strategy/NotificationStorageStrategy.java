@@ -10,16 +10,16 @@ import com.payneteasy.superfly.notification.LogoutNotification;
  * @author Roman Puchkovskiy
  */
 public interface NotificationStorageStrategy {
-	/**
-	 * Adds logout notifications to storage.
-	 * 
-	 * @param notifications	notifications to add
-	 */
-	void enqueueLogoutNotifications(List<LogoutNotification> notifications);
-	/**
-	 * Dequeues logout notifications.
-	 * 
-	 * @return notifications
-	 */
-	List<LogoutNotification> dequeueLogoutNotifications();
+    /**
+     * Adds logout notifications to storage.
+     *
+     * @param notifications    notifications to add
+     */
+    void enqueueLogoutNotifications(List<LogoutNotification> notifications);
+    /**
+     * Dequeues logout notifications.
+     *
+     * @return notifications
+     */
+    List<LogoutNotification> dequeueLogoutNotifications();
 }

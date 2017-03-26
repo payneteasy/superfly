@@ -25,68 +25,68 @@ import org.springframework.security.access.annotation.Secured;
 @Secured("ROLE_ADMIN")
 public class EditUserPage extends BasePage {
 
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private PublicKeyCrypto crypto;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private PublicKeyCrypto crypto;
 
-	public EditUserPage(PageParameters params) {
-		super(ListUsersPage.class, params);
+    public EditUserPage(PageParameters params) {
+        super(ListUsersPage.class, params);
 
-		long userId = params.get("userId").toLong();
+        long userId = params.get("userId").toLong();
 
-		final UIUser initialUser = userService.getUser(userId);
-		final UIUserWithPassword2 user = new UIUserWithPassword2();
-		BeanUtils.copyProperties(initialUser, user);
-		// we don't want to send the password to the page
-		user.setPassword(null);
-		Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
-			@Override
-			protected void onSubmit() {
-				userService.updateUser(user);
-				getRequestCycle().setResponsePage(ListUsersPage.class);
-				info("User updated: " + user.getUsername());
-			}
-		};
-		add(form);
+        final UIUser initialUser = userService.getUser(userId);
+        final UIUserWithPassword2 user = new UIUserWithPassword2();
+        BeanUtils.copyProperties(initialUser, user);
+        // we don't want to send the password to the page
+        user.setPassword(null);
+        Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
+            @Override
+            protected void onSubmit() {
+                userService.updateUser(user);
+                getRequestCycle().setResponsePage(ListUsersPage.class);
+                info("User updated: " + user.getUsername());
+            }
+        };
+        add(form);
 
-		LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
-		form.add(userName);
+        LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
+        form.add(userName);
 
-		LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);
-		email.getTextField().add(EmailAddressValidator.getInstance());
-		form.add(email);
-		
-//		LabelPasswordTextFieldRow password1Field = new LabelPasswordTextFieldRow(user, "password", "user.create.password", true);
-//		form.add(password1Field);
-//		
-//		LabelPasswordTextFieldRow password2Field = new LabelPasswordTextFieldRow(user, "password2", "user.create.password2", true);
-//		form.add(password2Field);
-//		
-//		form.add(new EqualPasswordInputValidator(password1Field.getPasswordTextField(), password2Field.getPasswordTextField()));
-//		
-//		form.add(new PasswordInputValidator(userName.getTextField(), password1Field.getPasswordTextField(), userService));
-		
-		LabelTextAreaRow<String> publicKeyField = new LabelTextAreaRow<String>(user, "publicKey", "user.create.publicKey");
-		publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
-		form.add(publicKeyField);
-		
-		form.add(new LabelTextFieldRow<String>(user,"name","user.create.name", true));
+        LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);
+        email.getTextField().add(EmailAddressValidator.getInstance());
+        form.add(email);
 
-		form.add(new LabelTextFieldRow<String>(user,"surname","user.create.surname", true));
+//        LabelPasswordTextFieldRow password1Field = new LabelPasswordTextFieldRow(user, "password", "user.create.password", true);
+//        form.add(password1Field);
+//
+//        LabelPasswordTextFieldRow password2Field = new LabelPasswordTextFieldRow(user, "password2", "user.create.password2", true);
+//        form.add(password2Field);
+//
+//        form.add(new EqualPasswordInputValidator(password1Field.getPasswordTextField(), password2Field.getPasswordTextField()));
+//
+//        form.add(new PasswordInputValidator(userName.getTextField(), password1Field.getPasswordTextField(), userService));
 
-		form.add(new LabelTextFieldRow<String>(user,"secretQuestion","user.create.secret-question", true));
+        LabelTextAreaRow<String> publicKeyField = new LabelTextAreaRow<String>(user, "publicKey", "user.create.publicKey");
+        publicKeyField.getTextField().add(new PublicKeyValidator(crypto));
+        form.add(publicKeyField);
 
-		form.add(new LabelTextFieldRow<String>(user,"secretAnswer","user.create.secret-answer", true));
+        form.add(new LabelTextFieldRow<String>(user,"name","user.create.name", true));
+
+        form.add(new LabelTextFieldRow<String>(user,"surname","user.create.surname", true));
+
+        form.add(new LabelTextFieldRow<String>(user,"secretQuestion","user.create.secret-question", true));
+
+        form.add(new LabelTextFieldRow<String>(user,"secretAnswer","user.create.secret-answer", true));
 
         form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
 
-		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
-	}
+        form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Edit user";
-	}
+    @Override
+    protected String getTitle() {
+        return "Edit user";
+    }
 
 }

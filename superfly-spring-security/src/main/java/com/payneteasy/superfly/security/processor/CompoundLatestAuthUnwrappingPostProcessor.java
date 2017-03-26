@@ -11,11 +11,11 @@ import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
  * @author Roman Puchkovskiy
  */
 public class CompoundLatestAuthUnwrappingPostProcessor implements
-		AuthenticationPostProcessor {
+        AuthenticationPostProcessor {
 
-	public Authentication postProcess(Authentication auth) {
-		CompoundAuthentication compound = (CompoundAuthentication) auth;
-		return compound.getLatestReadyAuthentication();
-	}
+    public Authentication postProcess(Authentication auth) {
+        CompoundAuthentication compound = (CompoundAuthentication) auth;
+        return compound.getLatestReadyAuthentication();
+    }
 
 }

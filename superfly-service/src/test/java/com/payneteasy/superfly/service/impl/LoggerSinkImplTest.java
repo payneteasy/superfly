@@ -9,48 +9,48 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 
 public class LoggerSinkImplTest {
-	
-	private LoggerSinkImpl loggerSink;
-	private StackAppender appender;
+
+    private LoggerSinkImpl loggerSink;
+    private StackAppender appender;
 
     @Before
-	public void setUp() {
-		loggerSink = new LoggerSinkImpl();
-		loggerSink.setUserInfoService(new UserInfoServiceMock());
-		appender = new StackAppender();
-		LogManager.getRootLogger().removeAllAppenders();
-		LogManager.getRootLogger().addAppender(appender);
-	}
+    public void setUp() {
+        loggerSink = new LoggerSinkImpl();
+        loggerSink.setUserInfoService(new UserInfoServiceMock());
+        appender = new StackAppender();
+        LogManager.getRootLogger().removeAllAppenders();
+        LogManager.getRootLogger().addAppender(appender);
+    }
 
     @After
-	public void tearDown() {
-		LogManager.getLoggerRepository().resetConfiguration();
-		loggerSink = null;
-		appender = null;
-	}
+    public void tearDown() {
+        LogManager.getLoggerRepository().resetConfiguration();
+        loggerSink = null;
+        appender = null;
+    }
 
     @Test
-	public void testInfo() {
-		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
+    public void testInfo() {
+        loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
         assertEquals("user:test-user, event:create_user, resource:new-user, result:success",
                 appender.getLastMessage());
-	}
+    }
 
     @Test
-	public void testInfoWithNullUser() {
-		loggerSink.setUserInfoService(new UserInfoServiceMock() {
-			@Override
-			public String getUsername() {
-				return null;
-			}
-		});
-		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
-		assertEquals("user:<SYSTEM>, event:create_user, resource:new-user, result:success", appender.getLastMessage());
-	}
+    public void testInfoWithNullUser() {
+        loggerSink.setUserInfoService(new UserInfoServiceMock() {
+            @Override
+            public String getUsername() {
+                return null;
+            }
+        });
+        loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", true, "new-user");
+        assertEquals("user:<SYSTEM>, event:create_user, resource:new-user, result:success", appender.getLastMessage());
+    }
 
     @Test
-	public void testInfoFailure() {
-		loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", false, "new-user");
-		assertEquals("user:test-user, event:create_user, resource:new-user, result:failure", appender.getLastMessage());
-	}
+    public void testInfoFailure() {
+        loggerSink.info(LoggerFactory.getLogger("testLogger"), "create_user", false, "new-user");
+        assertEquals("user:test-user, event:create_user, resource:new-user, result:failure", appender.getLastMessage());
+    }
 }

@@ -6,6 +6,6 @@ import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 
 public interface CreateUserStrategy {
-	RoutineResult createUser(UIUserForCreate createUser);
+    RoutineResult createUser(UIUserForCreate createUser);
     RoutineResult cloneUser(UICloneUserRequest cloneUser);
 }

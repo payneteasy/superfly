@@ -12,11 +12,11 @@ import com.payneteasy.superfly.service.UserInfoService;
  */
 public class UserInfoServiceAcegi implements UserInfoService {
 
-	public String getUsername() {
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			return null;
-		}
-		return SecurityContextHolder.getContext().getAuthentication().getName();
-	}
+    public String getUsername() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return null;
+        }
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 
 }

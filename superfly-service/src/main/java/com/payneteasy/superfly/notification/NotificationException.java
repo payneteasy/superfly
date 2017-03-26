@@ -7,19 +7,19 @@ package com.payneteasy.superfly.notification;
  */
 public class NotificationException extends Exception {
 
-	public NotificationException() {
-	}
+    public NotificationException() {
+    }
 
-	public NotificationException(String message) {
-		super(message);
-	}
+    public NotificationException(String message) {
+        super(message);
+    }
 
-	public NotificationException(Throwable cause) {
-		super(cause);
-	}
+    public NotificationException(Throwable cause) {
+        super(cause);
+    }
 
-	public NotificationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public NotificationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

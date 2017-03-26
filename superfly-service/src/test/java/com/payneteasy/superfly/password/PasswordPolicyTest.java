@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class PasswordPolicyTest {
 
     @Test
-	public void testComplexity() {
+    public void testComplexity() {
         AbstractPolicyValidation<PasswordCheckContext> validation=new PCIDSSPasswordPolicyValidation();
 
         PasswordCheckContext password=new PasswordCheckContext(null);
@@ -55,6 +55,6 @@ public class PasswordPolicyTest {
         }
 
         Assert.assertFalse(throwsException);
-	}
+    }
 
 }

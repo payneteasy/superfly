@@ -11,30 +11,30 @@ import com.payneteasy.superfly.api.SSOUserWithActions;
  * @author Roman Puchkovskiy
  */
 public interface UserStore {
-	/**
-	 * Returns a user by username.
-	 * 
-	 * @param username	username
-	 * @return user with the given name or null if not found
-	 */
-	SSOUserWithActions getUser(String username);
-	/**
-	 * Returns true if a user with the given name exists.
-	 * 
-	 * @param username	username
-	 * @return true if exists
-	 */
-	boolean userExists(String username);
-	/**
-	 * Sets users to be stored in this store.
-	 * 
-	 * @param users	users to store
-	 */
-	void setUsers(List<SSOUserWithActions> users);
-	/**
-	 * Returns an unmodifiable collection if users stored here.
-	 * 
-	 * @return users
-	 */
-	Collection<SSOUserWithActions> getUsers();
+    /**
+     * Returns a user by username.
+     *
+     * @param username    username
+     * @return user with the given name or null if not found
+     */
+    SSOUserWithActions getUser(String username);
+    /**
+     * Returns true if a user with the given name exists.
+     *
+     * @param username    username
+     * @return true if exists
+     */
+    boolean userExists(String username);
+    /**
+     * Sets users to be stored in this store.
+     *
+     * @param users    users to store
+     */
+    void setUsers(List<SSOUserWithActions> users);
+    /**
+     * Returns an unmodifiable collection if users stored here.
+     *
+     * @return users
+     */
+    Collection<SSOUserWithActions> getUsers();
 }

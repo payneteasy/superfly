@@ -7,12 +7,12 @@ package com.payneteasy.superfly.password;
  */
 public abstract class AbstractPasswordEncoder implements PasswordEncoder {
 
-	protected String mergePasswordAndSalt(String plainPassword, String salt) {
-		if (salt == null || salt.length() == 0) {
-			return plainPassword;
-		} else {
-			return plainPassword + "{" + salt + "}";
-		}
-	}
+    protected String mergePasswordAndSalt(String plainPassword, String salt) {
+        if (salt == null || salt.length() == 0) {
+            return plainPassword;
+        } else {
+            return plainPassword + "{" + salt + "}";
+        }
+    }
 
 }

@@ -17,63 +17,63 @@ import static org.junit.Assert.*;
 
 public class SuperflyAuthenticationProviderTest extends AbstractSuperflyAuthenticationProviderTest {
 
-	private SuperflyAuthenticationProvider provider;
-	private SSOService ssoService;
+    private SuperflyAuthenticationProvider provider;
+    private SSOService ssoService;
 
     @Before
-	public void setUp() {
-		ssoService = EasyMock.createMock(SSOService.class);
-		provider = new SuperflyAuthenticationProvider();
-		provider.setSsoService(ssoService);
-	}
+    public void setUp() {
+        ssoService = EasyMock.createMock(SSOService.class);
+        provider = new SuperflyAuthenticationProvider();
+        provider.setSsoService(ssoService);
+    }
 
     @Test
-	public void testStep1Success() {
-		EasyMock.expect(ssoService.authenticate(eq("pete"), eq("secret"), anyObject(AuthenticationRequestInfo.class)))
-				.andReturn(createSSOUserWithOneRole());
-		EasyMock.replay(ssoService);
+    public void testStep1Success() {
+        EasyMock.expect(ssoService.authenticate(eq("pete"), eq("secret"), anyObject(AuthenticationRequestInfo.class)))
+                .andReturn(createSSOUserWithOneRole());
+        EasyMock.replay(ssoService);
         assertNotNull(provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null)));
-		EasyMock.verify(ssoService);
-	}
+        EasyMock.verify(ssoService);
+    }
 
     @Test
-	public void testStep1_5Success() {
-		try {
-			provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUserWithOneRole()));
+    public void testStep1_5Success() {
+        try {
+            provider.authenticate(new SSOUserTransportAuthenticationToken(createSSOUserWithOneRole()));
             fail();
-		} catch (StepTwoException e) {
-			// expected
-		}
-	}
+        } catch (StepTwoException e) {
+            // expected
+        }
+    }
 
     @Test
-	public void testStep2Success() {
-		assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole())));
-	}
+    public void testStep2Success() {
+        assertNotNull(provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole())));
+    }
 
     @Test
-	public void testBadPassword() {
-		try {
-			provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("cory", "whatisthepassword", null));
-			fail();
-		} catch (BadCredentialsException e) {
-			// expected
-		}
-	}
+    public void testBadPassword() {
+        try {
+            provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("cory", "whatisthepassword", null));
+            fail();
+        } catch (BadCredentialsException e) {
+            // expected
+        }
+    }
 
     @Test
-	public void testNoRoles() {
-		try {
-			provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("cory", "whatisthepassword", null));
-			fail();
-		} catch (BadCredentialsException e) {
-			// expected
-		}
-	}
+    public void testNoRoles() {
+        try {
+            provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("cory", "whatisthepassword", null));
+            fail();
+        } catch (BadCredentialsException e) {
+            // expected
+        }
+    }
 
     @Test
-	public void testDisabled() {
-		provider.setEnabled(false);
+    public void testDisabled() {
+        provider.setEnabled(false);
         assertNull(provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "secret", null)));
-	}
+    }
 }

@@ -13,17 +13,17 @@ import com.payneteasy.superfly.demo.web.utils.SecurityUtils;
 @Secured({"ROLE_ADMINPAGE1", "ROLE_USERPAGE1"})
 public class Page1 extends BasePage {
 
-	public Page1(PageParameters parameters) {
-		super(parameters);
-		
-		add(new Label("username", SecurityUtils.getUsername()));
-		add(new ListView<String>("roles", Arrays.asList(SecurityUtils.getRoles())) {
-			@Override
-			protected void populateItem(ListItem<String> item) {
-				String role = item.getModelObject();
-				item.add(new Label("role", role));
-			}
-		});
-	}
+    public Page1(PageParameters parameters) {
+        super(parameters);
+
+        add(new Label("username", SecurityUtils.getUsername()));
+        add(new ListView<String>("roles", Arrays.asList(SecurityUtils.getRoles())) {
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                String role = item.getModelObject();
+                item.add(new Label("role", role));
+            }
+        });
+    }
 
 }

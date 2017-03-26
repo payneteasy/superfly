@@ -11,13 +11,13 @@ import com.payneteasy.superfly.security.SuperflyHOTPAuthenticationProcessingFilt
  * @author Roman Puchkovskiy
  */
 public class SuperflyLocalHOTPAuthenticationProcessingFilter extends
-		SuperflyHOTPAuthenticationProcessingFilter {
+        SuperflyHOTPAuthenticationProcessingFilter {
 
-	@Override
-	protected Authentication createSimpleAuthRequest(
-			Authentication authentication, String hotp) {
-		UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
-		return new LocalCheckHOTPToken(authentication.getName(), hotp, token.getAuthorities());
-	}
+    @Override
+    protected Authentication createSimpleAuthRequest(
+            Authentication authentication, String hotp) {
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
+        return new LocalCheckHOTPToken(authentication.getName(), hotp, token.getAuthorities());
+    }
 
 }

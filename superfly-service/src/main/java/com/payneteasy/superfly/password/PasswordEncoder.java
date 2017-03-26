@@ -7,13 +7,13 @@ package com.payneteasy.superfly.password;
  * @author Roman Puchkovskiy
  */
 public interface PasswordEncoder {
-	/**
-	 * Encodes a password using supplied salt. If salt is null or empty (""),
-	 * it's ignored.
-	 * 
-	 * @param plainPassword		password to encode
-	 * @param salt				salt
-	 * @return encoded password
-	 */
-	String encode(String plainPassword, String salt);
+    /**
+     * Encodes a password using supplied salt. If salt is null or empty (""),
+     * it's ignored.
+     *
+     * @param plainPassword        password to encode
+     * @param salt                salt
+     * @return encoded password
+     */
+    String encode(String plainPassword, String salt);
 }

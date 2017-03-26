@@ -16,62 +16,62 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
  * @author Roman Puchkovskiy
  */
 public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
-		AbstractSingleStepAuthenticationProcessingFilter {
+        AbstractSingleStepAuthenticationProcessingFilter {
 
-	private String usernameParameter = "j_username";
-	private String passwordParameter = "j_password";
-	private String subsystemIdentifier;
+    private String usernameParameter = "j_username";
+    private String passwordParameter = "j_password";
+    private String subsystemIdentifier;
 
-	public SuperflyUsernamePasswordAuthenticationProcessingFilter() {
-		super("/j_superfly_password_security_check");
-	}
-	
-	public void setUsernameParameter(String usernameParameter) {
-		this.usernameParameter = usernameParameter;
-	}
+    public SuperflyUsernamePasswordAuthenticationProcessingFilter() {
+        super("/j_superfly_password_security_check");
+    }
 
-	public void setPasswordParameter(String passwordParameter) {
-		this.passwordParameter = passwordParameter;
-	}
+    public void setUsernameParameter(String usernameParameter) {
+        this.usernameParameter = usernameParameter;
+    }
 
-	public void setSubsystemIdentifier(String subsystemIdentifier) {
-		this.subsystemIdentifier = subsystemIdentifier;
-	}
+    public void setPasswordParameter(String passwordParameter) {
+        this.passwordParameter = passwordParameter;
+    }
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException {
-		Authentication authRequest;
-		
-		String username = obtainUsername(request);
-		String password = obtainPassword(request);
-		
-		authRequest = createUsernamePasswordAuthRequest(request, username, password);
-		
-		return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
-	}
+    public void setSubsystemIdentifier(String subsystemIdentifier) {
+        this.subsystemIdentifier = subsystemIdentifier;
+    }
 
-	protected String obtainUsername(HttpServletRequest request) {
-		return request.getParameter(usernameParameter);
-	}
-	
-	protected String obtainPassword(HttpServletRequest request) {
-		return request.getParameter(passwordParameter);
-	}
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException {
+        Authentication authRequest;
 
-	protected Authentication createUsernamePasswordAuthRequest(
-			HttpServletRequest request, String username, String password) {
-		AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
-		Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
-				username, password, authRequestInfo);
-		return authRequest;
-	}
-	
-	protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
-		AuthenticationRequestInfo result = new AuthenticationRequestInfo();
-		result.setIpAddress(request.getRemoteAddr());
-		result.setSubsystemIdentifier(subsystemIdentifier);
-		return result;
-	}
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
+
+        authRequest = createUsernamePasswordAuthRequest(request, username, password);
+
+        return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
+    }
+
+    protected String obtainUsername(HttpServletRequest request) {
+        return request.getParameter(usernameParameter);
+    }
+
+    protected String obtainPassword(HttpServletRequest request) {
+        return request.getParameter(passwordParameter);
+    }
+
+    protected Authentication createUsernamePasswordAuthRequest(
+            HttpServletRequest request, String username, String password) {
+        AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
+        Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
+                username, password, authRequestInfo);
+        return authRequest;
+    }
+
+    protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
+        AuthenticationRequestInfo result = new AuthenticationRequestInfo();
+        result.setIpAddress(request.getRemoteAddr());
+        result.setSubsystemIdentifier(subsystemIdentifier);
+        return result;
+    }
 
 }

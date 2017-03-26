@@ -3,28 +3,28 @@ package com.payneteasy.superfly.web.wicket.page;
 import java.io.Serializable;
 
 public class SelectObjectWrapper<T> implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private T object;
-	private boolean selected;
+    private static final long serialVersionUID = 1L;
+    private T object;
+    private boolean selected;
 
-	public SelectObjectWrapper(T obj) {
-		this.selected = false;
-		this.object = obj;
-	}
+    public SelectObjectWrapper(T obj) {
+        this.selected = false;
+        this.object = obj;
+    }
 
-	public T getObject() {
-		return object;
-	}
+    public T getObject() {
+        return object;
+    }
 
-	public void setObject(T object) {
-		this.object = object;
-	}
+    public void setObject(T object) {
+        this.object = object;
+    }
 
-	public boolean isSelected() {
-		return selected;
-	}
+    public boolean isSelected() {
+        return selected;
+    }
 
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }

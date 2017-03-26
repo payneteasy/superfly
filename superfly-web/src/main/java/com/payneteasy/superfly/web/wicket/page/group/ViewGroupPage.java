@@ -28,92 +28,92 @@ import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class ViewGroupPage extends BasePage {
-	@SpringBean
-	private GroupService groupService;
-	
-	@Override
-	protected String getTitle() {
-		return "Group details";
-	}
-	
-	public ViewGroupPage(PageParameters param) {
-		super(ListGroupsPage.class, param);
-		
-		final Long groupId = param.get("gid").toLong();
-		
-		//BACK
-		add(new BookmarkablePageLink<ListGroupsPage>("back-to-groups",ListGroupsPage.class));
-		
-		//FILTER
-		final Filter filter = new Filter();
-		final Form<Filter> filtersForm = new Form<Filter>("filter-form", new Model<Filter>(filter));
-		add(filtersForm);
-		filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
-		
-		//GROUP PROPERTIES
-		final UIGroupForView curGroup = groupService.getGroupById(groupId);
-		
-		add(new Label("groupName", curGroup.getName()));
-		add(new Label("groupSubsystem", curGroup.getSubsystemName()));
-		
-		
-		// SORTABLE DATA PROVIDER
-		
-		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(fieldName) {
-			
+    @SpringBean
+    private GroupService groupService;
+
+    @Override
+    protected String getTitle() {
+        return "Group details";
+    }
+
+    public ViewGroupPage(PageParameters param) {
+        super(ListGroupsPage.class, param);
+
+        final Long groupId = param.get("gid").toLong();
+
+        //BACK
+        add(new BookmarkablePageLink<ListGroupsPage>("back-to-groups",ListGroupsPage.class));
+
+        //FILTER
+        final Filter filter = new Filter();
+        final Form<Filter> filtersForm = new Form<Filter>("filter-form", new Model<Filter>(filter));
+        add(filtersForm);
+        filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
+
+        //GROUP PROPERTIES
+        final UIGroupForView curGroup = groupService.getGroupById(groupId);
+
+        add(new Label("groupName", curGroup.getName()));
+        add(new Label("groupSubsystem", curGroup.getSubsystemName()));
+
+
+        // SORTABLE DATA PROVIDER
+
+        String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
+        final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(fieldName) {
+
             private static final long serialVersionUID = 1L;
 
-			public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first,
+            public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first,
                     long count) {
-				
-				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupMappedActions(first, count, 
-						getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
-				return list.iterator(); 
-			}
 
-			public long size() {
-				return groupService.getAllGroupMappedActionsCount(groupId, filter.getActionNameSubstring());
-			}
+                List<UIActionForCheckboxForGroup> list = groupService.getAllGroupMappedActions(first, count,
+                        getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
+                return list.iterator();
+            }
 
-		};
-		
+            public long size() {
+                return groupService.getAllGroupMappedActionsCount(groupId, filter.getActionNameSubstring());
+            }
 
-		// DATAVIEW
-		final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider){
-			private static final long serialVersionUID = 1L;
+        };
 
-			@Override
-			protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
-				final UIActionForCheckboxForGroup action = item.getModelObject();
-				item.add(new Label("action-id",String.valueOf(action.getActionId())));
-				item.add(new Label("action-name",action.getActionName()));
-			}
-			
-		};
-		
-		add(actionDataView);
-		add(new OrderByLink("order-by-ActionID", "actionId", actionDataProvider));
-		add(new OrderByLink("order-by-ActionName", "actionName", actionDataProvider));
 
-		add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
+        // DATAVIEW
+        final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider){
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
+                final UIActionForCheckboxForGroup action = item.getModelObject();
+                item.add(new Label("action-id",String.valueOf(action.getActionId())));
+                item.add(new Label("action-name",action.getActionName()));
+            }
+
+        };
+
+        add(actionDataView);
+        add(new OrderByLink("order-by-ActionID", "actionId", actionDataProvider));
+        add(new OrderByLink("order-by-ActionName", "actionName", actionDataProvider));
+
+        add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
 
         add(new BookmarkablePageLink("group-actions", ChangeGroupActionsPage.class, PageParametersBuilder.fromPair("gid", groupId)));
 
-	}
-	
+    }
 
-	@SuppressWarnings("unused")
-	private static class Filter implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private String actionNameSubstring;
 
-		public String getActionNameSubstring() {
-			return actionNameSubstring;
-		}
+    @SuppressWarnings("unused")
+    private static class Filter implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private String actionNameSubstring;
 
-		public void setActionNameSubstring(String actionNameSubstring) {
-			this.actionNameSubstring = actionNameSubstring;
-		}
-	}
+        public String getActionNameSubstring() {
+            return actionNameSubstring;
+        }
+
+        public void setActionNameSubstring(String actionNameSubstring) {
+            this.actionNameSubstring = actionNameSubstring;
+        }
+    }
 }

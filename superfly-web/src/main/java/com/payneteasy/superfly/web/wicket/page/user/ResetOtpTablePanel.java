@@ -44,7 +44,7 @@ public class ResetOtpTablePanel extends Panel {
                 subsystemService.getSubsystemsForFilter(),
                 new SubsystemChoiceRenderer());
         subsystemChoice.setRequired(true);
-		form.add(subsystemChoice);
+        form.add(subsystemChoice);
 
         form.add(new AjaxLink<Void>("cancel-link") {
             @Override
@@ -69,7 +69,7 @@ public class ResetOtpTablePanel extends Panel {
             
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-            	target.add(feedbackPanel2);
+                target.add(feedbackPanel2);
             }
         });
     }

@@ -18,26 +18,26 @@ public class PolicyValidationException extends SSOException {
     private final String code;
 
     public PolicyValidationException(String code) {
-    	super(code);
+        super(code);
         this.code = code;
     }
 
     public PolicyValidationException() {
-		super();
-		code = null;
-	}
+        super();
+        code = null;
+    }
 
-	public PolicyValidationException(String code, Throwable cause) {
-		super(code, cause);
-		this.code = code;
-	}
+    public PolicyValidationException(String code, Throwable cause) {
+        super(code, cause);
+        this.code = code;
+    }
 
-	public PolicyValidationException(Throwable cause) {
-		super(cause);
-		this.code = null;
-	}
+    public PolicyValidationException(Throwable cause) {
+        super(cause);
+        this.code = null;
+    }
 
-	public String getCode() {
+    public String getCode() {
         return code;
     }
 }

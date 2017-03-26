@@ -9,8 +9,8 @@ package com.payneteasy.superfly.service.impl.remote;
  */
 public class AuthRequestInfoObtainer implements SubsystemIdentifierObtainer {
 
-	public String obtainSubsystemIdentifier(String hint) {
-		return hint;
-	}
+    public String obtainSubsystemIdentifier(String hint) {
+        return hint;
+    }
 
 }

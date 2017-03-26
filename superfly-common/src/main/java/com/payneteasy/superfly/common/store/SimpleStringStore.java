@@ -12,19 +12,19 @@ import java.util.Set;
  * @author Roman Puchkovskiy
  */
 public class SimpleStringStore implements StringStore {
-	
-	private Set<String> strings;
 
-	public boolean exists(String key) {
-		return strings.contains(key);
-	}
+    private Set<String> strings;
 
-	public void setObjects(List<String> objects) {
-		strings = Collections.unmodifiableSet(new HashSet<String>(objects));
-	}
+    public boolean exists(String key) {
+        return strings.contains(key);
+    }
 
-	public Collection<String> getObjects() {
-		return strings;
-	}
+    public void setObjects(List<String> objects) {
+        strings = Collections.unmodifiableSet(new HashSet<String>(objects));
+    }
+
+    public Collection<String> getObjects() {
+        return strings;
+    }
 
 }

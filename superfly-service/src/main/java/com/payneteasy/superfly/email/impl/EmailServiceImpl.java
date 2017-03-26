@@ -19,15 +19,15 @@ import java.util.Map;
 
 public class EmailServiceImpl implements EmailService {
 
-	private VelocityEngine velocityEngine;
+    private VelocityEngine velocityEngine;
     private JavaMailSenderPool javaMailSenderPool;
-	private String templatePrefix = "velocity/";
+    private String templatePrefix = "velocity/";
     private boolean enableHotpEmails = true;
 
     @Required
-	public void setVelocityEngine(VelocityEngine velocityEngine) {
-		this.velocityEngine = velocityEngine;
-	}
+    public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
+    }
 
     @Required
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
@@ -64,12 +64,12 @@ public class EmailServiceImpl implements EmailService {
                 }
             }
         }
-	}
+    }
 
     @Override
-	public void sendNoPublicKeyMessage(String subsystemIdentifier, String email)
-			throws RuntimeMessagingException {
-		if (enableHotpEmails) {
+    public void sendNoPublicKeyMessage(String subsystemIdentifier, String email)
+            throws RuntimeMessagingException {
+        if (enableHotpEmails) {
             ConfiguredSender sender = javaMailSenderPool.get(subsystemIdentifier);
             if (sender != null) {
                 try {
@@ -88,27 +88,27 @@ public class EmailServiceImpl implements EmailService {
                 }
             }
         }
-	}
+    }
 
     @Override
-	public void sendTestMessage(long serverId, String email)
-			throws RuntimeMessagingException {
-		ConfiguredSender sender = javaMailSenderPool.get(serverId);
-		try {
-			String subject = "Test message";
+    public void sendTestMessage(long serverId, String email)
+            throws RuntimeMessagingException {
+        ConfiguredSender sender = javaMailSenderPool.get(serverId);
+        try {
+            String subject = "Test message";
             Map<String, Object> model = createEmptyModel();
             String body = getMessageBody("test-message.vm", model);
 
             MimeMessage message = createMessage(sender);
             MimeMessageHelper helper = createSimpleHelper(message);
             initHelper(sender, email, subject, body, helper);
-			sender.getSender().send(message);
-		} catch (MessagingException e) {
-			throw new RuntimeMessagingException(e);
-		} catch (MailException e) {
-			throw new RuntimeMessagingException(e);
-		}
-	}
+            sender.getSender().send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeMessagingException(e);
+        } catch (MailException e) {
+            throw new RuntimeMessagingException(e);
+        }
+    }
 
     private MimeMessageHelper createSimpleHelper(MimeMessage message) throws MessagingException {
         return new MimeMessageHelper(message, false);

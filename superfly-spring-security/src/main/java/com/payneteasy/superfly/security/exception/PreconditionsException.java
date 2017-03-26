@@ -9,14 +9,14 @@ import org.springframework.security.core.AuthenticationException;
  * @author Roman Puchkovskiy
  */
 public class PreconditionsException extends AuthenticationException {
-	private static final long serialVersionUID = 7098950681593983707L;
+    private static final long serialVersionUID = 7098950681593983707L;
 
-	public PreconditionsException(String msg, Throwable t) {
-		super(msg, t);
-	}
+    public PreconditionsException(String msg, Throwable t) {
+        super(msg, t);
+    }
 
-	public PreconditionsException(String msg) {
-		super(msg);
-	}
+    public PreconditionsException(String msg) {
+        super(msg);
+    }
 
 }

@@ -14,19 +14,19 @@ import org.springframework.security.access.ConfigAttribute;
  * @author Roman Puchkovskiy
  */
 public class DelegatingDecisionManagerTest {
-	private AccessDecisionManager ourManager;
-	private AccessDecisionManager delegate;
+    private AccessDecisionManager ourManager;
+    private AccessDecisionManager delegate;
 
     @Before
-	public void setUp() {
-		delegate = EasyMock.createMock(AccessDecisionManager.class);
-		ourManager = new DelegatingDecisionManager(delegate);
-	}
+    public void setUp() {
+        delegate = EasyMock.createMock(AccessDecisionManager.class);
+        ourManager = new DelegatingDecisionManager(delegate);
+    }
 
     @Test
-	public void testDelegateMethods() {
-		EasyMock.expect(delegate.supports(EasyMock.anyObject(ConfigAttribute.class))).andReturn(true);
-		EasyMock.replay(delegate);
+    public void testDelegateMethods() {
+        EasyMock.expect(delegate.supports(EasyMock.anyObject(ConfigAttribute.class))).andReturn(true);
+        EasyMock.replay(delegate);
         Assert.assertTrue(ourManager.supports(new ConfigAttribute() {
             private static final long serialVersionUID = 1L;
 
@@ -34,13 +34,13 @@ public class DelegatingDecisionManagerTest {
                 return "ha";
             }
         }));
-		EasyMock.verify(delegate);
-		
-		EasyMock.reset(delegate);
-		
-		EasyMock.expect(delegate.supports(EasyMock.anyObject(Class.class))).andReturn(false);
-		EasyMock.replay(delegate);
+        EasyMock.verify(delegate);
+
+        EasyMock.reset(delegate);
+
+        EasyMock.expect(delegate.supports(EasyMock.anyObject(Class.class))).andReturn(false);
+        EasyMock.replay(delegate);
         Assert.assertFalse(ourManager.supports(String.class));
-		EasyMock.verify(delegate);
-	}
+        EasyMock.verify(delegate);
+    }
 }

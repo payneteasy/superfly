@@ -15,46 +15,46 @@ import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
 @Secured("ROLE_ADMIN")
 public class HomePage extends BasePage{
 
-	@SpringBean
-	private ReleaseNotesService releaseNotesService;
+    @SpringBean
+    private ReleaseNotesService releaseNotesService;
 
 
 
-	public HomePage() {
+    public HomePage() {
         super(HomePage.class);
         
-		List<Release> listReleases = releaseNotesService.getReleaseNotes();
+        List<Release> listReleases = releaseNotesService.getReleaseNotes();
 
-		final ListView<Release> listViewReBean = new ListView<Release>(
-				"releases", listReleases) {
-			@Override
-			protected void populateItem(ListItem<Release> item) {
-				Release release = item.getModelObject();
-				item.add(new Label("release-number", release.getNumber()));
-				item.add(new Label("release-date", release.getDate()));
+        final ListView<Release> listViewReBean = new ListView<Release>(
+                "releases", listReleases) {
+            @Override
+            protected void populateItem(ListItem<Release> item) {
+                Release release = item.getModelObject();
+                item.add(new Label("release-number", release.getNumber()));
+                item.add(new Label("release-date", release.getDate()));
 
-				ListView<ReleaseItem> itemsListView = new ListView<ReleaseItem>(
-						"release-items", release.getItems()) {
-					@Override
-					protected void populateItem(ListItem<ReleaseItem> item) {
-						ReleaseItem releaseItemBean = item.getModelObject();
-						item.add(new Label("release-item-name",
-								releaseItemBean.getName()));
-						item.add(new Label("release-item-description",
-								releaseItemBean.getDescription()));
-					}
+                ListView<ReleaseItem> itemsListView = new ListView<ReleaseItem>(
+                        "release-items", release.getItems()) {
+                    @Override
+                    protected void populateItem(ListItem<ReleaseItem> item) {
+                        ReleaseItem releaseItemBean = item.getModelObject();
+                        item.add(new Label("release-item-name",
+                                releaseItemBean.getName()));
+                        item.add(new Label("release-item-description",
+                                releaseItemBean.getDescription()));
+                    }
 
-				};
-				item.add(itemsListView);
-			}
+                };
+                item.add(itemsListView);
+            }
 
-		};
-		add(listViewReBean);
-	}
+        };
+        add(listViewReBean);
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Superfly dashboard";
-	}
+    @Override
+    protected String getTitle() {
+        return "Superfly dashboard";
+    }
 
 }

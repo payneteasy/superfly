@@ -15,19 +15,19 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
  * @author Roman Puchkovskiy
  */
 public class SuperflySelectRoleAuthenticationProvider extends AbstractRoleTransformingAuthenticationProvider {
-	
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
-		Authentication result = null;
-		if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
-			SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
-			return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoRole(),
-					token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
-		}
-		return result;
-	}
 
-	public boolean supports(Class<?> authentication) {
-		return SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
-	}
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        Authentication result = null;
+        if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
+            SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
+            return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoRole(),
+                    token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
+        }
+        return result;
+    }
+
+    public boolean supports(Class<?> authentication) {
+        return SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
+    }
 }

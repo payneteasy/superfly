@@ -8,30 +8,30 @@ package com.payneteasy.superfly.common.singleton;
  * @param <T>
  */
 public abstract class SingletonHolder<T> {
-	private T instance;
+    private T instance;
 
-	/**
-	 * Obtains a singleton instance held by this object.
-	 * 
-	 * @return instance
-	 */
-	public T getInstance() {
-		if (instance == null) {
-			synchronized (this) {
-				if (instance == null) {
-					// this is to prevent double object creation if one thread
-					// blocks another one here
-					instance = createInstance();
-				}
-			}
-		}
-		return instance;
-	}
-	
-	/**
-	 * Actually creates a new instance.
-	 * 
-	 * @return created instance
-	 */
-	protected abstract T createInstance();
+    /**
+     * Obtains a singleton instance held by this object.
+     *
+     * @return instance
+     */
+    public T getInstance() {
+        if (instance == null) {
+            synchronized (this) {
+                if (instance == null) {
+                    // this is to prevent double object creation if one thread
+                    // blocks another one here
+                    instance = createInstance();
+                }
+            }
+        }
+        return instance;
+    }
+
+    /**
+     * Actually creates a new instance.
+     *
+     * @return created instance
+     */
+    protected abstract T createInstance();
 }

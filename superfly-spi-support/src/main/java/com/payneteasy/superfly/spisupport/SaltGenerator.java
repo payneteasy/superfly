@@ -6,10 +6,10 @@ package com.payneteasy.superfly.spisupport;
  * @author Roman Puchkovskiy
  */
 public interface SaltGenerator {
-	/**
-	 * Generates a random salt value.
-	 * 
-	 * @return salt value
-	 */
-	String generate();
+    /**
+     * Generates a random salt value.
+     *
+     * @return salt value
+     */
+    String generate();
 }

@@ -26,84 +26,84 @@ import com.payneteasy.superfly.spisupport.ObjectResolver;
  * @author Roman Puchkovskiy
  */
 public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, InitializingBean {
-	
-	private static final Logger logger = LoggerFactory.getLogger(HOTPProviderFactoryBean.class);
-	
-	private BeanFactory beanFactory;
-	
-	private String masterKey;
-	private int codeDigits = 6;
-	private int lookahead = 10;
-	private int tableSize = 100;
-	
-	private boolean allowTestProvider = false;
-	
-	private HOTPProvider hotpProvider;
-	
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
 
-	@Required
-	public void setMasterKey(String masterKey) {
-		this.masterKey = masterKey;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(HOTPProviderFactoryBean.class);
 
-	public void setCodeDigits(int codeDigits) {
-		this.codeDigits = codeDigits;
-	}
+    private BeanFactory beanFactory;
 
-	public void setLookahead(int lookahead) {
-		this.lookahead = lookahead;
-	}
+    private String masterKey;
+    private int codeDigits = 6;
+    private int lookahead = 10;
+    private int tableSize = 100;
 
-	public void setTableSize(int tableSize) {
-		this.tableSize = tableSize;
-	}
+    private boolean allowTestProvider = false;
 
-	public void setAllowTestProvider(boolean allowTestProvider) {
-		this.allowTestProvider = allowTestProvider;
-	}
+    private HOTPProvider hotpProvider;
 
-	public Object getObject() throws Exception {
-		return hotpProvider;
-	}
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 
-	public Class<?> getObjectType() {
-		return HOTPProvider.class;
-	}
+    @Required
+    public void setMasterKey(String masterKey) {
+        this.masterKey = masterKey;
+    }
 
-	public boolean isSingleton() {
-		return true;
-	}
+    public void setCodeDigits(int codeDigits) {
+        this.codeDigits = codeDigits;
+    }
 
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(beanFactory);
-		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
-		
-		HOTPProvider resultProvider = HOTPProviderUtils.instantiateProvider(allowTestProvider);
-		
-		if (resultProvider != null) {
-			logger.info("Found the following implementation via service loader: " + resultProvider.getClass().getName());
-		} else {
-			resultProvider = new NullHOTPProvider();
-			logger.info("Did not find an implementation via service loader. Falling back to a default implementation");
-		}
-		hotpProvider = resultProvider;
-		
-		ObjectResolver objectResolver = createObjectResolver();
-		HOTPProviderContext context = createHOTPProviderContext(objectResolver);
-		hotpProvider.init(context);
-	}
+    public void setLookahead(int lookahead) {
+        this.lookahead = lookahead;
+    }
 
-	protected HOTPProviderContext createHOTPProviderContext(
-			ObjectResolver objectResolver) {
-		HOTPProviderContext context = new HOTPProviderContextImpl(objectResolver, masterKey, codeDigits, lookahead, tableSize);
-		return context;
-	}
+    public void setTableSize(int tableSize) {
+        this.tableSize = tableSize;
+    }
 
-	protected ObjectResolver createObjectResolver() {
-		return new BeanFactoryObjectResolver((ListableBeanFactory) beanFactory);
-	}
+    public void setAllowTestProvider(boolean allowTestProvider) {
+        this.allowTestProvider = allowTestProvider;
+    }
+
+    public Object getObject() throws Exception {
+        return hotpProvider;
+    }
+
+    public Class<?> getObjectType() {
+        return HOTPProvider.class;
+    }
+
+    public boolean isSingleton() {
+        return true;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(beanFactory);
+        Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
+
+        HOTPProvider resultProvider = HOTPProviderUtils.instantiateProvider(allowTestProvider);
+
+        if (resultProvider != null) {
+            logger.info("Found the following implementation via service loader: " + resultProvider.getClass().getName());
+        } else {
+            resultProvider = new NullHOTPProvider();
+            logger.info("Did not find an implementation via service loader. Falling back to a default implementation");
+        }
+        hotpProvider = resultProvider;
+
+        ObjectResolver objectResolver = createObjectResolver();
+        HOTPProviderContext context = createHOTPProviderContext(objectResolver);
+        hotpProvider.init(context);
+    }
+
+    protected HOTPProviderContext createHOTPProviderContext(
+            ObjectResolver objectResolver) {
+        HOTPProviderContext context = new HOTPProviderContextImpl(objectResolver, masterKey, codeDigits, lookahead, tableSize);
+        return context;
+    }
+
+    protected ObjectResolver createObjectResolver() {
+        return new BeanFactoryObjectResolver((ListableBeanFactory) beanFactory);
+    }
 
 }

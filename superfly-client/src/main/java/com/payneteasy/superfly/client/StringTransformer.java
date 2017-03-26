@@ -6,11 +6,11 @@ package com.payneteasy.superfly.client;
  * @author Roman Puchkovskiy
  */
 public interface StringTransformer {
-	/**
-	 * Does transformation.
-	 * 
-	 * @param s	string to transform
-	 * @return transformed string
-	 */
-	String transform(String s);
+    /**
+     * Does transformation.
+     *
+     * @param s    string to transform
+     * @return transformed string
+     */
+    String transform(String s);
 }

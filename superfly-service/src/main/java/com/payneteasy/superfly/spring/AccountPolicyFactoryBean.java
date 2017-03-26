@@ -16,13 +16,13 @@ import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
  * @author Roman Puchkovskiy
  */
 public class AccountPolicyFactoryBean extends
-		AbstractPolicyDependingFactoryBean<AccountPolicy> {
-	
-	private UserDao userDao;
-	
-	private AccountPolicy accountPolicy;
-	private UserPasswordEncoder userPasswordEncoder;
-	private PasswordGenerator passwordGenerator;
+        AbstractPolicyDependingFactoryBean<AccountPolicy> {
+
+    private UserDao userDao;
+
+    private AccountPolicy accountPolicy;
+    private UserPasswordEncoder userPasswordEncoder;
+    private PasswordGenerator passwordGenerator;
     private ResetPasswordStrategy resetPasswordStrategy;
 
     @Required
@@ -31,50 +31,50 @@ public class AccountPolicyFactoryBean extends
     }
 
     @Required
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Required
-	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
-		this.userPasswordEncoder = userPasswordEncoder;
-	}
+    public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+        this.userPasswordEncoder = userPasswordEncoder;
+    }
 
-	@Required
-	public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
-		this.passwordGenerator = passwordGenerator;
-	}
+    @Required
+    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
+        this.passwordGenerator = passwordGenerator;
+    }
 
-	public AccountPolicy getObject() throws Exception {
-		if (accountPolicy == null) {
-			Policy policy = findPolicyByIdentifier();
-			switch (policy) {
-			case NONE:
-				SimpleAccountPolicy simpleAccountPolicy = new SimpleAccountPolicy();
-				simpleAccountPolicy.setUserDao(userDao);
-				accountPolicy = simpleAccountPolicy;
-				break;
-			case PCIDSS:
-				PCIDSSAccountPolicy pcidssAccountPolicy = new PCIDSSAccountPolicy();
-				pcidssAccountPolicy.setUserDao(userDao);
-				pcidssAccountPolicy.setUserPasswordEncoder(userPasswordEncoder);
-				pcidssAccountPolicy.setPasswordGenerator(passwordGenerator);
+    public AccountPolicy getObject() throws Exception {
+        if (accountPolicy == null) {
+            Policy policy = findPolicyByIdentifier();
+            switch (policy) {
+            case NONE:
+                SimpleAccountPolicy simpleAccountPolicy = new SimpleAccountPolicy();
+                simpleAccountPolicy.setUserDao(userDao);
+                accountPolicy = simpleAccountPolicy;
+                break;
+            case PCIDSS:
+                PCIDSSAccountPolicy pcidssAccountPolicy = new PCIDSSAccountPolicy();
+                pcidssAccountPolicy.setUserDao(userDao);
+                pcidssAccountPolicy.setUserPasswordEncoder(userPasswordEncoder);
+                pcidssAccountPolicy.setPasswordGenerator(passwordGenerator);
                 pcidssAccountPolicy.setResetPasswordStrategy(resetPasswordStrategy);
-				accountPolicy = pcidssAccountPolicy;
-				break;
-			default:
-				throw new IllegalStateException("Unknown policy: " + policy);
-			}
-		}
-		return accountPolicy;
-	}
+                accountPolicy = pcidssAccountPolicy;
+                break;
+            default:
+                throw new IllegalStateException("Unknown policy: " + policy);
+            }
+        }
+        return accountPolicy;
+    }
 
-	public Class<?> getObjectType() {
-		return AccountPolicy.class;
-	}
+    public Class<?> getObjectType() {
+        return AccountPolicy.class;
+    }
 
-	public boolean isSingleton() {
-		return true;
-	}
+    public boolean isSingleton() {
+        return true;
+    }
 
 }

@@ -33,143 +33,143 @@ import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class GroupActionsPage extends BasePage {
-	@SpringBean
-	ActionService actionService;
-	
-	@SpringBean
-	SubsystemService ssysService;
-	
-	@SpringBean
-	GroupService groupService;
-	
-	@Override
-	protected String getTitle() {
-		return "Create group";
-	}
+    @SpringBean
+    ActionService actionService;
 
-	public GroupActionsPage(PageParameters param) {
-		super(ListGroupsPage.class, param);
-		
-		final Long groupId = param.get("gid").toLong();
-		
-		// current Group
-		final UIGroup curGroup = groupService.getGroupById(groupId);
-		
-		// Filter
-		final Filter filter = new Filter();
-		final Form<Filter> filtersForm = new Form<Filter>("filters-form", new Model<Filter>(filter));
-		add(filtersForm);
-		filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
-		
-		
-		// groupModel
-		final GroupWizardModel groupModel = new GroupWizardModel();		
-		groupModel.setGroupName(curGroup.getName());
-		List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
-		for(UISubsystemForFilter e: list){
-			if(e.getId() == curGroup.getSubsystemId())groupModel.setGroupSubsystem(e);
-		}
-		
-		
-		
-		final ObjectHolder<List<UIActionForCheckboxForGroup>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForGroup>>();
+    @SpringBean
+    SubsystemService ssysService;
 
-		// CHECKGROUP
-		final InitializingModel<Collection<UIActionForCheckboxForGroup>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForCheckboxForGroup>>() {
-			@Override
-			protected Collection<UIActionForCheckboxForGroup> getInitialValue() {
-				final Collection<UIActionForCheckboxForGroup> checkedActions = new HashSet<UIActionForCheckboxForGroup>();
-				for (UIActionForCheckboxForGroup action : actionsHolder.getObject()) {
-					if (action.isMapped()) {
-						checkedActions.add(action);
-					}
-				}
-				return checkedActions;
-			}
-		};
-		
-		// SORTABLE DATA PROVIDER
-		String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
-		final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
-				fieldName) {
-			
-			public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first, long count) {
-				List<UIActionForCheckboxForGroup> list = groupService.getAllGroupActions(first, count, getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
-				actionsHolder.setObject(list);
-				actionsCheckGroupModel.clearInitialized();
-				return list.iterator(); 
-			}
+    @SpringBean
+    GroupService groupService;
 
-			public long size() {
-				return groupService.getAllGroupActionsCount(groupId, filter.getActionNameSubstring());
-			}
+    @Override
+    protected String getTitle() {
+        return "Create group";
+    }
 
-		};
-		
+    public GroupActionsPage(PageParameters param) {
+        super(ListGroupsPage.class, param);
 
-				
-		final CheckGroup<UIActionForCheckboxForGroup> checkGroup = new CheckGroup<UIActionForCheckboxForGroup>("group",actionsCheckGroupModel);
+        final Long groupId = param.get("gid").toLong();
 
-		// DATAVIEW
-		final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider, 15){
-			@Override
-			protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
-				final UIActionForCheckboxForGroup action = item.getModelObject();
-				item.add(new Label("name",action.getActionName()));
-				item.add(new Label("ssys-name",action.getSubsystemName()));
-				item.add(new Check<UIActionForCheckboxForGroup>("selected", item.getModel(), checkGroup));
-			}
-			
-		};
-		
-		checkGroup.add(actionDataView);
-		checkGroup.add(new OrderByLink("order-by-name", "actionName", actionDataProvider));
-		//checkGroup.add(new PagingNavigator("paging-navigator", actionDataView));
-		checkGroup.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
-		checkGroup.add(new CheckGroupSelector("groupselector",checkGroup));
-		
-		// FORM
-		Form form = new Form("form"){
-			@Override
-			protected void onSubmit() {				
-				List<Long> actionsToLink = new ArrayList<Long>();
-				List<Long> actionsToUnlink = new ArrayList<Long>();
-				List<UIActionForCheckboxForGroup> allActions = actionsHolder.getObject();
-				Collection<UIActionForCheckboxForGroup> selectedActions = actionsCheckGroupModel.getObject();
-				for(UIActionForCheckboxForGroup e : allActions){
-					if(selectedActions.contains(e)){
-						actionsToLink.add(e.getActionId());
-					}else{
-						actionsToUnlink.add(e.getActionId());
-					}
-				}
-				RoutineResult result = groupService.changeGroupActions(curGroup.getId(), actionsToLink, actionsToUnlink);
-				if (result.isOk()) {
-					info("Actions successfully changed. Please be aware that some sessions could be invalidated.");
-				} else {
-					error("Error while changing group actions: " + result.getErrorMessage());
-				}
-			}
-		};
-		form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
-		
-		form.add(checkGroup);
-		add(form);
-		//---
-	}
-	
+        // current Group
+        final UIGroup curGroup = groupService.getGroupById(groupId);
 
-	@SuppressWarnings("unused")
-	private static class Filter implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private String actionNameSubstring;
+        // Filter
+        final Filter filter = new Filter();
+        final Form<Filter> filtersForm = new Form<Filter>("filters-form", new Model<Filter>(filter));
+        add(filtersForm);
+        filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
 
-		public String getActionNameSubstring() {
-			return actionNameSubstring;
-		}
 
-		public void setActionNameSubstring(String actionNameSubstring) {
-			this.actionNameSubstring = actionNameSubstring;
-		}
-	}
+        // groupModel
+        final GroupWizardModel groupModel = new GroupWizardModel();
+        groupModel.setGroupName(curGroup.getName());
+        List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
+        for(UISubsystemForFilter e: list){
+            if(e.getId() == curGroup.getSubsystemId())groupModel.setGroupSubsystem(e);
+        }
+
+
+
+        final ObjectHolder<List<UIActionForCheckboxForGroup>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForGroup>>();
+
+        // CHECKGROUP
+        final InitializingModel<Collection<UIActionForCheckboxForGroup>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForCheckboxForGroup>>() {
+            @Override
+            protected Collection<UIActionForCheckboxForGroup> getInitialValue() {
+                final Collection<UIActionForCheckboxForGroup> checkedActions = new HashSet<UIActionForCheckboxForGroup>();
+                for (UIActionForCheckboxForGroup action : actionsHolder.getObject()) {
+                    if (action.isMapped()) {
+                        checkedActions.add(action);
+                    }
+                }
+                return checkedActions;
+            }
+        };
+
+        // SORTABLE DATA PROVIDER
+        String[] fieldName = { "groupId","groupName","subsystemName","actionId", "actionName" };
+        final SortableDataProvider<UIActionForCheckboxForGroup, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForCheckboxForGroup>(
+                fieldName) {
+
+            public Iterator<? extends UIActionForCheckboxForGroup> iterator(long first, long count) {
+                List<UIActionForCheckboxForGroup> list = groupService.getAllGroupActions(first, count, getSortFieldIndex(), isAscending(), groupId, filter.getActionNameSubstring());
+                actionsHolder.setObject(list);
+                actionsCheckGroupModel.clearInitialized();
+                return list.iterator();
+            }
+
+            public long size() {
+                return groupService.getAllGroupActionsCount(groupId, filter.getActionNameSubstring());
+            }
+
+        };
+
+
+
+        final CheckGroup<UIActionForCheckboxForGroup> checkGroup = new CheckGroup<UIActionForCheckboxForGroup>("group",actionsCheckGroupModel);
+
+        // DATAVIEW
+        final DataView<UIActionForCheckboxForGroup> actionDataView = new PagingDataView<UIActionForCheckboxForGroup>("dataView",actionDataProvider, 15){
+            @Override
+            protected void populateItem(Item<UIActionForCheckboxForGroup> item) {
+                final UIActionForCheckboxForGroup action = item.getModelObject();
+                item.add(new Label("name",action.getActionName()));
+                item.add(new Label("ssys-name",action.getSubsystemName()));
+                item.add(new Check<UIActionForCheckboxForGroup>("selected", item.getModel(), checkGroup));
+            }
+
+        };
+
+        checkGroup.add(actionDataView);
+        checkGroup.add(new OrderByLink("order-by-name", "actionName", actionDataProvider));
+        //checkGroup.add(new PagingNavigator("paging-navigator", actionDataView));
+        checkGroup.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
+        checkGroup.add(new CheckGroupSelector("groupselector",checkGroup));
+
+        // FORM
+        Form form = new Form("form"){
+            @Override
+            protected void onSubmit() {
+                List<Long> actionsToLink = new ArrayList<Long>();
+                List<Long> actionsToUnlink = new ArrayList<Long>();
+                List<UIActionForCheckboxForGroup> allActions = actionsHolder.getObject();
+                Collection<UIActionForCheckboxForGroup> selectedActions = actionsCheckGroupModel.getObject();
+                for(UIActionForCheckboxForGroup e : allActions){
+                    if(selectedActions.contains(e)){
+                        actionsToLink.add(e.getActionId());
+                    }else{
+                        actionsToUnlink.add(e.getActionId());
+                    }
+                }
+                RoutineResult result = groupService.changeGroupActions(curGroup.getId(), actionsToLink, actionsToUnlink);
+                if (result.isOk()) {
+                    info("Actions successfully changed. Please be aware that some sessions could be invalidated.");
+                } else {
+                    error("Error while changing group actions: " + result.getErrorMessage());
+                }
+            }
+        };
+        form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
+
+        form.add(checkGroup);
+        add(form);
+        //---
+    }
+
+
+    @SuppressWarnings("unused")
+    private static class Filter implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private String actionNameSubstring;
+
+        public String getActionNameSubstring() {
+            return actionNameSubstring;
+        }
+
+        public void setActionNameSubstring(String actionNameSubstring) {
+            this.actionNameSubstring = actionNameSubstring;
+        }
+    }
 }

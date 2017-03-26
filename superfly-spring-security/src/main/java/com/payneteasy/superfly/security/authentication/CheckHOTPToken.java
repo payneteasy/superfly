@@ -10,18 +10,18 @@ import com.payneteasy.superfly.api.SSOUser;
  * @author Roman Puchkovskiy
  */
 public class CheckHOTPToken extends SSOUserTransportAuthenticationToken {
-	private static final long serialVersionUID = 2290145086843797962L;
-	
-	private String hotp;
+    private static final long serialVersionUID = 2290145086843797962L;
 
-	public CheckHOTPToken(SSOUser ssoUser, String hotp) {
-		super(ssoUser);
-		this.hotp = hotp;
-	}
+    private String hotp;
 
-	@Override
-	public Object getCredentials() {
-		return hotp;
-	}
+    public CheckHOTPToken(SSOUser ssoUser, String hotp) {
+        super(ssoUser);
+        this.hotp = hotp;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return hotp;
+    }
 
 }

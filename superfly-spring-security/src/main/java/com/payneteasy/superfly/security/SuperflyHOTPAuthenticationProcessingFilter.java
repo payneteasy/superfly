@@ -23,54 +23,54 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
  * @author Roman Puchkovskiy
  */
 public class SuperflyHOTPAuthenticationProcessingFilter extends
-		AbstractSingleStepAuthenticationProcessingFilter {
-	
-	private static final Logger logger = LoggerFactory.getLogger(SuperflyHOTPAuthenticationProcessingFilter.class);
-	
-	private String hotpParameter = "j_hotp";
-	
-	public SuperflyHOTPAuthenticationProcessingFilter() {
-		super("/j_superfly_hotp_security_check");
-	}
-	
-	public void setHotpParameter(String hotpParameter) {
-		this.hotpParameter = hotpParameter;
-	}
+        AbstractSingleStepAuthenticationProcessingFilter {
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Assert.notNull(authentication);
-		
-		CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
-		authentication = extractLatestAuthOrSimpleAuth(authentication);
-		
-		String hotp = obtainHotp(request);
+    private static final Logger logger = LoggerFactory.getLogger(SuperflyHOTPAuthenticationProcessingFilter.class);
 
-		Authentication authRequest = createSimpleAuthRequest(authentication,
-				hotp);
-		
-		return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
-	}
+    private String hotpParameter = "j_hotp";
 
-	protected Authentication createSimpleAuthRequest(
-			Authentication authentication, String hotp) {
-		if (!(authentication instanceof SSOUserTransportAuthenticationToken)) {
-			String msg = "Unexpected authentication of class " + authentication.getClass() + ": " + authentication;
-			logger.error(msg);
-			throw new AuthenticationServiceException(msg);
-		}
-		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
-		Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
-		return authRequest;
-	}
+    public SuperflyHOTPAuthenticationProcessingFilter() {
+        super("/j_superfly_hotp_security_check");
+    }
 
-	protected Authentication createCheckHotpAuthRequest(String hotp, SSOUser ssoUser) {
-		return new CheckHOTPToken(ssoUser, hotp);
-	}
-	
-	protected String obtainHotp(HttpServletRequest request) {
-		return request.getParameter(hotpParameter);
-	}
+    public void setHotpParameter(String hotpParameter) {
+        this.hotpParameter = hotpParameter;
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Assert.notNull(authentication);
+
+        CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
+        authentication = extractLatestAuthOrSimpleAuth(authentication);
+
+        String hotp = obtainHotp(request);
+
+        Authentication authRequest = createSimpleAuthRequest(authentication,
+                hotp);
+
+        return getAuthenticationManager().authenticate(new CompoundAuthentication(compound.getReadyAuthentications(), authRequest));
+    }
+
+    protected Authentication createSimpleAuthRequest(
+            Authentication authentication, String hotp) {
+        if (!(authentication instanceof SSOUserTransportAuthenticationToken)) {
+            String msg = "Unexpected authentication of class " + authentication.getClass() + ": " + authentication;
+            logger.error(msg);
+            throw new AuthenticationServiceException(msg);
+        }
+        SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
+        Authentication authRequest = createCheckHotpAuthRequest(hotp, token.getSsoUser());
+        return authRequest;
+    }
+
+    protected Authentication createCheckHotpAuthRequest(String hotp, SSOUser ssoUser) {
+        return new CheckHOTPToken(ssoUser, hotp);
+    }
+
+    protected String obtainHotp(HttpServletRequest request) {
+        return request.getParameter(hotpParameter);
+    }
 }

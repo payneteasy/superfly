@@ -31,8 +31,8 @@ public class PasswordCheckContext implements IPolicyContext {
 
           int length=0;
           for(PasswordSaltPair pwd:thePasswordHistory){
-        	  // +1 in the following line is because the current password is
-        	  // first in the list (as it must not be present in the history)
+              // +1 in the following line is because the current password is
+              // first in the list (as it must not be present in the history)
               if(length<aHistoryLength + 1 && thePasswordEncoder.encode(aPassword,pwd.getSalt()).equals(pwd.getPassword())){
                   return true;
               }

@@ -21,64 +21,64 @@ import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 
 public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest {
-	
-	private LocalSecurityService localSecurityService;
-	private UserDao userDao;
+
+    private LocalSecurityService localSecurityService;
+    private UserDao userDao;
 
     @Before
-	public void setUp() {
-		LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
-		userDao = EasyMock.createStrictMock(UserDao.class);
-		service.setUserDao(userDao);
-		service.setLoggerSink(loggerSink);
-		service.setLocalRoleName("local");
-		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
-		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
-		userPasswordEncoder.setSaltSource(new NullSaltSource());
-		service.setUserPasswordEncoder(userPasswordEncoder);
-		service.setLockoutStrategy(new NoneLockoutStrategy());
-		localSecurityService = service;
-	}
+    public void setUp() {
+        LocalSecurityServiceImpl service = new LocalSecurityServiceImpl();
+        userDao = EasyMock.createStrictMock(UserDao.class);
+        service.setUserDao(userDao);
+        service.setLoggerSink(loggerSink);
+        service.setLocalRoleName("local");
+        UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+        userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        userPasswordEncoder.setSaltSource(new NullSaltSource());
+        service.setUserPasswordEncoder(userPasswordEncoder);
+        service.setLockoutStrategy(new NoneLockoutStrategy());
+        localSecurityService = service;
+    }
 
     @Test
-	public void testAuthenticateUser() throws Exception {
-		final AuthRole role = new AuthRole();
-		role.setRoleName("local");
-		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
-				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
-						.andReturn(new AuthSession("username", 1L){{setRoles(Collections.singletonList(role));}});
-		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(true), eq("username"));
-		EasyMock.replay(loggerSink, userDao);
-		
-		localSecurityService.authenticate("username", "password");
-		
-		EasyMock.verify(loggerSink);
-	}
+    public void testAuthenticateUser() throws Exception {
+        final AuthRole role = new AuthRole();
+        role.setRoleName("local");
+        EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+                anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+                        .andReturn(new AuthSession("username", 1L){{setRoles(Collections.singletonList(role));}});
+        loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(true), eq("username"));
+        EasyMock.replay(loggerSink, userDao);
+
+        localSecurityService.authenticate("username", "password");
+
+        EasyMock.verify(loggerSink);
+    }
 
     @Test
-	public void testAuthenticateUserFailNotNull() throws Exception {
-		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
-				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
-						.andReturn(new AuthSession("username"));
-		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
-		EasyMock.replay(loggerSink, userDao);
-		
-		localSecurityService.authenticate("username", "password");
-		
-		EasyMock.verify(loggerSink);
-	}
+    public void testAuthenticateUserFailNotNull() throws Exception {
+        EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+                anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+                        .andReturn(new AuthSession("username"));
+        loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
+        EasyMock.replay(loggerSink, userDao);
+
+        localSecurityService.authenticate("username", "password");
+
+        EasyMock.verify(loggerSink);
+    }
 
     @Test
     public void testAuthenticateUserFailWithNull() throws Exception {
-   		EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
-   				anyObject(String.class), anyObject(String.class), anyObject(String.class)))
-   						.andReturn(null);
-   		loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
-   		EasyMock.replay(loggerSink, userDao);
+           EasyMock.expect(userDao.authenticate(eq("username"), eq("password"),
+                   anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+                           .andReturn(null);
+           loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
+           EasyMock.replay(loggerSink, userDao);
 
-   		localSecurityService.authenticate("username", "password");
+           localSecurityService.authenticate("username", "password");
 
-   		EasyMock.verify(loggerSink);
-   	}
-	
+           EasyMock.verify(loggerSink);
+       }
+
 }

@@ -18,11 +18,11 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  */
 public abstract class ChangePasswordPanel extends Panel {
 
-	@SpringBean
-	private UserService userService;
+    @SpringBean
+    private UserService userService;
 
-	public ChangePasswordPanel(String id) {
-		super(id);
+    public ChangePasswordPanel(String id) {
+        super(id);
 
         add(new FeedbackPanel("feedback"));
         
@@ -59,7 +59,7 @@ public abstract class ChangePasswordPanel extends Panel {
         submitButton.setOutputMarkupId(true);
         submitButton.setMarkupId("change-button");
         form.add(submitButton);
-	}
+    }
 
     protected abstract String getCurrentUserName();
 

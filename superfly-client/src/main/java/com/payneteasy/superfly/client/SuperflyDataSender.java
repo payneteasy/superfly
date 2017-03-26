@@ -24,66 +24,66 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  * @author Roman Puchkovskiy
  */
 public class SuperflyDataSender {
-	
-	private static final Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
-	
-	private SSOService ssoService;
-	private ActionDescriptionCollector actionDescriptionCollector;
-	private String subsystemIdentifier = null;
-	private long delay = 0;
-	private StringTransformer[] transformers = new StringTransformer[0];
-	private boolean autoSend = true;
 
-	public void setSsoService(SSOService ssoService) {
-		this.ssoService = ssoService;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
 
-	public void setActionDescriptionCollector(
-			ActionDescriptionCollector actionDescriptionCollector) {
-		this.actionDescriptionCollector = actionDescriptionCollector;
-	}
+    private SSOService ssoService;
+    private ActionDescriptionCollector actionDescriptionCollector;
+    private String subsystemIdentifier = null;
+    private long delay = 0;
+    private StringTransformer[] transformers = new StringTransformer[0];
+    private boolean autoSend = true;
 
-	public String getSubsystemIdentifier() {
-		return subsystemIdentifier;
-	}
+    public void setSsoService(SSOService ssoService) {
+        this.ssoService = ssoService;
+    }
 
-	public void setSubsystemIdentifier(String subsystemIdentifier) {
-		this.subsystemIdentifier = subsystemIdentifier;
-	}
+    public void setActionDescriptionCollector(
+            ActionDescriptionCollector actionDescriptionCollector) {
+        this.actionDescriptionCollector = actionDescriptionCollector;
+    }
 
-	public void setDelay(long delay) {
-		this.delay = delay;
-	}
+    public String getSubsystemIdentifier() {
+        return subsystemIdentifier;
+    }
 
-	public void setTransformers(StringTransformer[] transformers) {
-		this.transformers = transformers;
-	}
+    public void setSubsystemIdentifier(String subsystemIdentifier) {
+        this.subsystemIdentifier = subsystemIdentifier;
+    }
 
-	public void setAutoSend(boolean autoSend) {
-		this.autoSend = autoSend;
-	}
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
 
-	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
-		if (autoSend) {
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					send();
-				}
-			}, delay);
-		}
-	}
+    public void setTransformers(StringTransformer[] transformers) {
+        this.transformers = transformers;
+    }
 
-	protected ActionDescription[] obtainActionDescriptions() throws CollectionException {
-		List<ActionDescription> actions = actionDescriptionCollector.collect();
-		actions = leaveUniqueActionsOnly(actions);
-		for (ActionDescription action : actions) {
-			action.setName(applyTransformers(action.getName()));
-		}
-		return actions.toArray(new ActionDescription[actions.size()]);
-	}
+    public void setAutoSend(boolean autoSend) {
+        this.autoSend = autoSend;
+    }
+
+    @PostConstruct
+    public void afterPropertiesSet() throws Exception {
+        if (autoSend) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    send();
+                }
+            }, delay);
+        }
+    }
+
+    protected ActionDescription[] obtainActionDescriptions() throws CollectionException {
+        List<ActionDescription> actions = actionDescriptionCollector.collect();
+        actions = leaveUniqueActionsOnly(actions);
+        for (ActionDescription action : actions) {
+            action.setName(applyTransformers(action.getName()));
+        }
+        return actions.toArray(new ActionDescription[actions.size()]);
+    }
 
     private List<ActionDescription> leaveUniqueActionsOnly(List<ActionDescription> actions) {
         Set<String> seenNames = new HashSet<>();
@@ -98,24 +98,24 @@ public class SuperflyDataSender {
     }
 
     protected String applyTransformers(String name) {
-		for (StringTransformer transformer : transformers) {
-			name = transformer.transform(name);
-		}
-		return name;
-	}
+        for (StringTransformer transformer : transformers) {
+            name = transformer.transform(name);
+        }
+        return name;
+    }
 
-	public void send() {
-		try {
+    public void send() {
+        try {
             final ActionDescription[] actionDescriptions = obtainActionDescriptions();
             if (logger.isDebugEnabled()) {
                 logger.debug("Sending the following actions: {}", getActionsStringForLog(actionDescriptions));
             }
             ssoService.sendSystemData(getSubsystemIdentifier(),
                     actionDescriptions);
-		} catch (CollectionException e) {
-			logger.error("Cannot send subsystem data", e);
-		}
-	}
+        } catch (CollectionException e) {
+            logger.error("Cannot send subsystem data", e);
+        }
+    }
 
     private String getActionsStringForLog(ActionDescription[] actionDescriptions) {
         List<String> names = new ArrayList<String>(actionDescriptions.length);

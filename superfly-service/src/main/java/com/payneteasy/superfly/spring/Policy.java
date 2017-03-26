@@ -6,15 +6,15 @@ package com.payneteasy.superfly.spring;
  * @author Roman Puchkovskiy
  */
 public enum Policy {
-	NONE("none"), PCIDSS("pcidss");
-	
-	private String identifier;
-	
-	private Policy(String identifier) {
-		this.identifier = identifier;
-	}
-	
-	public String getIdentifier() {
-		return identifier;
-	}
+    NONE("none"), PCIDSS("pcidss");
+
+    private String identifier;
+
+    private Policy(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
 }

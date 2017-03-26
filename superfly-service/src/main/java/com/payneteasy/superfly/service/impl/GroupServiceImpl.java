@@ -22,134 +22,134 @@ import com.payneteasy.superfly.utils.StringUtils;
 
 @Transactional
 public class GroupServiceImpl implements GroupService {
-	
-	private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
-	
-	private GroupDao groupDao;
-	private NotificationService notificationService;
-	private LoggerSink loggerSink;
 
-	@Required
-	public void setGroupDao(GroupDao groupDao) {
-		this.groupDao = groupDao;
-	}
+    private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
 
-	@Required
-	public void setNotificationService(NotificationService notificationService) {
-		this.notificationService = notificationService;
-	}
+    private GroupDao groupDao;
+    private NotificationService notificationService;
+    private LoggerSink loggerSink;
 
-	@Required
-	public void setLoggerSink(LoggerSink loggerSink) {
-		this.loggerSink = loggerSink;
-	}
+    @Required
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
 
-	public List<UIGroupForList> getGroups() {
-		return this.groupDao.getGroups(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-				DaoConstants.ASC, null, null);
-	}
-	
-	public RoutineResult createGroup(UIGroup group) {
-		RoutineResult result = groupDao.createGroup(group);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "CREATE_GROUP", result.isOk(), group.getName());
-		return result;
-	}
+    @Required
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
-	public RoutineResult deleteGroup(long id) {
-		RoutineResult result = groupDao.deleteGroup(id);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
-		return result;
-	}
+    @Required
+    public void setLoggerSink(LoggerSink loggerSink) {
+        this.loggerSink = loggerSink;
+    }
 
-	public List<UIGroupForList> getGroupsForSubsystems(long startFrom,
-			long recordsCount, int orderFieldNumber, boolean orderType,
-			String groupNamePrefix, List<Long> subsystemIds) {
-		return this.groupDao.getGroups(startFrom, recordsCount,
-				orderFieldNumber,
-				orderType ? DaoConstants.ASC : DaoConstants.DESC,
-				groupNamePrefix, 
-				StringUtils.collectionToCommaDelimitedString(subsystemIds));
-	}
+    public List<UIGroupForList> getGroups() {
+        return this.groupDao.getGroups(0, 10, DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
+                DaoConstants.ASC, null, null);
+    }
 
-	public long getGroupsCount(String groupName, List<Long> subsystemIds) {
-		return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
-	}
+    public RoutineResult createGroup(UIGroup group) {
+        RoutineResult result = groupDao.createGroup(group);
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "CREATE_GROUP", result.isOk(), group.getName());
+        return result;
+    }
 
-	public UIGroupForView getGroupById(long id) {
-		return groupDao.getGroupById(id);
-	}
+    public RoutineResult deleteGroup(long id) {
+        RoutineResult result = groupDao.deleteGroup(id);
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "DELETE_GROUP", result.isOk(), String.valueOf(id));
+        return result;
+    }
 
-	public RoutineResult updateGroup(UIGroup group) {
-		RoutineResult result = groupDao.updateGroup(group.getId(), group.getName());
-		loggerSink.info(logger, "UPDATE_GROUP", result.isOk(), group.getName());
-		return result;
-	}
-
-	public RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
-			List<Long> actionsToUnlink) {
-		RoutineResult result = groupDao.changeGroupActions(groupId,
-						StringUtils.collectionToCommaDelimitedString(actionsToLink),
-						StringUtils.collectionToCommaDelimitedString(actionsToUnlink));
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
-		return result;		
-	}
-
-	public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
+    public List<UIGroupForList> getGroupsForSubsystems(long startFrom,
             long recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring) {
-		return groupDao.getAllGroupMappedActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
-	}
-	
-	public long getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
-		return groupDao.getAllGroupMappedActionsCount(groupId, actionSubstring);
-	}
-	
-	public List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+            String groupNamePrefix, List<Long> subsystemIds) {
+        return this.groupDao.getGroups(startFrom, recordsCount,
+                orderFieldNumber,
+                orderType ? DaoConstants.ASC : DaoConstants.DESC,
+                groupNamePrefix,
+                StringUtils.collectionToCommaDelimitedString(subsystemIds));
+    }
+
+    public long getGroupsCount(String groupName, List<Long> subsystemIds) {
+        return groupDao.getGroupsCount(groupName, StringUtils.collectionToCommaDelimitedString(subsystemIds));
+    }
+
+    public UIGroupForView getGroupById(long id) {
+        return groupDao.getGroupById(id);
+    }
+
+    public RoutineResult updateGroup(UIGroup group) {
+        RoutineResult result = groupDao.updateGroup(group.getId(), group.getName());
+        loggerSink.info(logger, "UPDATE_GROUP", result.isOk(), group.getName());
+        return result;
+    }
+
+    public RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
+            List<Long> actionsToUnlink) {
+        RoutineResult result = groupDao.changeGroupActions(groupId,
+                        StringUtils.collectionToCommaDelimitedString(actionsToLink),
+                        StringUtils.collectionToCommaDelimitedString(actionsToUnlink));
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "CHANGE_GROUP_ACTIONS", result.isOk(), String.valueOf(groupId));
+        return result;
+    }
+
+    public List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
             long recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring) {
-		return groupDao.getAllGroupActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
-	}
-	
-	public long getAllGroupActionsCount(long groupId, String actionSubstring) {
-		return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
-	}
+            long groupId, String actionSubstring) {
+        return groupDao.getAllGroupMappedActions(startFrom, recordsCount,
+                orderFieldNumber,
+                orderType ? DaoConstants.ASC : DaoConstants.DESC,
+                groupId, actionSubstring);
+    }
 
-	public RoutineResult cloneGroup(UICloneGroupRequest request) {
-		RoutineResult result = groupDao.cloneGroup(request);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "CLONE_GROUP", result.isOk(), String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
-		return result;
-	}
+    public long getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
+        return groupDao.getAllGroupMappedActionsCount(groupId, actionSubstring);
+    }
 
-	public List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(
-			int startFrom, int recordsCount, int orderFieldNumber,
-			boolean orderType, long groupId, String actionSubstring) {
-		return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount, 
-				orderFieldNumber, 
-				orderType ? DaoConstants.ASC : DaoConstants.DESC, 
-				groupId, actionSubstring);
-	}
+    public List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
+            long groupId, String actionSubstring) {
+        return groupDao.getAllGroupActions(startFrom, recordsCount,
+                orderFieldNumber,
+                orderType ? DaoConstants.ASC : DaoConstants.DESC,
+                groupId, actionSubstring);
+    }
 
-	public int getAllGroupUnMappedActionsCount(long groupId,
-			String actionSubstring) {
-		return groupDao.getAllGroupUnMappedActionsCount(groupId, actionSubstring);
-	}
+    public long getAllGroupActionsCount(long groupId, String actionSubstring) {
+        return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
+    }
+
+    public RoutineResult cloneGroup(UICloneGroupRequest request) {
+        RoutineResult result = groupDao.cloneGroup(request);
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "CLONE_GROUP", result.isOk(), String.format("%s->%s", request.getSourceGroupId(), request.getNewGroupName()));
+        return result;
+    }
+
+    public List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(
+            int startFrom, int recordsCount, int orderFieldNumber,
+            boolean orderType, long groupId, String actionSubstring) {
+        return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount,
+                orderFieldNumber,
+                orderType ? DaoConstants.ASC : DaoConstants.DESC,
+                groupId, actionSubstring);
+    }
+
+    public int getAllGroupUnMappedActionsCount(long groupId,
+            String actionSubstring) {
+        return groupDao.getAllGroupUnMappedActionsCount(groupId, actionSubstring);
+    }
 
 }

@@ -8,20 +8,20 @@ package com.payneteasy.superfly.api;
  */
 public class MessageSendException extends SSOException {
 
-	public MessageSendException() {
-		super();
-	}
+    public MessageSendException() {
+        super();
+    }
 
-	public MessageSendException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public MessageSendException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public MessageSendException(String message) {
-		super(message);
-	}
+    public MessageSendException(String message) {
+        super(message);
+    }
 
-	public MessageSendException(Throwable cause) {
-		super(cause);
-	}
+    public MessageSendException(Throwable cause) {
+        super(cause);
+    }
 
 }

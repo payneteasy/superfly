@@ -10,30 +10,30 @@ import java.util.Date;
  * @since 1.3-5
  */
 public class UserStatus implements Serializable {
-	private String username;
+    private String username;
     private boolean accountLocked;
     private Date lastLoginDate;
     private int loginsFailed;
     private Date lastFailedLoginDate;
     private String lastFailedLoginIp;
 
-	/**
-	 * Returns a username.
-	 * 
-	 * @return username
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * Returns a username.
+     *
+     * @return username
+     */
+    public String getUsername() {
+        return username;
+    }
 
-	/**
-	 * Sets username.
-	 * 
-	 * @param username	name to set
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * Sets username.
+     *
+     * @param username    name to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     /**
      * Returns whether account is locked.

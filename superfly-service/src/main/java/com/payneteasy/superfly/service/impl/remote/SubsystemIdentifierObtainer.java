@@ -7,11 +7,11 @@ package com.payneteasy.superfly.service.impl.remote;
  * @author Roman Puchkovskiy
  */
 public interface SubsystemIdentifierObtainer {
-	/**
-	 * Obtains a subsystem identifier.
-	 * 
-	 * @param systemIdentifier	hint which possibly may be used as identifier
-	 * @return subsystem identifier
-	 */
-	String obtainSubsystemIdentifier(String systemIdentifier);
+    /**
+     * Obtains a subsystem identifier.
+     *
+     * @param systemIdentifier    hint which possibly may be used as identifier
+     * @return subsystem identifier
+     */
+    String obtainSubsystemIdentifier(String systemIdentifier);
 }

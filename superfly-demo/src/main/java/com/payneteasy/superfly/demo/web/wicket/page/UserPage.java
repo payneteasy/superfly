@@ -6,8 +6,8 @@ import org.springframework.security.annotation.Secured;
 @Secured({"ROLE_USERPAGE1", "ROLE_USERPAGE2"})
 public class UserPage extends BasePage {
 
-	public UserPage(PageParameters parameters) {
-		super(parameters);
-	}
+    public UserPage(PageParameters parameters) {
+        super(parameters);
+    }
 
 }

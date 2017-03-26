@@ -22,62 +22,62 @@ import com.payneteasy.superfly.common.utils.StringUtils;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractNotificationSinkFilter implements Filter {
-	
-	protected abstract boolean doFilterRequest(HttpServletRequest request);
 
-	protected abstract boolean acceptsNotificationType(String notificationType);
-	
-	public void init(FilterConfig filterConfig) throws ServletException {
-	}
+    protected abstract boolean doFilterRequest(HttpServletRequest request);
 
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
-			throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		if ("POST".equals(request.getMethod())) {
-			String notificationType = request.getParameter(getSuperflyNotificationParameterName());
-			if (notificationType != null && acceptsNotificationType(notificationType)) {
-				if (isAllowed(request)) {
-					if (doFilterRequest(request)) {
-						return;
-					}
-				}
-			}
-		}
-		chain.doFilter(req, resp);
-	}
-	
-	protected boolean isAllowed(HttpServletRequest request) {
-		return true;
-	}
+    protected abstract boolean acceptsNotificationType(String notificationType);
 
-	protected String getSuperflyNotificationParameterName() {
-		return "superflyNotification";
-	}
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
-	public void destroy() {
-	}
-	
-	protected Set<String> initAllowedIps(FilterConfig filterConfig) {
-		String resource = getPropertiesResource(filterConfig);
-		Set<String> ips = null;
-		Properties properties = CommonUtils.loadPropertiesThrowing(resource);
-		String commaDelimited = properties.getProperty("notification.allowed.ips").trim();
-		if (commaDelimited.length() > 0) {
-			String[] fragments = StringUtils.commaDelimitedListToStringArray(commaDelimited);
-			
-			ips = new HashSet<String>();
-			for (String ip : fragments) {
-				ips.add(ip);
-			}
-		}
-		return ips;
-	}
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+            throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        if ("POST".equals(request.getMethod())) {
+            String notificationType = request.getParameter(getSuperflyNotificationParameterName());
+            if (notificationType != null && acceptsNotificationType(notificationType)) {
+                if (isAllowed(request)) {
+                    if (doFilterRequest(request)) {
+                        return;
+                    }
+                }
+            }
+        }
+        chain.doFilter(req, resp);
+    }
 
-	protected String getPropertiesResource(FilterConfig filterConfig) {
-		return filterConfig.getInitParameter("propertiesResource");
-	}
-	
-	protected boolean isAllowedByIp(HttpServletRequest request, Set<String> allowedIps) {
-		return allowedIps == null || allowedIps.contains(request.getRemoteAddr());
-	}
+    protected boolean isAllowed(HttpServletRequest request) {
+        return true;
+    }
+
+    protected String getSuperflyNotificationParameterName() {
+        return "superflyNotification";
+    }
+
+    public void destroy() {
+    }
+
+    protected Set<String> initAllowedIps(FilterConfig filterConfig) {
+        String resource = getPropertiesResource(filterConfig);
+        Set<String> ips = null;
+        Properties properties = CommonUtils.loadPropertiesThrowing(resource);
+        String commaDelimited = properties.getProperty("notification.allowed.ips").trim();
+        if (commaDelimited.length() > 0) {
+            String[] fragments = StringUtils.commaDelimitedListToStringArray(commaDelimited);
+
+            ips = new HashSet<String>();
+            for (String ip : fragments) {
+                ips.add(ip);
+            }
+        }
+        return ips;
+    }
+
+    protected String getPropertiesResource(FilterConfig filterConfig) {
+        return filterConfig.getInitParameter("propertiesResource");
+    }
+
+    protected boolean isAllowedByIp(HttpServletRequest request, Set<String> allowedIps) {
+        return allowedIps == null || allowedIps.contains(request.getRemoteAddr());
+    }
 }

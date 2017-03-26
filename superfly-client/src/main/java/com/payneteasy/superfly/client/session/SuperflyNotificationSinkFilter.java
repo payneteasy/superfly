@@ -24,46 +24,46 @@ import com.payneteasy.superfly.common.utils.StringUtils;
  * @author Roman Puchkovskiy
  */
 public class SuperflyNotificationSinkFilter implements Filter {
-	
-	private static Logger logger = LoggerFactory.getLogger(SuperflyNotificationSinkFilter.class);
-	
-	public void init(FilterConfig filterConfig) throws ServletException {
-	}
 
-	public void doFilter(ServletRequest req, ServletResponse resp,
-			FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		if ("POST".equals(request.getMethod())) {
-			String logoutSessionIds = request.getParameter(getLogoutSessionIdsParameterName());
-			if (logoutSessionIds != null) {
-				// this is actually a logout request, so process it and
-				// interrupt filter chain
-				String[] sessionIds = StringUtils.commaDelimitedListToStringArray(logoutSessionIds);
-				for (String key : sessionIds) {
-					HttpSession session = getSessionMapping().removeSessionByKey(key);
-					if (session != null) {
-						try {
-							session.invalidate();
-						} catch (IllegalStateException e) {
-							logger.warn("Ignored exception while trying to invalidate a session", e);
-						}
-					}
-				}
-				return;
-			}
-		}
-		chain.doFilter(req, resp);
-	}
+    private static Logger logger = LoggerFactory.getLogger(SuperflyNotificationSinkFilter.class);
 
-	protected SessionMapping getSessionMapping() {
-		return SessionMappingLocator.getSessionMapping();
-	}
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
-	protected String getLogoutSessionIdsParameterName() {
-		return "superflyLogoutSessionIds";
-	}
-	
-	public void destroy() {
-	}
+    public void doFilter(ServletRequest req, ServletResponse resp,
+            FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        if ("POST".equals(request.getMethod())) {
+            String logoutSessionIds = request.getParameter(getLogoutSessionIdsParameterName());
+            if (logoutSessionIds != null) {
+                // this is actually a logout request, so process it and
+                // interrupt filter chain
+                String[] sessionIds = StringUtils.commaDelimitedListToStringArray(logoutSessionIds);
+                for (String key : sessionIds) {
+                    HttpSession session = getSessionMapping().removeSessionByKey(key);
+                    if (session != null) {
+                        try {
+                            session.invalidate();
+                        } catch (IllegalStateException e) {
+                            logger.warn("Ignored exception while trying to invalidate a session", e);
+                        }
+                    }
+                }
+                return;
+            }
+        }
+        chain.doFilter(req, resp);
+    }
+
+    protected SessionMapping getSessionMapping() {
+        return SessionMappingLocator.getSessionMapping();
+    }
+
+    protected String getLogoutSessionIdsParameterName() {
+        return "superflyLogoutSessionIds";
+    }
+
+    public void destroy() {
+    }
 
 }

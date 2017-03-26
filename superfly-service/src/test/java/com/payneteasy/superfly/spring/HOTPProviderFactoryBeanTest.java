@@ -8,22 +8,22 @@ import org.junit.Test;
 import org.springframework.beans.factory.ListableBeanFactory;
 
 public class HOTPProviderFactoryBeanTest {
-	
-	private HOTPProviderFactoryBean factoryBean;
+
+    private HOTPProviderFactoryBean factoryBean;
 
     @Before
-	public void setUp() throws Exception {
-		factoryBean = new HOTPProviderFactoryBean();
-		factoryBean.setBeanFactory(TrivialProxyFactory.createProxy(ListableBeanFactory.class));
-		factoryBean.setAllowTestProvider(true);
-		factoryBean.afterPropertiesSet();
-	}
+    public void setUp() throws Exception {
+        factoryBean = new HOTPProviderFactoryBean();
+        factoryBean.setBeanFactory(TrivialProxyFactory.createProxy(ListableBeanFactory.class));
+        factoryBean.setAllowTestProvider(true);
+        factoryBean.afterPropertiesSet();
+    }
 
     @Test
-	public void testInstantiation() throws Exception {
+    public void testInstantiation() throws Exception {
         Assert.assertEquals(HOTPProvider.class, factoryBean.getObjectType());
-		Object object = factoryBean.getObject();
+        Object object = factoryBean.getObject();
         Assert.assertTrue("Got: " + object, object instanceof TestHOTPProvider);
         Assert.assertTrue(((TestHOTPProvider) object).isInitialized());
-	}
+    }
 }

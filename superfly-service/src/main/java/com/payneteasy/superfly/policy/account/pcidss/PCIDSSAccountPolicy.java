@@ -21,12 +21,12 @@ import com.payneteasy.superfly.service.UserService;
  * @author Roman Puchkovskiy
  */
 public class PCIDSSAccountPolicy implements AccountPolicy {
-	
-	private static final Logger logger = LoggerFactory.getLogger(PCIDSSAccountPolicy.class);
-	
-	private UserDao userDao;
-	private PasswordGenerator passwordGenerator;
-	private UserPasswordEncoder userPasswordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(PCIDSSAccountPolicy.class);
+
+    private UserDao userDao;
+    private PasswordGenerator passwordGenerator;
+    private UserPasswordEncoder userPasswordEncoder;
     private ResetPasswordStrategy resetPasswordStrategy;
 
     @Required
@@ -35,52 +35,52 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     }
 
     @Required
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-	@Required
-	public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
-		this.passwordGenerator = passwordGenerator;
-	}
+    @Required
+    public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
+        this.passwordGenerator = passwordGenerator;
+    }
 
-	@Required
-	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
-		this.userPasswordEncoder = userPasswordEncoder;
-	}
+    @Required
+    public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+        this.userPasswordEncoder = userPasswordEncoder;
+    }
 
-	public String unlockUser(long userId, boolean unlockingSuspendedUser) {
-		if (unlockingSuspendedUser) {
-			String password = passwordGenerator.generate();
-			String encPassword = userPasswordEncoder.encode(password, userId);
-			RoutineResult result = userDao.unlockSuspendedUser(userId, encPassword);
-			if (!result.isOk()) {
-				throw new IllegalStateException(result.getErrorMessage());
-			}
-			return password;
-		} else {
-			RoutineResult result = userDao.unlockUser(userId);
-			if (!result.isOk()) {
-				throw new IllegalStateException(result.getErrorMessage());
-			}
-			return null;
-		}
-	}
+    public String unlockUser(long userId, boolean unlockingSuspendedUser) {
+        if (unlockingSuspendedUser) {
+            String password = passwordGenerator.generate();
+            String encPassword = userPasswordEncoder.encode(password, userId);
+            RoutineResult result = userDao.unlockSuspendedUser(userId, encPassword);
+            if (!result.isOk()) {
+                throw new IllegalStateException(result.getErrorMessage());
+            }
+            return password;
+        } else {
+            RoutineResult result = userDao.unlockUser(userId);
+            if (!result.isOk()) {
+                throw new IllegalStateException(result.getErrorMessage());
+            }
+            return null;
+        }
+    }
 
-	public void suspendUsersIfNeeded(int days, UserService userService) {
-		List<User> users = userDao.getUsersToSuspend(days);
-		for (User user : users) {
-			logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
-			userService.suspendUser(user.getUserid());
-		}
-	}
+    public void suspendUsersIfNeeded(int days, UserService userService) {
+        List<User> users = userDao.getUsersToSuspend(days);
+        for (User user : users) {
+            logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
+            userService.suspendUser(user.getUserid());
+        }
+    }
 
-	public void expirePasswordsIfNeeded(int days, UserService userService) {
+    public void expirePasswordsIfNeeded(int days, UserService userService) {
         List<User> users=userDao.getUsersWithExpiredPasswords(days);
         for(User u:users){
             logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
             resetPasswordStrategy.resetPassword(u.getUserid(),u.getUserName(), null);
         }
-	}
+    }
 
 }

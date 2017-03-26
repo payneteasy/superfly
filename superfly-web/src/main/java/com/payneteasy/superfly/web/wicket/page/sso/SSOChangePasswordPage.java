@@ -16,7 +16,7 @@ public class SSOChangePasswordPage extends BaseSSOPage {
     @SpringBean
     private SubsystemService subsystemService;
 
-	public SSOChangePasswordPage(final String username) {
+    public SSOChangePasswordPage(final String username) {
         if (getSession().getSsoLoginData() == null) {
             SSOUtils.redirectToLoginErrorPage(this, new Model<String>("No login data found"));
         }
@@ -35,6 +35,6 @@ public class SSOChangePasswordPage extends BaseSSOPage {
                         sessionService, subsystemService);
             }
         });
-	}
+    }
 
 }

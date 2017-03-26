@@ -7,8 +7,8 @@ import javax.persistence.Entity;
 
 @Entity(name = "temp_actions")
 public class ActionToSave implements Serializable {
-	private String name;
-	private String description;
+    private String name;
+    private String description;
 
     public ActionToSave() {
     }
@@ -18,20 +18,20 @@ public class ActionToSave implements Serializable {
     }
 
     @Column(name = "action_name")
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Column(name = "action_description")
-	public String getDescription() {
-		return description;
-	}
+    @Column(name = "action_description")
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

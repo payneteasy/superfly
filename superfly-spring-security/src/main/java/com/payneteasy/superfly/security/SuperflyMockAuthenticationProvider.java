@@ -22,63 +22,63 @@ import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
  * @author Roman Puchkovskiy
  */
 public class SuperflyMockAuthenticationProvider extends AbstractSuperflyAuthenticationProvider {
-	
-	private String username;
-	private String password;
-	private ActionsMapBuilder actionsMapBuilder;
-	
-	private Map<SSORole, SSOAction[]> cachedActionsMap;
 
-	@Required
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    private String username;
+    private String password;
+    private ActionsMapBuilder actionsMapBuilder;
 
-	@Required
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    private Map<SSORole, SSOAction[]> cachedActionsMap;
 
-	@Required
-	public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
-		this.actionsMapBuilder = actionsMapBuilder;
-	}
+    @Required
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	@Override
-	protected SSOUser doAuthenticate(
-			UsernamePasswordAuthRequestInfoAuthenticationToken authRequest,
-			String username, String password) {
-		boolean ok = this.username.equals(username) && this.password.equals(password);
-		
-		if (!ok) {
-			throw new BadCredentialsException("Bad password");
-		}
+    @Required
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-		SSOUser ssoUser;
-		try {
-			ssoUser = new SSOUser(username, buildActionsMap(username), buildPreferences());
-		} catch (Exception e) {
-			throw new AuthenticationServiceException("Cannot collect action descriptions", e);
-		}
-		return ssoUser;
-	}
+    @Required
+    public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
+        this.actionsMapBuilder = actionsMapBuilder;
+    }
 
-	protected Map<SSORole, SSOAction[]> buildActionsMap(String username) throws Exception {
-		if (cachedActionsMap == null) {
-			cachedActionsMap = actionsMapBuilder.build();
-		}
-		return cachedActionsMap;
-	}
-	
-	protected Map<String, String> buildPreferences() {
-		return Collections.emptyMap();
-	}
+    @Override
+    protected SSOUser doAuthenticate(
+            UsernamePasswordAuthRequestInfoAuthenticationToken authRequest,
+            String username, String password) {
+        boolean ok = this.username.equals(username) && this.password.equals(password);
 
-	@SuppressWarnings("rawtypes")
-	public boolean supports(Class authentication) {
-		return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
-				|| SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)
-				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
-	}
+        if (!ok) {
+            throw new BadCredentialsException("Bad password");
+        }
+
+        SSOUser ssoUser;
+        try {
+            ssoUser = new SSOUser(username, buildActionsMap(username), buildPreferences());
+        } catch (Exception e) {
+            throw new AuthenticationServiceException("Cannot collect action descriptions", e);
+        }
+        return ssoUser;
+    }
+
+    protected Map<SSORole, SSOAction[]> buildActionsMap(String username) throws Exception {
+        if (cachedActionsMap == null) {
+            cachedActionsMap = actionsMapBuilder.build();
+        }
+        return cachedActionsMap;
+    }
+
+    protected Map<String, String> buildPreferences() {
+        return Collections.emptyMap();
+    }
+
+    @SuppressWarnings("rawtypes")
+    public boolean supports(Class authentication) {
+        return UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
+                || SSOUserTransportAuthenticationToken.class.isAssignableFrom(authentication)
+                || SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication);
+    }
 
 }

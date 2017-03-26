@@ -4,8 +4,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 public class HomePage extends BasePage {
 
-	public HomePage(PageParameters parameters) {
-		super(parameters);
-	}
+    public HomePage(PageParameters parameters) {
+        super(parameters);
+    }
 
 }

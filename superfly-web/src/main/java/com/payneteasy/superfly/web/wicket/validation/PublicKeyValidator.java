@@ -14,27 +14,27 @@ import com.payneteasy.superfly.utils.PGPKeyValidator;
  * @author Roman Puchkovskiy
  */
 public class PublicKeyValidator implements IValidator<String> {
-	
-	private PublicKeyCrypto crypto;
 
-	public PublicKeyValidator(PublicKeyCrypto crypto) {
-		super();
-		this.crypto = crypto;
-	}
+    private PublicKeyCrypto crypto;
 
-	public void validate(IValidatable<String> validatable) {
-		String value = validatable.getValue();
-		try {
-			PGPKeyValidator.validatePublicKey(value, crypto);
-		} catch (BadPublicKeyException e) {
-			triggerError(validatable, e.getMessage());
-		}
-	}
+    public PublicKeyValidator(PublicKeyCrypto crypto) {
+        super();
+        this.crypto = crypto;
+    }
 
-	private void triggerError(IValidatable<String> validatable, String key) {
-		ValidationError error = new ValidationError();
-		error.addMessageKey(key);
-		validatable.error(error);
-	}
+    public void validate(IValidatable<String> validatable) {
+        String value = validatable.getValue();
+        try {
+            PGPKeyValidator.validatePublicKey(value, crypto);
+        } catch (BadPublicKeyException e) {
+            triggerError(validatable, e.getMessage());
+        }
+    }
+
+    private void triggerError(IValidatable<String> validatable, String key) {
+        ValidationError error = new ValidationError();
+        error.addMessageKey(key);
+        validatable.error(error);
+    }
 
 }

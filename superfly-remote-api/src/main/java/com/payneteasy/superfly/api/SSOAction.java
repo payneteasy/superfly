@@ -9,64 +9,64 @@ import java.io.Serializable;
  * @since 1.0
  */
 public class SSOAction implements Serializable {
-	private static final long serialVersionUID = 8596869669651056660L;
-	
-	private String name;
-	private boolean loggingNeeded;
-	
-	/**
-	 * Constructs action.
-	 * 
-	 * @param name			action name
-	 * @param loggingNeeded	whether this action will be logged when used in
-	 * the subsystem
-	 */
-	public SSOAction(String name, boolean loggingNeeded) {
-		super();
-		this.name = name;
-		this.loggingNeeded = loggingNeeded;
-	}
+    private static final long serialVersionUID = 8596869669651056660L;
 
-	/**
-	 * Returns action name.
-	 * 
-	 * @return name
-	 */
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private boolean loggingNeeded;
 
-	/**
-	 * Sets action name.
-	 * 
-	 * @param name	name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Constructs action.
+     *
+     * @param name            action name
+     * @param loggingNeeded    whether this action will be logged when used in
+     * the subsystem
+     */
+    public SSOAction(String name, boolean loggingNeeded) {
+        super();
+        this.name = name;
+        this.loggingNeeded = loggingNeeded;
+    }
 
-	/**
-	 * Returns whether this action should be logged when used.
-	 * 
-	 * @return true if logged
-	 */
-	public boolean isLoggingNeeded() {
-		return loggingNeeded;
-	}
+    /**
+     * Returns action name.
+     *
+     * @return name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Sets whether this action should be logged when used.
-	 * 
-	 * @param loggingNeeded	value to set
-	 */
-	public void setLoggingNeeded(boolean loggingNeeded) {
-		this.loggingNeeded = loggingNeeded;
-	}
-	
-	@Override
-	public String toString() {
-		return name;
-	}
+    /**
+     * Sets action name.
+     *
+     * @param name    name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Returns whether this action should be logged when used.
+     *
+     * @return true if logged
+     */
+    public boolean isLoggingNeeded() {
+        return loggingNeeded;
+    }
+
+    /**
+     * Sets whether this action should be logged when used.
+     *
+     * @param loggingNeeded    value to set
+     */
+    public void setLoggingNeeded(boolean loggingNeeded) {
+        this.loggingNeeded = loggingNeeded;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Override
     public boolean equals(Object o) {

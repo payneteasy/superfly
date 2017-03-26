@@ -9,11 +9,11 @@ import org.springframework.security.core.AuthenticationException;
  * @author Roman Puchkovskiy
  */
 public interface AuthenticationValidator {
-	/**
-	 * Carries out authentication.
-	 * 
-	 * @param auth	auth to validate
-	 * @throws AuthenticationException	if validation fails
-	 */
-	void validate(Authentication auth) throws AuthenticationException;
+    /**
+     * Carries out authentication.
+     *
+     * @param auth    auth to validate
+     * @throws AuthenticationException    if validation fails
+     */
+    void validate(Authentication auth) throws AuthenticationException;
 }

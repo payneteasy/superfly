@@ -13,8 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Secured("ROLE_ACTION_TEMP_PASSWORD")
 public class ChangePasswordPage extends BasePage {
 
-	public ChangePasswordPage(PageParameters params) {
-		super(ListUsersPage.class, params);
+    public ChangePasswordPage(PageParameters params) {
+        super(ListUsersPage.class, params);
 
         add(new ChangePasswordPanel("change-password-panel") {
             @Override
@@ -29,11 +29,11 @@ public class ChangePasswordPage extends BasePage {
                 SecurityContextHolder.clearContext();
             }
         });
-	}
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Change user password";
-	}
+    @Override
+    protected String getTitle() {
+        return "Change user password";
+    }
 
 }

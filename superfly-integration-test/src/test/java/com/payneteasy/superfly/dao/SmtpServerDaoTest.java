@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class SmtpServerDaoTest extends AbstractDaoTest {
-	private SmtpServerDao smtpServerDao;
+    private SmtpServerDao smtpServerDao;
     private SubsystemDao subsystemDao;
 
     private static boolean createdServer = false;
@@ -47,44 +47,44 @@ public class SmtpServerDaoTest extends AbstractDaoTest {
 
     @Test
     public void testUpdateSmtpServer() {
-		UISmtpServer server = getAnySmtpServer();
-		server.setName("testName");
+        UISmtpServer server = getAnySmtpServer();
+        server.setName("testName");
         server.setHost("host.com");
         server.setPort(null);
         server.setUsername("user");
         server.setPassword("pwd");
-		RoutineResult result = smtpServerDao.updateSmtpServer(server);
-		assertRoutineResult(result);
-	}
-	
-	private UISmtpServer getAnySmtpServer() {
-		long serverId = getAnySmtpServerId();
+        RoutineResult result = smtpServerDao.updateSmtpServer(server);
+        assertRoutineResult(result);
+    }
+
+    private UISmtpServer getAnySmtpServer() {
+        long serverId = getAnySmtpServerId();
         return smtpServerDao.getSmtpServer(serverId);
-	}
-	
-	private long getAnySmtpServerId(){
-		List<UISmtpServerForList> servers = smtpServerDao.listSmtpServers();
-		UISmtpServerForList server = servers.get(0);
+    }
+
+    private long getAnySmtpServerId(){
+        List<UISmtpServerForList> servers = smtpServerDao.listSmtpServers();
+        UISmtpServerForList server = servers.get(0);
         return server.getId();
-	}
+    }
 
     @Test
-	public void testGetSmtpServers() {
-		List<UISmtpServerForList> list = smtpServerDao.listSmtpServers();
+    public void testGetSmtpServers() {
+        List<UISmtpServerForList> list = smtpServerDao.listSmtpServers();
         assertNotNull("Servers list should not be null", list);
         assertTrue("Servers list should not be empty", list.size() > 0);
-	}
+    }
 
     @Test
-	public void testCreateSmtpServer() {
+    public void testCreateSmtpServer() {
         UISmtpServer server = createServer("the server name");
         server.setSsl(true);
         RoutineResult result = smtpServerDao.createSmtpServer(server);
         assertRoutineResult(result);
-		assertNotNull("ID must be generated", server.getId());
+        assertNotNull("ID must be generated", server.getId());
         server = smtpServerDao.getSmtpServer(server.getId());
         assertTrue(server.isSsl());
-	}
+    }
 
     private UISmtpServer createServer(String name) {
         UISmtpServer server = new UISmtpServer();
@@ -98,20 +98,20 @@ public class SmtpServerDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetSmtpServersForFilter() {
-		List<UISmtpServerForFilter> list = smtpServerDao.getSmtpServersForFilter();
-		assertNotNull("Servers list should not be null", list);
-		assertTrue("Servers list should not be empty", list.size() > 0);
-	}
+        List<UISmtpServerForFilter> list = smtpServerDao.getSmtpServersForFilter();
+        assertNotNull("Servers list should not be null", list);
+        assertTrue("Servers list should not be empty", list.size() > 0);
+    }
 
     @Test
-	public void testGetSmtpServer() {
+    public void testGetSmtpServer() {
         assertNotNull("Server not found", smtpServerDao.getSmtpServer(getAnySmtpServerId()));
-	}
+    }
 
     @Test
-	public void testGetSmtpServerBySubsystemIdentifier() {
+    public void testGetSmtpServerBySubsystemIdentifier() {
         smtpServerDao.getSmtpServerBySubsystemIdentifier("subsystem");
-	}
+    }
 
     @Test
     public void testDeleteSmtpServer() {

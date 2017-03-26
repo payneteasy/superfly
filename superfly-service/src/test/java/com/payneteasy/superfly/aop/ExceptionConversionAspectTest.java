@@ -10,184 +10,184 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class ExceptionConversionAspectTest {
-	
-	private ExceptionConversionAspect aspect;
+
+    private ExceptionConversionAspect aspect;
 
     @Before
-	public void setUp() {
-		aspect = new ExceptionConversionAspect();
-	}
+    public void setUp() {
+        aspect = new ExceptionConversionAspect();
+    }
 
     @Test
-	public void testNoNonconvertibles() {
-		// first, no non-convertible classes
-		try {
-			aspect.invoke(new ProceedingJoinPointAdapter() {
-				@Override
-				public Object proceed() throws Throwable {
-					throw new ConvertibleException();
-				}
-			});
-		} catch (Throwable e) {
-			assertOnlyRuntimeExceptions(e);
-		}
-	}
+    public void testNoNonconvertibles() {
+        // first, no non-convertible classes
+        try {
+            aspect.invoke(new ProceedingJoinPointAdapter() {
+                @Override
+                public Object proceed() throws Throwable {
+                    throw new ConvertibleException();
+                }
+            });
+        } catch (Throwable e) {
+            assertOnlyRuntimeExceptions(e);
+        }
+    }
 
     @Test
-	@SuppressWarnings("unchecked")
-	public void testMissNonconvertibles() {
-		// now, no-convertible classes exist, but we don't hit them
-		aspect.setNonConvertibleClasses(new Class[]{NonConvertibleException.class});
-		try {
-			aspect.invoke(new ProceedingJoinPointAdapter() {
-				@Override
-				public Object proceed() throws Throwable {
-					throw new ConvertibleException();
-				}
-			});
-		} catch (Throwable e) {
-			assertOnlyRuntimeExceptions(e);
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void testMissNonconvertibles() {
+        // now, no-convertible classes exist, but we don't hit them
+        aspect.setNonConvertibleClasses(new Class[]{NonConvertibleException.class});
+        try {
+            aspect.invoke(new ProceedingJoinPointAdapter() {
+                @Override
+                public Object proceed() throws Throwable {
+                    throw new ConvertibleException();
+                }
+            });
+        } catch (Throwable e) {
+            assertOnlyRuntimeExceptions(e);
+        }
+    }
 
     @Test
-	@SuppressWarnings("unchecked")
-	public void testConvertion() {
-		// now, no-convertible classes exist, but we don't hit them
-		aspect.setNonConvertibleClasses(new Class[]{NonConvertibleException.class});
-		try {
-			aspect.invoke(new ProceedingJoinPointAdapter() {
-				@Override
-				public Object proceed() throws Throwable {
-					throw new ConvertibleException();
-				}
-			});
-		} catch (Throwable e) {
-			assertOnlyRuntimeExceptions(e);
-		}
-		
-		// now, non-convertible is thrown
-		try {
-			aspect.invoke(new ProceedingJoinPointAdapter() {
-				@Override
-				public Object proceed() throws Throwable {
-					throw new SubNonConvertibleException();
-				}
-			});
-		} catch (Throwable e) {
+    @SuppressWarnings("unchecked")
+    public void testConvertion() {
+        // now, no-convertible classes exist, but we don't hit them
+        aspect.setNonConvertibleClasses(new Class[]{NonConvertibleException.class});
+        try {
+            aspect.invoke(new ProceedingJoinPointAdapter() {
+                @Override
+                public Object proceed() throws Throwable {
+                    throw new ConvertibleException();
+                }
+            });
+        } catch (Throwable e) {
+            assertOnlyRuntimeExceptions(e);
+        }
+
+        // now, non-convertible is thrown
+        try {
+            aspect.invoke(new ProceedingJoinPointAdapter() {
+                @Override
+                public Object proceed() throws Throwable {
+                    throw new SubNonConvertibleException();
+                }
+            });
+        } catch (Throwable e) {
             assertEquals(SubNonConvertibleException.class, e.getClass());
-		}
-		
-		// now, non-convertible is thrown
-		try {
-			aspect.invoke(new ProceedingJoinPointAdapter() {
-				@Override
-				public Object proceed() throws Throwable {
-					throw new SubNonConvertibleException(new NonConvertibleException());
-				}
-			});
-		} catch (Throwable e) {
-			assertEquals(SubNonConvertibleException.class, e.getClass());
-			assertOnlyRuntimeExceptions(e.getCause());
-		}
-	}
+        }
 
-	protected void assertOnlyRuntimeExceptions(Throwable e) {
-		while (e != null) {
-			assertEquals(RuntimeException.class, e.getClass());
-			e = e.getCause();
-		}
-	}
+        // now, non-convertible is thrown
+        try {
+            aspect.invoke(new ProceedingJoinPointAdapter() {
+                @Override
+                public Object proceed() throws Throwable {
+                    throw new SubNonConvertibleException(new NonConvertibleException());
+                }
+            });
+        } catch (Throwable e) {
+            assertEquals(SubNonConvertibleException.class, e.getClass());
+            assertOnlyRuntimeExceptions(e.getCause());
+        }
+    }
 
-	private abstract static class ProceedingJoinPointAdapter implements
-			ProceedingJoinPoint {
-		public String toShortString() {
-			return null;
-		}
+    protected void assertOnlyRuntimeExceptions(Throwable e) {
+        while (e != null) {
+            assertEquals(RuntimeException.class, e.getClass());
+            e = e.getCause();
+        }
+    }
 
-		public String toLongString() {
-			return null;
-		}
+    private abstract static class ProceedingJoinPointAdapter implements
+            ProceedingJoinPoint {
+        public String toShortString() {
+            return null;
+        }
 
-		public Object getThis() {
-			return null;
-		}
+        public String toLongString() {
+            return null;
+        }
 
-		public Object getTarget() {
-			return null;
-		}
+        public Object getThis() {
+            return null;
+        }
 
-		public StaticPart getStaticPart() {
-			return null;
-		}
+        public Object getTarget() {
+            return null;
+        }
 
-		public SourceLocation getSourceLocation() {
-			return null;
-		}
+        public StaticPart getStaticPart() {
+            return null;
+        }
 
-		public Signature getSignature() {
-			return null;
-		}
+        public SourceLocation getSourceLocation() {
+            return null;
+        }
 
-		public String getKind() {
-			return null;
-		}
+        public Signature getSignature() {
+            return null;
+        }
 
-		public Object[] getArgs() {
-			return null;
-		}
+        public String getKind() {
+            return null;
+        }
 
-		public void set$AroundClosure(AroundClosure arc) {
-		}
+        public Object[] getArgs() {
+            return null;
+        }
 
-		public Object proceed(Object[] args) throws Throwable {
-			return null;
-		}
+        public void set$AroundClosure(AroundClosure arc) {
+        }
 
-		public Object proceed() throws Throwable {
-			return null;
-		}
-	}
-	
-	public static class ConvertibleException extends Exception {
-	}
+        public Object proceed(Object[] args) throws Throwable {
+            return null;
+        }
 
-	public static class NonConvertibleException extends Exception {
-		public NonConvertibleException() {
-			super();
-		}
+        public Object proceed() throws Throwable {
+            return null;
+        }
+    }
 
-		public NonConvertibleException(String message, Throwable cause) {
-			super(message, cause);
-		}
+    public static class ConvertibleException extends Exception {
+    }
 
-		public NonConvertibleException(String message) {
-			super(message);
-		}
+    public static class NonConvertibleException extends Exception {
+        public NonConvertibleException() {
+            super();
+        }
 
-		public NonConvertibleException(Throwable cause) {
-			super(cause);
-		}
-	}
+        public NonConvertibleException(String message, Throwable cause) {
+            super(message, cause);
+        }
 
-	public static class SubNonConvertibleException extends NonConvertibleException {
-		public SubNonConvertibleException() {
-			super();
-		}
+        public NonConvertibleException(String message) {
+            super(message);
+        }
 
-		@SuppressWarnings("UnusedDeclaration")
+        public NonConvertibleException(Throwable cause) {
+            super(cause);
+        }
+    }
+
+    public static class SubNonConvertibleException extends NonConvertibleException {
+        public SubNonConvertibleException() {
+            super();
+        }
+
+        @SuppressWarnings("UnusedDeclaration")
         public SubNonConvertibleException(String message, Throwable cause) {
-			super(message, cause);
-		}
+            super(message, cause);
+        }
 
-		@SuppressWarnings("UnusedDeclaration")
+        @SuppressWarnings("UnusedDeclaration")
         public SubNonConvertibleException(String message) {
-			super(message);
-		}
+            super(message);
+        }
 
-		public SubNonConvertibleException(Throwable cause) {
-			super(cause);
-		}
-	}
+        public SubNonConvertibleException(Throwable cause) {
+            super(cause);
+        }
+    }
 
 }

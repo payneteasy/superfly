@@ -6,12 +6,12 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
 public class SubsystemInCreateUserChoiceRender implements IChoiceRenderer<UISubsystemForList>{
 
-	public Object getDisplayValue(UISubsystemForList object) {
-		return (object!=null) ? object.getName(): "-- Please select --";
-	}
+    public Object getDisplayValue(UISubsystemForList object) {
+        return (object!=null) ? object.getName(): "-- Please select --";
+    }
 
-	public String getIdValue(UISubsystemForList object, int arg1) {
-		return object!=null ? String.valueOf(object.getId()): null;
-	}
+    public String getIdValue(UISubsystemForList object, int arg1) {
+        return object!=null ? String.valueOf(object.getId()): null;
+    }
 
 }

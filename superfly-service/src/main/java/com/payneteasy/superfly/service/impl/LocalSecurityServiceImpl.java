@@ -18,54 +18,54 @@ import java.util.Collections;
 
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
-	
-	private UserDao userDao;
-	private String localSubsystemName = "superfly";
-	private String localRoleName = "admin";
-	private LoggerSink loggerSink;
-	private UserPasswordEncoder userPasswordEncoder;
-	private HOTPProvider hotpProvider;
-	private LockoutStrategy lockoutStrategy;
 
-	@Required
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
 
-	public void setLocalSubsystemName(String localSubsystemName) {
-		this.localSubsystemName = localSubsystemName;
-	}
+    private UserDao userDao;
+    private String localSubsystemName = "superfly";
+    private String localRoleName = "admin";
+    private LoggerSink loggerSink;
+    private UserPasswordEncoder userPasswordEncoder;
+    private HOTPProvider hotpProvider;
+    private LockoutStrategy lockoutStrategy;
 
-	public void setLocalRoleName(String localRoleName) {
-		this.localRoleName = localRoleName;
-	}
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-	@Required
-	public void setLoggerSink(LoggerSink loggerSink) {
-		this.loggerSink = loggerSink;
-	}
+    public void setLocalSubsystemName(String localSubsystemName) {
+        this.localSubsystemName = localSubsystemName;
+    }
 
-	@Required
-	public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
-		this.userPasswordEncoder = userPasswordEncoder;
-	}
+    public void setLocalRoleName(String localRoleName) {
+        this.localRoleName = localRoleName;
+    }
 
-	@Required
-	public void setHotpProvider(HOTPProvider hotpProvider) {
-		this.hotpProvider = hotpProvider;
-	}
+    @Required
+    public void setLoggerSink(LoggerSink loggerSink) {
+        this.loggerSink = loggerSink;
+    }
 
-	@Required
-	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
-		this.lockoutStrategy = lockoutStrategy;
-	}
+    @Required
+    public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
+        this.userPasswordEncoder = userPasswordEncoder;
+    }
 
-	public String[] authenticate(String username, String password) {
-		String encPassword = userPasswordEncoder.encode(password, username);
-		AuthSession session = userDao.authenticate(username, encPassword,
-				localSubsystemName, null, null);
+    @Required
+    public void setHotpProvider(HOTPProvider hotpProvider) {
+        this.hotpProvider = hotpProvider;
+    }
+
+    @Required
+    public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+        this.lockoutStrategy = lockoutStrategy;
+    }
+
+    public String[] authenticate(String username, String password) {
+        String encPassword = userPasswordEncoder.encode(password, username);
+        AuthSession session = userDao.authenticate(username, encPassword,
+                localSubsystemName, null, null);
         AuthRole role = null;
         if (session != null) {
             if (session.getRoles().size() == 1 && session.getRoles().get(0).getRoleName() == null) {
@@ -87,23 +87,23 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
             loggerSink.info(logger, "LOCAL_LOGIN", true, username);
             return result;
         }
-		if (session == null || session.getRoles().isEmpty()) {
-			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
-		}
-		loggerSink.info(logger, "LOCAL_LOGIN", false, username);
-		return null;
-	}
+        if (session == null || session.getRoles().isEmpty()) {
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
+        }
+        loggerSink.info(logger, "LOCAL_LOGIN", false, username);
+        return null;
+    }
 
-	public boolean authenticateUsingHOTP(String username, String hotp) {
-		boolean ok = hotpProvider.authenticate(localSubsystemName, username, hotp);
-		if (!ok) {
-			userDao.incrementHOTPLoginsFailed(username);
-			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-		} else {
-			userDao.clearHOTPLoginsFailed(username);
-		}
-		loggerSink.info(logger, "LOCAL_HOTP_CHECK", false, username);
-		return ok;
-	}
+    public boolean authenticateUsingHOTP(String username, String hotp) {
+        boolean ok = hotpProvider.authenticate(localSubsystemName, username, hotp);
+        if (!ok) {
+            userDao.incrementHOTPLoginsFailed(username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        } else {
+            userDao.clearHOTPLoginsFailed(username);
+        }
+        loggerSink.info(logger, "LOCAL_HOTP_CHECK", false, username);
+        return ok;
+    }
 
 }

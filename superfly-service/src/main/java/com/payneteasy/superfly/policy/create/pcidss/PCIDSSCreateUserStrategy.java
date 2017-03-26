@@ -7,11 +7,11 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 
 public class PCIDSSCreateUserStrategy implements CreateUserStrategy {
-	private UserDao userDao;
+    private UserDao userDao;
 
-	public PCIDSSCreateUserStrategy(UserDao userDao) {
+    public PCIDSSCreateUserStrategy(UserDao userDao) {
        this.userDao = userDao;
-	}
+    }
 
     public RoutineResult createUser(UIUserForCreate createUser) {
         createUser.setIsPasswordTemp(true);

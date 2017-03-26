@@ -15,27 +15,27 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 
 public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
-	protected FilterChain chain;
-	protected HttpSession session;
-	protected Filter filter;
+    protected HttpServletRequest request;
+    protected HttpServletResponse response;
+    protected FilterChain chain;
+    protected HttpSession session;
+    protected Filter filter;
 
     @Before
-	public void initFilterTest() {
-		request = EasyMock.createMock(HttpServletRequest.class);
-		expect(request.getContextPath()).andReturn("").anyTimes();
-		expect(request.getMethod()).andReturn("POST").anyTimes();
-		response = EasyMock.createMock(HttpServletResponse.class);
+    public void initFilterTest() {
+        request = EasyMock.createMock(HttpServletRequest.class);
+        expect(request.getContextPath()).andReturn("").anyTimes();
+        expect(request.getMethod()).andReturn("POST").anyTimes();
+        response = EasyMock.createMock(HttpServletResponse.class);
         expect(response.isCommitted()).andReturn(false).anyTimes();
-		chain = EasyMock.createMock(FilterChain.class);
-		session = EasyMock.createMock(HttpSession.class);
-	}
+        chain = EasyMock.createMock(FilterChain.class);
+        session = EasyMock.createMock(HttpSession.class);
+    }
 
-	protected void expectRedirectTo(String url) throws IOException {
-		expect(response.encodeRedirectURL(url)).andReturn(url);
-		response.sendRedirect(url);
-		expectLastCall();
-	}
+    protected void expectRedirectTo(String url) throws IOException {
+        expect(response.encodeRedirectURL(url)).andReturn(url);
+        response.sendRedirect(url);
+        expectLastCall();
+    }
 
 }

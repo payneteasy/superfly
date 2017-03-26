@@ -18,44 +18,44 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
 public class ChangeGroupActionsPage extends BasePage {
-	@SpringBean
-	private GroupService groupService;
+    @SpringBean
+    private GroupService groupService;
 
-	public ChangeGroupActionsPage(final PageParameters parameters) {
-		super(ListGroupsPage.class, parameters);
-		
-		final long groupId = parameters.get("gid").toLong();
-		UIGroup group = groupService.getGroupById(groupId);
-		add(new Label("group-name", group.getName()));
+    public ChangeGroupActionsPage(final PageParameters parameters) {
+        super(ListGroupsPage.class, parameters);
+
+        final long groupId = parameters.get("gid").toLong();
+        UIGroup group = groupService.getGroupById(groupId);
+        add(new Label("group-name", group.getName()));
         add(new MappingPanel("mapping-panel",groupId){
 
-			@Override
-			protected List<? extends MappingService> getMappedItems(String searchLabel) {
-				return groupService.getAllGroupMappedActions(0, Integer.MAX_VALUE, 5, true,groupId, searchLabel);
-			}
+            @Override
+            protected List<? extends MappingService> getMappedItems(String searchLabel) {
+                return groupService.getAllGroupMappedActions(0, Integer.MAX_VALUE, 5, true,groupId, searchLabel);
+            }
 
-			@Override
-			protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
-				return groupService.getAllGroupUnMappedActions(0, Integer.MAX_VALUE, 5, true,groupId, searchLabel);
-			}
+            @Override
+            protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
+                return groupService.getAllGroupUnMappedActions(0, Integer.MAX_VALUE, 5, true,groupId, searchLabel);
+            }
 
-			@Override
-			protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
-				groupService.changeGroupActions(groupId, mappedId, unmappedId);
-				setResponsePage(ChangeGroupActionsPage.class, parameters);
-			}
+            @Override
+            protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
+                groupService.changeGroupActions(groupId, mappedId, unmappedId);
+                setResponsePage(ChangeGroupActionsPage.class, parameters);
+            }
 
-			@Override
-			protected String getHeaderItemName() {
-				return "Actions";
-			}
+            @Override
+            protected String getHeaderItemName() {
+                return "Actions";
+            }
         });
         add(new BookmarkablePageLink<Page>("back-to-view", ViewGroupPage.class, PageParametersBuilder.fromPair("gid", group.getId())));
-		add(new BookmarkablePageLink<Page>("back-to-list", ListGroupsPage.class, parameters));
-	}
+        add(new BookmarkablePageLink<Page>("back-to-list", ListGroupsPage.class, parameters));
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Change group actions";
-	}
+    @Override
+    protected String getTitle() {
+        return "Change group actions";
+    }
 }

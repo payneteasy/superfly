@@ -19,19 +19,19 @@ import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
  * @author Roman Puchkovskiy
  */
 public abstract class BaseJob extends QuartzJobBean {
-	private static Logger logger = LoggerFactory.getLogger(BaseJob.class);
+    private static Logger logger = LoggerFactory.getLogger(BaseJob.class);
 
-	private static final String APPLICATION_CONTEXT_KEY = "applicationContext";
+    private static final String APPLICATION_CONTEXT_KEY = "applicationContext";
 
-	/**
-	 * Obtains Spring's application context.
-	 * 
-	 * @param context	job execution context
-	 * @return application context
-	 * @throws SchedulerException
-	 */
-	protected ApplicationContext getApplicationContext(JobExecutionContext context)
-			throws SchedulerException {
+    /**
+     * Obtains Spring's application context.
+     *
+     * @param context    job execution context
+     * @return application context
+     * @throws SchedulerException
+     */
+    protected ApplicationContext getApplicationContext(JobExecutionContext context)
+            throws SchedulerException {
 
         final SchedulerContext schedulerContext = context.getScheduler().getContext();
         ApplicationContext applicationContext =  (ApplicationContext) schedulerContext.get(APPLICATION_CONTEXT_KEY);
@@ -49,21 +49,21 @@ public abstract class BaseJob extends QuartzJobBean {
         }
 
         return applicationContext;
-	}
-	
-	protected NotificationSendStrategy getNotificationSendStrategy(JobExecutionContext context, String beanName)
-			throws BeansException, SchedulerException {
+    }
+
+    protected NotificationSendStrategy getNotificationSendStrategy(JobExecutionContext context, String beanName)
+            throws BeansException, SchedulerException {
 
         ApplicationContext applicationContext = getApplicationContext(context);
         return applicationContext!=null ? (NotificationSendStrategy) applicationContext.getBean(beanName) : null;
 
-	}
-	
-	/**
-	 * @see org.springframework.scheduling.quartz.QuartzJobBean#executeInternal(org.quartz.JobExecutionContext)
-	 */
-	@Override
-	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    }
+
+    /**
+     * @see org.springframework.scheduling.quartz.QuartzJobBean#executeInternal(org.quartz.JobExecutionContext)
+     */
+    @Override
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         if(context==null) {
             // todo this quick fix for:
             // ERROR ErrorLogger                - Job (sender.9F9F6217-536B-630D-4B8F-A2A4D5F74011 threw an exception.
@@ -85,7 +85,7 @@ public abstract class BaseJob extends QuartzJobBean {
                 throw new JobExecutionException(e);
             }
         }
-	}
-	
-	protected abstract void doExecute(JobExecutionContext context) throws SchedulerException;
+    }
+
+    protected abstract void doExecute(JobExecutionContext context) throws SchedulerException;
 }

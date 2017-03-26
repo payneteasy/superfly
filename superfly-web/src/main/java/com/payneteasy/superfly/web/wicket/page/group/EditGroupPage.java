@@ -23,59 +23,59 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupWizardModel;
 
 @Secured("ROLE_ADMIN")
 public class EditGroupPage extends BasePage {
-	@SpringBean
-	SubsystemService ssysService;
+    @SpringBean
+    SubsystemService ssysService;
 
-	@SpringBean
-	GroupService groupService;
+    @SpringBean
+    GroupService groupService;
 
-	public EditGroupPage(PageParameters param) {
-		super(ListGroupsPage.class, param);
-		String msg_text = "Edit Group name";
-		final Long groupId = param.get("gid").toLong();
+    public EditGroupPage(PageParameters param) {
+        super(ListGroupsPage.class, param);
+        String msg_text = "Edit Group name";
+        final Long groupId = param.get("gid").toLong();
 
-		GroupWizardModel groupModel = new GroupWizardModel();
+        GroupWizardModel groupModel = new GroupWizardModel();
 
-		UIGroup group = groupService.getGroupById(groupId);
-		groupModel.setGroupName(group.getName());
-		List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
-		for (UISubsystemForFilter e : list) {
-			if (e.getId() == group.getSubsystemId())
-				groupModel.setGroupSubsystem(e);
-		}
+        UIGroup group = groupService.getGroupById(groupId);
+        groupModel.setGroupName(group.getName());
+        List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
+        for (UISubsystemForFilter e : list) {
+            if (e.getId() == group.getSubsystemId())
+                groupModel.setGroupSubsystem(e);
+        }
 
-		Form<GroupWizardModel> form = new Form<GroupWizardModel>("form", new Model<GroupWizardModel>(groupModel)) {
-			private static final long serialVersionUID = 1L;
+        Form<GroupWizardModel> form = new Form<GroupWizardModel>("form", new Model<GroupWizardModel>(groupModel)) {
+            private static final long serialVersionUID = 1L;
 
-			@Override
-			protected void onSubmit() {
-				GroupWizardModel grModel = this.getModelObject();
-				UIGroup group = new UIGroup();
-				group.setName(grModel.getGroupName());
-				group.setSubsystemId(grModel.getGroupSubsystem().getId());
-				group.setId(groupId);
-				groupService.updateGroup(group);
-				setResponsePage(ListGroupsPage.class);
+            @Override
+            protected void onSubmit() {
+                GroupWizardModel grModel = this.getModelObject();
+                UIGroup group = new UIGroup();
+                group.setName(grModel.getGroupName());
+                group.setSubsystemId(grModel.getGroupSubsystem().getId());
+                group.setId(groupId);
+                groupService.updateGroup(group);
+                setResponsePage(ListGroupsPage.class);
 
-			}
-		};
-		add(form);
+            }
+        };
+        add(form);
 
-		form.add(new Label("msg", msg_text));
-		form.add(new LabelTextFieldRow<String>(groupModel, "groupName", "group.create.name", true));
-		
-		form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
-		
-		LabelDropDownChoiceRow<UISubsystemForFilter> subsystem = new LabelDropDownChoiceRow<UISubsystemForFilter>("groupSubsystem",
-				groupModel, "group.create.choice-subsystem", ssysService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
-		subsystem.getDropDownChoice().setRequired(true);
-		subsystem.getDropDownChoice().setEnabled(false);
-		form.add(subsystem);
-	}
+        form.add(new Label("msg", msg_text));
+        form.add(new LabelTextFieldRow<String>(groupModel, "groupName", "group.create.name", true));
 
-	@Override
-	protected String getTitle() {
-		return "Edit group";
-	}
+        form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
+
+        LabelDropDownChoiceRow<UISubsystemForFilter> subsystem = new LabelDropDownChoiceRow<UISubsystemForFilter>("groupSubsystem",
+                groupModel, "group.create.choice-subsystem", ssysService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+        subsystem.getDropDownChoice().setRequired(true);
+        subsystem.getDropDownChoice().setEnabled(false);
+        form.add(subsystem);
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Edit group";
+    }
 
 }

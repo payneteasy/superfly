@@ -8,8 +8,8 @@ package com.payneteasy.superfly.password;
  */
 public class PlaintextPasswordEncoder extends AbstractPasswordEncoder {
 
-	public String encode(String plainPassword, String salt) {
-		return mergePasswordAndSalt(plainPassword, salt);
-	}
+    public String encode(String plainPassword, String salt) {
+        return mergePasswordAndSalt(plainPassword, salt);
+    }
 
 }

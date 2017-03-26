@@ -12,11 +12,11 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  * @author Roman Puchkovskiy
  */
 public interface ActionDescriptionCollector {
-	/**
-	 * Returns action descriptions.
-	 * 
-	 * @return action descriptions
-	 * @throws CollectionException 
-	 */
-	List<ActionDescription> collect() throws CollectionException;
+    /**
+     * Returns action descriptions.
+     *
+     * @return action descriptions
+     * @throws CollectionException
+     */
+    List<ActionDescription> collect() throws CollectionException;
 }

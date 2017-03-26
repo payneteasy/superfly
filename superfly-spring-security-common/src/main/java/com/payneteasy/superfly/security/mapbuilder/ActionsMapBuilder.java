@@ -12,5 +12,5 @@ import com.payneteasy.superfly.api.SSORole;
  * @author Roman Puchkovskiy
  */
 public interface ActionsMapBuilder {
-	Map<SSORole, SSOAction[]> build() throws Exception;
+    Map<SSORole, SSOAction[]> build() throws Exception;
 }

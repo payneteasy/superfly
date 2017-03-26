@@ -6,8 +6,8 @@ import org.junit.Test;
 
 public class CheckHOTPTokenTest {
     @Test
-	public void testGetCredentials() {
-		CheckHOTPToken token = new CheckHOTPToken(new SSOUser("user", null, null), "hotp");
-		Assert.assertEquals("hotp", token.getCredentials());
-	}
+    public void testGetCredentials() {
+        CheckHOTPToken token = new CheckHOTPToken(new SSOUser("user", null, null), "hotp");
+        Assert.assertEquals("hotp", token.getCredentials());
+    }
 }

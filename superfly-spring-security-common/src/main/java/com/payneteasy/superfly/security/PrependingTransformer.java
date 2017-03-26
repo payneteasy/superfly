@@ -6,20 +6,20 @@ package com.payneteasy.superfly.security;
  * @author Roman Puchkovskiy
  */
 public class PrependingTransformer implements StringTransformer {
-	
-	private String prefix = "";
 
-	/**
-	 * Sets a prefix to prepend.
-	 * 
-	 * @param prefix
-	 */
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
+    private String prefix = "";
 
-	public String transform(String s) {
-		return prefix + s;
-	}
+    /**
+     * Sets a prefix to prepend.
+     *
+     * @param prefix
+     */
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String transform(String s) {
+        return prefix + s;
+    }
 
 }

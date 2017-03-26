@@ -5,8 +5,8 @@ import com.payneteasy.superfly.model.LockoutType;
 
 public class NoneLockoutStrategy implements LockoutStrategy {
 
-	public void checkLoginsFailed(String userName, LockoutType lockoutType) {
-		
-	}
+    public void checkLoginsFailed(String userName, LockoutType lockoutType) {
+
+    }
 
 }

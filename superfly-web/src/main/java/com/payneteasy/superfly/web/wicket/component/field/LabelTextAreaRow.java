@@ -12,48 +12,48 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
 public class LabelTextAreaRow<T> extends Panel {
-	private final TextArea<T> textField;
+    private final TextArea<T> textField;
 
-	public LabelTextAreaRow(Object aModelObject, String aProperty, String aResourceKey) {
-		this(aModelObject, aProperty, aResourceKey, false);
-	}
+    public LabelTextAreaRow(Object aModelObject, String aProperty, String aResourceKey) {
+        this(aModelObject, aProperty, aResourceKey, false);
+    }
 
-	public LabelTextAreaRow(Object aModelObject, String aProperty, String aResourceKey, boolean aRequired) {
-		super(aProperty);
+    public LabelTextAreaRow(Object aModelObject, String aProperty, String aResourceKey, boolean aRequired) {
+        super(aProperty);
 
-		// row
-		WebMarkupContainer row = new WebMarkupContainer("row");
-		row.add(new AttributeAppender("class", new Model<String>(aRequired ? "required" : ""), " "));
-		add(row);
+        // row
+        WebMarkupContainer row = new WebMarkupContainer("row");
+        row.add(new AttributeAppender("class", new Model<String>(aRequired ? "required" : ""), " "));
+        add(row);
 
-		// label
-		Label label = new Label("label-id", new ResourceModel(aResourceKey));
-		label.add(new AttributeModifier("for", new Model<String>(aProperty)));
-		row.add(label);
+        // label
+        Label label = new Label("label-id", new ResourceModel(aResourceKey));
+        label.add(new AttributeModifier("for", new Model<String>(aProperty)));
+        row.add(label);
 
-		// field
-		row.add(textField = new LabeledTextAreaField<T>("field-id", new PropertyModel<T>(aModelObject, aProperty), aProperty, aResourceKey,
-				aRequired));
-	}
+        // field
+        row.add(textField = new LabeledTextAreaField<T>("field-id", new PropertyModel<T>(aModelObject, aProperty), aProperty, aResourceKey,
+                aRequired));
+    }
 
-	public TextArea<T> getTextField() {
-		return textField;
-	}
+    public TextArea<T> getTextField() {
+        return textField;
+    }
 
-	private class LabeledTextAreaField<E> extends TextArea<E> {
-		public LabeledTextAreaField(String aId, IModel<E> aModel, String aMarkupId, String aResourceKey, boolean aRequired) {
-			super(aId, aModel);
-			theResourceKey = aResourceKey;
-			setRequired(aRequired);
-			setOutputMarkupId(true);
-			setMarkupId(aMarkupId);
-		}
+    private class LabeledTextAreaField<E> extends TextArea<E> {
+        public LabeledTextAreaField(String aId, IModel<E> aModel, String aMarkupId, String aResourceKey, boolean aRequired) {
+            super(aId, aModel);
+            theResourceKey = aResourceKey;
+            setRequired(aRequired);
+            setOutputMarkupId(true);
+            setMarkupId(aMarkupId);
+        }
 
-		@Override
-		public String getValidatorKeyPrefix() {
-			return theResourceKey;
-		}
+        @Override
+        public String getValidatorKeyPrefix() {
+            return theResourceKey;
+        }
 
-		private final String theResourceKey;
-	}
+        private final String theResourceKey;
+    }
 }

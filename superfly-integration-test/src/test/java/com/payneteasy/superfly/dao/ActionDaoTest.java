@@ -12,74 +12,74 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ActionDaoTest extends AbstractDaoTest {
-	private ActionDao actionDao;
+    private ActionDao actionDao;
 
     @Autowired
-	public void setActionDao(ActionDao actionDao) {
-		this.actionDao = actionDao;
-	}
+    public void setActionDao(ActionDao actionDao) {
+        this.actionDao = actionDao;
+    }
 
     @Test
     public void testCopyActionProperties(){
-    	actionDao.copyActionProperties(1, 2, true);
+        actionDao.copyActionProperties(1, 2, true);
     }
 
     @Test
     public void testGetAction(){
-    	actionDao.getAction(1);
+        actionDao.getAction(1);
     }
 
     @Test
-	public void testGetActionsForfilter() {
+    public void testGetActionsForfilter() {
         List<UIActionForFilter> actions = actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
         Assert.assertNotNull("List of actions must not be null", actions);
         Assert.assertTrue("List of actions cannot be empty", actions.size() > 0);
-	}
+    }
 
     @Test
-	public void testSaveActions() {
-		List<ActionToSave> actions = new ArrayList<ActionToSave>();
-		ActionToSave action;
-		action = new ActionToSave();
-		action.setName("action1");
-		action.setDescription("description1");
-		actions.add(action);
-		action = new ActionToSave();
-		action.setName("action2");
-		action.setDescription("description2");
-		actions.add(action);
-		actionDao.saveActions("superfly-demo", actions);
-	}
+    public void testSaveActions() {
+        List<ActionToSave> actions = new ArrayList<ActionToSave>();
+        ActionToSave action;
+        action = new ActionToSave();
+        action.setName("action1");
+        action.setDescription("description1");
+        actions.add(action);
+        action = new ActionToSave();
+        action.setName("action2");
+        action.setDescription("description2");
+        actions.add(action);
+        actionDao.saveActions("superfly-demo", actions);
+    }
 
     @Test
-	public void testGetActionForList() {
-		List<UIActionForList> actionList = actionDao.getActions(0, 10, 1,
-				"asc", null, null, "1,2");
+    public void testGetActionForList() {
+        List<UIActionForList> actionList = actionDao.getActions(0, 10, 1,
+                "asc", null, null, "1,2");
         Assert.assertTrue("Action list should not be empty", actionList.size() > 0);
-	}
+    }
 
     @Test
-	public void testGetActionCount() {
-		long count = actionDao.getActionCount(null, null, null);
+    public void testGetActionCount() {
+        long count = actionDao.getActionCount(null, null, null);
         Assert.assertTrue("Must get some action", count > 0);
-		actionDao.getActionCount("someActionName", "someActionDescription",
-				"1,2");
-	}
+        actionDao.getActionCount("someActionName", "someActionDescription",
+                "1,2");
+    }
 
     @Test
-	public void testChangeActionsLogLevel() {
-		List<Long> logLevelsOn = new ArrayList<Long>();
-		Long logLevelOn;
-		logLevelOn = (long) 1;
-		logLevelsOn.add(logLevelOn);
-		logLevelOn = (long) 2;
-		logLevelsOn.add(logLevelOn);
-		List<Long> logLevelsOff = new ArrayList<Long>();
-		Long logLevelOff;
-		logLevelOff = (long) 3;
-		logLevelsOff.add(logLevelOff);
-		actionDao.changeActionsLogLevel(StringUtils
-				.collectionToCommaDelimitedString(logLevelsOn), StringUtils
-				.collectionToCommaDelimitedString(logLevelsOff));
-	}
+    public void testChangeActionsLogLevel() {
+        List<Long> logLevelsOn = new ArrayList<Long>();
+        Long logLevelOn;
+        logLevelOn = (long) 1;
+        logLevelsOn.add(logLevelOn);
+        logLevelOn = (long) 2;
+        logLevelsOn.add(logLevelOn);
+        List<Long> logLevelsOff = new ArrayList<Long>();
+        Long logLevelOff;
+        logLevelOff = (long) 3;
+        logLevelsOff.add(logLevelOff);
+        actionDao.changeActionsLogLevel(StringUtils
+                .collectionToCommaDelimitedString(logLevelsOn), StringUtils
+                .collectionToCommaDelimitedString(logLevelsOff));
+    }
 }

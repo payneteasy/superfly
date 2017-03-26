@@ -8,19 +8,19 @@ package com.payneteasy.superfly.api;
  */
 public class UserNotFoundException extends SSOException {
 
-	public UserNotFoundException() {
-	}
+    public UserNotFoundException() {
+    }
 
-	public UserNotFoundException(String message) {
-		super(message);
-	}
+    public UserNotFoundException(String message) {
+        super(message);
+    }
 
-	public UserNotFoundException(Throwable cause) {
-		super(cause);
-	}
+    public UserNotFoundException(Throwable cause) {
+        super(cause);
+    }
 
-	public UserNotFoundException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public UserNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

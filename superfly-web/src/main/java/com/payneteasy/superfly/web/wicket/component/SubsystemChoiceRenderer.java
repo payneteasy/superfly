@@ -6,12 +6,12 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 @SuppressWarnings("serial")
 public class SubsystemChoiceRenderer implements IChoiceRenderer<UISubsystemForFilter>{
 
-	public Object getDisplayValue(UISubsystemForFilter object) {
-		return (object!=null) ? object.getName(): "-- Please select --";
-	}
+    public Object getDisplayValue(UISubsystemForFilter object) {
+        return (object!=null) ? object.getName(): "-- Please select --";
+    }
 
-	public String getIdValue(UISubsystemForFilter object, int index) {
-		return object!=null ? String.valueOf(object.getId()): null;
-	}
+    public String getIdValue(UISubsystemForFilter object, int index) {
+        return object!=null ? String.valueOf(object.getId()): null;
+    }
 
 }

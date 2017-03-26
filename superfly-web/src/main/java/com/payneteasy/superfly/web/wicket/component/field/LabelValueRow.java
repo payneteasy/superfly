@@ -9,7 +9,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
 public class LabelValueRow<T> extends Panel{
-	public LabelValueRow(String id, final IModel<T> model, String labelResourceKey) {
+    public LabelValueRow(String id, final IModel<T> model, String labelResourceKey) {
         super(id, model);
 
         // label

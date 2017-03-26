@@ -31,15 +31,15 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
 public class UserDetailsPage extends BasePage {
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private SubsystemService subsystemService;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private SubsystemService subsystemService;
 
-	public UserDetailsPage(PageParameters params) {
-		super(ListUsersPage.class, params);
+    public UserDetailsPage(PageParameters params) {
+        super(ListUsersPage.class, params);
 
-		final long userId = params.get("userId").toLong();
+        final long userId = params.get("userId").toLong();
 
         final IModel<UIUserDetails> uiUserDetailsIModel = new AbstractReadOnlyModel<UIUserDetails>() {
             @Override
@@ -48,38 +48,38 @@ public class UserDetailsPage extends BasePage {
             }
         };
 
-		final UIUserWithRolesAndActions user = userService.getUserRoleActions(userId, null, null, null);
-		final List<UIRoleWithActions> roleWithAction = user.getRoles();
-		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
-		sort.setRoleWithAction(roleWithAction);
+        final UIUserWithRolesAndActions user = userService.getUserRoleActions(userId, null, null, null);
+        final List<UIRoleWithActions> roleWithAction = user.getRoles();
+        final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+        sort.setRoleWithAction(roleWithAction);
 
 //        LEFT SIDE
-		ListView<String> subRolesList = new ListView<String>("sub-list", sort.getSubsystemsName()) {
-			@Override
-			protected void populateItem(ListItem<String> item) {
-				final String rfc = item.getModelObject();
-				item.add(new Label("sub-name", rfc));
-				
-				final PageParameters actionsParameters = new PageParameters();
-				actionsParameters.set("userId", String.valueOf(userId));
-				
-				final UISubsystem subsystem = subsystemService.getSubsystemByName(rfc);
-				actionsParameters.set("subId", String.valueOf(subsystem.getId()));
-				item.add(new BookmarkablePageLink<Page>("add-role", ChangeUserRolesPage.class, actionsParameters));
+        ListView<String> subRolesList = new ListView<String>("sub-list", sort.getSubsystemsName()) {
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                final String rfc = item.getModelObject();
+                item.add(new Label("sub-name", rfc));
 
-				List<UIRoleWithActions> roles = sort.getRoles(rfc);
-				item.add(new ListView<UIRoleWithActions>("role-list", roles) {
+                final PageParameters actionsParameters = new PageParameters();
+                actionsParameters.set("userId", String.valueOf(userId));
 
-					@Override
-					protected void populateItem(ListItem<UIRoleWithActions> listItem) {
-						final UIRoleWithActions role = listItem.getModelObject();
-						PageParameters params = new PageParameters();
-						params.set("userId", String.valueOf(userId));
-						params.set("subId", String.valueOf(subsystem.getId()));
-						params.set("roleId", String.valueOf(role.getId()));
-						listItem.add(new BookmarkablePageLink<ChangeUserGrantActionsPage>("grant-user-action", ChangeUserGrantActionsPage.class, params));
-						listItem.add(new Label("role-name", role.getName()));
-						listItem.add(new Link<Void>("delete-role") {
+                final UISubsystem subsystem = subsystemService.getSubsystemByName(rfc);
+                actionsParameters.set("subId", String.valueOf(subsystem.getId()));
+                item.add(new BookmarkablePageLink<Page>("add-role", ChangeUserRolesPage.class, actionsParameters));
+
+                List<UIRoleWithActions> roles = sort.getRoles(rfc);
+                item.add(new ListView<UIRoleWithActions>("role-list", roles) {
+
+                    @Override
+                    protected void populateItem(ListItem<UIRoleWithActions> listItem) {
+                        final UIRoleWithActions role = listItem.getModelObject();
+                        PageParameters params = new PageParameters();
+                        params.set("userId", String.valueOf(userId));
+                        params.set("subId", String.valueOf(subsystem.getId()));
+                        params.set("roleId", String.valueOf(role.getId()));
+                        listItem.add(new BookmarkablePageLink<ChangeUserGrantActionsPage>("grant-user-action", ChangeUserGrantActionsPage.class, params));
+                        listItem.add(new Label("role-name", role.getName()));
+                        listItem.add(new Link<Void>("delete-role") {
 
                             @Override
                             public void onClick() {
@@ -91,11 +91,11 @@ public class UserDetailsPage extends BasePage {
                                 setResponsePage(UserDetailsPage.class, parameters);
                             }
                         });
-					}
-				});
-			}
-		};
-		add(subRolesList);
+                    }
+                });
+            }
+        };
+        add(subRolesList);
 
 
 //        RIGHT SIDE
@@ -110,9 +110,9 @@ public class UserDetailsPage extends BasePage {
 
 
         //ADD SUBSYSTEM
-		PageParameters param = new PageParameters();
-		param.set("userId", String.valueOf(userId));
-		add(new BookmarkablePageLink<AppendSubsystemWithRolePage>("add-sub", AppendSubsystemWithRolePage.class, param));
+        PageParameters param = new PageParameters();
+        param.set("userId", String.valueOf(userId));
+        add(new BookmarkablePageLink<AppendSubsystemWithRolePage>("add-sub", AppendSubsystemWithRolePage.class, param));
 
 //        LOCK USER
         Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
@@ -148,11 +148,11 @@ public class UserDetailsPage extends BasePage {
             }
         }));
         add(switchLockedStatusLink);
-	}
+    }
 
-	@Override
-	protected String getTitle() {
-		return "User details";
-	}
+    @Override
+    protected String getTitle() {
+        return "User details";
+    }
 
 }

@@ -27,58 +27,58 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 @Secured("ROLE_ADMIN")
 public class ChangeUserGrantActionsPage extends BasePage {
 
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private SubsystemService subsystemService;
-	@SpringBean
-	private RoleService roleService;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private SubsystemService subsystemService;
+    @SpringBean
+    private RoleService roleService;
 
-	public ChangeUserGrantActionsPage(final PageParameters params) {
-		super(ListUsersPage.class, params);
+    public ChangeUserGrantActionsPage(final PageParameters params) {
+        super(ListUsersPage.class, params);
 
-		final long userId = params.get("userId").toLong();
-		final long subId = params.get("subId").toLong();
-		final long roleId = params.get("roleId").toLong();
+        final long userId = params.get("userId").toLong();
+        final long subId = params.get("subId").toLong();
+        final long roleId = params.get("roleId").toLong();
 
-		UIUser user = userService.getUser(userId);
-		UISubsystem subsystem = subsystemService.getSubsystem(subId);
-		UIRole role = roleService.getRole(roleId);
-		add(new Label("user-name", user.getUsername()));
-		add(new Label("sub-name", subsystem.getName()));
-		add(new Label("role-name",role.getRoleName()));
-		
-		add(new MappingPanel("mapping-panel", userId){
+        UIUser user = userService.getUser(userId);
+        UISubsystem subsystem = subsystemService.getSubsystem(subId);
+        UIRole role = roleService.getRole(roleId);
+        add(new Label("user-name", user.getUsername()));
+        add(new Label("sub-name", subsystem.getName()));
+        add(new Label("role-name",role.getRoleName()));
 
-			@Override
-			protected List<? extends MappingService> getMappedItems(String searchLabel) {
-				return userService.getMappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
-			}
+        add(new MappingPanel("mapping-panel", userId){
 
-			@Override
-			protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
-				return userService.getUnmappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
-			}
+            @Override
+            protected List<? extends MappingService> getMappedItems(String searchLabel) {
+                return userService.getMappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
+            }
 
-			@Override
-			protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
-				userService.changeUserRoleActions(userId, mappedId, unmappedId);
-				setResponsePage(ChangeUserGrantActionsPage.class, params);
-			}
+            @Override
+            protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
+                return userService.getUnmappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
+            }
 
-			@Override
-			protected String getHeaderItemName() {
-				return "Actions";
-			}
-			
-		});
-		
-		add(new BookmarkablePageLink<Page>("back",UserDetailsPage.class,params));
-	}
+            @Override
+            protected void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId) {
+                userService.changeUserRoleActions(userId, mappedId, unmappedId);
+                setResponsePage(ChangeUserGrantActionsPage.class, params);
+            }
+
+            @Override
+            protected String getHeaderItemName() {
+                return "Actions";
+            }
+
+        });
+
+        add(new BookmarkablePageLink<Page>("back",UserDetailsPage.class,params));
+    }
 
 
-	@Override
-	protected String getTitle() {
-		return "User change grant actions";
-	}
+    @Override
+    protected String getTitle() {
+        return "User change grant actions";
+    }
 }

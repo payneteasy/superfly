@@ -230,10 +230,10 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         KeyStore keystore  = KeyStore.getInstance("jks");
         InputStream is = null;
         try {
-        	is = url.openStream(); 
+            is = url.openStream();
             keystore.load(is, password != null ? password.toCharArray(): null);
         } finally {
-        	if (is != null) is.close();
+            if (is != null) is.close();
         }
         return keystore;
     }
@@ -250,9 +250,9 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         kmfactory.init(keystore, password != null ? password.toCharArray(): null);
         KeyManager[] keymanagers = kmfactory.getKeyManagers();
         for (int i = 0; i < keymanagers.length; i++) {
-        	if (keymanagers[i] instanceof X509KeyManager) {
-        		keymanagers[i] = new AuthSSLX509KeyManager((X509KeyManager) keymanagers[i]);
-        	}
+            if (keymanagers[i] instanceof X509KeyManager) {
+                keymanagers[i] = new AuthSSLX509KeyManager((X509KeyManager) keymanagers[i]);
+            }
         }
         return keymanagers; 
     }

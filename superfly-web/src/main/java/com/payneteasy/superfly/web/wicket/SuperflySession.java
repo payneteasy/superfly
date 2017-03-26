@@ -6,17 +6,17 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 
 public class SuperflySession extends WebSession {
-	
-	private StickyFilters stickyFilters = new StickyFilters();
+
+    private StickyFilters stickyFilters = new StickyFilters();
     private SSOLoginData ssoLoginData;
 
-	public SuperflySession(Request request) {
-		super(request);
-	}
+    public SuperflySession(Request request) {
+        super(request);
+    }
 
-	public StickyFilters getStickyFilters() {
-		return stickyFilters;
-	}
+    public StickyFilters getStickyFilters() {
+        return stickyFilters;
+    }
 
     public SSOLoginData getSsoLoginData() {
         return ssoLoginData;

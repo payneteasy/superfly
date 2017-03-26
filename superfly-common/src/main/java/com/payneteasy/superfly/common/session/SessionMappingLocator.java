@@ -8,18 +8,18 @@ import com.payneteasy.superfly.common.singleton.SingletonHolder;
  * @author Roman Puchkovskiy
  */
 public class SessionMappingLocator {
-	private static final SingletonHolder<SessionMapping> sessionMappingSingletonHolder = new SingletonHolder<SessionMapping>() {
-		@Override
-		protected SessionMapping createInstance() {
-			return createSessionMapping();
-		}
-	};
-	
-	public static SessionMapping getSessionMapping() {
-		return sessionMappingSingletonHolder.getInstance();
-	}
+    private static final SingletonHolder<SessionMapping> sessionMappingSingletonHolder = new SingletonHolder<SessionMapping>() {
+        @Override
+        protected SessionMapping createInstance() {
+            return createSessionMapping();
+        }
+    };
 
-	protected static SessionMapping createSessionMapping() {
-		return new HashMapBackedSessionMapping();
-	}
+    public static SessionMapping getSessionMapping() {
+        return sessionMappingSingletonHolder.getInstance();
+    }
+
+    protected static SessionMapping createSessionMapping() {
+        return new HashMapBackedSessionMapping();
+    }
 }
