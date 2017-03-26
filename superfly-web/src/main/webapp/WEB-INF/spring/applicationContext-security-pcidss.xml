@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:sec="http://www.springframework.org/schema/security"
-	xmlns="http://www.springframework.org/schema/beans"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xmlns="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <sec:http security="none" pattern="/favicon.ico"/>
     <sec:http security="none" pattern="/css/**"/>
@@ -15,16 +15,16 @@
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
         <sec:custom-filter ref="hotpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
 
-    	<sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
+        <sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
     
-		<!--
-			If you're not planning to use client SSL auth to protect your subsystem
-			calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
-			You will also have to modify ssoService bean properties (see its
-			comments in applicationContext-service.xml).
-		-->
-		<sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
-		<sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
+        <!--
+            If you're not planning to use client SSL auth to protect your subsystem
+            calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
+            You will also have to modify ssoService bean properties (see its
+            comments in applicationContext-service.xml).
+        -->
+        <sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
+        <sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
         <sec:intercept-url pattern="/remoting/sso.hessian.service" access="ROLE_SUBSYSTEM"/>
         <sec:intercept-url pattern="/remoting/basic.hessian.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
 
@@ -77,9 +77,9 @@
     
     <bean id="passwordAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
         <property name="delegateProvider">
-		    <bean class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
-		        <property name="localSecurityService" ref="localSecurityService"/>
-		    </bean>
+            <bean class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
+                <property name="localSecurityService" ref="localSecurityService"/>
+            </bean>
         </property>
         <property name="supportedSimpleAuthenticationClasses">
             <list>
@@ -87,17 +87,17 @@
             </list>
         </property>
         <property name="notSupportedSimpleAuthenticationClasses">
-        	<list>
-        		<value>com.payneteasy.superfly.web.security.LocalCheckHOTPToken</value>
-        	</list>
+            <list>
+                <value>com.payneteasy.superfly.web.security.LocalCheckHOTPToken</value>
+            </list>
         </property>
     </bean>
     
     <bean id="hotpAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
         <property name="delegateProvider">
-		    <bean class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProvider">
-		        <property name="localSecurityService" ref="localSecurityService"/>
-		    </bean>
+            <bean class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProvider">
+                <property name="localSecurityService" ref="localSecurityService"/>
+            </bean>
         </property>
         <property name="authenticationValidator">
             <bean class="com.payneteasy.superfly.security.validator.CompoundAuthenticationValidator">
@@ -114,35 +114,35 @@
         </property>
     </bean>
     
-	<bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
-		<property name="subsystemService" ref="subsystemService"/>
-	</bean>
+    <bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
+        <property name="subsystemService" ref="subsystemService"/>
+    </bean>
    
 <!-- 
-	<bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
-		<property name="userMap">
-			<bean class="org.springframework.security.userdetails.memory.UserMap">
-				<property name="users">
-					<map>
-						<entry key="superfly-client">
-							<bean class="org.springframework.security.userdetails.User">
-								<constructor-arg value="superfly-client"/>
-								<constructor-arg value="not-used"/>
-								<constructor-arg value="true"/>
-								<constructor-arg>
-									<list>
-										<bean class="org.springframework.security.GrantedAuthorityImpl">
-											<constructor-arg value="ROLE_SUBSYSTEM"/>
-										</bean>
-									</list>
-								</constructor-arg>
-							</bean>
-						</entry>
-					</map>
-				</property>
-			</bean>
-		</property>
-	</bean>
+    <bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
+        <property name="userMap">
+            <bean class="org.springframework.security.userdetails.memory.UserMap">
+                <property name="users">
+                    <map>
+                        <entry key="superfly-client">
+                            <bean class="org.springframework.security.userdetails.User">
+                                <constructor-arg value="superfly-client"/>
+                                <constructor-arg value="not-used"/>
+                                <constructor-arg value="true"/>
+                                <constructor-arg>
+                                    <list>
+                                        <bean class="org.springframework.security.GrantedAuthorityImpl">
+                                            <constructor-arg value="ROLE_SUBSYSTEM"/>
+                                        </bean>
+                                    </list>
+                                </constructor-arg>
+                            </bean>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+    </bean>
  -->
  
     <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">

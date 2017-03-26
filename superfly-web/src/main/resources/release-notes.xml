@@ -95,189 +95,189 @@
     </release>
 
     <release number="1.3-1" date="2012.01.05">
-    	<item type="task">
-    		<name>SMTP servers</name>
-    		<description>
-    			Any number of SMTP servers may be configured. They will be used
-    			for sending emails to users (like email with OTP table).
-    			SMTP server may be specified for a subsystem.
-    		</description>
-    	</item>
+        <item type="task">
+            <name>SMTP servers</name>
+            <description>
+                Any number of SMTP servers may be configured. They will be used
+                for sending emails to users (like email with OTP table).
+                SMTP server may be specified for a subsystem.
+            </description>
+        </item>
     </release>
 
     <release number="1.2-4" date="2010.11.16">
-    	<item type="task">
-    		<name>Remote editing and password/OTP table resetting</name>
-    		<description>
-    			It's now possible to edit a user and reset their password and
-    			OTP table via an SSOService.
-    		</description>
-    	</item>
+        <item type="task">
+            <name>Remote editing and password/OTP table resetting</name>
+            <description>
+                It's now possible to edit a user and reset their password and
+                OTP table via an SSOService.
+            </description>
+        </item>
     </release>
     
     <release number="1.2-2" date="2010.11.02">
-    	<item type="task">
-    		<name>PGP Public keys</name>
-    		<description>
-    			PGP Public keys may be stored for users and be used to sign
-    			materials which are sent by a Superfly server.
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>HOTP tables via e-mail</name>
-    		<description>
-    			Now, HOTP tables may be sent via email to their owners. Table
-    			is encrypted with user's PGP public key.
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Various fixes</name>
-    		<description>
-    		</description>
-    	</item>
+        <item type="task">
+            <name>PGP Public keys</name>
+            <description>
+                PGP Public keys may be stored for users and be used to sign
+                materials which are sent by a Superfly server.
+            </description>
+        </item>
+        <item type="task">
+            <name>HOTP tables via e-mail</name>
+            <description>
+                Now, HOTP tables may be sent via email to their owners. Table
+                is encrypted with user's PGP public key.
+            </description>
+        </item>
+        <item type="task">
+            <name>Various fixes</name>
+            <description>
+            </description>
+        </item>
     </release>
     
     <release number="1.2" date="2010.10.18">
-    	<item type="task">
-    		<name>PCI-DSS requirements</name>
-    		<description>
-    			Superfly is modified to comply to PCI-DSS requirements. See
-    			further tasks for details. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Password encryption</name>
-    		<description>
-    			Passwords in database are encrypted. Salt is supported. All
-    			MesageDigest algorithms available via JRE are supported for
-    			hashing. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Password expiration</name>
-    		<description>
-    			Passwords may be configured to be expired with time. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Accounts suspension</name>
-    		<description>
-    			User accounts may be configured to be suspended after a period
-    			of inactivity. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>PCI-DSS password restrictions</name>
-    		<description>
-    			Restrictions like minimal password length, mixed letters and
-    			digits, not matching to recently used passwords may be
-    			configured to be applied. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Password reset</name>
-    		<description>
-    			Password reset may be carried out in accordance to PCI-DSS. 
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Two-factor authentication</name>
-    		<description>
-    			Two-factor authentication is supported on spring-security side
-    			by new module structure for authentication workflow.
-    			Server-side, infrastructure for One-Time Passwords is created
-    			and ready for providers to be plugged in.
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Logging</name>
-    		<description>
-    			Logging of operations with system objects.
-    		</description>
-    	</item>
+        <item type="task">
+            <name>PCI-DSS requirements</name>
+            <description>
+                Superfly is modified to comply to PCI-DSS requirements. See
+                further tasks for details.
+            </description>
+        </item>
+        <item type="task">
+            <name>Password encryption</name>
+            <description>
+                Passwords in database are encrypted. Salt is supported. All
+                MesageDigest algorithms available via JRE are supported for
+                hashing.
+            </description>
+        </item>
+        <item type="task">
+            <name>Password expiration</name>
+            <description>
+                Passwords may be configured to be expired with time.
+            </description>
+        </item>
+        <item type="task">
+            <name>Accounts suspension</name>
+            <description>
+                User accounts may be configured to be suspended after a period
+                of inactivity.
+            </description>
+        </item>
+        <item type="task">
+            <name>PCI-DSS password restrictions</name>
+            <description>
+                Restrictions like minimal password length, mixed letters and
+                digits, not matching to recently used passwords may be
+                configured to be applied.
+            </description>
+        </item>
+        <item type="task">
+            <name>Password reset</name>
+            <description>
+                Password reset may be carried out in accordance to PCI-DSS.
+            </description>
+        </item>
+        <item type="task">
+            <name>Two-factor authentication</name>
+            <description>
+                Two-factor authentication is supported on spring-security side
+                by new module structure for authentication workflow.
+                Server-side, infrastructure for One-Time Passwords is created
+                and ready for providers to be plugged in.
+            </description>
+        </item>
+        <item type="task">
+            <name>Logging</name>
+            <description>
+                Logging of operations with system objects.
+            </description>
+        </item>
     </release>
     
     <release number="1.1-2" date="2010.10.04">
-    	<item type="task">
-    		<name>UI enhancements</name>
-    		<description>
-    			Actions are sorted by name in lists. Filters are made sticky.
-    		</description>
-    	</item>
+        <item type="task">
+            <name>UI enhancements</name>
+            <description>
+                Actions are sorted by name in lists. Filters are made sticky.
+            </description>
+        </item>
     </release>
     
     <release number="1.1" date="2010.08.09">
-    	<item type="task">
-    		<name>Local mode</name>
-    		<description>
-    			 Local mode for Spring Security integration allows to develop
-    			 your application more easily with no requirement to interact
-    			 with a Superfly server
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Spring 3.0 support</name>
-    		<description>
-    			Some internal classes are changed to work with Spring 3.0.
-    			superfly-spring-security artifact now works with Spring Security
-    			3.0, while legacy artifact working with Spring Security 2.0.x
-    			was moved to superfly-spring-security-2.0.
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>Jira integration</name>
-    		<description>
-    			It's possible to configure Jira to use Superfly as a security
-    			provider.
-    		</description>
-    	</item>
-    	<item type="task">
-    		<name>UI enhancements</name>
-    		<description>
-    			UI is made a bit more friendly.
-    		</description>
-    	</item>
+        <item type="task">
+            <name>Local mode</name>
+            <description>
+                 Local mode for Spring Security integration allows to develop
+                 your application more easily with no requirement to interact
+                 with a Superfly server
+            </description>
+        </item>
+        <item type="task">
+            <name>Spring 3.0 support</name>
+            <description>
+                Some internal classes are changed to work with Spring 3.0.
+                superfly-spring-security artifact now works with Spring Security
+                3.0, while legacy artifact working with Spring Security 2.0.x
+                was moved to superfly-spring-security-2.0.
+            </description>
+        </item>
+        <item type="task">
+            <name>Jira integration</name>
+            <description>
+                It's possible to configure Jira to use Superfly as a security
+                provider.
+            </description>
+        </item>
+        <item type="task">
+            <name>UI enhancements</name>
+            <description>
+                UI is made a bit more friendly.
+            </description>
+        </item>
     </release>
     
-	<release number="1.0" date="2010.01.20">
+    <release number="1.0" date="2010.01.20">
         <item type="task">
             <name>UI</name>
             <description>
-            	UI for subsystems, users, roles, actions management
+                UI for subsystems, users, roles, actions management
             </description>
         </item>
         <item type="task">
             <name>Remote login</name>
             <description>
-            	Login from subsystems is implemented
+                Login from subsystems is implemented
             </description>
         </item>
         <item type="task">
             <name>Actions from subsystem</name>
             <description>
-            	Subsystem is able to send its actions to the Superfly server
+                Subsystem is able to send its actions to the Superfly server
             </description>
         </item>
         <item type="task">
             <name>Spring Security integration</name>
             <description>
-            	To use Superfly security (authentication/authorization) in your
-            	application you only need to use a Superfly module for Spring
-            	Security
+                To use Superfly security (authentication/authorization) in your
+                application you only need to use a Superfly module for Spring
+                Security
             </description>
         </item>
         <item type="task">
             <name>SSL integration</name>
             <description>
-            	Subsystem may be authenticated to the Superfly server using
-            	a client SSL authentication
+                Subsystem may be authenticated to the Superfly server using
+                a client SSL authentication
             </description>
         </item>
         <item type="task">
             <name>Demo application</name>
             <description>
-            	All features (including Spring security integration and SSL
-            	integration) are demonstrated by a Demo application
+                All features (including Spring security integration and SSL
+                integration) are demonstrated by a Demo application
             </description>
         </item>
     </release>

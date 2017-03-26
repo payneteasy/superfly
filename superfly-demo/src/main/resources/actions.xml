@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actions>
-	<action name="adminpage1"/>
-	<action name="adminpage2"/>
-	<action name="userpage1"/>
-	<action name="userpage2"/>
+    <action name="adminpage1"/>
+    <action name="adminpage2"/>
+    <action name="userpage1"/>
+    <action name="userpage2"/>
 </actions>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <actions>
-	<action name="action1" description="description1"/>
-	<action name="action2" description="description2"/>
+    <action name="action1" description="description1"/>
+    <action name="action2" description="description2"/>
 </actions>

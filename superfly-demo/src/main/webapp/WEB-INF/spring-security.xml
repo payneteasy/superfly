@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:sec="http://www.springframework.org/schema/security"
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
-		
-	<!-- This is a configuration for Spring Security 2.0.x. For configuration for
-		a more recent version of Spring Security (now it's 3.0.x), see
-		spring-security.xml -->
-		
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <!-- This is a configuration for Spring Security 2.0.x. For configuration for
+        a more recent version of Spring Security (now it's 3.0.x), see
+        spring-security.xml -->
+
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
-    	<sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
-    	<sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
+        <sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
+        <sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
     
         <sec:intercept-url pattern="/favicon.ico" filters="none"/>
         <sec:intercept-url pattern="/css*"   filters="none"/>
@@ -32,67 +32,67 @@
     
     <sec:authentication-manager alias="authenticationManager">
 <!-- 
-    	<sec:authentication-provider ref="superflyMockAuthenticationProvider"/>
+        <sec:authentication-provider ref="superflyMockAuthenticationProvider"/>
  -->
-    	<sec:authentication-provider ref="superflyAuthenticationProvider"/>
+        <sec:authentication-provider ref="superflyAuthenticationProvider"/>
     </sec:authentication-manager>
 
     <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
-    	<property name="loginFormUrl" value="/login.jsp"/>
-    	<property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
+        <property name="loginFormUrl" value="/login.jsp"/>
+        <property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
     </bean>
     
     <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
-    	<property name="authenticationManager" ref="authenticationManager"/>
-    	<property name="authenticationFailureHandler">
-    		<bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-    			<constructor-arg value="/login.jsp"/>
-    		</bean>
-    	</property>
-    	<!-- Uncomment the following if you are not using SSL client auth for
-    		calls to SSOService and write your own subsystem name here. If you
-    		use SSL client auth, your subsystem name will be extracted from
-    		your client certificate (its CN field by default) -->
-    	<!-- 
-    	<property name="subsystemIdentifier" value="superfly-demo"/>
-    	 -->
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler">
+            <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+                <constructor-arg value="/login.jsp"/>
+            </bean>
+        </property>
+        <!-- Uncomment the following if you are not using SSL client auth for
+            calls to SSOService and write your own subsystem name here. If you
+            use SSL client auth, your subsystem name will be extracted from
+            your client certificate (its CN field by default) -->
+        <!--
+        <property name="subsystemIdentifier" value="superfly-demo"/>
+         -->
     </bean>
     
     <util:list id="actionNameToRoleNameTransformers">
-		<bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
-		<bean class="com.payneteasy.superfly.security.PrependingTransformer">
-			<property name="prefix" value="ROLE_"/>
-		</bean>
+        <bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
+        <bean class="com.payneteasy.superfly.security.PrependingTransformer">
+            <property name="prefix" value="ROLE_"/>
+        </bean>
     </util:list>
     
 <!-- 
     <bean id="superflyMockAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyMockAuthenticationProvider">
-    	<sec:custom-authentication-provider/>
-    	<property name="enabled" value="true"/>
-    	<property name="username" value="su"/>
-    	<property name="password" value="password"/>
-    	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
-    	<property name="actionsMapBuilder">
-    		<bean class="com.payneteasy.superfly.security.mapbuilder.AllForAllActionsMapBuilder">
-    			<property name="roleNames">
-		    		<list>
-		    			<value>role1</value>
-		    			<value>role2</value>
-		    		</list>
-    			</property>
-    			<property name="actionsSource">
-    				<bean class="com.payneteasy.superfly.security.mapbuilder.CollectingActionsSource">
-    					<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
-    				</bean>
-    			</property>
-    		</bean>
-    	</property>
+        <sec:custom-authentication-provider/>
+        <property name="enabled" value="true"/>
+        <property name="username" value="su"/>
+        <property name="password" value="password"/>
+        <property name="transformers" ref="actionNameToRoleNameTransformers"/>
+        <property name="actionsMapBuilder">
+            <bean class="com.payneteasy.superfly.security.mapbuilder.AllForAllActionsMapBuilder">
+                <property name="roleNames">
+                    <list>
+                        <value>role1</value>
+                        <value>role2</value>
+                    </list>
+                </property>
+                <property name="actionsSource">
+                    <bean class="com.payneteasy.superfly.security.mapbuilder.CollectingActionsSource">
+                        <property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
     </bean>
  -->
     
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
-    	<property name="ssoService" ref="ssoService"/>
-    	<property name="transformers" ref="actionNameToRoleNameTransformers"/>
+        <property name="ssoService" ref="ssoService"/>
+        <property name="transformers" ref="actionNameToRoleNameTransformers"/>
     </bean>
     
     <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">
