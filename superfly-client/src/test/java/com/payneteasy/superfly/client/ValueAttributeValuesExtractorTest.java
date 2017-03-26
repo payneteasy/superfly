@@ -8,11 +8,11 @@ import static org.junit.Assert.*;
 /**
  * @author rpuch
  */
-public class ValueAttritubeValuesExtractorTest {
+public class ValueAttributeValuesExtractorTest {
     @Test
     public void test() {
         Secured secured = Annotated.class.getAnnotation(Secured.class);
-        assertArrayEquals(new String[]{"abc"}, new ValueAttritubeValuesExtractor().extract(secured));
+        assertArrayEquals(new String[]{"abc"}, new ValueAttributeValuesExtractor().extract(secured));
     }
 
     @Secured("abc")

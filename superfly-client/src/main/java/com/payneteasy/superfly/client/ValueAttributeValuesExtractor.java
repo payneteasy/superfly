@@ -8,7 +8,7 @@ import java.lang.annotation.Annotation;
  *
  * @author Roman Puchkovskiy
  */
-public class ValueAttritubeValuesExtractor implements ValuesExtractor {
+public class ValueAttributeValuesExtractor implements ValuesExtractor {
 
     @Override
     public String[] extract(Annotation annotation) {

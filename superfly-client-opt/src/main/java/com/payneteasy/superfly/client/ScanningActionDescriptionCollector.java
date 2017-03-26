@@ -37,7 +37,7 @@ public class ScanningActionDescriptionCollector implements
 
     private String[] basePackages = new String[0];
     private Class<? extends Annotation> annotationClass;
-    private ValuesExtractor valuesExtractor = new ValueAttritubeValuesExtractor();
+    private ValuesExtractor valuesExtractor = new ValueAttributeValuesExtractor();
     private Set<String> notCollectedActions = Collections.singleton("action_temp_password");
 
     @Required
