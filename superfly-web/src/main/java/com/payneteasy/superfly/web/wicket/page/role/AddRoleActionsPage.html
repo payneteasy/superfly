@@ -8,19 +8,19 @@
 <wicket:extend>
 <div class="cont-box">
 <h5>Add to the role grant actions</h5>
-	<div class="well s-filter">
-	  <form wicket:id="filters-form" class="form-inline">
+    <div class="well s-filter">
+      <form wicket:id="filters-form" class="form-inline">
           <ul class="s-filter-items">
               <li><input type="text" wicket:id="action-name-substring" placeholder="Action name substring"/></li>
               <li><input type="submit" value="Filter" class="btn" /></li>
           </ul>
-	  </form>
-	</div>
-	<form wicket:id="form">
+      </form>
+    </div>
+    <form wicket:id="form">
         <input type="submit" value="Apply" wicket:id="save-actions-link" class="btn btn-primary"/>
         <input type="submit" value="Back" wicket:id="back-link" class="btn"/>
         <input type="submit" value="Cancel" wicket:id="cancel" class="btn"/>
-	<div wicket:id="group">
+    <div wicket:id="group">
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
@@ -45,7 +45,7 @@
         </table>
     </div>
 </form>
-</div>	
+</div>
 </wicket:extend>
 </body>
 </html>

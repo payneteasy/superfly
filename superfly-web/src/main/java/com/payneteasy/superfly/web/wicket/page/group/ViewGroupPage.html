@@ -11,36 +11,36 @@
     </div>
 
     <div class="well s-filter">
-	  <form wicket:id="filter-form" class="form-inline">
+      <form wicket:id="filter-form" class="form-inline">
           <ul class="s-filter-items">
               <li><input type="text" wicket:id="action-name-substr" placeholder="Action name"/></li>
               <li><input type="submit" value="Filter" class="btn"/></li>
           </ul>
-	  </form>
-	</div>
+      </form>
+    </div>
 
 <p>
     <strong>Group name: </strong><span wicket:id="groupName"></span>&nbsp;&nbsp;<strong>Subsystem: </strong>
     <span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" >Back to list groups</a>
 </p>
 
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr>
-				<th><a wicket:id="order-by-ActionID">ID</a></th>
-				<th><a wicket:id="order-by-ActionName">Action name</a></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="dataView">
-				<td><span wicket:id="action-id">[Name]</span></td>
-				<td><span wicket:id="action-name">[Subsystem]</span></td>
-			</tr>
-			<tr>
-			   <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th><a wicket:id="order-by-ActionID">ID</a></th>
+                <th><a wicket:id="order-by-ActionName">Action name</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr wicket:id="dataView">
+                <td><span wicket:id="action-id">[Name]</span></td>
+                <td><span wicket:id="action-name">[Subsystem]</span></td>
+            </tr>
+            <tr>
+               <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+            </tr>
+        </tbody>
+    </table>
 </wicket:extend>
 </body>
 </html>

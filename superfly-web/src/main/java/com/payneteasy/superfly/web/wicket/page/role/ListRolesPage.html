@@ -7,10 +7,10 @@
 </head>
 <body>
 <wicket:extend>
-	<div><span wicket:id="confirmPanel"></span></div>
+    <div><span wicket:id="confirmPanel"></span></div>
 
-	<div class="well s-filter">
-		<form wicket:id="filters-form" class="form-inline">
+    <div class="well s-filter">
+        <form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
                     <span>Subsystem:</span>
@@ -21,35 +21,35 @@
                     </select>
                 </li>
                 <li><input type="submit" value="Filter" class="btn"/></li>
-			</ul>
-		</form>
-	</div>
+            </ul>
+        </form>
+    </div>
 
-	<form wicket:id="form">
+    <form wicket:id="form">
         <div class="s-legend-btn">
             <input type="submit" wicket:id="add-role" value="Add Role" class="btn btn-primary"/>
             <input type="submit" wicket:id="delete-role" value="Delete selected" class="btn btn-warning"/>
         </div>
-		<div wicket:id="group">
-			<table class="table table-bordered table-hover">
-				<thead>
-					<tr>
-						<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-						<th><a wicket:id="order-by-roleName">Role Name</a></th>
-						<th><a wicket:id="order-by-principalName">PrincipalName</a></th>
-						<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr wicket:id="roleList">
-						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
-						<td>
-							<span wicket:id="role-name">bond</span>
-						</td>
-						<td><span wicket:id="principal-name">bond</span></td>
-						<td><span wicket:id="subsystem-name">bond</span></td>
-						<td class="s-td-action">
+        <div wicket:id="group">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th><a wicket:id="order-by-roleName">Role Name</a></th>
+                        <th><a wicket:id="order-by-principalName">PrincipalName</a></th>
+                        <th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="roleList">
+                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
+                        <td>
+                            <span wicket:id="role-name">bond</span>
+                        </td>
+                        <td><span wicket:id="principal-name">bond</span></td>
+                        <td><span wicket:id="subsystem-name">bond</span></td>
+                        <td class="s-td-action">
                             <div class="dropdown s-dropdown">
                                 <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
                                 <ul class="dropdown-menu s-dropdown-menu">
@@ -59,15 +59,15 @@
                                     <li><a href="#" wicket:id="delete-role">Delete</a></li>
                                 </ul>
                             </div>
-						</td>
-					</tr>
-					<tr>
-					 <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</form>
+                        </td>
+                    </tr>
+                    <tr>
+                     <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
 </wicket:extend>
 </body>
 </html>

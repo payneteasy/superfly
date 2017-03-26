@@ -6,55 +6,55 @@
 </head>
 <body>
 <wicket:extend>
-	<h3>Invalid sessions</h3>
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr class="s-table-head">
-				<th>Session ID</th>
-				<th>User</th>
-				<th>Callback URI</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="invalid-sessions">
-				<td>
-					<span wicket:id="session-id">12345</span>
-				</td>
-				<td>
-					<a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
-				</td>
-				<td>
-					<span wicket:id="callback-information">http://bond.james.bond.uk/</span>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+    <h3>Invalid sessions</h3>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="s-table-head">
+                <th>Session ID</th>
+                <th>User</th>
+                <th>Callback URI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr wicket:id="invalid-sessions">
+                <td>
+                    <span wicket:id="session-id">12345</span>
+                </td>
+                <td>
+                    <a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
+                </td>
+                <td>
+                    <span wicket:id="callback-information">http://bond.james.bond.uk/</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-	<input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="btn btn-primary"/>
+    <input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="btn btn-primary"/>
 
     <h3>Expired sessions</h3>
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr class="s-table-head">
-				<th>Session ID</th>
-				<th>User</th>
-				<th>Callback URI</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="expired-sessions">
-				<td>
-					<span wicket:id="session-id">12345</span>
-				</td>
-				<td>
-					<a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
-				</td>
-				<td>
-					<span wicket:id="callback-information">http://bond.james.bond.uk/</span>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="s-table-head">
+                <th>Session ID</th>
+                <th>User</th>
+                <th>Callback URI</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr wicket:id="expired-sessions">
+                <td>
+                    <span wicket:id="session-id">12345</span>
+                </td>
+                <td>
+                    <a href="#" wicket:id="user-link"><span wicket:id="username">Bond</span></a>
+                </td>
+                <td>
+                    <span wicket:id="callback-information">http://bond.james.bond.uk/</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <input type="submit" value="Delete expired sessions" wicket:id="delete-expired-sessions-link" class="btn btn-primary"/>
 </wicket:extend>
 </body>
