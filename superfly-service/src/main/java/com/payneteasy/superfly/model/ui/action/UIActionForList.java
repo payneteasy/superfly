@@ -5,65 +5,65 @@ import java.io.Serializable;
 import javax.persistence.Column;
 
 public class UIActionForList implements Serializable {
-	private long id;
-	private String name;
-	private String description;
-	private boolean logAction;
-	private String subsystemName;
-	private boolean selected;
-	
-	@Column(name = "actn_id")
-	public long getId() {
-		return id;
-	}
+    private long id;
+    private String name;
+    private String description;
+    private boolean logAction;
+    private String subsystemName;
+    private boolean selected;
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    @Column(name = "actn_id")
+    public long getId() {
+        return id;
+    }
 
-	@Column(name = "action_name")
-	public String getName() {
-		return name;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column(name = "action_name")
+    public String getName() {
+        return name;
+    }
 
-	@Column(name = "action_description")
-	public String getDescroption() {
-		return description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setDescroption(String descroption) {
-		this.description = descroption;
-	}
+    @Column(name = "action_description")
+    public String getDescroption() {
+        return description;
+    }
 
-	@Column(name = "log_action")
-	public boolean isLogAction() {
-		return logAction;
-	}
+    public void setDescroption(String descroption) {
+        this.description = descroption;
+    }
 
-	public void setLogAction(boolean logAction) {
-		this.logAction = logAction;
-	}
+    @Column(name = "log_action")
+    public boolean isLogAction() {
+        return logAction;
+    }
 
-	@Column(name = "subsystem_name")
-	public String getSubsystemName() {
-		return subsystemName;
-	}
+    public void setLogAction(boolean logAction) {
+        this.logAction = logAction;
+    }
 
-	public void setSubsystemName(String subsystemName) {
-		this.subsystemName = subsystemName;
-	}
+    @Column(name = "subsystem_name")
+    public String getSubsystemName() {
+        return subsystemName;
+    }
 
-	public boolean isSelected() {
-		return selected;
-	}
+    public void setSubsystemName(String subsystemName) {
+        this.subsystemName = subsystemName;
+    }
 
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
-	
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
 
 }

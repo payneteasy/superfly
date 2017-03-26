@@ -18,41 +18,41 @@ import com.payneteasy.superfly.notification.NotificationException;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractHttpNotificationSendStrategy implements
-		NotificationSendStrategy {
-	
-	protected static Logger logger = LoggerFactory.getLogger(AbstractHttpNotificationSendStrategy.class);
+        NotificationSendStrategy {
 
-	protected HttpClient httpClient;
+    protected static Logger logger = LoggerFactory.getLogger(AbstractHttpNotificationSendStrategy.class);
 
-	protected void doCall(String uri, String notificationType,
-			ParameterSetter parameterSetter) throws NotificationException {
-		PostMethod httpMethod = new PostMethod(uri);
-		httpMethod.setParameter("superflyNotification", notificationType);
-		parameterSetter.setParameters(httpMethod);
-		try {
-			httpClient.executeMethod(httpMethod);
-			if (logger.isInfoEnabled()) {
-				logger.info("Successfully notified " + uri + " with params " + Arrays.asList(httpMethod.getParameters()));
-			}
-		} catch (HttpException e) {
-			throw new NotificationException(e);
-		} catch (IOException e) {
-			throw new NotificationException(e);
-		} finally {
-			try {
-				httpMethod.releaseConnection();
-			} catch (IllegalArgumentException ignored) {
-				logger.warn(ignored.getMessage(), ignored);
-			}
-		}
-	}
-	
-	@Required
-	public void setHttpClient(HttpClient httpClient) {
-		this.httpClient = httpClient;
-	}
-	
-	protected static interface ParameterSetter {
-		void setParameters(PostMethod httpMethod);
-	}
+    protected HttpClient httpClient;
+
+    protected void doCall(String uri, String notificationType,
+            ParameterSetter parameterSetter) throws NotificationException {
+        PostMethod httpMethod = new PostMethod(uri);
+        httpMethod.setParameter("superflyNotification", notificationType);
+        parameterSetter.setParameters(httpMethod);
+        try {
+            httpClient.executeMethod(httpMethod);
+            if (logger.isInfoEnabled()) {
+                logger.info("Successfully notified " + uri + " with params " + Arrays.asList(httpMethod.getParameters()));
+            }
+        } catch (HttpException e) {
+            throw new NotificationException(e);
+        } catch (IOException e) {
+            throw new NotificationException(e);
+        } finally {
+            try {
+                httpMethod.releaseConnection();
+            } catch (IllegalArgumentException ignored) {
+                logger.warn(ignored.getMessage(), ignored);
+            }
+        }
+    }
+
+    @Required
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    protected static interface ParameterSetter {
+        void setParameters(PostMethod httpMethod);
+    }
 }

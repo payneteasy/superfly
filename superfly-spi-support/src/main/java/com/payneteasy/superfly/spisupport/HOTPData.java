@@ -10,46 +10,46 @@ import javax.persistence.Column;
  * @author Roman Puchkovskiy
  */
 public class HOTPData implements Serializable {
-	private static final long serialVersionUID = -1255491475933927511L;
-	
-	private long userId;
-	private String username;
-	private String salt;
-	private long counter;
+    private static final long serialVersionUID = -1255491475933927511L;
 
-	@Column(name = "user_id")
-	public long getUserId() {
-		return userId;
-	}
+    private long userId;
+    private String username;
+    private String salt;
+    private long counter;
 
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
+    @Column(name = "user_id")
+    public long getUserId() {
+        return userId;
+    }
 
-	@Column(name = "username")
-	public String getUsername() {
-		return username;
-	}
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    @Column(name = "username")
+    public String getUsername() {
+        return username;
+    }
 
-	@Column(name = "salt")
-	public String getSalt() {
-		return salt;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+    @Column(name = "salt")
+    public String getSalt() {
+        return salt;
+    }
 
-	@Column(name = "counter")
-	public long getCounter() {
-		return counter;
-	}
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
 
-	public void setCounter(long counter) {
-		this.counter = counter;
-	}
+    @Column(name = "counter")
+    public long getCounter() {
+        return counter;
+    }
+
+    public void setCounter(long counter) {
+        this.counter = counter;
+    }
 }

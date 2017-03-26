@@ -7,11 +7,11 @@ import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 
 public class NoneCreateUserStrategy implements CreateUserStrategy {
-	private UserDao userDao;
+    private UserDao userDao;
 
-	public NoneCreateUserStrategy(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    public NoneCreateUserStrategy(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     public RoutineResult createUser(UIUserForCreate createUser) {
         createUser.setIsPasswordTemp(false);

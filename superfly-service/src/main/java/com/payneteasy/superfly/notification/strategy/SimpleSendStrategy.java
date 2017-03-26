@@ -14,22 +14,22 @@ import com.payneteasy.superfly.notification.UsersChangedNotification;
  * @author Roman Puchkovskiy
  */
 public class SimpleSendStrategy extends AbstractHttpNotificationSendStrategy {
-	
-	public void send(final LogoutNotification notification)
-			throws NotificationException {
-		doCall(notification.getCallbackUri(), Notifications.LOGOUT, new ParameterSetter() {
-			public void setParameters(PostMethod httpMethod) {
-				httpMethod.setParameter("superflyLogoutSessionIds",
-						StringUtils.collectionToCommaDelimitedString(notification.getSessionIds()));
-			}
-		});
-	}
 
-	public void send(final UsersChangedNotification notification)
-			throws NotificationException {
-		doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, new ParameterSetter() {
-			public void setParameters(PostMethod httpMethod) {
-			}
-		});
-	}
+    public void send(final LogoutNotification notification)
+            throws NotificationException {
+        doCall(notification.getCallbackUri(), Notifications.LOGOUT, new ParameterSetter() {
+            public void setParameters(PostMethod httpMethod) {
+                httpMethod.setParameter("superflyLogoutSessionIds",
+                        StringUtils.collectionToCommaDelimitedString(notification.getSessionIds()));
+            }
+        });
+    }
+
+    public void send(final UsersChangedNotification notification)
+            throws NotificationException {
+        doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, new ParameterSetter() {
+            public void setParameters(PostMethod httpMethod) {
+            }
+        });
+    }
 }

@@ -14,24 +14,24 @@ import javax.servlet.ServletContext;
  */
 public class CustomContextLoaderListener extends ContextLoaderListener {
 
-	@Override
-	protected void customizeContext(ServletContext servletContext,
-			ConfigurableWebApplicationContext applicationContext) {
-		super.customizeContext(servletContext, applicationContext);
-		String policy = servletContext.getInitParameter("superfly-policy");
-		if (policy == null) {
-			policy = Policy.NONE.getIdentifier();
-		}
-		String disableHotp = servletContext.getInitParameter("disable-hotp");
-		if ("true".equals(disableHotp)) {
-			policy = Policy.NONE.getIdentifier();
-		}
-		String[] oldLocations = applicationContext.getConfigLocations();
-		String[] newLocations = new String[oldLocations.length];
-		for (int i = 0; i < oldLocations.length; i++) {
-			newLocations[i] = oldLocations[i].replaceAll("\\!policy\\!", policy);
-		}
-		applicationContext.setConfigLocations(newLocations);
-	}
+    @Override
+    protected void customizeContext(ServletContext servletContext,
+            ConfigurableWebApplicationContext applicationContext) {
+        super.customizeContext(servletContext, applicationContext);
+        String policy = servletContext.getInitParameter("superfly-policy");
+        if (policy == null) {
+            policy = Policy.NONE.getIdentifier();
+        }
+        String disableHotp = servletContext.getInitParameter("disable-hotp");
+        if ("true".equals(disableHotp)) {
+            policy = Policy.NONE.getIdentifier();
+        }
+        String[] oldLocations = applicationContext.getConfigLocations();
+        String[] newLocations = new String[oldLocations.length];
+        for (int i = 0; i < oldLocations.length; i++) {
+            newLocations[i] = oldLocations[i].replaceAll("\\!policy\\!", policy);
+        }
+        applicationContext.setConfigLocations(newLocations);
+    }
 
 }

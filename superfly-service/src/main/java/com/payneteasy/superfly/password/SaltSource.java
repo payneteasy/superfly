@@ -12,19 +12,19 @@ import com.payneteasy.superfly.spisupport.SaltGenerator;
  * @see PasswordEncoder
  */
 public interface SaltSource {
-	/**
-	 * Returns salt value.
-	 * 
-	 * @param username	username for which to get salt
-	 * @return salt
-	 */
-	String getSalt(String username);
-	
-	/**
-	 * Returns salt value by user id.
-	 * 
-	 * @param userId	ID of a user
-	 * @return salt
-	 */
-	String getSalt(long userId);
+    /**
+     * Returns salt value.
+     *
+     * @param username    username for which to get salt
+     * @return salt
+     */
+    String getSalt(String username);
+
+    /**
+     * Returns salt value by user id.
+     *
+     * @param userId    ID of a user
+     * @return salt
+     */
+    String getSalt(long userId);
 }

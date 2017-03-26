@@ -8,15 +8,15 @@ import java.io.Serializable;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractNotification implements Serializable {
-	private static final long serialVersionUID = 3016688765672360571L;
-	
-	private String callbackUri;
+    private static final long serialVersionUID = 3016688765672360571L;
 
-	public String getCallbackUri() {
-		return callbackUri;
-	}
+    private String callbackUri;
 
-	public void setCallbackUri(String callbackUri) {
-		this.callbackUri = callbackUri;
-	}
+    public String getCallbackUri() {
+        return callbackUri;
+    }
+
+    public void setCallbackUri(String callbackUri) {
+        this.callbackUri = callbackUri;
+    }
 }

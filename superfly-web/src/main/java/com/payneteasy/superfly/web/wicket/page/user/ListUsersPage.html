@@ -14,8 +14,8 @@
     <div wicket:id="reset-hotp-window"></div>
 
     <!--FILTER-->
-	<div class="well s-filter">
-		<form wicket:id="filters-form" class="form-inline">
+    <div class="well s-filter">
+        <form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
                     <input wicket:id="username-filter" type="text" placeholder="Username prefix"/>
@@ -40,39 +40,39 @@
                     <input type="submit" value="Filter" class="btn"/>
                 </li>
             </ul>
-		</form>
-	</div>
+        </form>
+    </div>
 
     <!--TABLE-->
-	<table class="table table-bordered table-hover">
-		<thead>
-			<tr class="s-table-head">
-				<th><a wicket:id="order-by-username">Username</a></th>
-				<th>Email</th>
-				<th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
-				<th><a wicket:id="order-by-last-login-date">Last login date</a></th>
-				<th title="Next OTP counter">NC</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr wicket:id="usersList">
-				<td>
-					<span wicket:id="user-name">bond</span>
-				</td>
-				<td>
-				    <span wicket:id="email">email</span>
-				</td>
-				<td align="center">
-					<span wicket:id="logins-failed">777</span>
-				</td>
-				<td>
-					<span wicket:id="last-login-date">2008-01-01 03:33:44</span>
-				</td>
-				<td align="center">
-					<span wicket:id="next-otp-counter">3</span>
-				</td>
-				<td class="s-td-action">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="s-table-head">
+                <th><a wicket:id="order-by-username">Username</a></th>
+                <th>Email</th>
+                <th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
+                <th><a wicket:id="order-by-last-login-date">Last login date</a></th>
+                <th title="Next OTP counter">NC</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr wicket:id="usersList">
+                <td>
+                    <span wicket:id="user-name">bond</span>
+                </td>
+                <td>
+                    <span wicket:id="email">email</span>
+                </td>
+                <td align="center">
+                    <span wicket:id="logins-failed">777</span>
+                </td>
+                <td>
+                    <span wicket:id="last-login-date">2008-01-01 03:33:44</span>
+                </td>
+                <td align="center">
+                    <span wicket:id="next-otp-counter">3</span>
+                </td>
+                <td class="s-td-action">
                     <div class="dropdown s-dropdown">
                         <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
                         <ul class="dropdown-menu s-dropdown-menu">
@@ -83,13 +83,13 @@
                             <li><a href="#" wicket:id="reset-table-link">Reset table</a></li>
                         </ul>
                     </div>
-				</td>
-			</tr>
-			<tr>
-			   <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
-			</tr>
-		</tbody>
-	</table>
+                </td>
+            </tr>
+            <tr>
+               <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
+            </tr>
+        </tbody>
+    </table>
 
 </wicket:extend>
 </body>

@@ -13,34 +13,34 @@ import org.springframework.security.core.GrantedAuthority;
  * @author Roman Puchkovskiy
  */
 public class EmptyAuthenticationToken implements Authentication {
-	private static final long serialVersionUID = 5670753128479212097L;
+    private static final long serialVersionUID = 5670753128479212097L;
 
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.emptySet();
-	}
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptySet();
+    }
 
-	public Object getCredentials() {
-		return null;
-	}
+    public Object getCredentials() {
+        return null;
+    }
 
-	public Object getDetails() {
-		return null;
-	}
+    public Object getDetails() {
+        return null;
+    }
 
-	public Object getPrincipal() {
-		return null;
-	}
+    public Object getPrincipal() {
+        return null;
+    }
 
-	public boolean isAuthenticated() {
-		return false;
-	}
+    public boolean isAuthenticated() {
+        return false;
+    }
 
-	public void setAuthenticated(boolean isAuthenticated)
-			throws IllegalArgumentException {
-	}
+    public void setAuthenticated(boolean isAuthenticated)
+            throws IllegalArgumentException {
+    }
 
-	public String getName() {
-		return null;
-	}
+    public String getName() {
+        return null;
+    }
 
 }

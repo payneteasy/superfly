@@ -11,42 +11,42 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 
 public interface GroupService {
 
-	List<UIGroupForList> getGroups();
+    List<UIGroupForList> getGroups();
 
-	List<UIGroupForList> getGroupsForSubsystems(long startFrom,
-			long recordsCount, int orderFieldNumber, boolean orderType,
-			String groupNamePrefix, List<Long> subsystemIds);
+    List<UIGroupForList> getGroupsForSubsystems(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean orderType,
+            String groupNamePrefix, List<Long> subsystemIds);
 
-	RoutineResult createGroup(UIGroup group);
+    RoutineResult createGroup(UIGroup group);
 
-	RoutineResult updateGroup(UIGroup group);
+    RoutineResult updateGroup(UIGroup group);
 
-	RoutineResult deleteGroup(long id);
+    RoutineResult deleteGroup(long id);
 
-	RoutineResult cloneGroup(UICloneGroupRequest request);
+    RoutineResult cloneGroup(UICloneGroupRequest request);
 
-	UIGroupForView getGroupById(long id);
+    UIGroupForView getGroupById(long id);
 
     long getGroupsCount(String groupName, List<Long> subsystemIds);
 
-	RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
-			List<Long> actionsToUnlink);
+    RoutineResult changeGroupActions(long groupId, List<Long> actionsToLink,
+            List<Long> actionsToUnlink);
 
-	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long stratFrom,
+    List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long stratFrom,
             long recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring);
+            long groupId, String actionSubstring);
 
     long getAllGroupMappedActionsCount(long groupId, String actionSubstring);
 
-	List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int stratFrom,
-			int recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring);
+    List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int stratFrom,
+            int recordsCount, int orderFieldNumber, boolean orderType,
+            long groupId, String actionSubstring);
 
-	int getAllGroupUnMappedActionsCount(long groupId, String actionSubstring);
+    int getAllGroupUnMappedActionsCount(long groupId, String actionSubstring);
 
-	List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+    List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
             long recordsCount, int orderFieldNumber, boolean orderType,
-			long groupId, String actionSubstring);
+            long groupId, String actionSubstring);
 
     long getAllGroupActionsCount(long groupId, String actionSubstring);
 

@@ -18,22 +18,22 @@ import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
  * @see X509PrincipalExtractor
  */
 public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
-		SubsystemIdentifierObtainer {
+        SubsystemIdentifierObtainer {
 
-	public String obtainSubsystemIdentifier(String hint) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return getUsername(authentication);
-	}
+    public String obtainSubsystemIdentifier(String hint) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return getUsername(authentication);
+    }
 
-	private String getUsername(Authentication authentication) {
-		Object principal = authentication.getPrincipal();
-		if (principal instanceof String) {
-			return (String) principal;
-		} else if (principal instanceof UserDetails) {
-			return ((UserDetails) principal).getUsername();
-		} else {
-			return principal.toString();
-		}
-	}
+    private String getUsername(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof String) {
+            return (String) principal;
+        } else if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
 
 }

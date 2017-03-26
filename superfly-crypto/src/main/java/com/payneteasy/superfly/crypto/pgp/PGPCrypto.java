@@ -7,12 +7,12 @@ import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 
 public class PGPCrypto implements PublicKeyCrypto {
 
-	public boolean isPublicKeyValid(String armoredPublicKey) {
-		return PGPUtils.isPublicKeyValid(armoredPublicKey);
-	}
+    public boolean isPublicKeyValid(String armoredPublicKey) {
+        return PGPUtils.isPublicKeyValid(armoredPublicKey);
+    }
 
-	public void encrypt(byte[] clearText, String name, String armoredPublicKey, OutputStream os) throws IOException {
-		PGPUtils.encryptBytesAndArmor(clearText, name, armoredPublicKey, os);
-	}
+    public void encrypt(byte[] clearText, String name, String armoredPublicKey, OutputStream os) throws IOException {
+        PGPUtils.encryptBytesAndArmor(clearText, name, armoredPublicKey, os);
+    }
 
 }

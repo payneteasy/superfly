@@ -22,28 +22,28 @@ import com.payneteasy.superfly.service.SubsystemService;
 
 @Transactional
 public class SubsystemServiceImpl implements SubsystemService {
-	
-	private static final Logger logger = LoggerFactory.getLogger(SubsystemServiceImpl.class);
-	
-	private SubsystemDao subsystemDao;
-	private NotificationService notificationService;
-	private LoggerSink loggerSink;
+
+    private static final Logger logger = LoggerFactory.getLogger(SubsystemServiceImpl.class);
+
+    private SubsystemDao subsystemDao;
+    private NotificationService notificationService;
+    private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
 
-	@Required
-	public void setSubsystemDao(SubsystemDao subsystemDao) {
-		this.subsystemDao = subsystemDao;
-	}
+    @Required
+    public void setSubsystemDao(SubsystemDao subsystemDao) {
+        this.subsystemDao = subsystemDao;
+    }
 
-	@Required
-	public void setNotificationService(NotificationService notificationService) {
-		this.notificationService = notificationService;
-	}
+    @Required
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
-	@Required
-	public void setLoggerSink(LoggerSink loggerSink) {
-		this.loggerSink = loggerSink;
-	}
+    @Required
+    public void setLoggerSink(LoggerSink loggerSink) {
+        this.loggerSink = loggerSink;
+    }
 
     @Required
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
@@ -51,47 +51,47 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     public RoutineResult createSubsystem(UISubsystem subsystem) {
-		RoutineResult result = subsystemDao.createSubsystem(subsystem);
-		loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
+        RoutineResult result = subsystemDao.createSubsystem(subsystem);
+        loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
-		return result;
-	}
+        return result;
+    }
 
-	public RoutineResult deleteSubsystem(Long subsystemId) {
-		RoutineResult result = subsystemDao.deleteSubsystem(subsystemId);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
+    public RoutineResult deleteSubsystem(Long subsystemId) {
+        RoutineResult result = subsystemDao.deleteSubsystem(subsystemId);
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "DELETE_SUBSYSTEM", result.isOk(), String.valueOf(subsystemId));
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
-		return result;
-	}
+        return result;
+    }
 
-	public List<UISubsystemForList> getSubsystems() {
-		return subsystemDao.getSubsystems();
-	}
+    public List<UISubsystemForList> getSubsystems() {
+        return subsystemDao.getSubsystems();
+    }
 
-	public RoutineResult updateSubsystem(UISubsystem subsystem) {
-		RoutineResult result = subsystemDao.updateSubsystem(subsystem);
-		if (result.isOk()) {
-			notificationService.notifyAboutUsersChanged();
-		}
-		loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
+    public RoutineResult updateSubsystem(UISubsystem subsystem) {
+        RoutineResult result = subsystemDao.updateSubsystem(subsystem);
+        if (result.isOk()) {
+            notificationService.notifyAboutUsersChanged();
+        }
+        loggerSink.info(logger, "UPDATE_SUBSYSTEM", result.isOk(), subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
-		return result;
-	}
+        return result;
+    }
 
-	public List<UISubsystemForFilter> getSubsystemsForFilter() {
-		return subsystemDao.getSubsystemsForFilter();
-	}
+    public List<UISubsystemForFilter> getSubsystemsForFilter() {
+        return subsystemDao.getSubsystemsForFilter();
+    }
 
-	public UISubsystem getSubsystem(long subsystemId) {
-		return subsystemDao.getSubsystem(subsystemId);
-	}
+    public UISubsystem getSubsystem(long subsystemId) {
+        return subsystemDao.getSubsystem(subsystemId);
+    }
 
-	public UISubsystem getSubsystemByName(String subsystemName) {
-		return subsystemDao.getSubsystemByName(subsystemName);
-	}
+    public UISubsystem getSubsystemByName(String subsystemName) {
+        return subsystemDao.getSubsystemByName(subsystemName);
+    }
 
     @Override
     public SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier) {

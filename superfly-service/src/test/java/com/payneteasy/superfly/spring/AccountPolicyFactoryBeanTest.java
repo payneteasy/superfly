@@ -6,16 +6,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AccountPolicyFactoryBeanTest {
-	private AccountPolicyFactoryBean factoryBean;
+    private AccountPolicyFactoryBean factoryBean;
 
     @Before
-	public void setUp() {
-		factoryBean = new AccountPolicyFactoryBean();
-	}
+    public void setUp() {
+        factoryBean = new AccountPolicyFactoryBean();
+    }
 
     @Test
-	public void testNone() throws Exception {
-		factoryBean.setPolicyName("none");
+    public void testNone() throws Exception {
+        factoryBean.setPolicyName("none");
         Assert.assertTrue(factoryBean.getObject() instanceof SimpleAccountPolicy);
-	}
+    }
 }

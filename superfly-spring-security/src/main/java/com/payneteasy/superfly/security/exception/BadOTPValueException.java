@@ -8,18 +8,18 @@ import org.springframework.security.authentication.BadCredentialsException;
  * @author Roman Puchkovskiy
  */
 public class BadOTPValueException extends BadCredentialsException {
-	private static final long serialVersionUID = 7345118080712359843L;
+    private static final long serialVersionUID = 7345118080712359843L;
 
-	public BadOTPValueException(String msg, Object extraInformation) {
-		super(msg, extraInformation);
-	}
+    public BadOTPValueException(String msg, Object extraInformation) {
+        super(msg, extraInformation);
+    }
 
-	public BadOTPValueException(String msg, Throwable t) {
-		super(msg, t);
-	}
+    public BadOTPValueException(String msg, Throwable t) {
+        super(msg, t);
+    }
 
-	public BadOTPValueException(String msg) {
-		super(msg);
-	}
+    public BadOTPValueException(String msg) {
+        super(msg);
+    }
 
 }

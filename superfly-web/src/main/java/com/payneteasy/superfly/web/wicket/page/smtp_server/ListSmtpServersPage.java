@@ -25,9 +25,9 @@ public class ListSmtpServersPage extends AbstractSmtpServerPage {
     private SmtpServerService smtpServerService;
 
     public ListSmtpServersPage() {
-    	final ModalWindow testWindow = new ModalWindow("test-window");
-    	add(testWindow);
-    	
+        final ModalWindow testWindow = new ModalWindow("test-window");
+        add(testWindow);
+
         add(new ListView<UISmtpServerForList>("servers", smtpServerService.listSmtpServers()) {
             @Override
             protected void populateItem(ListItem<UISmtpServerForList> item) {
@@ -52,15 +52,15 @@ public class ListSmtpServersPage extends AbstractSmtpServerPage {
                     }
                 });
                 item.add(new AjaxLink<Void>("test-link") {
-					@Override
-					public void onClick(AjaxRequestTarget target) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
                         TestPanel testPanel = new TestPanel(testWindow.getContentId(),
                                 server.getId(), testWindow, getFeedbackPanel());
                         testWindow.setContent(testPanel);
-						testWindow.show(target);
+                        testWindow.show(target);
                         target.focusComponent(testPanel.getAddressField());
-					}
-				});
+                    }
+                });
             }
         });
 

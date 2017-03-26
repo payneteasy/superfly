@@ -14,29 +14,29 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 public class SendNotificationOnceJob extends BaseJob {
-	
-	private static final Logger logger = LoggerFactory.getLogger(SendNotificationOnceJob.class);
-	
-	private String beanName;
-	private AbstractNotification notification;
-	private int retriesLeft;
 
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(SendNotificationOnceJob.class);
 
-	public void setNotification(AbstractNotification notification) {
-		this.notification = notification;
-	}
+    private String beanName;
+    private AbstractNotification notification;
+    private int retriesLeft;
 
-	public void setRetriesLeft(int retriesLeft) {
-		this.retriesLeft = retriesLeft;
-	}
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void doExecute(JobExecutionContext context) throws SchedulerException {
-		NotificationSendStrategy sendStrategy = getNotificationSendStrategy(context, beanName);
+    public void setNotification(AbstractNotification notification) {
+        this.notification = notification;
+    }
+
+    public void setRetriesLeft(int retriesLeft) {
+        this.retriesLeft = retriesLeft;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void doExecute(JobExecutionContext context) throws SchedulerException {
+        NotificationSendStrategy sendStrategy = getNotificationSendStrategy(context, beanName);
 
         if(sendStrategy==null) {
             logger.info("Notification strategy is null");
@@ -54,6 +54,6 @@ public class SendNotificationOnceJob extends BaseJob {
         } catch (NotificationException e) {
             logger.error("Error while trying to send a notification, no more retries, dropping: " + notification.toString(), e);
         }
-	}
+    }
 
 }

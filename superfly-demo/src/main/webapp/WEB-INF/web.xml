@@ -1,84 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-	<display-name>Superfly Demo</display-name>
+    <display-name>Superfly Demo</display-name>
 
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
             /WEB-INF/spring-context.xml
-        	/WEB-INF/superfly-client.xml
-        	/WEB-INF/spring-security-2.0.xml
+            /WEB-INF/superfly-client.xml
+            /WEB-INF/spring-security-2.0.xml
         </param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>/WEB-INF/log4j.properties</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>2000</param-value>
-	</context-param>
-	<context-param>
-		<param-name>configuration</param-name>
-		<param-value>development</param-value>
-	</context-param>
-	<context-param>
-		<param-name>webAppRootKey</param-name>
-		<param-value>superfly-demo</param-value>
-	</context-param>
-	<context-param>
-		<param-name>superfly-sso-service-url</param-name>
-		<!-- If you're not using SSL client auth for your SSOService calls,
-			you will probably want to set here an absolute URL (beginning with
-			http:// and host name). -->
-		<param-value>/superfly/remoting/sso.service</param-value>
-	</context-param>
-	<context-param>
-		<param-name>superfly-sso-service-host</param-name>
-		<param-value>localhost</param-value>
-	</context-param>
-	<context-param>
-		<param-name>superfly-sso-service-secure-port</param-name>
-		<param-value>8446</param-value>
-	</context-param>
+    </context-param>
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/log4j.properties</param-value>
+    </context-param>
+    <context-param>
+        <param-name>log4jRefreshInterval</param-name>
+        <param-value>2000</param-value>
+    </context-param>
+    <context-param>
+        <param-name>configuration</param-name>
+        <param-value>development</param-value>
+    </context-param>
+    <context-param>
+        <param-name>webAppRootKey</param-name>
+        <param-value>superfly-demo</param-value>
+    </context-param>
+    <context-param>
+        <param-name>superfly-sso-service-url</param-name>
+        <!-- If you're not using SSL client auth for your SSOService calls,
+            you will probably want to set here an absolute URL (beginning with
+            http:// and host name). -->
+        <param-value>/superfly/remoting/sso.service</param-value>
+    </context-param>
+    <context-param>
+        <param-name>superfly-sso-service-host</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <context-param>
+        <param-name>superfly-sso-service-secure-port</param-name>
+        <param-value>8446</param-value>
+    </context-param>
 
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>com.payneteasy.superfly.client.session.SessionMappingMaintainingListener</listener-class>
-	</listener>
-	
-	<filter>
-		<filter-name>logoutNotificationSinkFilter</filter-name>
-		<filter-class>com.payneteasy.superfly.client.session.LogoutNotificationSinkFilter</filter-class>
-	</filter>
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>com.payneteasy.superfly.client.session.SessionMappingMaintainingListener</listener-class>
+    </listener>
 
-	<filter-mapping>
-		<filter-name>logoutNotificationSinkFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter>
+        <filter-name>logoutNotificationSinkFilter</filter-name>
+        <filter-class>com.payneteasy.superfly.client.session.LogoutNotificationSinkFilter</filter-class>
+    </filter>
 
-	<filter>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
+    <filter-mapping>
+        <filter-name>logoutNotificationSinkFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-	</welcome-file-list>
-	
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
     <!-- WICKET -->
 
     <filter>
@@ -89,8 +89,8 @@
             <param-value>com.payneteasy.superfly.demo.web.wicket.DemoApplication</param-value>
         </init-param>
         <init-param>
-        	<param-name>ignorePaths</param-name>
-        	<param-value>/remoting/</param-value>
+            <param-name>ignorePaths</param-name>
+            <param-value>/remoting/</param-value>
         </init-param>
     </filter>
 
@@ -98,5 +98,5 @@
         <filter-name>wicket.superfly</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-	
+
 </web-app>

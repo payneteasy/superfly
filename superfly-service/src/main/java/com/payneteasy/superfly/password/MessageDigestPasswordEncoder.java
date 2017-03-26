@@ -14,36 +14,36 @@ import java.security.NoSuchAlgorithmException;
  * @see MessageDigest
  */
 public class MessageDigestPasswordEncoder extends AbstractPasswordEncoder {
-	private String algorithm;
+    private String algorithm;
 
-	public void setAlgorithm(String algorithm) {
-		this.algorithm = algorithm;
-	}
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
 
-	public String encode(String plainPassword, String salt) {
-		String saltedPassword = mergePasswordAndSalt(plainPassword, salt);
-		MessageDigest md = getMessageDigest();
-		byte[] digest = computeDigest(saltedPassword, md);
-		return digestToString(digest);
-	}
+    public String encode(String plainPassword, String salt) {
+        String saltedPassword = mergePasswordAndSalt(plainPassword, salt);
+        MessageDigest md = getMessageDigest();
+        byte[] digest = computeDigest(saltedPassword, md);
+        return digestToString(digest);
+    }
 
-	protected String digestToString(byte[] digest) {
-		return new String(Hex.encodeHex(digest));
-	}
+    protected String digestToString(byte[] digest) {
+        return new String(Hex.encodeHex(digest));
+    }
 
-	protected byte[] computeDigest(String saltedPassword, MessageDigest md) {
-		byte[] digest;
-		digest = md.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
-		return digest;
-	}
+    protected byte[] computeDigest(String saltedPassword, MessageDigest md) {
+        byte[] digest;
+        digest = md.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
+        return digest;
+    }
 
-	protected MessageDigest getMessageDigest() {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance(algorithm);
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException(e);
-		}
-		return md;
-	}
+    protected MessageDigest getMessageDigest() {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+        return md;
+    }
 }

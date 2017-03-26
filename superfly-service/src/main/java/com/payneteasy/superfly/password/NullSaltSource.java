@@ -7,12 +7,12 @@ package com.payneteasy.superfly.password;
  */
 public class NullSaltSource implements SaltSource {
 
-	public String getSalt(String username) {
-		return null;
-	}
+    public String getSalt(String username) {
+        return null;
+    }
 
-	public String getSalt(long userId) {
-		return null;
-	}
+    public String getSalt(long userId) {
+        return null;
+    }
 
 }

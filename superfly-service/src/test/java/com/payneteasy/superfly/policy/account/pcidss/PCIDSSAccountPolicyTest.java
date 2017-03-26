@@ -12,39 +12,39 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PCIDSSAccountPolicyTest {
-	private PCIDSSAccountPolicy policy;
-	private UserDao userDao;
+    private PCIDSSAccountPolicy policy;
+    private UserDao userDao;
 
     @Before
-	public void setUp() {
-		userDao = EasyMock.createMock(UserDao.class);
-		PasswordGeneratorImpl passwordGenerator = new PasswordGeneratorImpl();
-		policy = new PCIDSSAccountPolicy();
-		policy.setPasswordGenerator(passwordGenerator);
-		UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
-		userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
-		userPasswordEncoder.setSaltSource(new NullSaltSource());
-		policy.setUserPasswordEncoder(userPasswordEncoder);
-		policy.setUserDao(userDao);
-	}
+    public void setUp() {
+        userDao = EasyMock.createMock(UserDao.class);
+        PasswordGeneratorImpl passwordGenerator = new PasswordGeneratorImpl();
+        policy = new PCIDSSAccountPolicy();
+        policy.setPasswordGenerator(passwordGenerator);
+        UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
+        userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        userPasswordEncoder.setSaltSource(new NullSaltSource());
+        policy.setUserPasswordEncoder(userPasswordEncoder);
+        policy.setUserDao(userDao);
+    }
 
     @Test
-	public void testUnlockNotSuspendedUser() {
-		EasyMock.expect(userDao.unlockUser(1L)).andReturn(RoutineResult.okResult());
-		EasyMock.replay(userDao);
+    public void testUnlockNotSuspendedUser() {
+        EasyMock.expect(userDao.unlockUser(1L)).andReturn(RoutineResult.okResult());
+        EasyMock.replay(userDao);
 
         Assert.assertNull(policy.unlockUser(1L, false));
-		
-		EasyMock.verify(userDao);
-	}
+
+        EasyMock.verify(userDao);
+    }
 
     @Test
-	public void testUnlockSuspendedUser() {
-		EasyMock.expect(userDao.unlockSuspendedUser(EasyMock.eq(1L), EasyMock.anyObject(String.class))).andReturn(RoutineResult.okResult());
-		EasyMock.replay(userDao);
-		
+    public void testUnlockSuspendedUser() {
+        EasyMock.expect(userDao.unlockSuspendedUser(EasyMock.eq(1L), EasyMock.anyObject(String.class))).andReturn(RoutineResult.okResult());
+        EasyMock.replay(userDao);
+
         Assert.assertNotNull(policy.unlockUser(1L, true));
-		
-		EasyMock.verify(userDao);
-	}
+
+        EasyMock.verify(userDao);
+    }
 }

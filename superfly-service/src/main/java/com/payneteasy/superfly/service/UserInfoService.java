@@ -6,10 +6,10 @@ package com.payneteasy.superfly.service;
  * @author Roman Puchkovskiy
  */
 public interface UserInfoService {
-	/**
-	 * Returns name of the currently logged-in user.
-	 * 
-	 * @return current user name
-	 */
-	String getUsername();
+    /**
+     * Returns name of the currently logged-in user.
+     *
+     * @return current user name
+     */
+    String getUsername();
 }

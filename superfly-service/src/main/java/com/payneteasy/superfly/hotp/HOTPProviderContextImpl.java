@@ -10,45 +10,45 @@ import com.payneteasy.superfly.spisupport.ObjectResolver;
  * @author Roman Puchkovskiy
  */
 public class HOTPProviderContextImpl implements HOTPProviderContext {
-	
-	private ObjectResolver objectResolver;
-	private String masterKey;
-	private int codeDigits;
-	private int lookahead;
-	private int tableSize;
 
-	public HOTPProviderContextImpl(ObjectResolver objectResolver,
-			String masterKey, int codeDigits, int lookahead, int tableSize) {
-		super();
-		this.objectResolver = objectResolver;
-		this.masterKey = masterKey;
-		this.codeDigits = codeDigits;
-		this.lookahead = lookahead;
-		this.tableSize = tableSize;
-	}
+    private ObjectResolver objectResolver;
+    private String masterKey;
+    private int codeDigits;
+    private int lookahead;
+    private int tableSize;
 
-	public int getCodeDigits() {
-		return codeDigits;
-	}
+    public HOTPProviderContextImpl(ObjectResolver objectResolver,
+            String masterKey, int codeDigits, int lookahead, int tableSize) {
+        super();
+        this.objectResolver = objectResolver;
+        this.masterKey = masterKey;
+        this.codeDigits = codeDigits;
+        this.lookahead = lookahead;
+        this.tableSize = tableSize;
+    }
 
-	public int getLookahead() {
-		return lookahead;
-	}
+    public int getCodeDigits() {
+        return codeDigits;
+    }
 
-	public String getMasterKey() {
-		return masterKey;
-	}
+    public int getLookahead() {
+        return lookahead;
+    }
 
-	public ObjectResolver getObjectResolver() {
-		return objectResolver;
-	}
+    public String getMasterKey() {
+        return masterKey;
+    }
 
-	public int getTableSize() {
-		return tableSize;
-	}
+    public ObjectResolver getObjectResolver() {
+        return objectResolver;
+    }
 
-	public HOTPDao getHOTPDao() {
-		return objectResolver.resolve(HOTPDao.class);
-	}
+    public int getTableSize() {
+        return tableSize;
+    }
+
+    public HOTPDao getHOTPDao() {
+        return objectResolver.resolve(HOTPDao.class);
+    }
 
 }

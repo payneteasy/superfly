@@ -15,22 +15,22 @@ import com.payneteasy.superfly.common.session.SessionMappingLocator;
  * @author Roman Puchkovskiy
  */
 public abstract class AbstractSessionStoreAwareNotificationSinkFilter extends
-		AbstractNotificationSinkFilter {
-	
-	private static final Logger logger = LoggerFactory.getLogger(AbstractSessionStoreAwareNotificationSinkFilter.class);
+        AbstractNotificationSinkFilter {
 
-	protected SessionMapping getSessionMapping() {
-		return SessionMappingLocator.getSessionMapping();
-	}
+    private static final Logger logger = LoggerFactory.getLogger(AbstractSessionStoreAwareNotificationSinkFilter.class);
 
-	protected void invalidateSessionQuietly(HttpSession session) {
-		if (session != null) {
-			try {
-				session.invalidate();
-			} catch (IllegalStateException e) {
-				logger.warn("Ignored exception while trying to invalidate a session", e);
-			}
-		}
-	}
+    protected SessionMapping getSessionMapping() {
+        return SessionMappingLocator.getSessionMapping();
+    }
+
+    protected void invalidateSessionQuietly(HttpSession session) {
+        if (session != null) {
+            try {
+                session.invalidate();
+            } catch (IllegalStateException e) {
+                logger.warn("Ignored exception while trying to invalidate a session", e);
+            }
+        }
+    }
 
 }

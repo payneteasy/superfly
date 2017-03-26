@@ -28,103 +28,103 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class UserServiceImplTest {
-	
-	private UserDao userDao;
-	private UserServiceImpl userService;
+
+    private UserDao userDao;
+    private UserServiceImpl userService;
 
     @Before
-	public void setUp() {
-		userDao = EasyMock.createStrictMock(UserDao.class);
-		userService = new UserServiceImpl();
-		userService.setUserDao(userDao);
-		userService.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
-		userService.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
-		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
-		encoder.setAlgorithm("sha1");
-		userService.setPasswordEncoder(encoder);
-		userService.setSaltSource(new ConstantSaltSource("c3pio"));
-		userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
-		userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
+    public void setUp() {
+        userDao = EasyMock.createStrictMock(UserDao.class);
+        userService = new UserServiceImpl();
+        userService.setUserDao(userDao);
+        userService.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
+        userService.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
+        MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
+        encoder.setAlgorithm("sha1");
+        userService.setPasswordEncoder(encoder);
+        userService.setSaltSource(new ConstantSaltSource("c3pio"));
+        userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
+        userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
         userService.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
-	}
+    }
 
     @Test
-	public void testCreateUserPasswordEncryption() throws MessageSendException {
-		EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
-			public RoutineResult answer() throws Throwable {
-				UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
+    public void testCreateUserPasswordEncryption() throws MessageSendException {
+        EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
+            public RoutineResult answer() throws Throwable {
+                UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
                 assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
                 assertNotNull(user.getHotpSalt());
-				user.setId(1L);
-				return RoutineResult.okResult();
-			}
-		});
-		EasyMock.replay(userDao);
-		
-		UIUserForCreate user = new UIUserForCreate();
-		user.setUsername("pete");
-		user.setPassword("secret");
-		userService.createUser(user, "subsystem");
-		
-		EasyMock.verify(userDao);
-	}
+                user.setId(1L);
+                return RoutineResult.okResult();
+            }
+        });
+        EasyMock.replay(userDao);
+
+        UIUserForCreate user = new UIUserForCreate();
+        user.setUsername("pete");
+        user.setPassword("secret");
+        userService.createUser(user, "subsystem");
+
+        EasyMock.verify(userDao);
+    }
 
     @Test
-	public void testUpdateUserPasswordEncryption() {
-		EasyMock.expect(userDao.updateUser(anyObject(UIUser.class))).andAnswer(new IAnswer<RoutineResult>() {
-			public RoutineResult answer() throws Throwable {
-				UIUser user = (UIUser) EasyMock.getCurrentArguments()[0];
-				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
-				return RoutineResult.okResult();
-			}
-		});
-		EasyMock.replay(userDao);
-		
-		UIUser user = new UIUser();
-		user.setUsername("pete");
-		user.setPassword("secret");
-		userService.updateUser(user);
-		
-		EasyMock.verify(userDao);
-	}
+    public void testUpdateUserPasswordEncryption() {
+        EasyMock.expect(userDao.updateUser(anyObject(UIUser.class))).andAnswer(new IAnswer<RoutineResult>() {
+            public RoutineResult answer() throws Throwable {
+                UIUser user = (UIUser) EasyMock.getCurrentArguments()[0];
+                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                return RoutineResult.okResult();
+            }
+        });
+        EasyMock.replay(userDao);
+
+        UIUser user = new UIUser();
+        user.setUsername("pete");
+        user.setPassword("secret");
+        userService.updateUser(user);
+
+        EasyMock.verify(userDao);
+    }
 
     @Test
-	public void testCloneUserPasswordEncryption() throws MessageSendException {
-		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
-			public RoutineResult answer() throws Throwable {
-				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
-				assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
-				user.setId(1L);
-				return RoutineResult.okResult();
-			}
-		});
-		EasyMock.replay(userDao);
-		
-		userService.cloneUser(1L, "pete", "secret", "email", "new key", null);
-		
-		EasyMock.verify(userDao);
-	}
+    public void testCloneUserPasswordEncryption() throws MessageSendException {
+        EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+            public RoutineResult answer() throws Throwable {
+                UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
+                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                user.setId(1L);
+                return RoutineResult.okResult();
+            }
+        });
+        EasyMock.replay(userDao);
+
+        userService.cloneUser(1L, "pete", "secret", "email", "new key", null);
+
+        EasyMock.verify(userDao);
+    }
 
     @Test
-	public void testCloneUser() throws MessageSendException {
-		EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
-			public RoutineResult answer() throws Throwable {
-				UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
-				assertEquals("pete", user.getUsername());
-				assertNotNull(user.getPassword());
-				assertEquals("new-email", user.getEmail());
-				assertNotNull(user.getSalt());
-				assertNotNull(user.getHotpSalt());
-				user.setId(1L);
-				return RoutineResult.okResult();
-			}
-		});
-		EasyMock.replay(userDao);
-		
-		userService.cloneUser(1L, "pete", "secret", "new-email", "new key", null);
-		
-		EasyMock.verify(userDao);
-	}
+    public void testCloneUser() throws MessageSendException {
+        EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+            public RoutineResult answer() throws Throwable {
+                UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
+                assertEquals("pete", user.getUsername());
+                assertNotNull(user.getPassword());
+                assertEquals("new-email", user.getEmail());
+                assertNotNull(user.getSalt());
+                assertNotNull(user.getHotpSalt());
+                user.setId(1L);
+                return RoutineResult.okResult();
+            }
+        });
+        EasyMock.replay(userDao);
+
+        userService.cloneUser(1L, "pete", "secret", "new-email", "new key", null);
+
+        EasyMock.verify(userDao);
+    }
 
     @Test
     public void testGetUserLoginStatusSuccess() {

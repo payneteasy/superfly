@@ -12,33 +12,33 @@ import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
  * @author Roman Puchkovskiy
  */
 public class FullAuthentication extends EmptyAuthenticationToken {
-	private String username;
-	private Collection<? extends GrantedAuthority> authorities;
+    private String username;
+    private Collection<? extends GrantedAuthority> authorities;
 
-	public FullAuthentication(String username,
-			Collection<? extends GrantedAuthority> authorities) {
-		super();
-		this.username = username;
-		this.authorities = authorities;
-	}
+    public FullAuthentication(String username,
+            Collection<? extends GrantedAuthority> authorities) {
+        super();
+        this.username = username;
+        this.authorities = authorities;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
 
-	@Override
-	public String getName() {
-		return username;
-	}
+    @Override
+    public String getName() {
+        return username;
+    }
 
-	@Override
-	public Object getPrincipal() {
-		return username;
-	}
+    @Override
+    public Object getPrincipal() {
+        return username;
+    }
 
-	@Override
-	public boolean isAuthenticated() {
-		return true;
-	}
+    @Override
+    public boolean isAuthenticated() {
+        return true;
+    }
 }

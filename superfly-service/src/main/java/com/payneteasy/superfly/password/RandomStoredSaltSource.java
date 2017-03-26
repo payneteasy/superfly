@@ -24,24 +24,24 @@ public class RandomStoredSaltSource implements SaltSource{
 
     @Required
     public void setSaltGenerator(SaltGenerator saltGenerator) {
-		this.saltGenerator = saltGenerator;
-	}
+        this.saltGenerator = saltGenerator;
+    }
 
-	public String getSalt(String username) {
+    public String getSalt(String username) {
         String salt=userDao.getUserSalt(username);
         if(salt==null || salt.isEmpty()){
             salt = generateNewSaltAndSave(username);
         }
         return salt;
     }
-	
-	public String getSalt(long userId) {
-		String salt = userDao.getUserSaltByUserId(userId);
-		if (salt == null || salt.isEmpty()) {
-			salt = generateNewSaltAndSave(userId);
-		}
-		return salt;
-	}
+
+    public String getSalt(long userId) {
+        String salt = userDao.getUserSaltByUserId(userId);
+        if (salt == null || salt.isEmpty()) {
+            salt = generateNewSaltAndSave(userId);
+        }
+        return salt;
+    }
 
     private String generateNewSaltAndSave(String username) {
         String salt = generateSalt();
@@ -55,7 +55,7 @@ public class RandomStoredSaltSource implements SaltSource{
         return salt;
     }
 
-	private String generateSalt() {
-		return saltGenerator.generate();
-	}
+    private String generateSalt() {
+        return saltGenerator.generate();
+    }
 }

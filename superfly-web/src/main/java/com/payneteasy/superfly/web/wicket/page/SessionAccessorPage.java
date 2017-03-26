@@ -21,7 +21,7 @@ public class SessionAccessorPage extends WebPage {
     }
 
     @Override
-   	public SuperflySession getSession() {
-   		return (SuperflySession) super.getSession();
-   	}
+       public SuperflySession getSession() {
+           return (SuperflySession) super.getSession();
+       }
 }

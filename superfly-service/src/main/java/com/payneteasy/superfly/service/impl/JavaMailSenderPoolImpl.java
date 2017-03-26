@@ -54,12 +54,12 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
             props.put("mail.debug", System.getProperty("mail.debug", "false"));
             props.put(ssl ? "mail.smtps.auth" : "mail.smtp.auth", "true");
             props.put("mail.transport.protocol", ssl ? "smtps" : "smtp");
-    		Session session = Session.getInstance(props, new Authenticator() {
-    			@Override
-    			protected PasswordAuthentication getPasswordAuthentication() {
-    				return new PasswordAuthentication(server.getUsername(), server.getPassword());
-    			}
-    		});
+            Session session = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(server.getUsername(), server.getPassword());
+                }
+            });
             sender.setSession(session);
             sender.setProtocol(ssl ? "smtps" : "smtp");
             return new ConfiguredSender(sender, server.getFrom());

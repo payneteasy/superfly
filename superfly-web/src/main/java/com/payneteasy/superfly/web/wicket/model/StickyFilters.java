@@ -11,22 +11,22 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
  * @author Roman Puchkovskiy
  */
 public class StickyFilters implements Serializable {
-	private UISubsystemForFilter subsystem;
-	private String actionNameSubstring = "";
-	
-	public UISubsystemForFilter getSubsystem() {
-		return subsystem;
-	}
+    private UISubsystemForFilter subsystem;
+    private String actionNameSubstring = "";
 
-	public void setSubsystem(UISubsystemForFilter subsystem) {
-		this.subsystem = subsystem;
-	}
+    public UISubsystemForFilter getSubsystem() {
+        return subsystem;
+    }
 
-	public String getActionNameSubstring() {
-		return actionNameSubstring;
-	}
+    public void setSubsystem(UISubsystemForFilter subsystem) {
+        this.subsystem = subsystem;
+    }
 
-	public void setActionNameSubstring(String actionNameSubstring) {
-		this.actionNameSubstring = actionNameSubstring;
-	}
+    public String getActionNameSubstring() {
+        return actionNameSubstring;
+    }
+
+    public void setActionNameSubstring(String actionNameSubstring) {
+        this.actionNameSubstring = actionNameSubstring;
+    }
 }

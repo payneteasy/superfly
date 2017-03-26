@@ -8,5 +8,5 @@ import com.payneteasy.superfly.api.SSOAction;
  * @author Roman Puchkovskiy
  */
 public interface ActionsSource {
-	SSOAction[] getActions() throws Exception;
+    SSOAction[] getActions() throws Exception;
 }

@@ -17,51 +17,51 @@ import org.slf4j.LoggerFactory;
 import com.payneteasy.superfly.email.EmailService;
 
 public class TestPanel extends Panel {
-	private static final Logger logger = LoggerFactory.getLogger(TestPanel.class);
-	
-	@SpringBean
-	private EmailService emailService;
+    private static final Logger logger = LoggerFactory.getLogger(TestPanel.class);
+
+    @SpringBean
+    private EmailService emailService;
 
     private RequiredTextField<String> addressField;
-	
-	public TestPanel(String id, final long serverId, final ModalWindow window,
-			final FeedbackPanel feedbackPanel) {
-		super(id);
-		
-		Form<?> form = new Form<Void>("form");
-		add(form);
-		
-		final IModel<String> addressModel = new Model<String>();
+
+    public TestPanel(String id, final long serverId, final ModalWindow window,
+            final FeedbackPanel feedbackPanel) {
+        super(id);
+
+        Form<?> form = new Form<Void>("form");
+        add(form);
+
+        final IModel<String> addressModel = new Model<String>();
         addressField = new RequiredTextField<String>("address", addressModel);
         addressField.setOutputMarkupId(true);
         form.add(addressField);
-		
-		form.add(new AjaxLink<Void>("cancel-link") {
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				window.close(target);
-			}
-		});
-		form.add(new AjaxSubmitLink("submit-link") {
-			@Override
-			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				try {
-					emailService.sendTestMessage(serverId, addressModel.getObject());
-					info("Test message sent");
-					target.add(feedbackPanel);
-				} catch (RuntimeException e) {
-					logger.error(e.getMessage(), e);
-					error(e.getMessage());
-					target.add(feedbackPanel);
-				}
-				window.close(target);
-			}
-			
-			public void onError(AjaxRequestTarget target, Form<?> form) {
-				target.add(feedbackPanel);
-			}
-		});
-	}
+
+        form.add(new AjaxLink<Void>("cancel-link") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                window.close(target);
+            }
+        });
+        form.add(new AjaxSubmitLink("submit-link") {
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                try {
+                    emailService.sendTestMessage(serverId, addressModel.getObject());
+                    info("Test message sent");
+                    target.add(feedbackPanel);
+                } catch (RuntimeException e) {
+                    logger.error(e.getMessage(), e);
+                    error(e.getMessage());
+                    target.add(feedbackPanel);
+                }
+                window.close(target);
+            }
+
+            public void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(feedbackPanel);
+            }
+        });
+    }
 
     public RequiredTextField<String> getAddressField() {
         return addressField;

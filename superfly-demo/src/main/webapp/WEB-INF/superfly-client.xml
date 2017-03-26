@@ -1,117 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
-	
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
 <!--
     <bean id="ssoService" class="com.payneteasy.superfly.demo.mock.SSOServiceMock"/>
 -->
 
-	<bean id="ssoServiceHttpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
-		<property name="hostConfig">
-			<bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
-				<property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
-				<property name="keyStorePassword" value="changeit"/>
-				<property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
-				<property name="trustKeyStorePassword" value="changeit"/>
-				<property name="host">
-					<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-						<property name="initParamName" value="superfly-sso-service-host"/>
-					</bean>
-				</property>
-				<property name="securePort">
-					<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-						<property name="initParamName" value="superfly-sso-service-secure-port"/>
-					</bean>
-				</property>
-			</bean>
-		</property>
-	</bean>
-	
-	<bean id="ssoServiceHttpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor">
-		<property name="httpClient" ref="ssoServiceHttpClient"/>
-	</bean>
+    <bean id="ssoServiceHttpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+        <property name="hostConfig">
+            <bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
+                <property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
+                <property name="keyStorePassword" value="changeit"/>
+                <property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
+                <property name="trustKeyStorePassword" value="changeit"/>
+                <property name="host">
+                    <bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+                        <property name="initParamName" value="superfly-sso-service-host"/>
+                    </bean>
+                </property>
+                <property name="securePort">
+                    <bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+                        <property name="initParamName" value="superfly-sso-service-secure-port"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
 
-	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
-		<property name="serviceUrl">
-			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-				<property name="initParamName" value="superfly-sso-service-url"/>
-			</bean>
-		</property>
-		<property name="httpInvokerRequestExecutor" ref="ssoServiceHttpInvokerRequestExecutor"/>
-	</bean>
-	
-	<!--
-		If not using SSL client auth, comment out ssoService definition above
-		and uncomment its definition below. You will also have to modify
-	 	twoStepAuthenticationProcessingFilter definition in spring-security.xml
-	 	(see its comments).
-	 -->
+    <bean id="ssoServiceHttpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor">
+        <property name="httpClient" ref="ssoServiceHttpClient"/>
+    </bean>
+
+    <bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+        <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+        <property name="serviceUrl">
+            <bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+                <property name="initParamName" value="superfly-sso-service-url"/>
+            </bean>
+        </property>
+        <property name="httpInvokerRequestExecutor" ref="ssoServiceHttpInvokerRequestExecutor"/>
+    </bean>
+
+    <!--
+        If not using SSL client auth, comment out ssoService definition above
+        and uncomment its definition below. You will also have to modify
+         twoStepAuthenticationProcessingFilter definition in spring-security.xml
+         (see its comments).
+     -->
 
 <!-- 
-	<bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
-		<property name="serviceUrl">
-			<bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-				<property name="initParamName" value="superfly-sso-service-url"/>
-			</bean>
-		</property>
-	</bean>
+    <bean id="ssoService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+        <property name="serviceInterface" value="com.payneteasy.superfly.api.SSOService"/>
+        <property name="serviceUrl">
+            <bean class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+                <property name="initParamName" value="superfly-sso-service-url"/>
+            </bean>
+        </property>
+    </bean>
  -->
-	
-	<bean id="xmlActionDescriptionCollector" class="com.payneteasy.superfly.client.XmlActionDescriptionCollector">
-		<property name="resource">
-			<bean class="org.springframework.core.io.ClassPathResource">
-				<constructor-arg value="actions.xml"/>
-			</bean>
-		</property>
-	</bean>
-	
-	<bean id="scanningActionDescriptionCollector" class="com.payneteasy.superfly.client.ScanningActionDescriptionCollector">
-		<property name="basePackages">
-			<list>
-				<value>com.payneteasy.superfly.demo.web.wicket</value>
-			</list>
-		</property>
-		<property name="annotationClass" value="org.springframework.security.annotation.Secured"/>
-	</bean>
-	
-	<util:list id="scannedActionToRoleNamesTransformers">
-		<bean class="com.payneteasy.superfly.client.PrefixRemovingTransformer">
-			<property name="prefixes">
-				<list>
-					<value>ROLE_</value>
-				</list>
-			</property>
-		</bean>
-		<bean class="com.payneteasy.superfly.client.LowercaseTransformer"/>
-	</util:list>
-	
-	<bean id="transformedScannedActionDescriptionCollector" class="com.payneteasy.superfly.client.TransformingActionDescriptionCollector">
-		<property name="collector" ref="scanningActionDescriptionCollector"/>
-		<property name="transformers" ref="scannedActionToRoleNamesTransformers"/>
-	</bean>
-	
-	<bean id="mergingActionDescriptionCollector" class="com.payneteasy.superfly.client.MergingActionDescriptionCollector">
-		<property name="collectors">
-			<list>
-				<ref bean="xmlActionDescriptionCollector"/>
-				<ref bean="transformedScannedActionDescriptionCollector"/>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="superflyDataSender" class="com.payneteasy.superfly.client.SuperflyDataSender">
-		<property name="ssoService" ref="ssoService"/>
-		<property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
-		<property name="subsystemIdentifier" value="superfly-demo"/>
-		<!-- Delay is to allow superfly server to launch before this triggers,
-			it's only relevant for configuration when both superfly server and
-			its client application live in the same container -->
-		<property name="delay" value="500"/>
-	</bean>
+
+    <bean id="xmlActionDescriptionCollector" class="com.payneteasy.superfly.client.XmlActionDescriptionCollector">
+        <property name="resource">
+            <bean class="org.springframework.core.io.ClassPathResource">
+                <constructor-arg value="actions.xml"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="scanningActionDescriptionCollector" class="com.payneteasy.superfly.client.ScanningActionDescriptionCollector">
+        <property name="basePackages">
+            <list>
+                <value>com.payneteasy.superfly.demo.web.wicket</value>
+            </list>
+        </property>
+        <property name="annotationClass" value="org.springframework.security.annotation.Secured"/>
+    </bean>
+
+    <util:list id="scannedActionToRoleNamesTransformers">
+        <bean class="com.payneteasy.superfly.client.PrefixRemovingTransformer">
+            <property name="prefixes">
+                <list>
+                    <value>ROLE_</value>
+                </list>
+            </property>
+        </bean>
+        <bean class="com.payneteasy.superfly.client.LowercaseTransformer"/>
+    </util:list>
+
+    <bean id="transformedScannedActionDescriptionCollector" class="com.payneteasy.superfly.client.TransformingActionDescriptionCollector">
+        <property name="collector" ref="scanningActionDescriptionCollector"/>
+        <property name="transformers" ref="scannedActionToRoleNamesTransformers"/>
+    </bean>
+
+    <bean id="mergingActionDescriptionCollector" class="com.payneteasy.superfly.client.MergingActionDescriptionCollector">
+        <property name="collectors">
+            <list>
+                <ref bean="xmlActionDescriptionCollector"/>
+                <ref bean="transformedScannedActionDescriptionCollector"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="superflyDataSender" class="com.payneteasy.superfly.client.SuperflyDataSender">
+        <property name="ssoService" ref="ssoService"/>
+        <property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
+        <property name="subsystemIdentifier" value="superfly-demo"/>
+        <!-- Delay is to allow superfly server to launch before this triggers,
+            it's only relevant for configuration when both superfly server and
+            its client application live in the same container -->
+        <property name="delay" value="500"/>
+    </bean>
     
 </beans>

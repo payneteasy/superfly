@@ -11,19 +11,19 @@ import com.payneteasy.superfly.api.AuthenticationRequestInfo;
  * @author Roman Puchkovskiy
  */
 public class UsernamePasswordAuthRequestInfoAuthenticationToken extends
-		UsernamePasswordAuthenticationToken {
-	private static final long serialVersionUID = 9204822041434318662L;
-	
-	private AuthenticationRequestInfo authRequestInfo;
+        UsernamePasswordAuthenticationToken {
+    private static final long serialVersionUID = 9204822041434318662L;
 
-	public UsernamePasswordAuthRequestInfoAuthenticationToken(Object principal,
-			Object credentials, AuthenticationRequestInfo authRequestInfo) {
-		super(principal, credentials);
-		this.authRequestInfo = authRequestInfo;
-	}
-	
-	public AuthenticationRequestInfo getAuthRequestInfo() {
-		return authRequestInfo;
-	}
+    private AuthenticationRequestInfo authRequestInfo;
+
+    public UsernamePasswordAuthRequestInfoAuthenticationToken(Object principal,
+            Object credentials, AuthenticationRequestInfo authRequestInfo) {
+        super(principal, credentials);
+        this.authRequestInfo = authRequestInfo;
+    }
+
+    public AuthenticationRequestInfo getAuthRequestInfo() {
+        return authRequestInfo;
+    }
 
 }

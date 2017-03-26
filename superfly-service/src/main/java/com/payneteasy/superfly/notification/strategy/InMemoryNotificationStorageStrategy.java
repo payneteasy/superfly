@@ -13,21 +13,21 @@ import com.payneteasy.superfly.notification.LogoutNotification;
  * @author Roman Puchkovskiy
  */
 public class InMemoryNotificationStorageStrategy implements
-		NotificationStorageStrategy {
-	
-	private Queue<LogoutNotification> logoutNotifications = new ConcurrentLinkedQueue<LogoutNotification>();
-	
-	public void enqueueLogoutNotifications(
-			List<LogoutNotification> notifications) {
-		logoutNotifications.addAll(logoutNotifications);
-	}
+        NotificationStorageStrategy {
 
-	public List<LogoutNotification> dequeueLogoutNotifications() {
-		List<LogoutNotification> notifications = new ArrayList<LogoutNotification>();
-		while (!logoutNotifications.isEmpty()) {
-			notifications.add(logoutNotifications.poll());
-		}
-		return notifications;
-	}
+    private Queue<LogoutNotification> logoutNotifications = new ConcurrentLinkedQueue<LogoutNotification>();
+
+    public void enqueueLogoutNotifications(
+            List<LogoutNotification> notifications) {
+        logoutNotifications.addAll(logoutNotifications);
+    }
+
+    public List<LogoutNotification> dequeueLogoutNotifications() {
+        List<LogoutNotification> notifications = new ArrayList<LogoutNotification>();
+        while (!logoutNotifications.isEmpty()) {
+            notifications.add(logoutNotifications.poll());
+        }
+        return notifications;
+    }
 
 }

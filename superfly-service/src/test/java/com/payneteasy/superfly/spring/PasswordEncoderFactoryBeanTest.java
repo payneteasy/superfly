@@ -9,30 +9,30 @@ import static org.junit.Assert.assertEquals;
 
 public class PasswordEncoderFactoryBeanTest {
     @Test
-	public void testPlaintext() throws Exception {
-		PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
-		factoryBean.setPolicyName("none");
-		PasswordEncoder encoder = factoryBean.getObject();
+    public void testPlaintext() throws Exception {
+        PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
+        factoryBean.setPolicyName("none");
+        PasswordEncoder encoder = factoryBean.getObject();
         assertEquals(encoder.getClass(), MessageDigestPasswordEncoder.class);
-	}
+    }
 
     @Test
-	public void testPciDss() throws Exception {
-		PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
-		factoryBean.setPolicyName("pcidss");
-		PasswordEncoder encoder = factoryBean.getObject();
-		assertEquals(encoder.getClass(), MessageDigestPasswordEncoder.class);
-	}
+    public void testPciDss() throws Exception {
+        PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
+        factoryBean.setPolicyName("pcidss");
+        PasswordEncoder encoder = factoryBean.getObject();
+        assertEquals(encoder.getClass(), MessageDigestPasswordEncoder.class);
+    }
 
     @Test
-	public void testNull() throws Exception {
-		PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
-		factoryBean.setPolicyName(null);
-		try {
-			factoryBean.getObject();
+    public void testNull() throws Exception {
+        PasswordEncoderFactoryBean factoryBean = new PasswordEncoderFactoryBean();
+        factoryBean.setPolicyName(null);
+        try {
+            factoryBean.getObject();
             Assert.fail();
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
-	}
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
 }

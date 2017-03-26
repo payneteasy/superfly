@@ -41,7 +41,7 @@ public abstract class AbstractDaoTest extends AbstractJUnit4SpringContextTests {
     }
 
     protected void assertRoutineResult(RoutineResult result) {
-    	Assert.assertNotNull("Routine result cannot be null", result);
+        Assert.assertNotNull("Routine result cannot be null", result);
         Assert.assertTrue("Routine result must be OK", result.isOk());
     }
 

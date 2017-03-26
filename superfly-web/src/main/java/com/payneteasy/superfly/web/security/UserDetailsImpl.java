@@ -14,48 +14,48 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Roman Puchkovskiy
  */
 public class UserDetailsImpl implements UserDetails {
-	
-	private String username;
-	private String password;
-	private GrantedAuthority[] authorities;
 
-	public UserDetailsImpl(String username, String password, String[] actions,
-			String rolePrefix) {
-		super();
-		this.username = username;
-		this.password = password;
-		this.authorities = new GrantedAuthority[actions.length];
-		for (int i = 0; i < actions.length; i++) {
-			authorities[i] = new GrantedAuthorityImpl(rolePrefix + actions[i].toUpperCase());
-		}
-	}
+    private String username;
+    private String password;
+    private GrantedAuthority[] authorities;
 
-	public Collection<GrantedAuthority> getAuthorities() {
-		return Arrays.asList(authorities);
-	}
+    public UserDetailsImpl(String username, String password, String[] actions,
+            String rolePrefix) {
+        super();
+        this.username = username;
+        this.password = password;
+        this.authorities = new GrantedAuthority[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            authorities[i] = new GrantedAuthorityImpl(rolePrefix + actions[i].toUpperCase());
+        }
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public Collection<GrantedAuthority> getAuthorities() {
+        return Arrays.asList(authorities);
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	public boolean isEnabled() {
-		return true;
-	}
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    public boolean isEnabled() {
+        return true;
+    }
 
 }

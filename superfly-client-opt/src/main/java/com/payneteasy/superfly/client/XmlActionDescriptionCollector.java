@@ -22,36 +22,36 @@ import java.util.List;
  * @author Roman Puchkovskiy
  */
 public class XmlActionDescriptionCollector implements ActionDescriptionCollector {
-	
-	private static final Logger logger = LoggerFactory.getLogger(XmlActionDescriptionCollector.class);
-	
-	private Resource resource;
 
-	@Required
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(XmlActionDescriptionCollector.class);
 
-	public List<ActionDescription> collect() throws CollectionException {
-		List<ActionDescriptionBean> list = new ArrayList<ActionDescriptionBean>();
-		Digester digester = new Digester();
-		digester.push(list);
-		digester.setNamespaceAware(false);
-		digester.setValidating(false);
+    private Resource resource;
 
-		digester.addObjectCreate("actions/action", ActionDescriptionBean.class);
-		digester.addSetProperties("actions/action");
-		digester.addSetNext("actions/action", "add", ActionDescriptionBean.class.getName());
+    @Required
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    public List<ActionDescription> collect() throws CollectionException {
+        List<ActionDescriptionBean> list = new ArrayList<ActionDescriptionBean>();
+        Digester digester = new Digester();
+        digester.push(list);
+        digester.setNamespaceAware(false);
+        digester.setValidating(false);
+
+        digester.addObjectCreate("actions/action", ActionDescriptionBean.class);
+        digester.addSetProperties("actions/action");
+        digester.addSetNext("actions/action", "add", ActionDescriptionBean.class.getName());
 
         InputStream is = null;
-		try {
+        try {
             is = resource.getInputStream();
             digester.parse(is);
-		} catch (IOException e) {
-			throw new CollectionException(e);
-		} catch (SAXException e) {
-			throw new CollectionException(e);
-		} finally {
+        } catch (IOException e) {
+            throw new CollectionException(e);
+        } catch (SAXException e) {
+            throw new CollectionException(e);
+        } finally {
             if (is != null) {
                 try {
                     is.close();
@@ -60,19 +60,19 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
                 }
             }
         }
-		
-		List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
-		for (ActionDescriptionBean bean : list) {
-			ActionDescription action = new ActionDescription();
-			BeanUtils.copyProperties(bean, action);
-			actions.add(action);
-		}
-		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Collected the following actions: " + actions);
-		}
-		
-		return actions;
-	}
+
+        List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
+        for (ActionDescriptionBean bean : list) {
+            ActionDescription action = new ActionDescription();
+            BeanUtils.copyProperties(bean, action);
+            actions.add(action);
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Collected the following actions: " + actions);
+        }
+
+        return actions;
+    }
 
 }

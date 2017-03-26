@@ -6,20 +6,20 @@ package com.payneteasy.superfly.client;
  * @author Roman Puchkovskiy
  */
 public class PrefixRemovingTransformer implements StringTransformer {
-	
-	private String[] prefixes = {};
 
-	public void setPrefixes(String[] prefixes) {
-		this.prefixes = prefixes;
-	}
+    private String[] prefixes = {};
 
-	public String transform(String s) {
-		for (String prefix : prefixes) {
-			if (s.startsWith(prefix)) {
-				s = s.substring(prefix.length());
-			}
-		}
-		return s;
-	}
+    public void setPrefixes(String[] prefixes) {
+        this.prefixes = prefixes;
+    }
+
+    public String transform(String s) {
+        for (String prefix : prefixes) {
+            if (s.startsWith(prefix)) {
+                s = s.substring(prefix.length());
+            }
+        }
+        return s;
+    }
 
 }

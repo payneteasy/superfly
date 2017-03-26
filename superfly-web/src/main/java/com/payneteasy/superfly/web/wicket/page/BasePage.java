@@ -26,56 +26,56 @@ public abstract class BasePage extends SessionAccessorPage {
     @SpringBean
     private SettingsService settingsService;
 
-	private Class<? extends Page> pageClass;
-	
-	private FeedbackPanel feedbackPanel;
+    private Class<? extends Page> pageClass;
 
-	public BasePage(Class<? extends Page> pageClass) {
+    private FeedbackPanel feedbackPanel;
+
+    public BasePage(Class<? extends Page> pageClass) {
         super();
-		this.pageClass = pageClass;
-		init();
-	}
+        this.pageClass = pageClass;
+        init();
+    }
 
-	public BasePage(Class<? extends Page> pageClass, PageParameters params) {
+    public BasePage(Class<? extends Page> pageClass, PageParameters params) {
         super(params);
-		this.pageClass = pageClass;
-		init();
-	}
+        this.pageClass = pageClass;
+        init();
+    }
 
-	private void init() {
-		add(userContainer("user-container"));
+    private void init() {
+        add(userContainer("user-container"));
 
-		add(new BookmarkablePageLink<Void>("self-link", getApplication().getHomePage()));
-		
-		add(new Label("page-title", getTitle()));
-		add(new Label("page-head-title", getHeadTitle()));
+        add(new BookmarkablePageLink<Void>("self-link", getApplication().getHomePage()));
+
+        add(new Label("page-title", getTitle()));
+        add(new Label("page-head-title", getHeadTitle()));
 
         add(new Label("superfly-version", settingsService.getSuperflyVersion()));
-		
-		feedbackPanel = new FeedbackPanel("feedback");
-		feedbackPanel.setOutputMarkupId(true);
-		add(feedbackPanel);
-		
-		addNavBarItem("subsystems", ListSubsystemsPage.class);
-		addNavBarItem("actions", ListActionsPage.class);
-		addNavBarItem("groups", ListGroupsPage.class);
-		addNavBarItem("users", ListUsersPage.class);
-		addNavBarItem("roles", ListRolesPage.class);
-		addNavBarItem("sessions", ListSessionsPage.class);
+
+        feedbackPanel = new FeedbackPanel("feedback");
+        feedbackPanel.setOutputMarkupId(true);
+        add(feedbackPanel);
+
+        addNavBarItem("subsystems", ListSubsystemsPage.class);
+        addNavBarItem("actions", ListActionsPage.class);
+        addNavBarItem("groups", ListGroupsPage.class);
+        addNavBarItem("users", ListUsersPage.class);
+        addNavBarItem("roles", ListRolesPage.class);
+        addNavBarItem("sessions", ListSessionsPage.class);
         addNavBarItem("smtp", ListSmtpServersPage.class);
 
 
-	}
+    }
 
-	protected abstract String getTitle();
+    protected abstract String getTitle();
 
-	protected String getHeadTitle() {
-		return "Superfly service web ~ " + getHeadTitlePostfix();
-	}
+    protected String getHeadTitle() {
+        return "Superfly service web ~ " + getHeadTitlePostfix();
+    }
 
-	protected String getHeadTitlePostfix() {
-		return getTitle();
-	}
+    protected String getHeadTitlePostfix() {
+        return getTitle();
+    }
 
     private WebMarkupContainer userContainer(String containerId){
         WebMarkupContainer webMarkupContainer = new WebMarkupContainer(containerId);
@@ -83,26 +83,26 @@ public abstract class BasePage extends SessionAccessorPage {
         return webMarkupContainer;
     }
 
-	private void addNavBarItem(String id, Class<? extends Page> aPageClass) {
+    private void addNavBarItem(String id, Class<? extends Page> aPageClass) {
         WebMarkupContainer listItemContainer = new WebMarkupContainer("list-item-"+id);
         add(listItemContainer);
-		BookmarkablePageLink<? extends Page> link = new BookmarkablePageLink<Page>(id, aPageClass);
+        BookmarkablePageLink<? extends Page> link = new BookmarkablePageLink<Page>(id, aPageClass);
         listItemContainer.add(link);
-		if (pageClass != null) {
-			if (pageClass.equals(aPageClass)) {
-				listItemContainer.add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
-					@Override
-					public String getObject() {
-						return "active";
-					}
+        if (pageClass != null) {
+            if (pageClass.equals(aPageClass)) {
+                listItemContainer.add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {
+                        return "active";
+                    }
 
-				}));
-			}
-		}
-	}
+                }));
+            }
+        }
+    }
 
-	protected FeedbackPanel getFeedbackPanel() {
-		return feedbackPanel;
-	}
+    protected FeedbackPanel getFeedbackPanel() {
+        return feedbackPanel;
+    }
 
 }

@@ -33,147 +33,147 @@ import java.util.*;
 
 @Secured("ROLE_ADMIN")
 public class AppendSubsystemWithRolePage extends BasePage {
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private RoleService roleService;
-	@SpringBean
-	private SubsystemService subsystemService;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private RoleService roleService;
+    @SpringBean
+    private SubsystemService subsystemService;
 
     public AppendSubsystemWithRolePage(PageParameters params) {
-		super(ListUsersPage.class, params);
-		final long userId = params.get("userId").toLong();
-		
-		WebMarkupContainer container = new WebMarkupContainer("container");
-		add(container);
-		
-		List<UISubsystemForList> listSub = subsystemService.getSubsystems();
-		
-		UIUserWithRolesAndActions user1 = userService.getUserRoleActions(userId, null, null, null);
-		
-		final List<UIRoleWithActions> roleWithAction = user1.getRoles();
-		
-		final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
-		sort.setRoleWithAction(roleWithAction);
-		List<String> oldSubName = sort.getSubsystemsName();
-		List<UISubsystemForList> oldSub = new ArrayList<UISubsystemForList>();
-		List<UISubsystemForList> newSub = new ArrayList<UISubsystemForList>();
-		for (UISubsystemForList ui : listSub) {
-			for (String sub : oldSubName) {
-				if (sub.equals(ui.getName())) {
-					oldSub.add(ui);
-				}
-			}
-		}
-		for (UISubsystemForList old : listSub) {
-			if (!oldSub.contains(old)) {
-				newSub.add(old);
-			}
-		}
+        super(ListUsersPage.class, params);
+        final long userId = params.get("userId").toLong();
+
+        WebMarkupContainer container = new WebMarkupContainer("container");
+        add(container);
+
+        List<UISubsystemForList> listSub = subsystemService.getSubsystems();
+
+        UIUserWithRolesAndActions user1 = userService.getUserRoleActions(userId, null, null, null);
+
+        final List<UIRoleWithActions> roleWithAction = user1.getRoles();
+
+        final SortRoleOfSubsystem sort = new SortRoleOfSubsystem();
+        sort.setRoleWithAction(roleWithAction);
+        List<String> oldSubName = sort.getSubsystemsName();
+        List<UISubsystemForList> oldSub = new ArrayList<UISubsystemForList>();
+        List<UISubsystemForList> newSub = new ArrayList<UISubsystemForList>();
+        for (UISubsystemForList ui : listSub) {
+            for (String sub : oldSubName) {
+                if (sub.equals(ui.getName())) {
+                    oldSub.add(ui);
+                }
+            }
+        }
+        for (UISubsystemForList old : listSub) {
+            if (!oldSub.contains(old)) {
+                newSub.add(old);
+            }
+        }
 
         boolean visible = true;
         if(newSub.isEmpty()){
-        	visible =false;
+            visible =false;
         }
         container.setVisible(visible);
         
-		for (UISubsystemForList sub : newSub) {
-			List<Long> listIdsub = new ArrayList<Long>();
-			listIdsub.add(sub.getId());
-			List<UIRoleForList> listRole = roleService.getRoles(0, Integer.MAX_VALUE, 1, true, null, listIdsub);
-			modelsMap.put(sub, listRole);
-		}
+        for (UISubsystemForList sub : newSub) {
+            List<Long> listIdsub = new ArrayList<Long>();
+            listIdsub.add(sub.getId());
+            List<UIRoleForList> listRole = roleService.getRoles(0, Integer.MAX_VALUE, 1, true, null, listIdsub);
+            modelsMap.put(sub, listRole);
+        }
 
-		// models for DropDrownChoice
-		IModel<List<? extends UISubsystemForList>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
-			@Override
-			public List<UISubsystemForList> getObject() {
-				Set<UISubsystemForList> keys = modelsMap.keySet();
-				List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(keys);
-				return list;
-			}
+        // models for DropDrownChoice
+        IModel<List<? extends UISubsystemForList>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
+            @Override
+            public List<UISubsystemForList> getObject() {
+                Set<UISubsystemForList> keys = modelsMap.keySet();
+                List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(keys);
+                return list;
+            }
 
-		};
-		final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
-			@Override
-			public List<UIRoleForList> load() {
-				List<UIRoleForList> models = modelsMap.get(subsystem);
-				if (models == null) {
-					models = Collections.emptyList();
-				}
-				return models;
-			}
+        };
+        final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
+            @Override
+            public List<UIRoleForList> load() {
+                List<UIRoleForList> models = modelsMap.get(subsystem);
+                if (models == null) {
+                    models = Collections.emptyList();
+                }
+                return models;
+            }
 
-		};
-		Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>("form");
-		container.add(form);
+        };
+        Form<UIUserAddSubsystemWithRole> form = new Form<UIUserAddSubsystemWithRole>("form");
+        container.add(form);
 
 //        USER INFO
         UIUser user = userService.getUser(userId);
         form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
 
-		LabelDropDownChoiceRow<UISubsystemForList> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", subsystemsModel, new SubsystemInCreateUserChoiceRender());
-		subsystemsRow.getDropDownChoice().setRequired(true);
-		
-		final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
-		rolesRow.getDropDownChoice().setRequired(true);
-		rolesRow.setOutputMarkupId(true);
-		
-		form.add(subsystemsRow);
-		form.add(rolesRow);
-		subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
+        LabelDropDownChoiceRow<UISubsystemForList> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", subsystemsModel, new SubsystemInCreateUserChoiceRender());
+        subsystemsRow.getDropDownChoice().setRequired(true);
 
-			@Override
-			protected void onUpdate(AjaxRequestTarget target) {
+        final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
+        rolesRow.getDropDownChoice().setRequired(true);
+        rolesRow.setOutputMarkupId(true);
+
+        form.add(subsystemsRow);
+        form.add(rolesRow);
+        subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
                 rolesModel.detach();
-				target.add(rolesRow);
-			}
-			
-		});
-		form.add(new Button("add-sub") {
+                target.add(rolesRow);
+            }
 
-			@Override
-			public void onSubmit() {
-				UIRoleForList role = rolesRow.getDropDownChoice().getModelObject();
-				userService.addSubsystemWithRole(userId, role.getId());
-				PageParameters param = new PageParameters();
-				param.set("userId", String.valueOf(userId));
-				getRequestCycle().setResponsePage(UserDetailsPage.class, param);
-			}
+        });
+        form.add(new Button("add-sub") {
 
-		});
-		final PageParameters param = new PageParameters();
-		param.set("userId", String.valueOf(userId));
-		form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class, param));
-		
-		WebMarkupContainer noMoreSubContainer = new WebMarkupContainer("no-more-sub-container");
-		noMoreSubContainer.setVisible(!visible);
-		noMoreSubContainer.add(new BookmarkablePageLink<Page>("back", UserDetailsPage.class, param));
-		add(noMoreSubContainer);
-	}
+            @Override
+            public void onSubmit() {
+                UIRoleForList role = rolesRow.getDropDownChoice().getModelObject();
+                userService.addSubsystemWithRole(userId, role.getId());
+                PageParameters param = new PageParameters();
+                param.set("userId", String.valueOf(userId));
+                getRequestCycle().setResponsePage(UserDetailsPage.class, param);
+            }
 
-	@Override
-	protected String getTitle() {
-		return "Add subsystem with role";
-	}
+        });
+        final PageParameters param = new PageParameters();
+        param.set("userId", String.valueOf(userId));
+        form.add(new BookmarkablePageLink<Page>("cancel", UserDetailsPage.class, param));
 
-	private final Map<UISubsystemForList, List<UIRoleForList>> modelsMap = new HashMap<UISubsystemForList, List<UIRoleForList>>(); // map:company->model
-	private UIRoleForList role;
-	private UISubsystemForList subsystem;
+        WebMarkupContainer noMoreSubContainer = new WebMarkupContainer("no-more-sub-container");
+        noMoreSubContainer.setVisible(!visible);
+        noMoreSubContainer.add(new BookmarkablePageLink<Page>("back", UserDetailsPage.class, param));
+        add(noMoreSubContainer);
+    }
 
-	public UIRoleForList getRole() {
-		return role;
-	}
+    @Override
+    protected String getTitle() {
+        return "Add subsystem with role";
+    }
 
-	public void setRole(UIRoleForList role) {
-		this.role = role;
-	}
+    private final Map<UISubsystemForList, List<UIRoleForList>> modelsMap = new HashMap<UISubsystemForList, List<UIRoleForList>>(); // map:company->model
+    private UIRoleForList role;
+    private UISubsystemForList subsystem;
 
-	public UISubsystemForList getSubsystem() {
-		return subsystem;
-	}
+    public UIRoleForList getRole() {
+        return role;
+    }
 
-	public void setSubsystem(UISubsystemForList subsystem) {
-		this.subsystem = subsystem;
-	}
+    public void setRole(UIRoleForList role) {
+        this.role = role;
+    }
+
+    public UISubsystemForList getSubsystem() {
+        return subsystem;
+    }
+
+    public void setSubsystem(UISubsystemForList subsystem) {
+        this.subsystem = subsystem;
+    }
 }

@@ -13,15 +13,15 @@ import com.payneteasy.superfly.common.session.SessionMappingLocator;
  */
 public class SessionMappingMaintainingListener implements HttpSessionListener {
 
-	public void sessionCreated(HttpSessionEvent se) {
-	}
+    public void sessionCreated(HttpSessionEvent se) {
+    }
 
-	public void sessionDestroyed(HttpSessionEvent se) {
-		getSessionMapping().removeSessionById(se.getSession().getId());
-	}
+    public void sessionDestroyed(HttpSessionEvent se) {
+        getSessionMapping().removeSessionById(se.getSession().getId());
+    }
 
-	protected SessionMapping getSessionMapping() {
-		return SessionMappingLocator.getSessionMapping();
-	}
+    protected SessionMapping getSessionMapping() {
+        return SessionMappingLocator.getSessionMapping();
+    }
 
 }

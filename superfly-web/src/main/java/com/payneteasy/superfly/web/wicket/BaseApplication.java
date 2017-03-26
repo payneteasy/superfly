@@ -33,8 +33,8 @@ public abstract class BaseApplication extends WebApplication {
         mount(wrapWithInterceptingMapper(new MountedMapper(path, pageClass, parametersEncoder)));
     }
 
-	@Override
-	protected final void init() {
+    @Override
+    protected final void init() {
         super.init();
 
         if (getConfigurationType() == RuntimeConfigurationType.DEVELOPMENT) {
@@ -49,7 +49,7 @@ public abstract class BaseApplication extends WebApplication {
         getDebugSettings().setOutputMarkupContainerClassName(false);
         
         customInit();
-	}
+    }
 
     protected abstract void customInit();
 
@@ -57,9 +57,9 @@ public abstract class BaseApplication extends WebApplication {
         return mapper;
     }
 
-	@Override
-	public Session newSession(Request request, Response response) {
-		return new SuperflySession(request);
-	}
+    @Override
+    public Session newSession(Request request, Response response) {
+        return new SuperflySession(request);
+    }
 
 }

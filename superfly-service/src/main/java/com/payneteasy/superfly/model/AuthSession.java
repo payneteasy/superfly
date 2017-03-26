@@ -36,13 +36,13 @@ public class AuthSession {
     }
 
     @Column(name = "session_id")
-   	public Long getSessionId() {
-   		return sessionId;
-   	}
+       public Long getSessionId() {
+           return sessionId;
+       }
 
-   	public void setSessionId(Long sessionId) {
-   		this.sessionId = sessionId;
-   	}
+       public void setSessionId(Long sessionId) {
+           this.sessionId = sessionId;
+       }
 
     @OneToMany
     @JoinColumn(table = "role")

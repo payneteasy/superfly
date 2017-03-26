@@ -11,13 +11,13 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
  */
 public class OnlineFieldBehavior extends AjaxFormComponentUpdatingBehavior {
 
-	public OnlineFieldBehavior() {
-		super("onchange");
-	}
+    public OnlineFieldBehavior() {
+        super("onchange");
+    }
 
-	@Override
-	protected void onUpdate(AjaxRequestTarget target) {
-		// doing nothing, as it's enough to just add this behavior to a component
-	}
+    @Override
+    protected void onUpdate(AjaxRequestTarget target) {
+        // doing nothing, as it's enough to just add this behavior to a component
+    }
 
 }

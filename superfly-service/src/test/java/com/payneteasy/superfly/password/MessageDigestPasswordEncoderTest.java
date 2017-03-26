@@ -15,33 +15,33 @@ import static org.junit.Assert.assertEquals;
 public class MessageDigestPasswordEncoderTest {
 
     @Test
-	public void testMd5() {
-		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
-		encoder.setAlgorithm("MD5");
-		String encoded = encoder.encode("password", "salt");
-		String expected = DigestUtils.md5Hex("password{salt}");
+    public void testMd5() {
+        MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
+        encoder.setAlgorithm("MD5");
+        String encoded = encoder.encode("password", "salt");
+        String expected = DigestUtils.md5Hex("password{salt}");
         assertEquals(expected, encoded);
-	}
+    }
 
     @Test
-	public void testSha1() {
-		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
-		encoder.setAlgorithm("SHA1");
-		String encoded = encoder.encode("password", "salt");
-		String expected = DigestUtils.shaHex("password{salt}");
-		assertEquals(expected, encoded);
-	}
+    public void testSha1() {
+        MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
+        encoder.setAlgorithm("SHA1");
+        String encoded = encoder.encode("password", "salt");
+        String expected = DigestUtils.shaHex("password{salt}");
+        assertEquals(expected, encoded);
+    }
 
     @Test
-	public void testSha256() throws NoSuchAlgorithmException {
-		MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
-		encoder.setAlgorithm("SHA-256");
-		String encoded = encoder.encode("password", "salt");
-		MessageDigest md = MessageDigest.getInstance("sha-256");
-		byte[] bytes = md.digest("password{salt}".getBytes(StandardCharsets.UTF_8));
-		String expected = new String(Hex.encodeHex(bytes));
-		assertEquals(expected, encoded);
-	}
+    public void testSha256() throws NoSuchAlgorithmException {
+        MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
+        encoder.setAlgorithm("SHA-256");
+        String encoded = encoder.encode("password", "salt");
+        MessageDigest md = MessageDigest.getInstance("sha-256");
+        byte[] bytes = md.digest("password{salt}".getBytes(StandardCharsets.UTF_8));
+        String expected = new String(Hex.encodeHex(bytes));
+        assertEquals(expected, encoded);
+    }
 
     @Test
     public void testNewPassword() {

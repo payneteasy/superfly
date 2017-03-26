@@ -32,112 +32,112 @@ import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
  * @author Roman Puchkovskiy
  */
 public class SuperflyMultiMockAuthenticationProvider extends
-		AbstractRoleTransformingAuthenticationProvider {
-	
-	private String username;
-	private String password;
-	private String hotp;
-	private ActionsMapBuilder actionsMapBuilder;
-	private boolean enabled = true;
-	private AuthenticationPostProcessor authenticationPostProcessor = new IdAuthenticationPostProcessor();
-	
-	private Map<SSORole, SSOAction[]> cachedMap = null;
-	
-	public void setUsername(String username) {
-		this.username = username;
-	}
+        AbstractRoleTransformingAuthenticationProvider {
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    private String username;
+    private String password;
+    private String hotp;
+    private ActionsMapBuilder actionsMapBuilder;
+    private boolean enabled = true;
+    private AuthenticationPostProcessor authenticationPostProcessor = new IdAuthenticationPostProcessor();
 
-	public void setHotp(String hotp) {
-		this.hotp = hotp;
-	}
+    private Map<SSORole, SSOAction[]> cachedMap = null;
 
-	@Required
-	public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
-		this.actionsMapBuilder = actionsMapBuilder;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setAuthenticationPostProcessor(
-			AuthenticationPostProcessor authenticationPostProcessor) {
-		this.authenticationPostProcessor = authenticationPostProcessor;
-	}
+    public void setHotp(String hotp) {
+        this.hotp = hotp;
+    }
 
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
-		if (enabled) {
-			Authentication auth;
-			CompoundAuthentication compound = null;
-			if (authentication instanceof CompoundAuthentication) {
-				compound = (CompoundAuthentication) authentication;
-				auth = compound.getCurrentAuthenticationRequest();
-			} else {
-				auth = authentication;
-			}
-			if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
-				if (username.equals(auth.getName()) && password.equals(auth.getCredentials())) {
-					CompoundAuthentication newCompound = new CompoundAuthentication();
-					newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(auth.getName())));
-					return newCompound;
-				} else {
-					throw new BadCredentialsException("Bad username/password");
-				}
-			} else if (auth instanceof CheckHOTPToken) {
-				CheckHOTPToken token = (CheckHOTPToken) auth;
-				if (hotp.equals(token.getCredentials())) {
-					if (token.getSsoUser().getActionsMap().size() == 1) {
-						return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
-								token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
-					}
+    @Required
+    public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
+        this.actionsMapBuilder = actionsMapBuilder;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setAuthenticationPostProcessor(
+            AuthenticationPostProcessor authenticationPostProcessor) {
+        this.authenticationPostProcessor = authenticationPostProcessor;
+    }
+
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        if (enabled) {
+            Authentication auth;
+            CompoundAuthentication compound = null;
+            if (authentication instanceof CompoundAuthentication) {
+                compound = (CompoundAuthentication) authentication;
+                auth = compound.getCurrentAuthenticationRequest();
+            } else {
+                auth = authentication;
+            }
+            if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
+                if (username.equals(auth.getName()) && password.equals(auth.getCredentials())) {
+                    CompoundAuthentication newCompound = new CompoundAuthentication();
+                    newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(auth.getName())));
+                    return newCompound;
+                } else {
+                    throw new BadCredentialsException("Bad username/password");
+                }
+            } else if (auth instanceof CheckHOTPToken) {
+                CheckHOTPToken token = (CheckHOTPToken) auth;
+                if (hotp.equals(token.getCredentials())) {
+                    if (token.getSsoUser().getActionsMap().size() == 1) {
+                        return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
+                                token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
+                    }
                     if (compound == null) {
                         throw new IllegalStateException("CompoundAuthentication cannot be null here");
                     }
-					CompoundAuthentication newCompound = new CompoundAuthentication(compound.getReadyAuthentications(), auth);
-					newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
-					return newCompound;
-				} else {
-					throw new BadOTPValueException("Bad HOTP");
-				}
-			} else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
-				SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
-				final SSOUserAuthenticationToken ssoUserAuthenticationToken = new SSOUserAuthenticationToken(
-						token.getSsoUser(), token.getSsoRole(),
-						token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
-				return authenticationPostProcessor.postProcess(ssoUserAuthenticationToken);
-			}
-		}
-		return null;
-	}
+                    CompoundAuthentication newCompound = new CompoundAuthentication(compound.getReadyAuthentications(), auth);
+                    newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
+                    return newCompound;
+                } else {
+                    throw new BadOTPValueException("Bad HOTP");
+                }
+            } else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
+                SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
+                final SSOUserAuthenticationToken ssoUserAuthenticationToken = new SSOUserAuthenticationToken(
+                        token.getSsoUser(), token.getSsoRole(),
+                        token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
+                return authenticationPostProcessor.postProcess(ssoUserAuthenticationToken);
+            }
+        }
+        return null;
+    }
 
-	protected SSOUser createSSOUser(String username) {
-		return new SSOUser(username, getActionsMap(), Collections.<String, String>emptyMap());
-	}
-	
-	private Map<SSORole, SSOAction[]> getActionsMap() {
-		if (cachedMap == null) {
-			try {
-				cachedMap = actionsMapBuilder.build();
-			} catch (Exception e) {
-				throw new AuthenticationServiceException("Could not obtain roles and actions", e);
-			}
-		}
-		return cachedMap;
-	}
+    protected SSOUser createSSOUser(String username) {
+        return new SSOUser(username, getActionsMap(), Collections.<String, String>emptyMap());
+    }
 
-	public boolean supports(Class<?> authentication) {
-		if (!enabled) {
-			return false;
-		}
-		return (UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
-				|| CheckHOTPToken.class.isAssignableFrom(authentication)
-				|| SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication)
-				|| CompoundAuthentication.class.isAssignableFrom(authentication));
-	}
+    private Map<SSORole, SSOAction[]> getActionsMap() {
+        if (cachedMap == null) {
+            try {
+                cachedMap = actionsMapBuilder.build();
+            } catch (Exception e) {
+                throw new AuthenticationServiceException("Could not obtain roles and actions", e);
+            }
+        }
+        return cachedMap;
+    }
+
+    public boolean supports(Class<?> authentication) {
+        if (!enabled) {
+            return false;
+        }
+        return (UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
+                || CheckHOTPToken.class.isAssignableFrom(authentication)
+                || SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication)
+                || CompoundAuthentication.class.isAssignableFrom(authentication));
+    }
 
 }

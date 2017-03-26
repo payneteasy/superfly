@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="transactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+    <bean id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 
-	<bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-	</bean>
+    <bean id="daoMethodInfoFactory" class="com.googlecode.jdbcproc.daofactory.DaoMethodInfoFactory">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
 
-	<!-- Abstract dao -->
-	<bean id="abstractDao" abstract="true"
-		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-		<property name="daoMethodInfoFactory" ref="daoMethodInfoFactory" />
-	</bean>
+    <!-- Abstract dao -->
+    <bean id="abstractDao" abstract="true"
+        class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="daoMethodInfoFactory" ref="daoMethodInfoFactory" />
+    </bean>
 
-	<!-- DAO definitions follow -->
+    <!-- DAO definitions follow -->
 
-	<bean id="userDao"
-		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
-		parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.UserDao" />
-	</bean>
+    <bean id="userDao"
+        class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+        parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.UserDao" />
+    </bean>
 
-	<bean id="subsystemDao"
-		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
-		parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao" />
-	</bean>
-	
-	<bean id="groupDao"
-		class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
-		parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.GroupDao" />
-	</bean>
-	
-	<bean id="actionDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.ActionDao"/>
-	</bean>
-	
-	<bean id="roleDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.RoleDao"/>
-	</bean>
-	
-	<bean id="sessionDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.SessionDao"/>
-	</bean>
-	
-	<bean id="hotpDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.spisupport.HOTPDao"/>
-	</bean>
+    <bean id="subsystemDao"
+        class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+        parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao" />
+    </bean>
 
-	<bean id="smtpServerDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
-		<property name="interface" value="com.payneteasy.superfly.dao.SmtpServerDao"/>
-	</bean>
+    <bean id="groupDao"
+        class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean"
+        parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.GroupDao" />
+    </bean>
+
+    <bean id="actionDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.ActionDao"/>
+    </bean>
+
+    <bean id="roleDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.RoleDao"/>
+    </bean>
+
+    <bean id="sessionDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.SessionDao"/>
+    </bean>
+
+    <bean id="hotpDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.spisupport.HOTPDao"/>
+    </bean>
+
+    <bean id="smtpServerDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.SmtpServerDao"/>
+    </bean>
 
 </beans>

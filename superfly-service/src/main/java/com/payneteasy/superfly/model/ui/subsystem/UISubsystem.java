@@ -8,34 +8,34 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 public class UISubsystem implements Serializable {
-	private Long id;
-	private String name;
+    private Long id;
+    private String name;
     private String title;
-	private String callbackUrl;
+    private String callbackUrl;
     private boolean sendCallbacks = true;
-	private boolean allowListUsers;
+    private boolean allowListUsers;
     private UISmtpServerForFilter smtpServer;
     private String subsystemUrl;
     private String landingUrl;
     private String loginFormCssUrl;
 
-	@Column(name = "ssys_id")
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "ssys_id")
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	@Column(name = "subsystem_name")
-	public String getName() {
-		return name;
-	}
+    @Column(name = "subsystem_name")
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Column(name = "subsystem_title")
     public String getTitle() {
@@ -47,13 +47,13 @@ public class UISubsystem implements Serializable {
     }
 
     @Column(name = "callback_information")
-	public String getCallbackUrl() {
-		return callbackUrl;
-	}
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
 
-	public void setCallbackUrl(String callbackUrl) {
-		this.callbackUrl = callbackUrl;
-	}
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
 
     @Column(name = "send_callbacks")
     public boolean isSendCallbacks() {
@@ -65,13 +65,13 @@ public class UISubsystem implements Serializable {
     }
 
     @Column(name = "allow_list_users")
-	public boolean isAllowListUsers() {
-		return allowListUsers;
-	}
+    public boolean isAllowListUsers() {
+        return allowListUsers;
+    }
 
-	public void setAllowListUsers(boolean allowListUsers) {
-		this.allowListUsers = allowListUsers;
-	}
+    public void setAllowListUsers(boolean allowListUsers) {
+        this.allowListUsers = allowListUsers;
+    }
 
     @ManyToOne
     @JoinColumn(table = "smtp_server", name = "ssrv_id")

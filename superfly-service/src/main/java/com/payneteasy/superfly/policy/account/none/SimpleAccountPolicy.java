@@ -12,25 +12,25 @@ import com.payneteasy.superfly.service.UserService;
  * @author Roman Puchkovskiy
  */
 public class SimpleAccountPolicy implements AccountPolicy {
-	
-	private UserDao userDao;
-	
-	@Required
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
 
-	public String unlockUser(long userId, boolean unlockingSuspendedUser) {
-		userDao.unlockUser(userId);
-		return null;
-	}
+    private UserDao userDao;
 
-	public void suspendUsersIfNeeded(int days, UserService userService) {
-		// doing nothing as suspension is not needed here
-	}
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-	public void expirePasswordsIfNeeded(int days, UserService userService) {
-		// doing nothing as password expiration is not needed here
-	}
+    public String unlockUser(long userId, boolean unlockingSuspendedUser) {
+        userDao.unlockUser(userId);
+        return null;
+    }
+
+    public void suspendUsersIfNeeded(int days, UserService userService) {
+        // doing nothing as suspension is not needed here
+    }
+
+    public void expirePasswordsIfNeeded(int days, UserService userService) {
+        // doing nothing as password expiration is not needed here
+    }
 
 }

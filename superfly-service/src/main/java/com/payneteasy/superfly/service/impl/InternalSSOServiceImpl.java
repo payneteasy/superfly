@@ -47,34 +47,34 @@ import com.payneteasy.superfly.utils.PGPKeyValidator;
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
-	private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
 
-	private UserDao userDao;
-	private ActionDao actionDao;
+    private UserDao userDao;
+    private ActionDao actionDao;
     private SessionDao sessionDao;
-	private NotificationService notificationService;
-	private LoggerSink loggerSink;
-	private PasswordEncoder passwordEncoder;
-	private SaltSource saltSource;
-	private SaltGenerator hotpSaltGenerator;
-	private HOTPProvider hotpProvider;
-	private LockoutStrategy lockoutStrategy;
-	private RegisterUserStrategy registerUserStrategy;
-	private PublicKeyCrypto publicKeyCrypto;
-	private HOTPService hotpService;
-	private Set<String> notSavedActions = Collections.singleton("action_temp_password");
+    private NotificationService notificationService;
+    private LoggerSink loggerSink;
+    private PasswordEncoder passwordEncoder;
+    private SaltSource saltSource;
+    private SaltGenerator hotpSaltGenerator;
+    private HOTPProvider hotpProvider;
+    private LockoutStrategy lockoutStrategy;
+    private RegisterUserStrategy registerUserStrategy;
+    private PublicKeyCrypto publicKeyCrypto;
+    private HOTPService hotpService;
+    private Set<String> notSavedActions = Collections.singleton("action_temp_password");
 
-	private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+    private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
-	@Required
-	public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
-		this.policyValidation = policyValidation;
-	}
+    @Required
+    public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
+        this.policyValidation = policyValidation;
+    }
 
-	@Required
-	public void setUserDao(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Required
     public void setSessionDao(SessionDao sessionDao) {
@@ -82,81 +82,81 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Required
-	public void setActionDao(ActionDao actionDao) {
-		this.actionDao = actionDao;
-	}
+    public void setActionDao(ActionDao actionDao) {
+        this.actionDao = actionDao;
+    }
 
-	@Required
-	public void setNotificationService(NotificationService notificationService) {
-		this.notificationService = notificationService;
-	}
+    @Required
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
-	@Required
-	public void setLoggerSink(LoggerSink loggerSink) {
-		this.loggerSink = loggerSink;
-	}
+    @Required
+    public void setLoggerSink(LoggerSink loggerSink) {
+        this.loggerSink = loggerSink;
+    }
 
-	@Required
-	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-		this.passwordEncoder = passwordEncoder;
-	}
+    @Required
+    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	@Required
-	public void setSaltSource(SaltSource saltSource) {
-		this.saltSource = saltSource;
-	}
+    @Required
+    public void setSaltSource(SaltSource saltSource) {
+        this.saltSource = saltSource;
+    }
 
-	@Required
-	public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
-		this.hotpSaltGenerator = hotpSaltGenerator;
-	}
+    @Required
+    public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
+        this.hotpSaltGenerator = hotpSaltGenerator;
+    }
 
-	@Required
-	public void setHotpProvider(HOTPProvider hotpProvider) {
-		this.hotpProvider = hotpProvider;
-	}
+    @Required
+    public void setHotpProvider(HOTPProvider hotpProvider) {
+        this.hotpProvider = hotpProvider;
+    }
 
-	@Required
-	public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
-		this.lockoutStrategy = lockoutStrategy;
-	}
+    @Required
+    public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
+        this.lockoutStrategy = lockoutStrategy;
+    }
 
-	@Required
-	public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
-		this.registerUserStrategy = registerUserStrategy;
-	}
+    @Required
+    public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
+        this.registerUserStrategy = registerUserStrategy;
+    }
 
-	@Required
-	public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
-		this.publicKeyCrypto = publicKeyCrypto;
-	}
+    @Required
+    public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
+        this.publicKeyCrypto = publicKeyCrypto;
+    }
 
-	@Required
-	public void setHotpService(HOTPService hotpService) {
-		this.hotpService = hotpService;
-	}
+    @Required
+    public void setHotpService(HOTPService hotpService) {
+        this.hotpService = hotpService;
+    }
 
-	public void setNotSavedActions(Set<String> notSavedActions) {
-		this.notSavedActions = notSavedActions;
-	}
+    public void setNotSavedActions(Set<String> notSavedActions) {
+        this.notSavedActions = notSavedActions;
+    }
 
-	public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
-			String sessionInfo) {
-		SSOUser ssoUser;
-		String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-		AuthSession session = userDao.authenticate(username, encPassword,
+    public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
+            String sessionInfo) {
+        SSOUser ssoUser;
+        String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        AuthSession session = userDao.authenticate(username, encPassword,
                 subsystemIdentifier, userIpAddress, sessionInfo);
-		boolean ok = session != null && session.getSessionId() != null;
-		loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
-		if (ok) {
+        boolean ok = session != null && session.getSessionId() != null;
+        loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
+        if (ok) {
             ssoUser = buildSSOUser(session);
-		} else {
+        } else {
             logger.warn("No roles for user {}", username);
-			lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
-			ssoUser = null;
-		}
-		return ssoUser;
-	}
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
+            ssoUser = null;
+        }
+        return ssoUser;
+    }
 
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
@@ -193,135 +193,135 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
-		SSOAction[] actions = new SSOAction[authActions.size()];
-		for (int i = 0; i < authActions.size(); i++) {
-			AuthAction authAction = authActions.get(i);
-			SSOAction ssoAction = new SSOAction(authAction.getActionName(), authAction.isLogAction());
-			actions[i] = ssoAction;
-		}
-		return actions;
-	}
+        SSOAction[] actions = new SSOAction[authActions.size()];
+        for (int i = 0; i < authActions.size(); i++) {
+            AuthAction authAction = authActions.get(i);
+            SSOAction ssoAction = new SSOAction(authAction.getActionName(), authAction.isLogAction());
+            actions[i] = ssoAction;
+        }
+        return actions;
+    }
 
-	public void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions) {
-		List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
-		actionDao.saveActions(subsystemIdentifier, actions);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Saved actions for subsystem " + subsystemIdentifier + ": " + actions.size());
-			logger.debug("Actions are: " + Arrays.asList(actionDescriptions));
-		}
-	}
+    public void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions) {
+        List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
+        actionDao.saveActions(subsystemIdentifier, actions);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Saved actions for subsystem " + subsystemIdentifier + ": " + actions.size());
+            logger.debug("Actions are: " + Arrays.asList(actionDescriptions));
+        }
+    }
 
-	private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
-		List<ActionToSave> actions = new ArrayList<>(actionDescriptions.length);
-		for (ActionDescription description : actionDescriptions) {
-			if (!notSavedActions.contains(description.getName().toLowerCase())) {
-				ActionToSave action = new ActionToSave();
-				action.setName(description.getName());
-				action.setDescription(description.getDescription());
-				actions.add(action);
-			}
-		}
-		return actions;
-	}
+    private List<ActionToSave> convertActionDescriptions(ActionDescription[] actionDescriptions) {
+        List<ActionToSave> actions = new ArrayList<>(actionDescriptions.length);
+        for (ActionDescription description : actionDescriptions) {
+            if (!notSavedActions.contains(description.getName().toLowerCase())) {
+                ActionToSave action = new ActionToSave();
+                action.setName(description.getName());
+                action.setDescription(description.getDescription());
+                actions.add(action);
+            }
+        }
+        return actions;
+    }
 
-	public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
-		List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
-		List<SSOUserWithActions> result = new ArrayList<>(users.size());
-		for (UserWithActions user : users) {
-			result.add(convertToSSOUser(user));
-		}
-		return result;
-	}
+    public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
+        List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
+        List<SSOUserWithActions> result = new ArrayList<>(users.size());
+        for (UserWithActions user : users) {
+            result.add(convertToSSOUser(user));
+        }
+        return result;
+    }
 
-	public void registerUser(String username, String password, String email, String subsystemIdentifier,
-			RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-			String secretAnswer, String publicKey,String organization) throws UserExistsException, PolicyValidationException,
-			BadPublicKeyException, MessageSendException {
+    public void registerUser(String username, String password, String email, String subsystemIdentifier,
+            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+            String secretAnswer, String publicKey,String organization) throws UserExistsException, PolicyValidationException,
+            BadPublicKeyException, MessageSendException {
 
-		UserRegisterRequest registerUser = new UserRegisterRequest();
-		registerUser.setUsername(username);
-		registerUser.setEmail(email);
-		registerUser.setSalt(saltSource.getSalt(username));
-		registerUser.setHotpSalt(hotpSaltGenerator.generate());
-		registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
-		registerUser.setPrincipalNames(null);
-		registerUser.setSubsystemName(subsystemIdentifier);
-		registerUser.setName(name);
-		registerUser.setSurname(surname);
-		registerUser.setSecretQuestion(secretQuestion);
-		registerUser.setSecretAnswer(secretAnswer);
-		registerUser.setPublicKey(publicKey);
+        UserRegisterRequest registerUser = new UserRegisterRequest();
+        registerUser.setUsername(username);
+        registerUser.setEmail(email);
+        registerUser.setSalt(saltSource.getSalt(username));
+        registerUser.setHotpSalt(hotpSaltGenerator.generate());
+        registerUser.setPassword(passwordEncoder.encode(password, registerUser.getSalt()));
+        registerUser.setPrincipalNames(null);
+        registerUser.setSubsystemName(subsystemIdentifier);
+        registerUser.setName(name);
+        registerUser.setSurname(surname);
+        registerUser.setSecretQuestion(secretQuestion);
+        registerUser.setSecretAnswer(secretAnswer);
+        registerUser.setPublicKey(publicKey);
         registerUser.setOrganization(organization);
 
-		// validate password policy
-		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistoryAndCurrentPassword(username)));
+        // validate password policy
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+                .getUserPasswordHistoryAndCurrentPassword(username)));
 
-		validatePublicKey(publicKey);
+        validatePublicKey(publicKey);
 
-		RoutineResult result = registerUserStrategy.registerUser(registerUser);
-		if (result.isOk()) {
-			for (RoleGrantSpecification roleGrant : roleGrants) {
-				result = userDao.grantRolesToUser(
-						registerUser.getUserid(),
-						roleGrant.isDetectSubsystemIdentifier() ? subsystemIdentifier : roleGrant
-								.getSubsystemIdentifier(), roleGrant.getPrincipalName());
-				if (!result.isOk()) {
-					throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
-							+ result.getErrorMessage());
-				}
-			}
+        RoutineResult result = registerUserStrategy.registerUser(registerUser);
+        if (result.isOk()) {
+            for (RoleGrantSpecification roleGrant : roleGrants) {
+                result = userDao.grantRolesToUser(
+                        registerUser.getUserid(),
+                        roleGrant.isDetectSubsystemIdentifier() ? subsystemIdentifier : roleGrant
+                                .getSubsystemIdentifier(), roleGrant.getPrincipalName());
+                if (!result.isOk()) {
+                    throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
+                            + result.getErrorMessage());
+                }
+            }
 
-			if (result.isOk()) {
-				hotpService.sendTableIfSupported(subsystemIdentifier, registerUser.getUserid());
-			}
+            if (result.isOk()) {
+                hotpService.sendTableIfSupported(subsystemIdentifier, registerUser.getUserid());
+            }
 
-			notificationService.notifyAboutUsersChanged();
-			loggerSink.info(logger, "REGISTER_USER", true, username);
-		} else if (result.isDuplicate()) {
-			loggerSink.info(logger, "REGISTER_USER", false, username);
-			throw new UserExistsException(result.getErrorMessage());
-		} else {
-			loggerSink.info(logger, "REGISTER_USER", false, username);
-			throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
-					+ result.getErrorMessage());
-		}
-	}
+            notificationService.notifyAboutUsersChanged();
+            loggerSink.info(logger, "REGISTER_USER", true, username);
+        } else if (result.isDuplicate()) {
+            loggerSink.info(logger, "REGISTER_USER", false, username);
+            throw new UserExistsException(result.getErrorMessage());
+        } else {
+            loggerSink.info(logger, "REGISTER_USER", false, username);
+            throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
+                    + result.getErrorMessage());
+        }
+    }
 
-	private void validatePublicKey(String publicKey) throws BadPublicKeyException {
-		PGPKeyValidator.validatePublicKey(publicKey, publicKeyCrypto);
-	}
+    private void validatePublicKey(String publicKey) throws BadPublicKeyException {
+        PGPKeyValidator.validatePublicKey(publicKey, publicKeyCrypto);
+    }
 
-	public boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp) {
-		boolean ok = hotpProvider.authenticate(subsystemIdentifier, username, hotp);
-		if (!ok) {
-			userDao.incrementHOTPLoginsFailed(username);
-			lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-		} else {
-			userDao.clearHOTPLoginsFailed(username);
-		}
-		loggerSink.info(logger, "REMOTE_HOTP_CHECK", ok, username);
-		return ok;
-	}
+    public boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp) {
+        boolean ok = hotpProvider.authenticate(subsystemIdentifier, username, hotp);
+        if (!ok) {
+            userDao.incrementHOTPLoginsFailed(username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        } else {
+            userDao.clearHOTPLoginsFailed(username);
+        }
+        loggerSink.info(logger, "REMOTE_HOTP_CHECK", ok, username);
+        return ok;
+    }
 
-	protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
-		return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
-	}
+    protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
+        return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
+    }
 
-	public void changeTempPassword(String userName, String password) throws PolicyValidationException {
-		policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
-				.getUserPasswordHistoryAndCurrentPassword(userName)));
-		userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
-	}
+    public void changeTempPassword(String userName, String password) throws PolicyValidationException {
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+                .getUserPasswordHistoryAndCurrentPassword(userName)));
+        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+    }
 
-	public UserForDescription getUserDescription(String username) {
-		return userDao.getUserForDescription(username);
-	}
+    public UserForDescription getUserDescription(String username) {
+        return userDao.getUserForDescription(username);
+    }
 
-	public void updateUserForDescription(UserForDescription user) throws BadPublicKeyException {
-		validatePublicKey(user.getPublicKey());
-		userDao.updateUserForDescription(user);
-	}
+    public void updateUserForDescription(UserForDescription user) throws BadPublicKeyException {
+        validatePublicKey(user.getPublicKey());
+        userDao.updateUserForDescription(user);
+    }
 
     @Override
     public List<UserWithStatus> getUserStatuses(String userNames) {
@@ -360,8 +360,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         userDao.completeUser(username);
     }
 
-	@Override
-	public void changeUserRole(String username, String newRole) {
-		userDao.changeUserRole(username, newRole);
-	}
+    @Override
+    public void changeUserRole(String username, String newRole) {
+        userDao.changeUserRole(username, newRole);
+    }
 }

@@ -17,20 +17,20 @@ import com.payneteasy.superfly.api.SSORole;
  */
 public class SeparateActionsMapBuilder implements ActionsMapBuilder {
 
-	private Map<String, ActionsSource> roleNamesToActionsSources;
+    private Map<String, ActionsSource> roleNamesToActionsSources;
 
-	@Required
-	public void setRoleNamesToActionsSources(
-			Map<String, ActionsSource> roleNamesToActionsSources) {
-		this.roleNamesToActionsSources = roleNamesToActionsSources;
-	}
+    @Required
+    public void setRoleNamesToActionsSources(
+            Map<String, ActionsSource> roleNamesToActionsSources) {
+        this.roleNamesToActionsSources = roleNamesToActionsSources;
+    }
 
-	public Map<SSORole, SSOAction[]> build() throws Exception {
-		Map<SSORole, SSOAction[]> map = new HashMap<SSORole, SSOAction[]>();
-		for (Entry<String, ActionsSource> entry : roleNamesToActionsSources.entrySet()) {
-			map.put(new SSORole(entry.getKey()), entry.getValue().getActions());
-		}
-		return map;
-	}
+    public Map<SSORole, SSOAction[]> build() throws Exception {
+        Map<SSORole, SSOAction[]> map = new HashMap<SSORole, SSOAction[]>();
+        for (Entry<String, ActionsSource> entry : roleNamesToActionsSources.entrySet()) {
+            map.put(new SSORole(entry.getKey()), entry.getValue().getActions());
+        }
+        return map;
+    }
 
 }

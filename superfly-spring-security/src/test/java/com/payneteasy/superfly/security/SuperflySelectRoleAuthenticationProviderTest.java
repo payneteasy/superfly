@@ -12,29 +12,29 @@ import org.springframework.security.core.Authentication;
 import static org.junit.Assert.*;
 
 public class SuperflySelectRoleAuthenticationProviderTest extends
-		AbstractSuperflyAuthenticationProviderTest {
-	private AuthenticationProvider provider;
+        AbstractSuperflyAuthenticationProviderTest {
+    private AuthenticationProvider provider;
 
     @Before
-	public void setUp() {
+    public void setUp() {
         provider = new SuperflySelectRoleAuthenticationProvider();
-	}
+    }
 
     @Test
-	public void testSupports() {
+    public void testSupports() {
         assertTrue(provider.supports(SSOUserAndSelectedRoleAuthenticationToken.class));
         assertFalse(provider.supports(UsernamePasswordAuthenticationToken.class));
-	}
+    }
 
     @Test
-	public void testSuccess() {
-		Authentication auth = provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole()));
+    public void testSuccess() {
+        Authentication auth = provider.authenticate(new SSOUserAndSelectedRoleAuthenticationToken(createSSOUserWithOneRole(), createSSORole()));
         assertNotNull(auth);
-		assertTrue(auth instanceof SSOUserAuthenticationToken);
-	}
+        assertTrue(auth instanceof SSOUserAuthenticationToken);
+    }
 
     @Test
-	public void testUnsupportedAuthentication() {
+    public void testUnsupportedAuthentication() {
         assertNull(provider.authenticate(new EmptyAuthenticationToken()));
-	}
+    }
 }

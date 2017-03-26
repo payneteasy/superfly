@@ -19,30 +19,30 @@ import java.util.Arrays;
  * @author Roman Puchkovskiy
  */
 public class SubsystemUserDetailsService implements UserDetailsService {
-	
-	private SubsystemService subsystemService;
-	private String[] authorities = {"ROLE_SUBSYSTEM"};
 
-	@Required
-	public void setSubsystemService(SubsystemService subsystemService) {
-		this.subsystemService = subsystemService;
-	}
+    private SubsystemService subsystemService;
+    private String[] authorities = {"ROLE_SUBSYSTEM"};
 
-	public void setAuthorities(String[] authorities) {
-		this.authorities = authorities;
-	}
+    @Required
+    public void setSubsystemService(SubsystemService subsystemService) {
+        this.subsystemService = subsystemService;
+    }
 
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException, DataAccessException {
-		UISubsystem subsystem = subsystemService.getSubsystemByName(username);
-		if (subsystem == null) {
-			throw new UsernameNotFoundException("No subsystem was found with name=" + username);
-		}
-		GrantedAuthority[] gas = new GrantedAuthority[authorities.length];
-		for (int i = 0; i < authorities.length; i++) {
-			gas[i] = new SimpleGrantedAuthority(authorities[i]);
-		}
-		return new User(username, "NOT-USED", true, true, true, true, Arrays.asList(gas));
-	}
+    public void setAuthorities(String[] authorities) {
+        this.authorities = authorities;
+    }
+
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException, DataAccessException {
+        UISubsystem subsystem = subsystemService.getSubsystemByName(username);
+        if (subsystem == null) {
+            throw new UsernameNotFoundException("No subsystem was found with name=" + username);
+        }
+        GrantedAuthority[] gas = new GrantedAuthority[authorities.length];
+        for (int i = 0; i < authorities.length; i++) {
+            gas[i] = new SimpleGrantedAuthority(authorities[i]);
+        }
+        return new User(username, "NOT-USED", true, true, true, true, Arrays.asList(gas));
+    }
 
 }

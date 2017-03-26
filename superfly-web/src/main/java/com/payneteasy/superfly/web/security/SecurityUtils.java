@@ -41,8 +41,8 @@ public class SecurityUtils {
         String[] roles = new String[authorities.size()];
         int i = 0;
         for (GrantedAuthority authority : authorities) {
-        	roles[i] = authority.getAuthority();
-        	i++;
+            roles[i] = authority.getAuthority();
+            i++;
         }
 
         return roles;
@@ -60,8 +60,8 @@ public class SecurityUtils {
         return username;
     }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static boolean isComponentVisible(Class aComponentClass) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static boolean isComponentVisible(Class aComponentClass) {
         if (aComponentClass.isAnnotationPresent(Secured.class)) {
             Secured securedAnnotation = (Secured) aComponentClass.getAnnotation(Secured.class);
             String[] roles = securedAnnotation.value();
@@ -82,6 +82,6 @@ public class SecurityUtils {
     }
     
     public static boolean isTempPassword() {
-    	return isUserInRole("ROLE_ACTION_TEMP_PASSWORD");
+        return isUserInRole("ROLE_ACTION_TEMP_PASSWORD");
     }
 }

@@ -19,30 +19,30 @@ import java.util.Scanner;
  * @author Roman Puchkovskiy
  */
 public class ResourceActionsSource implements ActionsSource {
-	
-	private Resource resource;
-	private Charset charset = StandardCharsets.UTF_8;
 
-	@Required
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
+    private Resource resource;
+    private Charset charset = StandardCharsets.UTF_8;
 
-	public void setEncoding(String encoding) {
-		this.charset = encoding == null ? null : Charset.forName(encoding);
-	}
+    @Required
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
 
-	public SSOAction[] getActions() throws Exception {
-		InputStream is = resource.getInputStream();
-		Reader reader = new InputStreamReader(is, charset);
-		List<SSOAction> actionsList = new ArrayList<>();
-		try (Scanner scanner = new Scanner(reader)) {
-			while (scanner.hasNext()) {
-				String token = scanner.next();
-				actionsList.add(new SSOAction(token, false));
-			}
-		}
-		return actionsList.toArray(new SSOAction[actionsList.size()]);
-	}
+    public void setEncoding(String encoding) {
+        this.charset = encoding == null ? null : Charset.forName(encoding);
+    }
+
+    public SSOAction[] getActions() throws Exception {
+        InputStream is = resource.getInputStream();
+        Reader reader = new InputStreamReader(is, charset);
+        List<SSOAction> actionsList = new ArrayList<>();
+        try (Scanner scanner = new Scanner(reader)) {
+            while (scanner.hasNext()) {
+                String token = scanner.next();
+                actionsList.add(new SSOAction(token, false));
+            }
+        }
+        return actionsList.toArray(new SSOAction[actionsList.size()]);
+    }
 
 }

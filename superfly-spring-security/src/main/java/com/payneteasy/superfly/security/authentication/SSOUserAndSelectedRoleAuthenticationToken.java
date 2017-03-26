@@ -12,24 +12,24 @@ import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
  * @see SuperflyAuthenticationProvider
  */
 public class SSOUserAndSelectedRoleAuthenticationToken extends EmptyAuthenticationToken {
-	private static final long serialVersionUID = -3043969728081312772L;
-	
-	private SSOUser ssoUser;
-	private SSORole ssoRole;
+    private static final long serialVersionUID = -3043969728081312772L;
 
-	public SSOUserAndSelectedRoleAuthenticationToken(SSOUser ssoUser,
-			SSORole ssoRole) {
-		super();
-		this.ssoUser = ssoUser;
-		this.ssoRole = ssoRole;
-	}
-	
-	public SSOUser getSsoUser() {
-		return ssoUser;
-	}
+    private SSOUser ssoUser;
+    private SSORole ssoRole;
 
-	public SSORole getSsoRole() {
-		return ssoRole;
-	}
+    public SSOUserAndSelectedRoleAuthenticationToken(SSOUser ssoUser,
+            SSORole ssoRole) {
+        super();
+        this.ssoUser = ssoUser;
+        this.ssoRole = ssoRole;
+    }
+
+    public SSOUser getSsoUser() {
+        return ssoUser;
+    }
+
+    public SSORole getSsoRole() {
+        return ssoRole;
+    }
 
 }

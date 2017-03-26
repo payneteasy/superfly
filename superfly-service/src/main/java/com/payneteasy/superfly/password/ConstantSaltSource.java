@@ -6,27 +6,27 @@ package com.payneteasy.superfly.password;
  * @author Roman Puchkovskiy
  */
 public class ConstantSaltSource implements SaltSource {
-	
-	private String salt;
-	
-	public ConstantSaltSource() {
-	}
 
-	public ConstantSaltSource(String salt) {
-		super();
-		this.salt = salt;
-	}
-	
-	public void setSalt(String salt) {
-		this.salt = salt;
-	}
+    private String salt;
 
-	public String getSalt(String username) {
-		return salt;
-	}
+    public ConstantSaltSource() {
+    }
 
-	public String getSalt(long userId) {
-		return salt;
-	}
+    public ConstantSaltSource(String salt) {
+        super();
+        this.salt = salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public String getSalt(String username) {
+        return salt;
+    }
+
+    public String getSalt(long userId) {
+        return salt;
+    }
 
 }

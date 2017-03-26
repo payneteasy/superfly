@@ -8,10 +8,10 @@ import com.payneteasy.superfly.api.SSOUser;
  * @author Roman Puchkovskiy
  */
 public class HOTPCheckedToken extends SSOUserTransportAuthenticationToken {
-	private static final long serialVersionUID = -7861332629416740520L;
+    private static final long serialVersionUID = -7861332629416740520L;
 
-	public HOTPCheckedToken(SSOUser ssoUser) {
-		super(ssoUser);
-	}
+    public HOTPCheckedToken(SSOUser ssoUser) {
+        super(ssoUser);
+    }
 
 }

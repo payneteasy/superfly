@@ -1,195 +1,195 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>superfly-web</artifactId>
-	<packaging>war</packaging>
-	<name>Superfly server web-application</name>
-	<description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
-	<dependencies>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-service</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-client-opt</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-spring-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-crypto</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-wicket</artifactId>
-		</dependency>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-web</artifactId>
+    <packaging>war</packaging>
+    <name>Superfly server web-application</name>
+    <description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-client-opt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-spring-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-crypto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-wicket</artifactId>
+        </dependency>
 
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.opensymphony.quartz</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
-	    <dependency>
-	    	<groupId>commons-collections</groupId>
-	    	<artifactId>commons-collections</artifactId>
-	    </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
         
-	    <dependency>
-	        <groupId>com.googlecode.xremoting</groupId>
-	        <artifactId>xremoting-core</artifactId>
-	    </dependency>
-	    <dependency>
-	        <groupId>com.thoughtworks.xstream</groupId>
-	        <artifactId>xstream</artifactId>
-	    </dependency>
+        <dependency>
+            <groupId>com.googlecode.xremoting</groupId>
+            <artifactId>xremoting-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
         </dependency>
-	    
-		<!-- WICKET DEPENDENCIES -->
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket</artifactId>
+
+        <!-- WICKET DEPENDENCIES -->
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
             <type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-spring</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-extensions</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-datetime</artifactId>
-		</dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-datetime</artifactId>
+        </dependency>
 
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-util</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <!--  JETTY DEPENDENCIES FOR TESTING  -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <scope>provided</scope>
+        </dependency>
 <!--
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-management</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-management</artifactId>
+            <scope>provided</scope>
+        </dependency>
 -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-plus</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
+            <scope>provided</scope>
+        </dependency>
 <!--
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-naming</artifactId>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-naming</artifactId>
+            <scope>provided</scope>
+        </dependency>
 -->
 
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-            	    <groupId>cglib</groupId>
-            	    <artifactId>cglib</artifactId>
-            	    <scope>compile</scope>
-        	</dependency>
-	</dependencies>
-	<build>
-		<resources>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-		<testResources>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                    <scope>compile</scope>
+            </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <testResources>
             <testResource>
                 <filtering>false</filtering>
                 <directory>src/test/resources</directory>
             </testResource>
-			<testResource>
-				<filtering>false</filtering>
-				<directory>src/test/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</testResource>
-		</testResources>
-		<finalName>superfly</finalName>
-	</build>
+            <testResource>
+                <filtering>false</filtering>
+                <directory>src/test/java</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
+        <finalName>superfly</finalName>
+    </build>
 
 </project>

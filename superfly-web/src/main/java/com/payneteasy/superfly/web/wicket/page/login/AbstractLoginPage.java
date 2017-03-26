@@ -18,29 +18,29 @@ public abstract class AbstractLoginPage extends WebPage {
         HttpSession session = request.getSession(false);
         Object ex = null;
         if (session != null) {
-        	ex = session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-        	if (ex != null) {
-        		session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
-        	}
+            ex = session.getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+            if (ex != null) {
+                session.removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+            }
         }
         
         String result = null;
         if (ex != null) {
-        	if (ex instanceof BadOTPValueException) {
-        		result = "The one-time password value you entered is incorrect.";
-        	} else {
-        		result = "The username or password you entered is incorrect or user is locked.";
-        	}
+            if (ex instanceof BadOTPValueException) {
+                result = "The one-time password value you entered is incorrect.";
+            } else {
+                result = "The username or password you entered is incorrect or user is locked.";
+            }
         }
-		return result;
+        return result;
     }
     
-	protected void addMessage(Form<Void> form) {
-		String message = getSpringSecurityExceptionMessageAndRemoveException();
+    protected void addMessage(Form<Void> form) {
+        String message = getSpringSecurityExceptionMessageAndRemoveException();
         Label reasonLabel = new Label("reason", message);
         reasonLabel.setVisible(message != null);
-		form.add(reasonLabel);
-		add(form);
-	}
+        form.add(reasonLabel);
+        add(form);
+    }
 
 }

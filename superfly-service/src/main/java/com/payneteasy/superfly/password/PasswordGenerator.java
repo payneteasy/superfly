@@ -7,11 +7,11 @@ package com.payneteasy.superfly.password;
  */
 public interface PasswordGenerator {
 
-	/**
-	 * Generates a password
-	 * 
-	 * @return password
-	 */
-	String generate();
+    /**
+     * Generates a password
+     *
+     * @return password
+     */
+    String generate();
 
 }

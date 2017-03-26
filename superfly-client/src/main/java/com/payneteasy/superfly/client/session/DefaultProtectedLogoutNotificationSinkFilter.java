@@ -13,17 +13,17 @@ import javax.servlet.http.HttpServletRequest;
  * @author Roman Puchkovskiy
  */
 public class DefaultProtectedLogoutNotificationSinkFilter extends
-		LogoutNotificationSinkFilter {
-	private Set<String> allowedIps = null;
+        LogoutNotificationSinkFilter {
+    private Set<String> allowedIps = null;
 
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-		super.init(filterConfig);
-		allowedIps = initAllowedIps(filterConfig);
-	}
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        super.init(filterConfig);
+        allowedIps = initAllowedIps(filterConfig);
+    }
 
-	@Override
-	protected boolean isAllowed(HttpServletRequest request) {
-		return isAllowedByIp(request, allowedIps);
-	}
+    @Override
+    protected boolean isAllowed(HttpServletRequest request) {
+        return isAllowedByIp(request, allowedIps);
+    }
 }

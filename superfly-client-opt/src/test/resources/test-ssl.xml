@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	<bean id="httpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
-		<property name="hostConfig">
-			<bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
-				<property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
-				<property name="keyStorePassword" value="changeit"/>
-				<property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
-				<property name="trustKeyStorePassword" value="changeit"/>
-				<property name="host" value="localhost"/>
-				<property name="securePort" value="8446"/>
-			</bean>
-		</property>
-	</bean>
+    <bean id="httpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
+        <property name="hostConfig">
+            <bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
+                <property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
+                <property name="keyStorePassword" value="changeit"/>
+                <property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
+                <property name="trustKeyStorePassword" value="changeit"/>
+                <property name="host" value="localhost"/>
+                <property name="securePort" value="8446"/>
+            </bean>
+        </property>
+    </bean>
 
 </beans>

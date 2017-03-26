@@ -13,20 +13,20 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
  * @author Roman Puchkovskiy
  */
 public class SuperflyAuthenticationProvider extends AbstractSuperflyAuthenticationProvider {
-	
-	private SSOService ssoService;
-	
-	@Required
-	public void setSsoService(SSOService ssoService) {
-		this.ssoService = ssoService;
-	}
 
-	@Override
-	protected SSOUser doAuthenticate(
-			UsernamePasswordAuthRequestInfoAuthenticationToken authRequest,
-			String username, String password) {
-		SSOUser ssoUser = ssoService.authenticate(username, password,
-				authRequest.getAuthRequestInfo());
-		return ssoUser;
-	}
+    private SSOService ssoService;
+
+    @Required
+    public void setSsoService(SSOService ssoService) {
+        this.ssoService = ssoService;
+    }
+
+    @Override
+    protected SSOUser doAuthenticate(
+            UsernamePasswordAuthRequestInfoAuthenticationToken authRequest,
+            String username, String password) {
+        SSOUser ssoUser = ssoService.authenticate(username, password,
+                authRequest.getAuthRequestInfo());
+        return ssoUser;
+    }
 }

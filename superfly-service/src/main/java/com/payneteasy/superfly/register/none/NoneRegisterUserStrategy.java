@@ -6,15 +6,15 @@ import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 
 public class NoneRegisterUserStrategy implements RegisterUserStrategy {
-	private UserDao userDao;
+    private UserDao userDao;
 
-	public NoneRegisterUserStrategy(UserDao userDao) {
-		this.userDao = userDao;
-	}
+    public NoneRegisterUserStrategy(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-	public RoutineResult registerUser(UserRegisterRequest registerUser) {
-		registerUser.setIsPasswordTemp(false);
-		return userDao.registerUser(registerUser);
-	}
+    public RoutineResult registerUser(UserRegisterRequest registerUser) {
+        registerUser.setIsPasswordTemp(false);
+        return userDao.registerUser(registerUser);
+    }
 
 }

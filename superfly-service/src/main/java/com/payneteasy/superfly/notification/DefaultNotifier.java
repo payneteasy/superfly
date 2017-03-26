@@ -20,52 +20,52 @@ import com.payneteasy.superfly.utils.SchedulerUtils;
  * @author Roman Puchkovskiy
  */
 public class DefaultNotifier implements Notifier {
-	
-	private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
-	
-	private Scheduler scheduler;
-	private String sendStrategyBeanName;
-	private int maxRetries = 3;
 
-	@Required
-	public void setScheduler(Scheduler scheduler) {
-		this.scheduler = scheduler;
-	}
+    private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
 
-	@Required
-	public void setSendStrategyBeanName(String sendStrategyBeanName) {
-		this.sendStrategyBeanName = sendStrategyBeanName;
-	}
+    private Scheduler scheduler;
+    private String sendStrategyBeanName;
+    private int maxRetries = 3;
 
-	public void setMaxRetries(int maxRetries) {
-		this.maxRetries = maxRetries;
-	}
+    @Required
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
 
-	public void notifyAboutLogout(List<LogoutNotification> notifications) {
-		logger.info("Notifying about logout: " + notifications);
-		for (LogoutNotification notification : notifications) {
-			createJob(notification);
-		}
-	}
+    @Required
+    public void setSendStrategyBeanName(String sendStrategyBeanName) {
+        this.sendStrategyBeanName = sendStrategyBeanName;
+    }
 
-	public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
-		logger.info("Notifying about users changed: " + notifications);
-		for (UsersChangedNotification notification : notifications) {
-			createJob(notification);
-		}
-	}
-	
-	private void createJob(AbstractNotification notification) {
-		Map<String, Object> dataMap = new HashMap<String, Object>();
-		dataMap.put("beanName", sendStrategyBeanName);
-		dataMap.put("notification", notification);
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
+    public void notifyAboutLogout(List<LogoutNotification> notifications) {
+        logger.info("Notifying about logout: " + notifications);
+        for (LogoutNotification notification : notifications) {
+            createJob(notification);
+        }
+    }
+
+    public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
+        logger.info("Notifying about users changed: " + notifications);
+        for (UsersChangedNotification notification : notifications) {
+            createJob(notification);
+        }
+    }
+
+    private void createJob(AbstractNotification notification) {
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("beanName", sendStrategyBeanName);
+        dataMap.put("notification", notification);
 
         dataMap.put("retriesLeft", maxRetries); // deprecated
 
-		try {
-			SchedulerUtils.scheduleJob(scheduler, SendNotificationOnceJob.class, dataMap);
-		} catch (SchedulerException e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
+        try {
+            SchedulerUtils.scheduleJob(scheduler, SendNotificationOnceJob.class, dataMap);
+        } catch (SchedulerException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
 }

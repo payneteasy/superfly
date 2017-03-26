@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>superfly-httpclient-ssl</artifactId>
-	<name>HttpClient SSL Extensions</name>
-	<description>Extensions to HttpClient which allow to use client SSL authentication as well as server trust check</description>
-	<dependencies>
-	    <dependency>
-	    	<groupId>commons-httpclient</groupId>
-	    	<artifactId>commons-httpclient</artifactId>
-	    </dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-	</dependencies>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-httpclient-ssl</artifactId>
+    <name>HttpClient SSL Extensions</name>
+    <description>Extensions to HttpClient which allow to use client SSL authentication as well as server trust check</description>
+    <dependencies>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

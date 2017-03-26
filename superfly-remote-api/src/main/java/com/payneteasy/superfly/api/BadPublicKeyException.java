@@ -8,20 +8,20 @@ package com.payneteasy.superfly.api;
  */
 public class BadPublicKeyException extends SSOException {
 
-	public BadPublicKeyException() {
-		super();
-	}
+    public BadPublicKeyException() {
+        super();
+    }
 
-	public BadPublicKeyException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public BadPublicKeyException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public BadPublicKeyException(String message) {
-		super(message);
-	}
+    public BadPublicKeyException(String message) {
+        super(message);
+    }
 
-	public BadPublicKeyException(Throwable cause) {
-		super(cause);
-	}
+    public BadPublicKeyException(Throwable cause) {
+        super(cause);
+    }
 
 }

@@ -19,41 +19,41 @@ import com.payneteasy.superfly.security.exception.BadOTPValueException;
  */
 public class SuperflyHOTPAuthenticationProvider implements AuthenticationProvider {
 
-	private SSOService ssoService;
-	private Class<?> supportedAuthenticationClass = CheckHOTPToken.class;
+    private SSOService ssoService;
+    private Class<?> supportedAuthenticationClass = CheckHOTPToken.class;
 
-	@Required
-	public void setSsoService(SSOService ssoService) {
-		this.ssoService = ssoService;
-	}
+    @Required
+    public void setSsoService(SSOService ssoService) {
+        this.ssoService = ssoService;
+    }
 
-	public void setSupportedAuthenticationClass(Class<RunAsUserToken> clazz) {
-		this.supportedAuthenticationClass = clazz;
-	}
-	
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
-		Authentication result = null;
-		if (authentication instanceof CheckHOTPToken) {
-			CheckHOTPToken authRequest = (CheckHOTPToken) authentication;
-			if (authRequest.getCredentials() == null) {
-				throw new BadOTPValueException("Null HOTP value");
-			}
-			boolean ok = ssoService.authenticateUsingHOTP(authRequest.getName(), authRequest.getCredentials().toString());
-			if (!ok) {
-				throw new BadOTPValueException("Invalid HOTP value");
-			}
-			result = createAuthentication(authRequest.getSsoUser());
-		}
-		return result;
-	}
+    public void setSupportedAuthenticationClass(Class<RunAsUserToken> clazz) {
+        this.supportedAuthenticationClass = clazz;
+    }
 
-	public boolean supports(Class<?> authentication) {
-		return supportedAuthenticationClass.isAssignableFrom(authentication);
-	}
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        Authentication result = null;
+        if (authentication instanceof CheckHOTPToken) {
+            CheckHOTPToken authRequest = (CheckHOTPToken) authentication;
+            if (authRequest.getCredentials() == null) {
+                throw new BadOTPValueException("Null HOTP value");
+            }
+            boolean ok = ssoService.authenticateUsingHOTP(authRequest.getName(), authRequest.getCredentials().toString());
+            if (!ok) {
+                throw new BadOTPValueException("Invalid HOTP value");
+            }
+            result = createAuthentication(authRequest.getSsoUser());
+        }
+        return result;
+    }
 
-	protected Authentication createAuthentication(SSOUser ssoUser) {
-		return new HOTPCheckedToken(ssoUser);
-	}
+    public boolean supports(Class<?> authentication) {
+        return supportedAuthenticationClass.isAssignableFrom(authentication);
+    }
+
+    protected Authentication createAuthentication(SSOUser ssoUser) {
+        return new HOTPCheckedToken(ssoUser);
+    }
 
 }

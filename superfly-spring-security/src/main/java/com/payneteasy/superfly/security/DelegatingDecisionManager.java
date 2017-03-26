@@ -9,36 +9,36 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.core.Authentication;
 
 public class DelegatingDecisionManager implements AccessDecisionManager {
-	
-	private AccessDecisionManager delegate;
-	
-	public DelegatingDecisionManager() {
-	}
 
-	public DelegatingDecisionManager(AccessDecisionManager delegate) {
-		this.delegate = delegate;
-	}
-	
-	public void setDelegate(AccessDecisionManager delegate) {
-		this.delegate = delegate;
-	}
-	
-	protected AccessDecisionManager getDelegate() {
-		return delegate;
-	}
+    private AccessDecisionManager delegate;
 
-	public void decide(Authentication authentication, Object object,
-			Collection<ConfigAttribute> configAttributes)
-			throws AccessDeniedException, InsufficientAuthenticationException {
-		delegate.decide(authentication, object, configAttributes);
-	}
+    public DelegatingDecisionManager() {
+    }
 
-	public boolean supports(ConfigAttribute attribute) {
-		return delegate.supports(attribute);
-	}
+    public DelegatingDecisionManager(AccessDecisionManager delegate) {
+        this.delegate = delegate;
+    }
 
-	public boolean supports(Class<?> clazz) {
-		return delegate.supports(clazz);
-	}
+    public void setDelegate(AccessDecisionManager delegate) {
+        this.delegate = delegate;
+    }
+
+    protected AccessDecisionManager getDelegate() {
+        return delegate;
+    }
+
+    public void decide(Authentication authentication, Object object,
+            Collection<ConfigAttribute> configAttributes)
+            throws AccessDeniedException, InsufficientAuthenticationException {
+        delegate.decide(authentication, object, configAttributes);
+    }
+
+    public boolean supports(ConfigAttribute attribute) {
+        return delegate.supports(attribute);
+    }
+
+    public boolean supports(Class<?> clazz) {
+        return delegate.supports(clazz);
+    }
 
 }

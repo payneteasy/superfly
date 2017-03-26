@@ -13,8 +13,8 @@ import com.payneteasy.superfly.password.SaltSource;
  * @author Roman Puchkovskiy
  */
 public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean<SaltSource> {
-	
-	private SaltSource source;
+
+    private SaltSource source;
 
     private Map<String,SaltSource> salts;
 
@@ -22,23 +22,23 @@ public class SaltSourceFactoryBean extends AbstractPolicyDependingFactoryBean<Sa
         this.salts = salts;
     }
 
-	public SaltSource getObject() throws Exception {
-		if (source == null) {
-			Policy p = findPolicyByIdentifier();
+    public SaltSource getObject() throws Exception {
+        if (source == null) {
+            Policy p = findPolicyByIdentifier();
             if(salts.containsKey(p.name().toLowerCase())){
-				source = salts.get(p.name().toLowerCase());
-			} else
+                source = salts.get(p.name().toLowerCase());
+            } else
                 throw new IllegalArgumentException();
-		}
-		return source;
-	}
+        }
+        return source;
+    }
 
-	public Class<?> getObjectType() {
-		return SaltSource.class;
-	}
+    public Class<?> getObjectType() {
+        return SaltSource.class;
+    }
 
-	public boolean isSingleton() {
-		return true;
-	}
+    public boolean isSingleton() {
+        return true;
+    }
 
 }

@@ -20,65 +20,65 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 @Secured("ROLE_ADMIN")
 public class ResetPasswordUserPage extends BasePage {
-	@SpringBean
-	private ResetPasswordStrategy resetPasswordStrategy;
-	
-	@SpringBean
-	private UserService userService;
-	@SpringBean
-	private PasswordGenerator passwordGenerator;
-	
-	public ResetPasswordUserPage(final PageParameters parameters) {
-		super(ListUsersPage.class, parameters);
-		
-		final long userId = parameters.get("userId").toLong();
-		final UIUser user = userService.getUser(userId);
-//		System.out.println("POLICY NAME "+resetPasswordStrategy.getPolicyName());
-		Form<Void> form = new Form<Void>("form");
-		add(form);
-		final Label label = new Label("generated-password", new LoadableDetachableModel<String>() {
+    @SpringBean
+    private ResetPasswordStrategy resetPasswordStrategy;
 
-			@Override
-			protected String load() {
-				setNewPassword(passwordGenerator.generate());
-				return getNewPassword();
-			}
-		});
-		label.setOutputMarkupId(true);
-		form.add(label);
-		form.add(new IndicatingAjaxLink<String>("generateNewPassword") {
-			private static final long serialVersionUID = 1L;
+    @SpringBean
+    private UserService userService;
+    @SpringBean
+    private PasswordGenerator passwordGenerator;
 
-			public void onClick(AjaxRequestTarget aTarget) {
-				setNewPassword(passwordGenerator.generate());
-				aTarget.add(label);
-			}
-		});
-		form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
+    public ResetPasswordUserPage(final PageParameters parameters) {
+        super(ListUsersPage.class, parameters);
+
+        final long userId = parameters.get("userId").toLong();
+        final UIUser user = userService.getUser(userId);
+//        System.out.println("POLICY NAME "+resetPasswordStrategy.getPolicyName());
+        Form<Void> form = new Form<Void>("form");
+        add(form);
+        final Label label = new Label("generated-password", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                setNewPassword(passwordGenerator.generate());
+                return getNewPassword();
+            }
+        });
+        label.setOutputMarkupId(true);
+        form.add(label);
+        form.add(new IndicatingAjaxLink<String>("generateNewPassword") {
+            private static final long serialVersionUID = 1L;
+
+            public void onClick(AjaxRequestTarget aTarget) {
+                setNewPassword(passwordGenerator.generate());
+                aTarget.add(label);
+            }
+        });
+        form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
         form.add(new Button("reset-button"){
 
-			@Override
-			public void onSubmit() {
-				resetPasswordStrategy.resetPassword(userId, user.getUsername(), newPassword);
-				setResponsePage(ListUsersPage.class);
-			}
-        	
+            @Override
+            public void onSubmit() {
+                resetPasswordStrategy.resetPassword(userId, user.getUsername(), newPassword);
+                setResponsePage(ListUsersPage.class);
+            }
+
         });
-	}
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Reset password";
-	}
+    @Override
+    protected String getTitle() {
+        return "Reset password";
+    }
 
-	private String newPassword;
+    private String newPassword;
 
-	public String getNewPassword() {
-		return newPassword;
-	}
+    public String getNewPassword() {
+        return newPassword;
+    }
 
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
-	}
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
 
 }

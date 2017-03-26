@@ -15,28 +15,28 @@ import com.payneteasy.superfly.service.LocalSecurityService;
  * @author Roman Puchkovskiy
  */
 public class SuperflyLocalHOTPAuthenticationProvider implements
-		AuthenticationProvider {
-	
-	private LocalSecurityService localSecurityService;
+        AuthenticationProvider {
 
-	@Required
-	public void setLocalSecurityService(LocalSecurityService localSecurityService) {
-		this.localSecurityService = localSecurityService;
-	}
+    private LocalSecurityService localSecurityService;
 
-	public Authentication authenticate(Authentication authentication)
-			throws AuthenticationException {
-		String username = authentication.getName();
-		String hotp = (String) authentication.getCredentials();
-		boolean ok = localSecurityService.authenticateUsingHOTP(username, hotp);
-		if (!ok) {
-			throw new BadOTPValueException("Did not find a user with matching password");
-		}
-		return new FullAuthentication(username, authentication.getAuthorities());
-	}
+    @Required
+    public void setLocalSecurityService(LocalSecurityService localSecurityService) {
+        this.localSecurityService = localSecurityService;
+    }
 
-	public boolean supports(Class<?> authentication) {
-		return LocalCheckHOTPToken.class.isAssignableFrom(authentication);
-	}
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        String username = authentication.getName();
+        String hotp = (String) authentication.getCredentials();
+        boolean ok = localSecurityService.authenticateUsingHOTP(username, hotp);
+        if (!ok) {
+            throw new BadOTPValueException("Did not find a user with matching password");
+        }
+        return new FullAuthentication(username, authentication.getAuthorities());
+    }
+
+    public boolean supports(Class<?> authentication) {
+        return LocalCheckHOTPToken.class.isAssignableFrom(authentication);
+    }
 
 }

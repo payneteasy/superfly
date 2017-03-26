@@ -34,18 +34,18 @@ import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class ViewRolePage extends BasePage {
-	@SpringBean
-	private RoleService roleService;
-	
-	@Override
-	protected String getTitle() {
-		return "Role details";
-	}
+    @SpringBean
+    private RoleService roleService;
 
-	public ViewRolePage(PageParameters param) {
-		super(ListRolesPage.class, param);
-		
-		final Long roleId = param.get("roleid").toLong();
+    @Override
+    protected String getTitle() {
+        return "Role details";
+    }
+
+    public ViewRolePage(PageParameters param) {
+        super(ListRolesPage.class, param);
+
+        final Long roleId = param.get("roleid").toLong();
 
         //BACK
         add(new Link<Void>("btn-back") {
@@ -54,13 +54,13 @@ public class ViewRolePage extends BasePage {
                 setResponsePage(ListRolesPage.class);
             }
         });
-		
-		//ROLE PROPERTIES
-		final UIRoleForView curRole = roleService.getRole(roleId);
-		
-		add(new Label("roleName", curRole.getRoleName()));
-		add(new Label("principalName", curRole.getPrincipalName()));
-		add(new Label("roleSubsystem", curRole.getRoleName()));
+
+        //ROLE PROPERTIES
+        final UIRoleForView curRole = roleService.getRole(roleId);
+
+        add(new Label("roleName", curRole.getRoleName()));
+        add(new Label("principalName", curRole.getPrincipalName()));
+        add(new Label("roleSubsystem", curRole.getRoleName()));
 
         PageParameters pageParameters = PageParametersBuilder.fromPair("id", roleId);
         add(new BookmarkablePageLink<Page>("role-groups", ChangeRoleGroupsPage.class, pageParameters));
@@ -77,7 +77,7 @@ public class ViewRolePage extends BasePage {
         });
 
 //        GRANT ACTIONS
-		add(new ListView<UIActionForCheckboxForRole>("grant-actions",roleService.getMappedRoleActions(0, Integer.MAX_VALUE, 1, true, roleId, null)) {
+        add(new ListView<UIActionForCheckboxForRole>("grant-actions",roleService.getMappedRoleActions(0, Integer.MAX_VALUE, 1, true, roleId, null)) {
             @Override
             protected void populateItem(ListItem<UIActionForCheckboxForRole> item) {
                 final UIActionForCheckboxForRole action = item.getModelObject();
@@ -86,19 +86,19 @@ public class ViewRolePage extends BasePage {
             }
         });
 
-	}
-	
+    }
 
-	@SuppressWarnings("unused")
-	private static class Filter implements Serializable {
-		private String actionNameSubstring;
 
-		public String getActionNameSubstring() {
-			return actionNameSubstring;
-		}
+    @SuppressWarnings("unused")
+    private static class Filter implements Serializable {
+        private String actionNameSubstring;
 
-		public void setActionNameSubstring(String actionNameSubstring) {
-			this.actionNameSubstring = actionNameSubstring;
-		}
-	}
+        public String getActionNameSubstring() {
+            return actionNameSubstring;
+        }
+
+        public void setActionNameSubstring(String actionNameSubstring) {
+            this.actionNameSubstring = actionNameSubstring;
+        }
+    }
 }

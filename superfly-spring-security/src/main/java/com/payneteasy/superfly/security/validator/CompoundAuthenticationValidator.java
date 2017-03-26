@@ -16,33 +16,33 @@ import com.payneteasy.superfly.security.exception.PreconditionsException;
  * @author Roman Puchkovskiy
  */
 public class CompoundAuthenticationValidator implements AuthenticationValidator {
-	
-	private Class<?>[] requiredClasses = new Class<?>[]{};
-	
-	public void setRequiredClasses(Class<?>[] classes) {
-		this.requiredClasses = classes;
-	}
 
-	public void validate(Authentication auth) throws AuthenticationException {
-		if (auth instanceof CompoundAuthentication) {
-			CompoundAuthentication compound = (CompoundAuthentication) auth;
-			validateCompound(compound);
-		} else {
-			throw new IllegalArgumentException(auth.getClass().getName() + " is not instance of a CompoundAuthentication");
-		}
-	}
+    private Class<?>[] requiredClasses = new Class<?>[]{};
 
-	protected void validateCompound(CompoundAuthentication compound) {
-		Authentication[] auths = compound.getReadyAuthentications();
-		Set<Class<?>> classes = new HashSet<Class<?>>();
-		for (Authentication auth : auths) {
-			classes.add(auth.getClass());
-		}
-		for (Class<?> clazz : requiredClasses) {
-			if (!classes.contains(clazz)) {
-				throw new PreconditionsException("Unexpected authentication class before authentication");
-			}
-		}
-	}
+    public void setRequiredClasses(Class<?>[] classes) {
+        this.requiredClasses = classes;
+    }
+
+    public void validate(Authentication auth) throws AuthenticationException {
+        if (auth instanceof CompoundAuthentication) {
+            CompoundAuthentication compound = (CompoundAuthentication) auth;
+            validateCompound(compound);
+        } else {
+            throw new IllegalArgumentException(auth.getClass().getName() + " is not instance of a CompoundAuthentication");
+        }
+    }
+
+    protected void validateCompound(CompoundAuthentication compound) {
+        Authentication[] auths = compound.getReadyAuthentications();
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        for (Authentication auth : auths) {
+            classes.add(auth.getClass());
+        }
+        for (Class<?> clazz : requiredClasses) {
+            if (!classes.contains(clazz)) {
+                throw new PreconditionsException("Unexpected authentication class before authentication");
+            }
+        }
+    }
 
 }

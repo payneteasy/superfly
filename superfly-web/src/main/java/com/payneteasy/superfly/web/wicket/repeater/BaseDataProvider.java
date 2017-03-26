@@ -10,15 +10,15 @@ import org.apache.wicket.model.Model;
  * Base for a data provider.
  * 
  * @author Roman Puchkovskiy
- * @param <T>	provided type
+ * @param <T>    provided type
  */
 public abstract class BaseDataProvider<T extends Serializable> implements IDataProvider<T> {
-	
-	public IModel<T> model(T object) {
-		return new Model<T>(object);
-	}
 
-	public void detach() {
-	}
+    public IModel<T> model(T object) {
+        return new Model<T>(object);
+    }
+
+    public void detach() {
+    }
 
 }

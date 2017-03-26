@@ -10,13 +10,13 @@ import java.io.Serializable;
  * @param <T>
  */
 public class ObjectHolder<T> implements Serializable {
-	private T object;
+    private T object;
 
-	public T getObject() {
-		return object;
-	}
+    public T getObject() {
+        return object;
+    }
 
-	public void setObject(T object) {
-		this.object = object;
-	}
+    public void setObject(T object) {
+        this.object = object;
+    }
 }

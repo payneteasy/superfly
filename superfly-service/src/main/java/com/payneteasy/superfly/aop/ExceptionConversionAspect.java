@@ -19,20 +19,20 @@ import com.payneteasy.superfly.utils.CloneExceptionUtils;
 @SuppressWarnings("unchecked")
 @Aspect
 public class ExceptionConversionAspect {
-	
-	private Class<? extends Exception>[] nonConvertibleClasses = new Class[]{};
+
+    private Class<? extends Exception>[] nonConvertibleClasses = new Class[]{};
 
     public void setNonConvertibleClasses(
-			Class<? extends Exception>[] nonConvertibleClasses) {
-		this.nonConvertibleClasses = nonConvertibleClasses;
-	}
+            Class<? extends Exception>[] nonConvertibleClasses) {
+        this.nonConvertibleClasses = nonConvertibleClasses;
+    }
 
-	@Around("execution(* com.payneteasy.superfly.service.impl.remote.SSOServiceImpl.*(..))")
+    @Around("execution(* com.payneteasy.superfly.service.impl.remote.SSOServiceImpl.*(..))")
     public Object invoke(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         try {
             return proceedingJoinPoint.proceed();
         } catch (Exception ex) {
-        	throw CloneExceptionUtils.cloneException(ex, nonConvertibleClasses);
+            throw CloneExceptionUtils.cloneException(ex, nonConvertibleClasses);
         }
     }
 }

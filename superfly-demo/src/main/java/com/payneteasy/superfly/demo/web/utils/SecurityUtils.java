@@ -21,10 +21,10 @@ public class SecurityUtils {
         }
         
         if (authentication instanceof FastAuthentication) {
-        	FastAuthentication fastAuthentication = (FastAuthentication) authentication;
-        	if (fastAuthentication.hasAuthority(aRole)) {
-        		return true;
-        	}
+            FastAuthentication fastAuthentication = (FastAuthentication) authentication;
+            if (fastAuthentication.hasAuthority(aRole)) {
+                return true;
+            }
         } else {
             for (GrantedAuthority authority : authorities) {
                 if (aRole.equals(authority.getAuthority())) {
@@ -49,8 +49,8 @@ public class SecurityUtils {
         String[] roles = new String[authorities.length];
         int i = 0;
         for (GrantedAuthority authority : authorities) {
-        	roles[i] = authority.getAuthority();
-        	i++;
+            roles[i] = authority.getAuthority();
+            i++;
         }
 
         return roles;
@@ -69,7 +69,7 @@ public class SecurityUtils {
     }
 
     @SuppressWarnings("unchecked")
-	public static boolean isComponentVisible(Class aComponentClass) {
+    public static boolean isComponentVisible(Class aComponentClass) {
         if (aComponentClass.isAnnotationPresent(Secured.class)) {
             Secured securedAnnotation = (Secured) aComponentClass.getAnnotation(Secured.class);
             String[] roles = securedAnnotation.value();

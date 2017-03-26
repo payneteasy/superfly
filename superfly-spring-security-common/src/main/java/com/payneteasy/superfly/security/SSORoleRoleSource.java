@@ -5,10 +5,10 @@ import com.payneteasy.superfly.api.SSOUser;
 
 public class SSORoleRoleSource implements RoleSource {
 
-	public String[] getRoleNames(SSOUser ssoUser, SSORole ssoRole) {
-		String[] result = new String[1];
-		result[0] = ssoRole.getName();
-		return result;
-	}
+    public String[] getRoleNames(SSOUser ssoUser, SSORole ssoRole) {
+        String[] result = new String[1];
+        result[0] = ssoRole.getName();
+        return result;
+    }
 
 }

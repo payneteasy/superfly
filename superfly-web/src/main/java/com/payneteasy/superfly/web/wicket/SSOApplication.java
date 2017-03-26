@@ -7,19 +7,19 @@ import org.apache.wicket.settings.IRequestCycleSettings;
 
 public class SSOApplication extends BaseApplication {
 
-	@Override
-	protected void customInit() {
+    @Override
+    protected void customInit() {
         // SSO (i.e., real single sign-on) login
         mountBookmarkablePageWithParameters("/login", SSOLoginPage.class);
         // single sign-out
         mountBookmarkablePageWithParameters("/logout", SSOLogoutPage.class);
 
         getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
-	}
+    }
 
-	@Override
-	public Class<? extends Page> getHomePage() {
-		return SSOLoginPage.class;
-	}
+    @Override
+    public Class<? extends Page> getHomePage() {
+        return SSOLoginPage.class;
+    }
 
 }

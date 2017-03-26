@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
+    </parent>
     <artifactId>superfly-crypto</artifactId>
-	<name>Superfly helper crypto services</name>
-	<description>Contains crypto services like OpenPGP-compatible encryption</description>
-	<dependencies>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcpg-jdk15</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-	</dependencies>
+    <name>Superfly helper crypto services</name>
+    <description>Contains crypto services like OpenPGP-compatible encryption</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpg-jdk15</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>

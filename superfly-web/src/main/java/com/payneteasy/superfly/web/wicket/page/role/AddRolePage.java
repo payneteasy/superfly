@@ -21,62 +21,62 @@ import java.io.Serializable;
 
 @Secured("ROLE_ADMIN")
 public class AddRolePage extends BasePage {
-	@SpringBean
-	RoleService roleService;
-	@SpringBean
-	private SubsystemService subsystemService;
+    @SpringBean
+    RoleService roleService;
+    @SpringBean
+    private SubsystemService subsystemService;
 
-	public AddRolePage() {
-		super(ListRolesPage.class);
-		
-		final UIRole role = new UIRole();
-		setDefaultModel(new CompoundPropertyModel<UIRole>(role));
-		final RoleFilter roleFilter = new RoleFilter();
-		Form<Void> form = new Form<Void>("form") {
+    public AddRolePage() {
+        super(ListRolesPage.class);
 
-		};
-		add(form);
-		LabelDropDownChoiceRow<UISubsystemForFilter> subsystem =new LabelDropDownChoiceRow<UISubsystemForFilter>("subsystem", roleFilter, "role.create.subsystem", subsystemService
-				.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
-		subsystem.getDropDownChoice().setRequired(true);
-		form.add(subsystem);
-		
-		form.add(new LabelTextFieldRow<String>(role, "roleName", "role.create.name", true));
-		form.add(new LabelTextFieldRow<String>(role, "principalName", "role.create.principal-name", true));
-		form.add(new Button("add-role") {
+        final UIRole role = new UIRole();
+        setDefaultModel(new CompoundPropertyModel<UIRole>(role));
+        final RoleFilter roleFilter = new RoleFilter();
+        Form<Void> form = new Form<Void>("form") {
 
-			@Override
-			public void onSubmit() {
-				role.setSubsystemId(roleFilter.getSubsystem().getId());
-				roleService.createRole(role);
-				PageParameters params = new PageParameters();
-				params.set("id", String.valueOf(role.getRoleId()));
-				params.set("idSubsystem", String.valueOf(role.getSubsystemId()));
-				params.set("wizard", "true");
-				getRequestCycle().setResponsePage(AddRoleGroupsPage.class,
+        };
+        add(form);
+        LabelDropDownChoiceRow<UISubsystemForFilter> subsystem =new LabelDropDownChoiceRow<UISubsystemForFilter>("subsystem", roleFilter, "role.create.subsystem", subsystemService
+                .getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+        subsystem.getDropDownChoice().setRequired(true);
+        form.add(subsystem);
+
+        form.add(new LabelTextFieldRow<String>(role, "roleName", "role.create.name", true));
+        form.add(new LabelTextFieldRow<String>(role, "principalName", "role.create.principal-name", true));
+        form.add(new Button("add-role") {
+
+            @Override
+            public void onSubmit() {
+                role.setSubsystemId(roleFilter.getSubsystem().getId());
+                roleService.createRole(role);
+                PageParameters params = new PageParameters();
+                params.set("id", String.valueOf(role.getRoleId()));
+                params.set("idSubsystem", String.valueOf(role.getSubsystemId()));
+                params.set("wizard", "true");
+                getRequestCycle().setResponsePage(AddRoleGroupsPage.class,
                         params);
-			}
+            }
 
-		});
-		form.add(new BookmarkablePageLink<Page>("cancel",ListRolesPage.class));
-	}
+        });
+        form.add(new BookmarkablePageLink<Page>("cancel",ListRolesPage.class));
+    }
 
-	@Override
-	protected String getTitle() {
-		return "Create role";
-	}
+    @Override
+    protected String getTitle() {
+        return "Create role";
+    }
 
-	@SuppressWarnings("unused")
-	private class RoleFilter implements Serializable {
-		private UISubsystemForFilter subsystem;
+    @SuppressWarnings("unused")
+    private class RoleFilter implements Serializable {
+        private UISubsystemForFilter subsystem;
 
-		public UISubsystemForFilter getSubsystem() {
-			return subsystem;
-		}
+        public UISubsystemForFilter getSubsystem() {
+            return subsystem;
+        }
 
-		public void setSubsystem(UISubsystemForFilter subsystem) {
-			this.subsystem = subsystem;
-		}
+        public void setSubsystem(UISubsystemForFilter subsystem) {
+            this.subsystem = subsystem;
+        }
 
-	}
+    }
 }

@@ -24,72 +24,72 @@ import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 
 @Secured("ROLE_ADMIN")
 public class GroupPropertiesPage extends BasePage {
-	@SpringBean
-	SubsystemService ssysService;
+    @SpringBean
+    SubsystemService ssysService;
 
-	@SpringBean
-	GroupService groupService;
+    @SpringBean
+    GroupService groupService;
 
-	@Override
-	protected String getTitle() {
-		return "Create group";
-	}
+    @Override
+    protected String getTitle() {
+        return "Create group";
+    }
 
-	public GroupPropertiesPage(PageParameters param) {
-		super(ListGroupsPage.class, param);
+    public GroupPropertiesPage(PageParameters param) {
+        super(ListGroupsPage.class, param);
 
-		final StringValue groupIdValue = param.get("gid");
+        final StringValue groupIdValue = param.get("gid");
 
-		String msg_text = "Please, provide new Group name and Subsystem";
-		GroupWizardModel groupModel = new GroupWizardModel();
+        String msg_text = "Please, provide new Group name and Subsystem";
+        GroupWizardModel groupModel = new GroupWizardModel();
 
-		// edit || create
-		if (!groupIdValue.isNull()) {
-			msg_text = "Edit Group name";
-			UIGroup group = groupService.getGroupById(groupIdValue.toLong());
-			groupModel.setGroupName(group.getName());
-			List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
-			for (UISubsystemForFilter e : list) {
-				if (e.getId() == group.getSubsystemId())
-					groupModel.setGroupSubsystem(e);
-			}
+        // edit || create
+        if (!groupIdValue.isNull()) {
+            msg_text = "Edit Group name";
+            UIGroup group = groupService.getGroupById(groupIdValue.toLong());
+            groupModel.setGroupName(group.getName());
+            List<UISubsystemForFilter> list = ssysService.getSubsystemsForFilter();
+            for (UISubsystemForFilter e : list) {
+                if (e.getId() == group.getSubsystemId())
+                    groupModel.setGroupSubsystem(e);
+            }
 
-		}
+        }
 
-		Form<GroupWizardModel> form = new Form<GroupWizardModel>("form", new Model<GroupWizardModel>(groupModel)) {
-			private static final long serialVersionUID = 1L;
+        Form<GroupWizardModel> form = new Form<GroupWizardModel>("form", new Model<GroupWizardModel>(groupModel)) {
+            private static final long serialVersionUID = 1L;
 
-			@Override
-			protected void onSubmit() {
-				GroupWizardModel grModel = this.getModelObject();
-				UIGroup group = new UIGroup();
-				group.setName(grModel.getGroupName());
-				group.setSubsystemId(grModel.getGroupSubsystem().getId());
-				if (groupIdValue.isNull()) {
-					groupService.createGroup(group);
-					PageParameters params = new PageParameters();
-					params.set("gid", group.getId());
-					setResponsePage(GroupActionsPage.class, params);
-				} else {
-					group.setId(groupIdValue.toLong());
-					groupService.updateGroup(group);
-					setResponsePage(ListGroupsPage.class);
-				}
+            @Override
+            protected void onSubmit() {
+                GroupWizardModel grModel = this.getModelObject();
+                UIGroup group = new UIGroup();
+                group.setName(grModel.getGroupName());
+                group.setSubsystemId(grModel.getGroupSubsystem().getId());
+                if (groupIdValue.isNull()) {
+                    groupService.createGroup(group);
+                    PageParameters params = new PageParameters();
+                    params.set("gid", group.getId());
+                    setResponsePage(GroupActionsPage.class, params);
+                } else {
+                    group.setId(groupIdValue.toLong());
+                    groupService.updateGroup(group);
+                    setResponsePage(ListGroupsPage.class);
+                }
 
-			}
-		};
-		add(form);
+            }
+        };
+        add(form);
 
-		form.add(new Label("msg", msg_text));
+        form.add(new Label("msg", msg_text));
 
-		form.add(new LabelTextFieldRow<String>(groupModel, "groupName", "group.create.name", true));
+        form.add(new LabelTextFieldRow<String>(groupModel, "groupName", "group.create.name", true));
 
-		LabelDropDownChoiceRow<UISubsystemForFilter> subsystem = new LabelDropDownChoiceRow<UISubsystemForFilter>("groupSubsystem",
-				groupModel, "group.create.choice-subsystem", ssysService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
-		subsystem.getDropDownChoice().setRequired(true);
-		form.add(subsystem);
+        LabelDropDownChoiceRow<UISubsystemForFilter> subsystem = new LabelDropDownChoiceRow<UISubsystemForFilter>("groupSubsystem",
+                groupModel, "group.create.choice-subsystem", ssysService.getSubsystemsForFilter(), new SubsystemChoiceRenderer());
+        subsystem.getDropDownChoice().setRequired(true);
+        form.add(subsystem);
 
-		form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
-	}
+        form.add(new BookmarkablePageLink<Page>("btn-cancel", ListGroupsPage.class));
+    }
 
 }

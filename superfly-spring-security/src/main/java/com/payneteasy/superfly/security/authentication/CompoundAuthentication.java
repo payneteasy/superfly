@@ -12,50 +12,50 @@ import org.springframework.security.core.Authentication;
  * @author Roman Puchkovskiy
  */
 public class CompoundAuthentication extends EmptyAuthenticationToken {
-	private static final long serialVersionUID = 8781927069834292831L;
-	
-	private List<Authentication> readyAuthentications = new ArrayList<Authentication>();
-	private Authentication currentAuthenticationRequest;
-	
-	public CompoundAuthentication() {
-		this(null);
-	}
-	
-	public CompoundAuthentication(Authentication request) {
-		this(new Authentication[]{}, request);
-	}
-	
-	public CompoundAuthentication(Authentication[] readyAuthentications,
-			Authentication currentAuthenticationRequest) {
-		super();
-		this.readyAuthentications = new ArrayList<Authentication>(Arrays.asList(readyAuthentications));
-		this.currentAuthenticationRequest = currentAuthenticationRequest;
-	}
+    private static final long serialVersionUID = 8781927069834292831L;
 
-	public void addReadyAuthentication(Authentication auth) {
-		readyAuthentications.add(auth);
-	}
-	
-	public Authentication getCurrentAuthenticationRequest() {
-		return currentAuthenticationRequest;
-	}
+    private List<Authentication> readyAuthentications = new ArrayList<Authentication>();
+    private Authentication currentAuthenticationRequest;
 
-	public Authentication[] getReadyAuthentications() {
-		return readyAuthentications.toArray(new Authentication[readyAuthentications.size()]);
-	}
-	
-	public Authentication getLatestReadyAuthentication() {
-		if (readyAuthentications.isEmpty()) {
-			return null;
-		}
-		return readyAuthentications.get(readyAuthentications.size() - 1);
-	}
-	
-	public Authentication getFirstReadyAuthentication() {
-		if (readyAuthentications.isEmpty()) {
-			return null;
-		}
-		return readyAuthentications.get(0);
-	}
+    public CompoundAuthentication() {
+        this(null);
+    }
+
+    public CompoundAuthentication(Authentication request) {
+        this(new Authentication[]{}, request);
+    }
+
+    public CompoundAuthentication(Authentication[] readyAuthentications,
+            Authentication currentAuthenticationRequest) {
+        super();
+        this.readyAuthentications = new ArrayList<Authentication>(Arrays.asList(readyAuthentications));
+        this.currentAuthenticationRequest = currentAuthenticationRequest;
+    }
+
+    public void addReadyAuthentication(Authentication auth) {
+        readyAuthentications.add(auth);
+    }
+
+    public Authentication getCurrentAuthenticationRequest() {
+        return currentAuthenticationRequest;
+    }
+
+    public Authentication[] getReadyAuthentications() {
+        return readyAuthentications.toArray(new Authentication[readyAuthentications.size()]);
+    }
+
+    public Authentication getLatestReadyAuthentication() {
+        if (readyAuthentications.isEmpty()) {
+            return null;
+        }
+        return readyAuthentications.get(readyAuthentications.size() - 1);
+    }
+
+    public Authentication getFirstReadyAuthentication() {
+        if (readyAuthentications.isEmpty()) {
+            return null;
+        }
+        return readyAuthentications.get(0);
+    }
 
 }

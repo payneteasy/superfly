@@ -9,8 +9,8 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 public class SuperflyPagingNavigator extends Panel{
-	public SuperflyPagingNavigator(String aId, final DataView<?> aPageable){
-		super(aId);
+    public SuperflyPagingNavigator(String aId, final DataView<?> aPageable){
+        super(aId);
         thePageable = aPageable;
 
         addLink(new LinkInfo("paging-first") {
@@ -74,9 +74,9 @@ public class SuperflyPagingNavigator extends Panel{
 
         Link<String> link = new Link<String>(id) {
 
-			private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-			@Override
+            @Override
             public boolean isVisible() {
                 return aInfo.isVisible();
             }

@@ -13,33 +13,33 @@ import java.io.Serializable;
  * @since 1.1
  */
 public class RoleGrantSpecification implements Serializable {
-	private static final long serialVersionUID = 5027521935601493108L;
-	
-	private String subsystemIdentifier;
-	private boolean detectSubsystemIdentifier;
-	private String principalName;
+    private static final long serialVersionUID = 5027521935601493108L;
 
-	public String getSubsystemIdentifier() {
-		return subsystemIdentifier;
-	}
+    private String subsystemIdentifier;
+    private boolean detectSubsystemIdentifier;
+    private String principalName;
 
-	public void setSubsystemIdentifier(String subsystemIdentifier) {
-		this.subsystemIdentifier = subsystemIdentifier;
-	}
+    public String getSubsystemIdentifier() {
+        return subsystemIdentifier;
+    }
 
-	public boolean isDetectSubsystemIdentifier() {
-		return detectSubsystemIdentifier;
-	}
+    public void setSubsystemIdentifier(String subsystemIdentifier) {
+        this.subsystemIdentifier = subsystemIdentifier;
+    }
 
-	public void setDetectSubsystemIdentifier(boolean detectSubsystemIdentifier) {
-		this.detectSubsystemIdentifier = detectSubsystemIdentifier;
-	}
+    public boolean isDetectSubsystemIdentifier() {
+        return detectSubsystemIdentifier;
+    }
 
-	public String getPrincipalName() {
-		return principalName;
-	}
+    public void setDetectSubsystemIdentifier(boolean detectSubsystemIdentifier) {
+        this.detectSubsystemIdentifier = detectSubsystemIdentifier;
+    }
 
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
-	}
+    public String getPrincipalName() {
+        return principalName;
+    }
+
+    public void setPrincipalName(String principalName) {
+        this.principalName = principalName;
+    }
 }

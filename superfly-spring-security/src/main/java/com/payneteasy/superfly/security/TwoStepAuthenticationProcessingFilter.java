@@ -26,103 +26,103 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
  * @author Roman Puchkovskiy
  */
 public class TwoStepAuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
-	
-	public static final String SPRING_SECURITY_FORM_ROLE_KEY = "j_role";
+
+    public static final String SPRING_SECURITY_FORM_ROLE_KEY = "j_role";
 
     private String roleParameter = SPRING_SECURITY_FORM_ROLE_KEY;
     private String subsystemIdentifier = null;
     
     public TwoStepAuthenticationProcessingFilter() {
-    	setFilterProcessesUrl("/j_superfly_security_check");
+        setFilterProcessesUrl("/j_superfly_security_check");
     }
-	
-	public void setRoleParameter(String roleParameter) {
-		this.roleParameter = roleParameter;
-	}
 
-	public void setSubsystemIdentifier(String subsystemIdentifier) {
-		this.subsystemIdentifier = subsystemIdentifier;
-	}
+    public void setRoleParameter(String roleParameter) {
+        this.roleParameter = roleParameter;
+    }
 
-	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Authentication authRequest;
-		if (isStepOne(request, authentication)) {
-			authRequest = doStepOne(request, authentication);
-		} else if (isStepTwo(request, authentication)) {
-			authRequest = doStepTwo(request, authentication);
-		} else {
-			throw new IllegalStateException("Must execute either step 1 or step 2, but they both didn't match");
-		}
-		
-		return getAuthenticationManager().authenticate(authRequest);
-	}
-	
-	protected String obtainRoleKey(HttpServletRequest request) {
-		return request.getParameter(roleParameter);
-	}
+    public void setSubsystemIdentifier(String subsystemIdentifier) {
+        this.subsystemIdentifier = subsystemIdentifier;
+    }
 
-	protected boolean isStepOne(HttpServletRequest request,
-			Authentication authentication) {
-		return obtainUsername(request) != null;
-	}
-	
-	protected boolean isStepTwo(HttpServletRequest request,
-			Authentication authentication) {
-		return obtainRoleKey(request) != null;
-	}
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+            HttpServletResponse response) throws AuthenticationException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authRequest;
+        if (isStepOne(request, authentication)) {
+            authRequest = doStepOne(request, authentication);
+        } else if (isStepTwo(request, authentication)) {
+            authRequest = doStepTwo(request, authentication);
+        } else {
+            throw new IllegalStateException("Must execute either step 1 or step 2, but they both didn't match");
+        }
 
-	protected Authentication doStepOne(HttpServletRequest request,
-			Authentication authentication) {
-		String username = obtainUsername(request);
-		String password = obtainPassword(request);
-		
-		return createUsernamePasswordAuthRequest(request, username, password);
-	}
+        return getAuthenticationManager().authenticate(authRequest);
+    }
 
-	protected Authentication createUsernamePasswordAuthRequest(
-			HttpServletRequest request, String username, String password) {
-		AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
-		Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
-				username, password, authRequestInfo);
-		return authRequest;
-	}
-	
-	protected Authentication doStepTwo(HttpServletRequest request,
-			Authentication authentication) {
-		String roleKey = obtainRoleKey(request);
-		SSOUser ssoUser = (SSOUser) request.getSession().getAttribute(
-				SSOUserTransportAuthenticationToken.SESSION_KEY);
-		request.getSession().removeAttribute(
-				SSOUserTransportAuthenticationToken.SESSION_KEY);
-		if (ssoUser == null) {
-			throw new BadCredentialsException("Session expired");
-		}
-		SSORole selectedRole = null;
-		for (SSORole role : ssoUser.getActionsMap().keySet()) {
-			if (role.getName().equals(roleKey)) {
-				selectedRole = role;
-				break;
-			}
-		}
-		if (selectedRole == null) {
-			throw new BadCredentialsException("Unknown role: " + roleKey);
-		}
-		
-		return createUserRoleAuthRequest(ssoUser, selectedRole);
-	}
-	
-	protected Authentication createUserRoleAuthRequest(SSOUser ssoUser, SSORole role) {
-		return new SSOUserAndSelectedRoleAuthenticationToken(ssoUser, role);
-	}
+    protected String obtainRoleKey(HttpServletRequest request) {
+        return request.getParameter(roleParameter);
+    }
 
-	protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
-		AuthenticationRequestInfo result = new AuthenticationRequestInfo();
-		result.setIpAddress(request.getRemoteAddr());
-		result.setSubsystemIdentifier(subsystemIdentifier);
-		return result;
-	}
+    protected boolean isStepOne(HttpServletRequest request,
+            Authentication authentication) {
+        return obtainUsername(request) != null;
+    }
+
+    protected boolean isStepTwo(HttpServletRequest request,
+            Authentication authentication) {
+        return obtainRoleKey(request) != null;
+    }
+
+    protected Authentication doStepOne(HttpServletRequest request,
+            Authentication authentication) {
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
+
+        return createUsernamePasswordAuthRequest(request, username, password);
+    }
+
+    protected Authentication createUsernamePasswordAuthRequest(
+            HttpServletRequest request, String username, String password) {
+        AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
+        Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
+                username, password, authRequestInfo);
+        return authRequest;
+    }
+
+    protected Authentication doStepTwo(HttpServletRequest request,
+            Authentication authentication) {
+        String roleKey = obtainRoleKey(request);
+        SSOUser ssoUser = (SSOUser) request.getSession().getAttribute(
+                SSOUserTransportAuthenticationToken.SESSION_KEY);
+        request.getSession().removeAttribute(
+                SSOUserTransportAuthenticationToken.SESSION_KEY);
+        if (ssoUser == null) {
+            throw new BadCredentialsException("Session expired");
+        }
+        SSORole selectedRole = null;
+        for (SSORole role : ssoUser.getActionsMap().keySet()) {
+            if (role.getName().equals(roleKey)) {
+                selectedRole = role;
+                break;
+            }
+        }
+        if (selectedRole == null) {
+            throw new BadCredentialsException("Unknown role: " + roleKey);
+        }
+
+        return createUserRoleAuthRequest(ssoUser, selectedRole);
+    }
+
+    protected Authentication createUserRoleAuthRequest(SSOUser ssoUser, SSORole role) {
+        return new SSOUserAndSelectedRoleAuthenticationToken(ssoUser, role);
+    }
+
+    protected AuthenticationRequestInfo createAuthRequestInfo(HttpServletRequest request) {
+        AuthenticationRequestInfo result = new AuthenticationRequestInfo();
+        result.setIpAddress(request.getRemoteAddr());
+        result.setSubsystemIdentifier(subsystemIdentifier);
+        return result;
+    }
 
 }

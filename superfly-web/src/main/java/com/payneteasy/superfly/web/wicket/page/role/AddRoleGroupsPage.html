@@ -8,34 +8,34 @@
 <wicket:extend>
 <div class="cont-box">
 <h5>Add to the role of groups</h5>
-	<form wicket:id="form" >
+    <form wicket:id="form" >
         <input type="submit" value="Apply" wicket:id="save-actions-link" class="btn btn-primary"/>
         <input type="submit" value="Next" wicket:id="next-link" class="btn"/>
         <input type="submit" value="Cancel" wicket:id="cancel" class="btn"/>
-		<div wicket:id="group">
-		    <table class="table table-bordered table-hover">
-		    	<thead>
-		    		<tr>
-			    		<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-			    		<th>Group Name</th>
-			    		<th>Subsystem Name</th>
-			    		
-		    		</tr>
-		    	</thead>
-		    	<tbody>
-		    		<tr wicket:id="actions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
-		    			<td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
-		    			<td><span wicket:id="group-name">Role 1</span></td>
-		    			<td><span wicket:id="subsystem-name">Subsystem 1</span></td>
-		    		</tr>
-		    		<tr>
-			          <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
-			        </tr>
-				</tbody>
-			</table>
-		</div>
+        <div wicket:id="group">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th>Group Name</th>
+                        <th>Subsystem Name</th>
 
-	</form>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="actions" onMouseOver="highlight(this);" onMouseOut="rollback(this);">
+                        <td class="checkbox-cell"><input type="checkbox" wicket:id="mapped" /></td>
+                        <td><span wicket:id="group-name">Role 1</span></td>
+                        <td><span wicket:id="subsystem-name">Subsystem 1</span></td>
+                    </tr>
+                    <tr>
+                      <td wicket:id="paging-navigator" class="paging-navigator" colspan="3"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </form>
 </div>
 </wicket:extend>
 </body>

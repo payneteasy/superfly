@@ -12,55 +12,55 @@ import com.payneteasy.superfly.model.ui.group.UIGroupForView;
 
 public interface GroupDao {
 
-	@AStoredProcedure(name = "ui_get_groups_list")
-	List<UIGroupForList> getGroups(long startFrom, long recordsCount,
-			int orderFieldNumber, String orderType, String groupNamePrefix,
-			String subsystemIds);
+    @AStoredProcedure(name = "ui_get_groups_list")
+    List<UIGroupForList> getGroups(long startFrom, long recordsCount,
+            int orderFieldNumber, String orderType, String groupNamePrefix,
+            String subsystemIds);
 
-	@AStoredProcedure(name = "ui_create_group")
-	RoutineResult createGroup(UIGroup group);
+    @AStoredProcedure(name = "ui_create_group")
+    RoutineResult createGroup(UIGroup group);
 
-	@AStoredProcedure(name = "ui_delete_group")
-	RoutineResult deleteGroup(long id);
+    @AStoredProcedure(name = "ui_delete_group")
+    RoutineResult deleteGroup(long id);
 
-	@AStoredProcedure(name = "ui_get_groups_list_count")
+    @AStoredProcedure(name = "ui_get_groups_list_count")
     long getGroupsCount(String groupName, String subsystemIds);
 
-	@AStoredProcedure(name = "ui_get_group")
-	UIGroupForView getGroupById(long id);
+    @AStoredProcedure(name = "ui_get_group")
+    UIGroupForView getGroupById(long id);
 
-	@AStoredProcedure(name = "ui_edit_group_properties")
-	RoutineResult updateGroup(long id, String groupName);
+    @AStoredProcedure(name = "ui_edit_group_properties")
+    RoutineResult updateGroup(long id, String groupName);
 
-	@AStoredProcedure(name = "ui_change_group_actions")
-	RoutineResult changeGroupActions(long groupId, String actionsToLink,
-			String actionsToUnlink);
+    @AStoredProcedure(name = "ui_change_group_actions")
+    RoutineResult changeGroupActions(long groupId, String actionsToLink,
+            String actionsToUnlink);
 
-	@AStoredProcedure(name = "ui_get_mapped_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
+    @AStoredProcedure(name = "ui_get_mapped_group_actions_list")
+    List<UIActionForCheckboxForGroup> getAllGroupMappedActions(long startFrom,
             long recordsCount, int orderFieldNumber, String orderType,
-			long groupId, String actionNameSubstring);
+            long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_get_mapped_group_actions_list_count")
+    @AStoredProcedure(name = "ui_get_mapped_group_actions_list_count")
     long getAllGroupMappedActionsCount(long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_get_unmapped_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int startFrom,
-			int recordsCount, int orderFieldNumber, String orderType,
-			long groupId, String actionNameSubstring);
+    @AStoredProcedure(name = "ui_get_unmapped_group_actions_list")
+    List<UIActionForCheckboxForGroup> getAllGroupUnMappedActions(int startFrom,
+            int recordsCount, int orderFieldNumber, String orderType,
+            long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_get_unmapped_group_actions_list_count")
-	int getAllGroupUnMappedActionsCount(long groupId, String actionNameSubstring);
+    @AStoredProcedure(name = "ui_get_unmapped_group_actions_list_count")
+    int getAllGroupUnMappedActionsCount(long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_get_all_group_actions_list")
-	List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
+    @AStoredProcedure(name = "ui_get_all_group_actions_list")
+    List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
             long recordsCount, int orderFieldNumber, String orderType,
-			long groupId, String actionNameSubstring);
+            long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_get_all_group_actions_list_count")
+    @AStoredProcedure(name = "ui_get_all_group_actions_list_count")
     long getAllGroupActionsCount(long groupId, String actionNameSubstring);
 
-	@AStoredProcedure(name = "ui_clone_group")
-	RoutineResult cloneGroup(UICloneGroupRequest request);
+    @AStoredProcedure(name = "ui_clone_group")
+    RoutineResult cloneGroup(UICloneGroupRequest request);
 
 }

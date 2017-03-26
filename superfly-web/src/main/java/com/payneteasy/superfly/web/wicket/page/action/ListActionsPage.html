@@ -7,8 +7,8 @@
 <body>
 <wicket:extend>
 
-	<div class="well s-filter">
-		<form wicket:id="filters-form" class="form-inline">
+    <div class="well s-filter">
+        <form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
                     <span>Subsystem:</span>
@@ -25,43 +25,43 @@
                     <input type="submit" value="Filter" class="btn"/>
                 </li>
             </ul>
-		</form>
-	</div>
+        </form>
+    </div>
 
     <!--TABLE    -->
-	<form wicket:id="form">
+    <form wicket:id="form">
 
         <div class="s-legend-btn">
             <input type="submit" value="Log On/Off" wicket:id="log-action"  class="btn btn-warning"/>
         </div>
 
-		<div wicket:id="group">
-			<table class="table table-bordered table-hover">
-				<thead>
-					<tr>
-						<th><input type="checkbox" wicket:id="master-checkbox" /></th>
-						<th><a wicket:id="order-by-actionName">Action Name</a></th>
-						<th><a wicket:id="order-by-actionDescription">Description</a></th>
-						<th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
-						<th>Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr wicket:id="actionList">
-						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
-						<td><span wicket:id="action-name">bond</span></td>
-						<td><span wicket:id="action-description">bond</span></td>
-						<td><span wicket:id="subsystem-name">bond</span></td>
-						<td><a href="#" wicket:id="copy-action" class="btn btn-info">Copy</a></td>
-					</tr>
-					<tr>
-					   <td wicket:id="paging-navigator" class="paging-navigator" colspan="6"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		
-	</form>
+        <div wicket:id="group">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th><a wicket:id="order-by-actionName">Action Name</a></th>
+                        <th><a wicket:id="order-by-actionDescription">Description</a></th>
+                        <th><a wicket:id="order-by-subsystemName">Subsystem Name</a></th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="actionList">
+                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected" /></td>
+                        <td><span wicket:id="action-name">bond</span></td>
+                        <td><span wicket:id="action-description">bond</span></td>
+                        <td><span wicket:id="subsystem-name">bond</span></td>
+                        <td><a href="#" wicket:id="copy-action" class="btn btn-info">Copy</a></td>
+                    </tr>
+                    <tr>
+                       <td wicket:id="paging-navigator" class="paging-navigator" colspan="6"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </form>
 </wicket:extend>
 </body>
 </html>

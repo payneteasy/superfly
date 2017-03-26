@@ -12,32 +12,32 @@ import com.payneteasy.superfly.client.exception.CollectionException;
  * @author Roman Puchkovskiy
  */
 public class TransformingActionDescriptionCollector implements
-		ActionDescriptionCollector {
-	
-	private ActionDescriptionCollector collector;
-	private StringTransformer[] transformers;
-	
-	public void setCollector(ActionDescriptionCollector collector) {
-		this.collector = collector;
-	}
+        ActionDescriptionCollector {
 
-	public void setTransformers(StringTransformer[] transformers) {
-		this.transformers = transformers;
-	}
+    private ActionDescriptionCollector collector;
+    private StringTransformer[] transformers;
 
-	public List<ActionDescription> collect() throws CollectionException {
-		List<ActionDescription> list = collector.collect();
-		for (ActionDescription actionDescription : list) {
-			actionDescription.setName(applyTransformers(actionDescription.getName()));
-		}
-		return list;
-	}
+    public void setCollector(ActionDescriptionCollector collector) {
+        this.collector = collector;
+    }
 
-	protected String applyTransformers(String name) {
-		for (StringTransformer transformer : transformers) {
-			name = transformer.transform(name);
-		}
-		return name;
-	}
+    public void setTransformers(StringTransformer[] transformers) {
+        this.transformers = transformers;
+    }
+
+    public List<ActionDescription> collect() throws CollectionException {
+        List<ActionDescription> list = collector.collect();
+        for (ActionDescription actionDescription : list) {
+            actionDescription.setName(applyTransformers(actionDescription.getName()));
+        }
+        return list;
+    }
+
+    protected String applyTransformers(String name) {
+        for (StringTransformer transformer : transformers) {
+            name = transformer.transform(name);
+        }
+        return name;
+    }
 
 }

@@ -16,36 +16,36 @@ import com.payneteasy.superfly.service.LocalSecurityService;
  * @author Roman Puchkovskiy
  */
 public class SuperflyLocalAuthenticationProvider extends
-		AbstractUserDetailsAuthenticationProvider {
-	
-	private LocalSecurityService localSecurityService;
-	private String rolePrefix = "ROLE_";
+        AbstractUserDetailsAuthenticationProvider {
 
-	@Required
-	public void setLocalSecurityService(LocalSecurityService localSecurityService) {
-		this.localSecurityService = localSecurityService;
-	}
+    private LocalSecurityService localSecurityService;
+    private String rolePrefix = "ROLE_";
 
-	public void setRolePrefix(String rolePrefix) {
-		this.rolePrefix = rolePrefix;
-	}
+    @Required
+    public void setLocalSecurityService(LocalSecurityService localSecurityService) {
+        this.localSecurityService = localSecurityService;
+    }
 
-	@Override
-	protected UserDetails retrieveUser(String username,
-			UsernamePasswordAuthenticationToken authentication)
-			throws AuthenticationException {
-		String password = (String) authentication.getCredentials();
-		String actions[] = localSecurityService.authenticate(username, password);
-		if (actions == null) {
-			throw new BadCredentialsException("Did not find a user with matching password");
-		}
-		return new UserDetailsImpl(username, password, actions, rolePrefix);
-	}
-	
-	@Override
-	protected void additionalAuthenticationChecks(UserDetails userDetails,
-			UsernamePasswordAuthenticationToken authentication)
-			throws AuthenticationException {
-	}
+    public void setRolePrefix(String rolePrefix) {
+        this.rolePrefix = rolePrefix;
+    }
+
+    @Override
+    protected UserDetails retrieveUser(String username,
+            UsernamePasswordAuthenticationToken authentication)
+            throws AuthenticationException {
+        String password = (String) authentication.getCredentials();
+        String actions[] = localSecurityService.authenticate(username, password);
+        if (actions == null) {
+            throw new BadCredentialsException("Did not find a user with matching password");
+        }
+        return new UserDetailsImpl(username, password, actions, rolePrefix);
+    }
+
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails,
+            UsernamePasswordAuthenticationToken authentication)
+            throws AuthenticationException {
+    }
 
 }

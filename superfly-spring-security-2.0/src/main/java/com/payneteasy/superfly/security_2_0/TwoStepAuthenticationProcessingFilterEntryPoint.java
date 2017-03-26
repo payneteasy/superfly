@@ -19,43 +19,43 @@ import com.payneteasy.superfly.security_2_0.exception.StepTwoException;
  * @author Roman Puchkovskiy
  */
 public class TwoStepAuthenticationProcessingFilterEntryPoint extends
-		AuthenticationProcessingFilterEntryPoint {
-	
-	private String loginFormStepTwoUrl;
+        AuthenticationProcessingFilterEntryPoint {
 
-	public String getLoginFormStepTwoUrl() {
-		return loginFormStepTwoUrl;
-	}
+    private String loginFormStepTwoUrl;
 
-	public void setLoginFormStepTwoUrl(String loginFormStepTwoUrl) {
-		this.loginFormStepTwoUrl = loginFormStepTwoUrl;
-	}
+    public String getLoginFormStepTwoUrl() {
+        return loginFormStepTwoUrl;
+    }
 
-	@Override
-	protected String determineUrlToUseForThisRequest(
-			HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException exception) {
-		if (exception instanceof StepTwoException) {
-			prepareForStepTwo(request, exception);
-			return getLoginFormStepTwoUrl();
-		} else {
-			return getLoginFormUrl();
-		}
-	}
-	
-	protected void prepareForStepTwo(HttpServletRequest request,
-			AuthenticationException reason) {
-		Authentication authentication = reason.getAuthentication();
-		SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
-		Set<SSORole> roles = token.getSsoUser().getActionsMap().keySet();
-		request.getSession().setAttribute(SSOUserTransportAuthenticationToken.SESSION_KEY, token.getSsoUser());
-		if (!isServerSideRedirect()) {
-			request.getSession().setAttribute("superflyRoles", roles);
-			request.getSession().setAttribute("ctxPath", request.getContextPath());
-		} else {
-			request.setAttribute("superflyRoles", roles);
-			request.setAttribute("ctxPath", request.getContextPath());
-		}
-	}
+    public void setLoginFormStepTwoUrl(String loginFormStepTwoUrl) {
+        this.loginFormStepTwoUrl = loginFormStepTwoUrl;
+    }
+
+    @Override
+    protected String determineUrlToUseForThisRequest(
+            HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException exception) {
+        if (exception instanceof StepTwoException) {
+            prepareForStepTwo(request, exception);
+            return getLoginFormStepTwoUrl();
+        } else {
+            return getLoginFormUrl();
+        }
+    }
+
+    protected void prepareForStepTwo(HttpServletRequest request,
+            AuthenticationException reason) {
+        Authentication authentication = reason.getAuthentication();
+        SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
+        Set<SSORole> roles = token.getSsoUser().getActionsMap().keySet();
+        request.getSession().setAttribute(SSOUserTransportAuthenticationToken.SESSION_KEY, token.getSsoUser());
+        if (!isServerSideRedirect()) {
+            request.getSession().setAttribute("superflyRoles", roles);
+            request.getSession().setAttribute("ctxPath", request.getContextPath());
+        } else {
+            request.setAttribute("superflyRoles", roles);
+            request.setAttribute("ctxPath", request.getContextPath());
+        }
+    }
 
 }

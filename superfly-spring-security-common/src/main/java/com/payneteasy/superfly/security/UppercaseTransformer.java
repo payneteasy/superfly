@@ -7,8 +7,8 @@ package com.payneteasy.superfly.security;
  */
 public class UppercaseTransformer implements StringTransformer {
 
-	public String transform(String s) {
-		return s.toUpperCase();
-	}
+    public String transform(String s) {
+        return s.toUpperCase();
+    }
 
 }

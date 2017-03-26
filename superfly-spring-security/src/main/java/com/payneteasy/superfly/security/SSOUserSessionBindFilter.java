@@ -26,23 +26,23 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
  */
 public class SSOUserSessionBindFilter extends GenericFilterBean {
 
-	public void doFilter(ServletRequest req, ServletResponse resp,
-			FilterChain chain) throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) resp;
-		HttpSession session = request.getSession(false);
-		if (session != null) {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if (authentication != null && authentication instanceof SSOUserAuthenticationToken) {
-				SSOUserAuthenticationToken token = (SSOUserAuthenticationToken) authentication;
-				getSessionMapping().addSession(token.getUser().getSessionId(), session);
-			}
-		}
-		chain.doFilter(request, response);
-	}
+    public void doFilter(ServletRequest req, ServletResponse resp,
+            FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication instanceof SSOUserAuthenticationToken) {
+                SSOUserAuthenticationToken token = (SSOUserAuthenticationToken) authentication;
+                getSessionMapping().addSession(token.getUser().getSessionId(), session);
+            }
+        }
+        chain.doFilter(request, response);
+    }
 
-	protected SessionMapping getSessionMapping() {
-		return SessionMappingLocator.getSessionMapping();
-	}
+    protected SessionMapping getSessionMapping() {
+        return SessionMappingLocator.getSessionMapping();
+    }
 
 }

@@ -7,8 +7,8 @@
 <body>
 <wicket:extend>
     <span wicket:id="confirmPanel"></span>
-	
-	<div class="well s-filter">
+
+    <div class="well s-filter">
         <form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
@@ -24,29 +24,29 @@
                 </li>
             </ul>
         </form>
-	</div>
-	
-	<form wicket:id="form">
-		<div wicket:id="group">
+    </div>
+
+    <form wicket:id="form">
+        <div wicket:id="group">
             <div class="s-legend-btn">
                 <input type="submit" wicket:id="add-group" value="Add Group" class="btn btn-primary"/>
                 <input type="submit" value="Delete selected" class="btn btn-warning"/>
             </div>
-			<table class="table table-bordered table-hover">
-				<thead>
-					<tr>
-						<th><input type="checkbox" wicket:id="groupselector"/></th>
-						<th><a wicket:id="order-by-groupName">Name</a></th>
-						<th><a wicket:id="order-by-subsystemName">Subsystem</a></th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr wicket:id="list-group">
-						<td class="checkbox-cell"><input type="checkbox" wicket:id="selected"/></td>
-						<td><span wicket:id="group-name">[Name]</span></td>
-						<td><span wicket:id="group-ssys">[Subsystem]</span></td>
-						<td class="s-td-action">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" wicket:id="groupselector"/></th>
+                        <th><a wicket:id="order-by-groupName">Name</a></th>
+                        <th><a wicket:id="order-by-subsystemName">Subsystem</a></th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="list-group">
+                        <td class="checkbox-cell"><input type="checkbox" wicket:id="selected"/></td>
+                        <td><span wicket:id="group-name">[Name]</span></td>
+                        <td><span wicket:id="group-ssys">[Subsystem]</span></td>
+                        <td class="s-td-action">
                             <div class="dropdown s-dropdown">
                                 <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
                                 <ul class="dropdown-menu s-dropdown-menu">
@@ -57,14 +57,14 @@
                                 </ul>
                             </div>
                         </td>
-					</tr>
-					<tr>
-					 <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</form>
+                    </tr>
+                    <tr>
+                     <td wicket:id="paging-navigator" class="paging-navigator" colspan="7"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
 </wicket:extend>
 </body>
 </html>

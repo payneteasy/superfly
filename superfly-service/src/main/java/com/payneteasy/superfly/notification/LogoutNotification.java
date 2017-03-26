@@ -11,21 +11,21 @@ import org.springframework.util.StringUtils;
  * @author Roman Puchkovskiy
  */
 public class LogoutNotification extends AbstractNotification {
-	private static final long serialVersionUID = 3921708726957920760L;
-	
-	private List<String> sessionIds;
+    private static final long serialVersionUID = 3921708726957920760L;
 
-	public List<String> getSessionIds() {
-		return sessionIds;
-	}
+    private List<String> sessionIds;
 
-	public void setSessionIds(List<String> sessionIds) {
-		this.sessionIds = sessionIds;
-	}
-	
-	@Override
-	public String toString() {
-		return "LogoutNotification [for " + getCallbackUri() + "]: "
-				+ StringUtils.collectionToCommaDelimitedString(sessionIds);
-	}
+    public List<String> getSessionIds() {
+        return sessionIds;
+    }
+
+    public void setSessionIds(List<String> sessionIds) {
+        this.sessionIds = sessionIds;
+    }
+
+    @Override
+    public String toString() {
+        return "LogoutNotification [for " + getCallbackUri() + "]: "
+                + StringUtils.collectionToCommaDelimitedString(sessionIds);
+    }
 }

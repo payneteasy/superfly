@@ -16,14 +16,14 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrategy {
-	
-	private static final String DEV_FILE_PATH = "src/main/resources/components-security.properties";
-	private static final String PROD_FILE_PATH = "components-security.properties";
-	
-	/**
-	 * Used only in production mode (i.e. when properties are loaded from the classpath).
-	 */
-	private Properties cachedProperties = null;
+
+    private static final String DEV_FILE_PATH = "src/main/resources/components-security.properties";
+    private static final String PROD_FILE_PATH = "components-security.properties";
+
+    /**
+     * Used only in production mode (i.e. when properties are loaded from the classpath).
+     */
+    private Properties cachedProperties = null;
 
     public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
         return true;
@@ -70,34 +70,34 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
         String file = DEV_FILE_PATH;
         boolean devMode = new File(file).exists();
         InputStream in = null;
-		try {
-			if (devMode) {
-				in = new FileInputStream(file);
-			} else {
-				if (cachedProperties != null) {
-					return cachedProperties;
-				}
-				ClassLoader cl = Thread.currentThread().getContextClassLoader();
-				if (cl == null) {
-					cl = getClass().getClassLoader();
-				}
-				in = cl.getResourceAsStream(PROD_FILE_PATH);
-			}
-		    prop.load(in);
-		    if (!devMode) {
-				cachedProperties = prop;
-			}
-			return prop;
-		} catch (IOException e) {
-		    throw new IllegalStateException("Error reading from file " +file+": "+e.getMessage());
-		} finally {
-		    try {
-		        if (in != null) {
-					in.close();
-				}
-		    } catch (IOException e) {
-		        throw new IllegalStateException("Error closing file " +file+": "+e.getMessage(), e);
-		    }
-		}
+        try {
+            if (devMode) {
+                in = new FileInputStream(file);
+            } else {
+                if (cachedProperties != null) {
+                    return cachedProperties;
+                }
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                if (cl == null) {
+                    cl = getClass().getClassLoader();
+                }
+                in = cl.getResourceAsStream(PROD_FILE_PATH);
+            }
+            prop.load(in);
+            if (!devMode) {
+                cachedProperties = prop;
+            }
+            return prop;
+        } catch (IOException e) {
+            throw new IllegalStateException("Error reading from file " +file+": "+e.getMessage());
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                throw new IllegalStateException("Error closing file " +file+": "+e.getMessage(), e);
+            }
+        }
     }
 }

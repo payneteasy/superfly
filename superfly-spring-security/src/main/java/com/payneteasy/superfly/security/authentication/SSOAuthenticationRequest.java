@@ -9,13 +9,13 @@ import org.springframework.security.core.Authentication;
  * @author Roman Puchkovskiy
  */
 public class SSOAuthenticationRequest extends EmptyAuthenticationToken {
-	private static final long serialVersionUID = 9204822041434318662L;
+    private static final long serialVersionUID = 9204822041434318662L;
 
-	private String subsystemToken;
+    private String subsystemToken;
 
-	public SSOAuthenticationRequest(String subsystemToken) {
+    public SSOAuthenticationRequest(String subsystemToken) {
         this.subsystemToken = subsystemToken;
-	}
+    }
 
     public String getSubsystemToken() {
         return subsystemToken;

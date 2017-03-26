@@ -12,32 +12,32 @@ import com.payneteasy.superfly.password.PasswordEncoder;
  * @author Roman Puchkovskiy
  */
 public class PasswordEncoderFactoryBean extends AbstractPolicyDependingFactoryBean<PasswordEncoder> {
-	
-	private PasswordEncoder encoder;
 
-	public PasswordEncoder getObject() throws Exception {
-		if (encoder == null) {
-			Policy p = findPolicyByIdentifier();
-			switch (p) {
-			case NONE:
-			case PCIDSS:
-				MessageDigestPasswordEncoder encPCIDSS = new MessageDigestPasswordEncoder();
-				encPCIDSS.setAlgorithm("SHA-256");
-				encoder = encPCIDSS;
-				break;
-			default:
-				throw new IllegalArgumentException();
-			}
-		}
-		return encoder;
-	}
+    private PasswordEncoder encoder;
 
-	public Class<?> getObjectType() {
-		return PasswordEncoder.class;
-	}
+    public PasswordEncoder getObject() throws Exception {
+        if (encoder == null) {
+            Policy p = findPolicyByIdentifier();
+            switch (p) {
+            case NONE:
+            case PCIDSS:
+                MessageDigestPasswordEncoder encPCIDSS = new MessageDigestPasswordEncoder();
+                encPCIDSS.setAlgorithm("SHA-256");
+                encoder = encPCIDSS;
+                break;
+            default:
+                throw new IllegalArgumentException();
+            }
+        }
+        return encoder;
+    }
 
-	public boolean isSingleton() {
-		return true;
-	}
+    public Class<?> getObjectType() {
+        return PasswordEncoder.class;
+    }
+
+    public boolean isSingleton() {
+        return true;
+    }
 
 }

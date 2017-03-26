@@ -22,59 +22,59 @@ import java.util.Collections;
 import static org.easymock.EasyMock.*;
 
 public class InsufficientAuthenticationAccessDecisionManagerTest {
-	
-	private AccessDecisionManager delegate;
-	private InsufficientAuthenticationAccessDecisionManager manager;
+
+    private AccessDecisionManager delegate;
+    private InsufficientAuthenticationAccessDecisionManager manager;
 
     @Before
-	public void setUp() {
-		delegate = EasyMock.createMock(AccessDecisionManager.class);
-		manager = new InsufficientAuthenticationAccessDecisionManager(delegate);
-		manager.setInsufficientAuthenticationClasses(new Class<?>[]{Insuf.class});
-	}
+    public void setUp() {
+        delegate = EasyMock.createMock(AccessDecisionManager.class);
+        manager = new InsufficientAuthenticationAccessDecisionManager(delegate);
+        manager.setInsufficientAuthenticationClasses(new Class<?>[]{Insuf.class});
+    }
 
     @Test
-	public void testInsufficientAuthentication() {
-		Insuf auth = new Insuf();
-		try {
-			manager.decide(auth, createFilter(), Collections.<ConfigAttribute>emptySet());
+    public void testInsufficientAuthentication() {
+        Insuf auth = new Insuf();
+        try {
+            manager.decide(auth, createFilter(), Collections.<ConfigAttribute>emptySet());
             Assert.fail();
-		} catch (InsufficientAuthenticationException e) {
-			// expected
+        } catch (InsufficientAuthenticationException e) {
+            // expected
             Assert.assertSame(auth, e.getAuthentication());
-		}
-	}
+        }
+    }
 
     @Test
-	@SuppressWarnings("unchecked")
-	public void testSufficientAuthentication() {
-		delegate.decide(anyObject(Authentication.class), anyObject(), anyObject(Collection.class));
-		replay(delegate);
-		manager.decide(new Suf(), createFilter(), Collections.<ConfigAttribute>emptySet());
-		verify(delegate);
-	}
+    @SuppressWarnings("unchecked")
+    public void testSufficientAuthentication() {
+        delegate.decide(anyObject(Authentication.class), anyObject(), anyObject(Collection.class));
+        replay(delegate);
+        manager.decide(new Suf(), createFilter(), Collections.<ConfigAttribute>emptySet());
+        verify(delegate);
+    }
 
     @Test
-	public void testDefaultConstructor() {
-		new InsufficientAuthenticationAccessDecisionManager();
-	}
+    public void testDefaultConstructor() {
+        new InsufficientAuthenticationAccessDecisionManager();
+    }
 
-	private GenericFilterBean createFilter() {
-		return new GenericFilterBean() {
-			public void doFilter(ServletRequest request, ServletResponse response,
-					FilterChain chain) throws IOException, ServletException {
-			}
-		};
-	}
-	
-	private static class Insuf extends EmptyAuthenticationToken {
-		private static final long serialVersionUID = 7147774578593339557L;
-		
-	}
-	
-	private static class Suf extends EmptyAuthenticationToken {
-		private static final long serialVersionUID = -8651621693219389336L;
-		
-	}
-	
+    private GenericFilterBean createFilter() {
+        return new GenericFilterBean() {
+            public void doFilter(ServletRequest request, ServletResponse response,
+                    FilterChain chain) throws IOException, ServletException {
+            }
+        };
+    }
+
+    private static class Insuf extends EmptyAuthenticationToken {
+        private static final long serialVersionUID = 7147774578593339557L;
+
+    }
+
+    private static class Suf extends EmptyAuthenticationToken {
+        private static final long serialVersionUID = -8651621693219389336L;
+
+    }
+
 }

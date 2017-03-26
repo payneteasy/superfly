@@ -1,35 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>superfly-common</artifactId>
-	<name>Common classes</name>
-	<description>Common classes used by other Superfly libraries</description>
-	<dependencies>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-remote-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-common</artifactId>
+    <name>Common classes</name>
+    <description>Common classes used by other Superfly libraries</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-remote-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 </project>

@@ -11,29 +11,29 @@ import com.payneteasy.superfly.spisupport.HOTPProviderContext;
  * Roman Puchkovskiy
  */
 public class NullHOTPProvider implements HOTPProvider {
-	public void init(HOTPProviderContext context) {
-	}
-	
-	public boolean authenticate(String subsystemIdentifier, String username, String hotp) {
-		return true;
-	}
+    public void init(HOTPProviderContext context) {
+    }
 
-	public String getSequenceForDownloadFileName(String username) {
-		throw new UnsupportedOperationException();
-	}
+    public boolean authenticate(String subsystemIdentifier, String username, String hotp) {
+        return true;
+    }
 
-	public void outputSequenceForDownload(String username, OutputStream os) {
-		throw new UnsupportedOperationException();
-	}
+    public String getSequenceForDownloadFileName(String username) {
+        throw new UnsupportedOperationException();
+    }
 
-	public boolean outputsSequenceForDownload() {
-		return false;
-	}
+    public void outputSequenceForDownload(String username, OutputStream os) {
+        throw new UnsupportedOperationException();
+    }
 
-	public String computeValue(String username, long counter) {
-		return "111111";
-	}
+    public boolean outputsSequenceForDownload() {
+        return false;
+    }
 
-	public void resetSequence(String username) {
-	}
+    public String computeValue(String username, long counter) {
+        return "111111";
+    }
+
+    public void resetSequence(String username) {
+    }
 }

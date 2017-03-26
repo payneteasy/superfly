@@ -11,63 +11,63 @@ import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.role.UIRoleForView;
 
 public interface RoleService {
-	/**
-	 * Returns list of roles for UI filter.
-	 * 
-	 * @return roles
-	 */
-	List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId);
+    /**
+     * Returns list of roles for UI filter.
+     *
+     * @return roles
+     */
+    List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId);
 
-	List<UIRoleForFilter> getRolesForFilter();
+    List<UIRoleForFilter> getRolesForFilter();
 
-	List<UIRoleForList> getRoles(long startFrom, long recordsCount,
-			int orderFieldNumber, boolean asc, String rolesName,
-			List<Long> subsystems);
+    List<UIRoleForList> getRoles(long startFrom, long recordsCount,
+            int orderFieldNumber, boolean asc, String rolesName,
+            List<Long> subsystems);
 
     long getRoleCount(String rolesName, List<Long> subsystems);
 
-	RoutineResult deleteRole(long roleId);
+    RoutineResult deleteRole(long roleId);
 
-	UIRoleForView getRole(long roleId);
+    UIRoleForView getRole(long roleId);
 
-	RoutineResult updateRole(UIRole role);
+    RoutineResult updateRole(UIRole role);
 
-	RoutineResult createRole(UIRole role);
+    RoutineResult createRole(UIRole role);
 
-	List<UIGroupForCheckbox> getAllRoleGroups(long startFrom, long recordsCount,
-			int orderFieldNumber, String orderType, long roleId);
+    List<UIGroupForCheckbox> getAllRoleGroups(long startFrom, long recordsCount,
+            int orderFieldNumber, String orderType, long roleId);
 
-	RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds,
-			List<Long> groupToRemoveIds);
+    RoutineResult changeRoleGroups(long roleId, List<Long> groupToAddIds,
+            List<Long> groupToRemoveIds);
 
-	List<UIActionForCheckboxForRole> getAllRoleActions(long startFrom,
+    List<UIActionForCheckboxForRole> getAllRoleActions(long startFrom,
             long recordsCount, int orderFieldNumber, boolean ascending,
-			long roleId, String actionName);
+            long roleId, String actionName);
 
     long getAllRoleActionsCount(long roleId, String actionName);
 
-	List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
+    List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
             long recordsCount, int orderFieldNumber, boolean ascending,
-			long roleId, String actionName);
+            long roleId, String actionName);
 
-	List<UIActionForCheckboxForRole> getUnMappedRoleActions(long startFrom,
+    List<UIActionForCheckboxForRole> getUnMappedRoleActions(long startFrom,
             long recordsCount, int orderFieldNumber, boolean ascending,
-			long roleId, String actionName);
+            long roleId, String actionName);
 
     long getMappedRoleActionsCount(long roleId, String actionName);
 
     long getAllRoleGroupsCount(long roleId);
 
-	RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
-			List<Long> actionToRemoveIds);
+    RoutineResult changeRoleActions(long roleId, List<Long> actionToAddIds,
+            List<Long> actionToRemoveIds);
 
-	List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
-			long recordsCount, int orderFieldNumber, boolean ascending,
-			long roleId);
+    List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
+            long roleId);
 
     int getMappedRoleGroupsCount(long roleId);
 
-	List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
-			long recordsCount, int orderFieldNumber, boolean ascending,
-			long roleId);
+    List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
+            long recordsCount, int orderFieldNumber, boolean ascending,
+            long roleId);
 }
