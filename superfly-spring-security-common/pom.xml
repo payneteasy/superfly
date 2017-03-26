@@ -1,45 +1,45 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>superfly-parent</artifactId>
-		<groupId>com.payneteasy.superfly</groupId>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
         <version>1.6-12-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>superfly-spring-security-common</artifactId>
-	<name>Spring Security Extension for Superfly commons</name>
-	<description>Contains common classes for Spring Security support</description>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-remote-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.payneteasy.superfly</groupId>
-			<artifactId>superfly-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-	</dependencies>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-spring-security-common</artifactId>
+    <name>Spring Security Extension for Superfly commons</name>
+    <description>Contains common classes for Spring Security support</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-remote-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+    </dependencies>
 </project>
