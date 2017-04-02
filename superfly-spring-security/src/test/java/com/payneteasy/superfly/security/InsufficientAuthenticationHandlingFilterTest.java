@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.security;
 
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class InsufficientAuthenticationHandlingFilterTest extends AbstractFilter
         filter = insufFilter;
     }
 
-    @Test
+    @After
     public void tearDown() {
         SecurityContextHolder.clearContext();
     }
