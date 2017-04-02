@@ -1,10 +1,9 @@
 package com.payneteasy.superfly.web.wicket.component;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 
-public class RoleInCreateUserChoiceRender implements IChoiceRenderer<UIRoleForList>{
+public class RoleInCreateUserChoiceRender extends ChoiceRenderer<UIRoleForList> {
 
     public Object getDisplayValue(UIRoleForList object) {
         return (object!=null) ? object.getName(): "-- Please select --";

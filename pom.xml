@@ -759,7 +759,7 @@
         <spring.security_2.version>2.0.8.RELEASE</spring.security_2.version>
         <aspectj.version>1.6.5</aspectj.version>
 
-        <wicket.version>6.19.0</wicket.version>
+        <wicket.version>7.6.0</wicket.version>
         <jetty.version>8.1.16.v20140903</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>

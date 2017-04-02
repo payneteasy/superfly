@@ -1,10 +1,10 @@
 package com.payneteasy.superfly.web.wicket.component;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+
 @SuppressWarnings("serial")
-public class SubsystemChoiceRenderer implements IChoiceRenderer<UISubsystemForFilter>{
+public class SubsystemChoiceRenderer extends ChoiceRenderer<UISubsystemForFilter> {
 
     public Object getDisplayValue(UISubsystemForFilter object) {
         return (object!=null) ? object.getName(): "-- Please select --";

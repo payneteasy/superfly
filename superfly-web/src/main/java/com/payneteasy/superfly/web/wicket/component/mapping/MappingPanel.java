@@ -1,13 +1,6 @@
 package com.payneteasy.superfly.web.wicket.component.mapping;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.markup.html.WebMarkupContainer;
+import com.payneteasy.superfly.service.mapping.MappingService;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
@@ -20,41 +13,39 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.string.Strings;
 
-import com.payneteasy.superfly.service.mapping.MappingService;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-public abstract class MappingPanel extends Panel {
+public abstract class MappingPanel<T extends MappingService> extends Panel {
 
-    private ListView<MappingService> mappedListView;
-    private ListView<MappingService> unmappedListView;
-
-    public MappingPanel(String id, final long entityId) {
+    protected MappingPanel(String id, final long entityId) {
         super(id);
-        final MappingModel<MappingService> mappingModel = new MappingModel<MappingService>();
-        Form<MappingModel<MappingService>> form = new Form<MappingModel<MappingService>>("form-mapping",
-                new Model<MappingModel<MappingService>>(mappingModel));
+        final MappingModel<MappingService> mappingModel = new MappingModel<>();
+        Form<MappingModel<MappingService>> form = new Form<>("form-mapping",
+                new Model<>(mappingModel));
         add(form);
 
-        final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<MappingService>("checkgroup-mapped",
+        final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<>("checkgroup-mapped",
                 mappingModel.getSelectedInMapped());
         form.add(checkGroupMapped);
         checkGroupMapped.add(new CheckGroupSelector("master-checkbox-map", checkGroupMapped));
         checkGroupMapped.add(new Label("mapped-item-name", getHeaderItemName()));
-        IModel<List<? extends MappingService>> mappedListModel = new LoadableDetachableModel<List<? extends MappingService>>() {
+
+        final IModel<List<T>> mappedListModel = new LoadableDetachableModel<List<T>>() {
             @Override
-            public List<? extends MappingService> load() {
+            public List<T> load() {
                 return getMappedItems(mappingModel.getSearchMappedString());
             }
         };
-        mappedListView = new ListView<MappingService>("mapped-list", mappedListModel) {
+        ListView<T> mappedListView = new ListView<T>("mapped-list", mappedListModel) {
 
             @Override
-            protected void populateItem(ListItem<MappingService> item) {
-                MappingService mapped = item.getModelObject();
+            protected void populateItem(ListItem<T> item) {
+                T mapped = item.getModelObject();
                 item.add(new Label("mapped-name", createObjectNameModel(mapped.getItemName())));
-                item.add(new Check<MappingService>("selected", new Model<MappingService>(mapped)));
+                item.add(new Check<>("selected", new Model<>(mapped)));
             }
 
         };
@@ -69,28 +60,25 @@ public abstract class MappingPanel extends Panel {
 
         });
 
-        final CheckGroup<MappingService> checkGroupUnMapped = new CheckGroup<MappingService>("checkgroup-unmapped",
+        final CheckGroup<MappingService> checkGroupUnMapped = new CheckGroup<>("checkgroup-unmapped",
                 mappingModel.getSelectedInUnMapped());
         form.add(checkGroupUnMapped);
         checkGroupUnMapped.add(new CheckGroupSelector("master-checkbox-unmap", checkGroupUnMapped));
         checkGroupUnMapped.add(new Label("unmapped-item-name", getHeaderItemName()));
-        IModel<List<? extends MappingService>> unmappedListModel = new LoadableDetachableModel<List<? extends MappingService>>() {
 
+        final IModel<List<T>> unmappedListModel = new LoadableDetachableModel<List<T>>() {
             @Override
-            public List<? extends MappingService> load() {
+            public List<T> load() {
                 return getUnMappedItems(mappingModel.getSearchUnMappedString());
             }
-
         };
-        unmappedListView = new ListView<MappingService>("unmapped-list", unmappedListModel) {
-
+        ListView<T> unmappedListView = new ListView<T>("unmapped-list", unmappedListModel) {
             @Override
-            protected void populateItem(ListItem<MappingService> item) {
+            protected void populateItem(ListItem<T> item) {
                 MappingService unmapped = item.getModelObject();
                 item.add(new Label("mapped-name", createObjectNameModel(unmapped.getItemName())));
-                item.add(new Check<MappingService>("selected", new Model<MappingService>(unmapped)));
+                item.add(new Check<>("selected", new Model<>(unmapped)));
             }
-
         };
         unmappedListView.setReuseItems(true);
         checkGroupUnMapped.add(unmappedListView);
@@ -105,20 +93,20 @@ public abstract class MappingPanel extends Panel {
 
     }
 
-    protected abstract List<? extends MappingService> getMappedItems(String searchLabel);
+    protected abstract List<T> getMappedItems(String searchLabel);
 
-    protected abstract List<? extends MappingService> getUnMappedItems(String searchLabel);
+    protected abstract List<T> getUnMappedItems(String searchLabel);
 
     protected abstract void mappingProcess(long entityId, List<Long> mappedId, List<Long> unmappedId);
 
     protected abstract String getHeaderItemName();
 
     private IModel<String> createObjectNameModel(String itemName) {
-        return new Model<String>(itemName);
+        return new Model<>(itemName);
     }
     
     private List<Long> objectsToIds(Collection<? extends MappingService> objects) {
-        List<Long> ids = new ArrayList<Long>(objects.size());
+        List<Long> ids = new ArrayList<>(objects.size());
         for (MappingService object : objects) {
             ids.add(object.getItemId());
         }

@@ -5,6 +5,8 @@ import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.component.IRequestableComponent;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.util.io.IOUtils;
 import org.springframework.security.access.annotation.Secured;
 
@@ -50,6 +52,11 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
             ret = true;
         }
         return ret;
+    }
+
+    @Override
+    public boolean isResourceAuthorized(IResource resource, PageParameters parameters) {
+        return true;
     }
 
     private boolean isComponentAllowed(String aPath, Properties aProps) {

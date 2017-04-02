@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.wicket;
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLogoutPage;
 import org.apache.wicket.Page;
-import org.apache.wicket.settings.IRequestCycleSettings;
+import org.apache.wicket.settings.RequestCycleSettings;
 
 public class SSOApplication extends BaseApplication {
 
@@ -14,7 +14,7 @@ public class SSOApplication extends BaseApplication {
         // single sign-out
         mountBookmarkablePageWithParameters("/logout", SSOLogoutPage.class);
 
-        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
+        getRequestCycleSettings().setRenderStrategy(RequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
     }
 
     @Override

@@ -1,23 +1,22 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import java.util.List;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.springframework.security.access.annotation.Secured;
-
+import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.service.mapping.MappingService;
 import com.payneteasy.superfly.web.wicket.component.mapping.MappingPanel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.access.annotation.Secured;
+
+import java.util.List;
 
 /**
  * Used to change actions assigned to a user.
@@ -48,15 +47,15 @@ public class ChangeUserGrantActionsPage extends BasePage {
         add(new Label("sub-name", subsystem.getName()));
         add(new Label("role-name",role.getRoleName()));
 
-        add(new MappingPanel("mapping-panel", userId){
+        add(new MappingPanel<UIActionForCheckboxForUser>("mapping-panel", userId){
 
             @Override
-            protected List<? extends MappingService> getMappedItems(String searchLabel) {
+            protected List<UIActionForCheckboxForUser> getMappedItems(String searchLabel) {
                 return userService.getMappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
             }
 
             @Override
-            protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
+            protected List<UIActionForCheckboxForUser> getUnMappedItems(String searchLabel) {
                 return userService.getUnmappedUserActions(userId, subId, roleId, searchLabel, 0, Integer.MAX_VALUE);
             }
 

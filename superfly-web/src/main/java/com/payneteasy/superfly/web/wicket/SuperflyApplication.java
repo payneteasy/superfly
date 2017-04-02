@@ -13,7 +13,14 @@ import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
-import com.payneteasy.superfly.web.wicket.page.role.*;
+import com.payneteasy.superfly.web.wicket.page.role.AddRoleActionsPage;
+import com.payneteasy.superfly.web.wicket.page.role.AddRoleGroupsPage;
+import com.payneteasy.superfly.web.wicket.page.role.AddRolePage;
+import com.payneteasy.superfly.web.wicket.page.role.ChangeRoleActionsPage;
+import com.payneteasy.superfly.web.wicket.page.role.ChangeRoleGroupsPage;
+import com.payneteasy.superfly.web.wicket.page.role.EditRolePage;
+import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
+import com.payneteasy.superfly.web.wicket.page.role.ViewRolePage;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
@@ -22,14 +29,22 @@ import com.payneteasy.superfly.web.wicket.page.smtp_server.ViewSmtpServerPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.AddSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.EditSubsystemPage;
 import com.payneteasy.superfly.web.wicket.page.subsystem.ListSubsystemsPage;
-import com.payneteasy.superfly.web.wicket.page.user.*;
+import com.payneteasy.superfly.web.wicket.page.user.AppendSubsystemWithRolePage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangeUserGrantActionsPage;
+import com.payneteasy.superfly.web.wicket.page.user.ChangeUserRolesPage;
+import com.payneteasy.superfly.web.wicket.page.user.CloneUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.CreateUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.EditUserPage;
+import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
+import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
 import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
-import org.apache.wicket.settings.IRequestCycleSettings;
+import org.apache.wicket.settings.RequestCycleSettings;
 
 public class SuperflyApplication extends BaseApplication {
 
@@ -84,7 +99,7 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePageWithPath("smtp-servers/update", UpdateSmtpServerPage.class);
         mountBookmarkablePageWithPath("smtp-servers/view", ViewSmtpServerPage.class);
 
-        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.REDIRECT_TO_RENDER);
+        getRequestCycleSettings().setRenderStrategy(RequestCycleSettings.RenderStrategy.REDIRECT_TO_RENDER);
     }
 
     protected InterceptionDecisions createInterceptionDecisions() {

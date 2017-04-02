@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
+import com.payneteasy.superfly.model.ui.group.UIGroupForCheckbox;
 import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.service.RoleService;
-import com.payneteasy.superfly.service.mapping.MappingService;
 import com.payneteasy.superfly.web.wicket.component.mapping.MappingPanel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
@@ -25,15 +25,15 @@ public class ChangeRoleGroupsPage extends BasePage {
         final long roleId = parameters.get("id").toLong();
         UIRole role = roleService.getRole(roleId);
         add(new Label("role-name", role.getRoleName()));
-        add(new MappingPanel("mapping-panel",roleId){
+        add(new MappingPanel<UIGroupForCheckbox>("mapping-panel", roleId){
 
             @Override
-            protected List<? extends MappingService> getMappedItems(String searchLabel) {
+            protected List<UIGroupForCheckbox> getMappedItems(String searchLabel) {
                 return roleService.getMappedRoleGroups(0, Integer.MAX_VALUE, 5, true, roleId);
             }
 
             @Override
-            protected List<? extends MappingService> getUnMappedItems(String searchLabel) {
+            protected List<UIGroupForCheckbox> getUnMappedItems(String searchLabel) {
                 return roleService.getUnMappedRoleGroups(0, Integer.MAX_VALUE, 5, true, roleId);
             }
 

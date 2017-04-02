@@ -1,24 +1,24 @@
 package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SmtpServerService;
+import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.springframework.security.access.annotation.Secured;
-
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
-import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
-import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
-import com.payneteasy.superfly.web.wicket.page.BasePage;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class AddSubsystemPage extends BasePage {
             }
         };
         form.add(new LabelDropDownChoiceRow<>("smtpServer", subsystem, "subsystem.smtpServer",
-                smtpServersModel, new IChoiceRenderer<UISmtpServerForFilter>() {
+                smtpServersModel, new ChoiceRenderer<UISmtpServerForFilter>() {
             public Object getDisplayValue(UISmtpServerForFilter server) {
                 return server == null ? "" : server.getName();
             }
