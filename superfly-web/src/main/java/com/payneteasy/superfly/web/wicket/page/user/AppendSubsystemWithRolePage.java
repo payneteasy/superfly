@@ -10,7 +10,7 @@ import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
-import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRender;
+import com.payneteasy.superfly.web.wicket.component.SubsystemInCreateUserChoiceRenderer;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
@@ -112,7 +112,7 @@ public class AppendSubsystemWithRolePage extends BasePage {
         UIUser user = userService.getUser(userId);
         form.add(new LabelValueRow<String>("user-name", new Model<String>(user.getUsername()), "user.name"));
 
-        LabelDropDownChoiceRow<UISubsystemForList> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", subsystemsModel, new SubsystemInCreateUserChoiceRender());
+        LabelDropDownChoiceRow<UISubsystemForList> subsystemsRow = new LabelDropDownChoiceRow<UISubsystemForList>("subsystem", this, "user.create.choice-subsystem", subsystemsModel, new SubsystemInCreateUserChoiceRenderer());
         subsystemsRow.getDropDownChoice().setRequired(true);
 
         final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());

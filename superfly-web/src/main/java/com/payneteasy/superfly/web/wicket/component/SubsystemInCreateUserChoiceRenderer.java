@@ -1,10 +1,9 @@
 package com.payneteasy.superfly.web.wicket.component;
 
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 
-public class SubsystemInCreateUserChoiceRender implements IChoiceRenderer<UISubsystemForList>{
+public class SubsystemInCreateUserChoiceRenderer extends ChoiceRenderer<UISubsystemForList> {
 
     public Object getDisplayValue(UISubsystemForList object) {
         return (object!=null) ? object.getName(): "-- Please select --";

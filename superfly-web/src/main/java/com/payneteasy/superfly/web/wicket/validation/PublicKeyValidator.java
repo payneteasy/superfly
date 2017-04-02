@@ -1,12 +1,11 @@
 package com.payneteasy.superfly.web.wicket.validation;
 
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidator;
-import org.apache.wicket.validation.ValidationError;
-
 import com.payneteasy.superfly.api.BadPublicKeyException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.utils.PGPKeyValidator;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * Used to validate public keys.
@@ -33,7 +32,7 @@ public class PublicKeyValidator implements IValidator<String> {
 
     private void triggerError(IValidatable<String> validatable, String key) {
         ValidationError error = new ValidationError();
-        error.addMessageKey(key);
+        error.addKey(key);
         validatable.error(error);
     }
 
