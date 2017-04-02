@@ -69,8 +69,9 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest {
         Step1Authentication auth = new Step1Authentication();
         InsufficientAuthenticationException ex = new InsufficientAuthenticationException("Insufficient!");
         ex.setAuthentication(auth);
+        Assert.assertNull("before the commence() we must have null", SecurityContextHolder.getContext().getAuthentication());
         entryPoint.commence(request, response, ex);
-        Assert.assertNull(SecurityContextHolder.getContext().getAuthentication());
+        Assert.assertNull("after the commence() we must have null", SecurityContextHolder.getContext().getAuthentication());
 
         EasyMock.verify(response);
     }
