@@ -1,15 +1,17 @@
 package com.payneteasy.superfly.utils;
 
-import java.util.Date;
-import java.util.Map;
-
 import org.quartz.Job;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+
+import java.util.Date;
+import java.util.Map;
 
 public class SchedulerUtils {
 
@@ -19,17 +21,27 @@ public class SchedulerUtils {
             Class<? extends Job> jobClass, Map<String, Object> dataMap)
             throws SchedulerException {
         String name = new RandomGUID().toString();
-        JobDetail jobDetail = new JobDetail(name, GROUP, jobClass);
-        jobDetail.getJobDataMap().putAll(dataMap);
-        Trigger trigger = new SimpleTrigger(name, GROUP, new Date(new Date().getTime() + 1000));
+        JobDetail jobDetail = JobBuilder.newJob(jobClass)
+                .withIdentity(name, GROUP)
+                .usingJobData(new JobDataMap(dataMap))
+                .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(name, GROUP)
+                .startAt(new Date(new Date().getTime() + 1000))
+                .build();
         scheduler.scheduleJob(jobDetail, trigger);
     }
 
     public static void rescheduleJob(JobExecutionContext context, Map<String, Object> dataMap) throws SchedulerException {
         String name = new RandomGUID().toString();
-        JobDetail jobDetail = new JobDetail(name, GROUP, context.getJobDetail().getJobClass());
-        jobDetail.getJobDataMap().putAll(dataMap);
-        Trigger trigger = new SimpleTrigger(name, GROUP, new Date(new Date().getTime() + 1000 * 60));
+        JobDetail jobDetail = JobBuilder.newJob(context.getJobDetail().getJobClass())
+                .withIdentity(name, GROUP)
+                .usingJobData(new JobDataMap(dataMap))
+                .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(name, GROUP)
+                .startAt(new Date(new Date().getTime() + 1000 * 60))
+                .build();
         context.getScheduler().scheduleJob(jobDetail, trigger);
     }
 }
