@@ -1,18 +1,17 @@
 package com.payneteasy.superfly.security.authentication;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.RoleSource;
 import com.payneteasy.superfly.security.StringTransformer;
 import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Authentication implementation which represents authentication result
@@ -48,38 +47,45 @@ public class SSOUserAuthenticationToken implements FastAuthentication {
             for (StringTransformer transformer : transformers) {
                 name = transformer.transform(name);
             }
-            this.authorities[i] = new GrantedAuthorityImpl(name);
+            this.authorities[i] = new SimpleGrantedAuthority(name);
             this.authorityNames.add(name);
         }
 
         this.authenticated = true;
     }
 
+    @Override
     public Collection<GrantedAuthority> getAuthorities() {
         return Arrays.asList(authorities);
     }
 
+    @Override
     public Object getCredentials() {
         return credentials;
     }
 
+    @Override
     public Object getDetails() {
         return details;
     }
 
+    @Override
     public Object getPrincipal() {
         return user;
     }
 
+    @Override
     public boolean isAuthenticated() {
         return authenticated;
     }
 
+    @Override
     public void setAuthenticated(boolean isAuthenticated)
             throws IllegalArgumentException {
         this.authenticated = isAuthenticated;
     }
 
+    @Override
     public String getName() {
         return user.getName();
     }
@@ -92,6 +98,7 @@ public class SSOUserAuthenticationToken implements FastAuthentication {
         return role;
     }
 
+    @Override
     public boolean hasAuthority(String name) {
         return authorityNames.contains(name);
     }

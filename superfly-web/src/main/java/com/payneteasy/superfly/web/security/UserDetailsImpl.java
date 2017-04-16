@@ -1,11 +1,11 @@
 package com.payneteasy.superfly.web.security;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * UserDetails implementation used in Superfly locally by
@@ -26,7 +26,7 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
         this.authorities = new GrantedAuthority[actions.length];
         for (int i = 0; i < actions.length; i++) {
-            authorities[i] = new GrantedAuthorityImpl(rolePrefix + actions[i].toUpperCase());
+            authorities[i] = new SimpleGrantedAuthority(rolePrefix + actions[i].toUpperCase());
         }
     }
 
