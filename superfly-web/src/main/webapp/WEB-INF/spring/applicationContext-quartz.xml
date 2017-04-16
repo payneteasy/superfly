@@ -54,30 +54,30 @@
        </bean>
     
 
-    <bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <bean id="expireSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="jobDetail" ref="expireSessionsJobDetail"/>
         <property name="repeatInterval" value="60000"/> <!-- every minute -->
     </bean>
 
-    <bean id="expirePasswordsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <bean id="expirePasswordsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="jobDetail" ref="expirePasswordJobDetail"/>
         <property name="repeatInterval" value="86400000"/> <!-- daily -->
     </bean>
     
-    <bean id="suspendUsersTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <bean id="suspendUsersTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
         <property name="jobDetail" ref="suspendUsersJobDetail"/>
         <property name="repeatInterval" value="86400000"/> <!-- daily -->
     </bean>
 
-    <bean id="expireSSOSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-           <property name="jobDetail" ref="expireSSOSessionsJobDetail"/>
-           <property name="repeatInterval" value="60000"/> <!-- every minute -->
-       </bean>
+    <bean id="expireSSOSessionsTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="expireSSOSessionsJobDetail"/>
+        <property name="repeatInterval" value="60000"/> <!-- every minute -->
+    </bean>
 
-    <bean id="expireTokensTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-           <property name="jobDetail" ref="expireTokensJobDetail"/>
-           <property name="repeatInterval" value="60000"/> <!-- every minute -->
-       </bean>
+    <bean id="expireTokensTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="expireTokensJobDetail"/>
+        <property name="repeatInterval" value="60000"/> <!-- every minute -->
+    </bean>
 
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
@@ -96,10 +96,12 @@
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
     </bean>
 
-    <!--<bean id="persistentScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
-        <!--<property name="dataSource" ref="dataSource"/>-->
-        <!--<property name="transactionManager" ref="transactionManager"/>-->
-        <!--<property name="applicationContextSchedulerContextKey" value="applicationContext"/>-->
-    <!--</bean>-->
+<!--
+    <bean id="persistentScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+    </bean>
+-->
 
 </beans>
