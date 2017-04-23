@@ -41,7 +41,7 @@ public class SuperflyHOTPAuthenticationProcessingFilter extends
     public Authentication attemptAuthentication(HttpServletRequest request,
             HttpServletResponse response) throws AuthenticationException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Assert.notNull(authentication);
+        Assert.notNull(authentication, "authentication cannot be null");
 
         CompoundAuthentication compound = getCompoundAuthenticationOrNewOne(authentication);
         authentication = extractLatestAuthOrSimpleAuth(authentication);

@@ -786,6 +786,8 @@
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 
         <java.version>1.7</java.version>

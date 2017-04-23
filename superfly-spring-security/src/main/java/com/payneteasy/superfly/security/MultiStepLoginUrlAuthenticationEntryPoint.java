@@ -1,18 +1,16 @@
 package com.payneteasy.superfly.security;
 
-import java.util.Collections;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * {@link AuthenticationEntryPoint} which is intended to be used for multi-step
@@ -25,6 +23,10 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
         LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private Map<Class<? extends Authentication>, String> stepInsufficientAuthenticationMapping = Collections.emptyMap();
+
+    public MultiStepLoginUrlAuthenticationEntryPoint(String loginFormUrl) {
+        super(loginFormUrl);
+    }
 
     public void setInsufficientAuthenticationMapping(
             Map<Class<? extends Authentication>,

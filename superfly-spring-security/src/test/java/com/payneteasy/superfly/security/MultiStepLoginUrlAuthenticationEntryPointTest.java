@@ -3,7 +3,10 @@ package com.payneteasy.superfly.security;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import org.easymock.EasyMock;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
@@ -27,8 +30,7 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest {
     public void setUp() {
         request = EasyMock.createNiceMock(HttpServletRequest.class);
         response = EasyMock.createMock(HttpServletResponse.class);
-        entryPoint = new MultiStepLoginUrlAuthenticationEntryPoint();
-        entryPoint.setLoginFormUrl("/step-one.html");
+        entryPoint = new MultiStepLoginUrlAuthenticationEntryPoint("/step-one.html");
         Map<Class<? extends Authentication>, String> mapping = new HashMap<Class<? extends Authentication>, String>();
         mapping.put(Step2Authentication.class, "/step-two.html");
         entryPoint.setInsufficientAuthenticationMapping(mapping);

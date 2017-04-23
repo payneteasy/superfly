@@ -7,7 +7,7 @@ import org.springframework.security.core.AuthenticationException;
  * must be initiated.
  * 
  * @author Roman Puchkovskiy
- * @see TwoStepAuthenticationProcessingFilter
+ * @see com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter
  */
 public class StepTwoException extends AuthenticationException {
     private static final long serialVersionUID = -5091470653099959408L;
@@ -18,10 +18,6 @@ public class StepTwoException extends AuthenticationException {
 
     public StepTwoException(String msg, Throwable t) {
         super(msg, t);
-    }
-
-    public StepTwoException(String msg, Object extraInformation) {
-        super(msg, extraInformation);
     }
 
 }

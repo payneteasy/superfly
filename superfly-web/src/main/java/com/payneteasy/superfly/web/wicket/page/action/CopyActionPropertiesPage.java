@@ -68,7 +68,7 @@ public class CopyActionPropertiesPage extends BasePage {
         final ActionFilter actionFilter = new ActionFilter();
         Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
         add(filtersForm);
-        final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model("")) {
+        final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model<>("")) {
 
             @Override
             protected Iterator<String> getChoices(String input) {
@@ -139,8 +139,8 @@ public class CopyActionPropertiesPage extends BasePage {
 
         };
         filtersForm.add(actionDataView);
-        filtersForm.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-        filtersForm.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
+        filtersForm.add(new OrderByLink<>("order-by-actionName", "actionName", actionDataProvider));
+        filtersForm.add(new OrderByLink<>("order-by-actionDescription", "actionDescription", actionDataProvider));
         filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
         filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
 

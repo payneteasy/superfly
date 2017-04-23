@@ -78,7 +78,7 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
     }
 
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(beanFactory);
+        Assert.notNull(beanFactory, "beanFactory is null");
         Assert.isInstanceOf(ListableBeanFactory.class, beanFactory);
 
         HOTPProvider resultProvider = HOTPProviderUtils.instantiateProvider(allowTestProvider);

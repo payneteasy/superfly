@@ -23,6 +23,10 @@ public class TwoStepAuthenticationProcessingFilterEntryPoint extends
 
     private String loginFormStepTwoUrl;
 
+    public TwoStepAuthenticationProcessingFilterEntryPoint(String loginFormUrl, String loginFormStepTwoUrl) {
+        super(loginFormUrl);
+    }
+
     public String getLoginFormStepTwoUrl() {
         return loginFormStepTwoUrl;
     }

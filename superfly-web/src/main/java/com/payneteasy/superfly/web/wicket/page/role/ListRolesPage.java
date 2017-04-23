@@ -20,7 +20,13 @@ import org.apache.wicket.Page;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckGroup;
+import org.apache.wicket.markup.html.form.CheckGroupSelector;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.repeater.Item;
@@ -31,7 +37,11 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class ListRolesPage extends BasePage {
@@ -147,9 +157,9 @@ public class ListRolesPage extends BasePage {
 
         };
         group.add(rolesDateView);
-        group.add(new OrderByLink("order-by-roleName", "roleName", rolesDataProvider));
-        group.add(new OrderByLink("order-by-principalName", "principalName", rolesDataProvider));
-        group.add(new OrderByLink("order-by-subsystemName", "subsystemName", rolesDataProvider));
+        group.add(new OrderByLink<>("order-by-roleName", "roleName", rolesDataProvider));
+        group.add(new OrderByLink<>("order-by-principalName", "principalName", rolesDataProvider));
+        group.add(new OrderByLink<>("order-by-subsystemName", "subsystemName", rolesDataProvider));
 
         group.add(new SuperflyPagingNavigator("paging-navigator", rolesDateView));
 

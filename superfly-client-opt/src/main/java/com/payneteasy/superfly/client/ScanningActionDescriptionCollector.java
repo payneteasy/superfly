@@ -68,14 +68,14 @@ public class ScanningActionDescriptionCollector implements
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(annotationClass);
         for (Class<?> clazz : annotatedClasses) {
             final Annotation annotation = clazz.getAnnotation(annotationClass);
-            Assert.notNull(annotation);
+            Assert.notNull(annotation, "annotation cannot be null");
             Collections.addAll(extractedActionNames, valuesExtractor.extract(annotation));
         }
 
         final Set<Method> annotatedMethods = reflections.getMethodsAnnotatedWith(annotationClass);
         for (Method method : annotatedMethods) {
             final Annotation annotation = method.getAnnotation(annotationClass);
-            Assert.notNull(annotation);
+            Assert.notNull(annotation, "annotation cannot be null");
             Collections.addAll(extractedActionNames, valuesExtractor.extract(annotation));
         }
 
