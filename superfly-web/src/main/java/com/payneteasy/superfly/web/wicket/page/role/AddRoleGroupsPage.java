@@ -12,7 +12,11 @@ import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckGroup;
+import org.apache.wicket.markup.html.form.CheckGroupSelector;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -21,7 +25,11 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class AddRoleGroupsPage extends BasePage {
@@ -34,12 +42,13 @@ public class AddRoleGroupsPage extends BasePage {
         final long roleId = params.get("id").toLong(-1);
         isWizard = params.get("wizard").toBoolean(false);
 
-        final ObjectHolder<List<UIGroupForCheckbox>> rolesHolder = new ObjectHolder<List<UIGroupForCheckbox>>();
+        List<UIGroupForCheckbox> emptyList = new ArrayList<>();
+        final ObjectHolder<List<UIGroupForCheckbox>> rolesHolder = new ObjectHolder<>(emptyList);
         final InitializingModel<Collection<UIGroupForCheckbox>> rolesCheckGroupModel = new InitializingModel<Collection<UIGroupForCheckbox>>() {
 
             @Override
             protected Collection<UIGroupForCheckbox> getInitialValue() {
-                final Collection<UIGroupForCheckbox> checkedRoles = new HashSet<UIGroupForCheckbox>();
+                final Collection<UIGroupForCheckbox> checkedRoles = new HashSet<>();
                 for (UIGroupForCheckbox role : rolesHolder.getObject()) {
                     if (role.isMapped()) {
                         checkedRoles.add(role);
@@ -76,7 +85,7 @@ public class AddRoleGroupsPage extends BasePage {
         };
         add(form);
 
-        final CheckGroup<UIGroupForCheckbox> group = new CheckGroup<UIGroupForCheckbox>(
+        final CheckGroup<UIGroupForCheckbox> group = new CheckGroup<>(
                 "group", rolesCheckGroupModel);
         form.add(group);
         group.add(new CheckGroupSelector("master-checkbox", group));
@@ -85,8 +94,7 @@ public class AddRoleGroupsPage extends BasePage {
             @Override
             protected void populateItem(Item<UIGroupForCheckbox> item) {
                 UIGroupForCheckbox role = item.getModelObject();
-                item.add(new Check<UIGroupForCheckbox>("mapped", item
-                        .getModel(), group));
+                item.add(new Check<>("mapped", item.getModel(), group));
                 item.add(new Label("subsystem-name", role.getSubsystemName()));
                 item.add(new Label("group-name", role.getGroupName()));
             }
@@ -101,17 +109,17 @@ public class AddRoleGroupsPage extends BasePage {
         PageParameters pageParams = new PageParameters();
         pageParams.set("id", String.valueOf(roleId));
         pageParams.set("wizard", "true");
-        BookmarkablePageLink<AddRoleActionsPage> nextLink = new BookmarkablePageLink<AddRoleActionsPage>(
+        BookmarkablePageLink<AddRoleActionsPage> nextLink = new BookmarkablePageLink<>(
                 "next-link", AddRoleActionsPage.class, pageParams);
         nextLink.setVisible(isWizard);
         form.add(nextLink);
 
     }
 
-    protected void doSubmit(long roleId, List<UIGroupForCheckbox> allGroups,
+    private void doSubmit(long roleId, List<UIGroupForCheckbox> allGroups,
             Collection<UIGroupForCheckbox> checkedGroups) {
-        List<Long> idsToAdd = new ArrayList<Long>();
-        List<Long> idsToRemove = new ArrayList<Long>();
+        List<Long> idsToAdd = new ArrayList<>();
+        List<Long> idsToRemove = new ArrayList<>();
         for (UIGroupForCheckbox group : allGroups) {
             if (checkedGroups.contains(group)) {
                 idsToAdd.add(group.getGroupId());

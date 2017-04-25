@@ -4,6 +4,7 @@ import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.ui.role.UIRole;
+import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -29,7 +30,9 @@ public class UserDaoTest extends AbstractDaoTest {
     private static boolean created = false;
 
     private static UISubsystem subsystem;
+    private static UISubsystem subsystem2;
     private static UIRole role;
+    private static UIUserForCreate user;
 
     @Autowired
     public void setUserDao(UserDao userDao) {
@@ -49,21 +52,47 @@ public class UserDaoTest extends AbstractDaoTest {
     @Before
     public void setUp() throws Exception {
         if (!created) {
-               subsystem = new UISubsystem();
-               subsystem.setName("subsystem-for-user");
-               subsystem.setCallbackUrl("no-callback");
+            subsystem = new UISubsystem();
+            subsystem.setName("subsystem-for-user");
+            subsystem.setCallbackUrl("no-callback");
             subsystem.setTitle("The Subsystem");
             subsystem.setSubsystemUrl("subsystem-for-user-url");
             subsystem.setLandingUrl("subsystem-for-user-url");
-               subsystemDao.createSubsystem(subsystem);
+            subsystemDao.createSubsystem(subsystem);
 
-               role = new UIRole();
-               role.setRoleName("role1");
-               role.setPrincipalName("role1");
-               role.setSubsystemId(subsystem.getId());
-               roleDao.createRole(role);
+            subsystem2 = new UISubsystem();
+            subsystem2.setName("subsystem-for-user-2");
+            subsystem2.setCallbackUrl("no-callback");
+            subsystem2.setTitle("The Subsystem 2");
+            subsystem2.setSubsystemUrl("subsystem-for-user-url");
+            subsystem2.setLandingUrl("subsystem-for-user-url");
+            subsystemDao.createSubsystem(subsystem2);
 
-            UIUserForCreate user = new UIUserForCreate();
+            role = new UIRole();
+            role.setRoleName("role1");
+            role.setPrincipalName("role1");
+            role.setSubsystemId(subsystem.getId());
+            roleDao.createRole(role);
+
+            UIRole subsystem1role2 = new UIRole();
+            subsystem1role2.setRoleName("role2");
+            subsystem1role2.setPrincipalName("role2");
+            subsystem1role2.setSubsystemId(subsystem.getId());
+            roleDao.createRole(subsystem1role2);
+
+            UIRole subsystem2role1 = new UIRole();
+            subsystem2role1.setRoleName("role1");
+            subsystem2role1.setPrincipalName("role1");
+            subsystem2role1.setSubsystemId(subsystem2.getId());
+            roleDao.createRole(subsystem2role1);
+
+            UIRole subsystem2role2 = new UIRole();
+            subsystem2role2.setRoleName("role2");
+            subsystem2role2.setPrincipalName("role2");
+            subsystem2role2.setSubsystemId(subsystem2.getId());
+            roleDao.createRole(subsystem2role2);
+
+            user = new UIUserForCreate();
             user.setUsername("user-1");
             user.setPassword("abc");
             user.setEmail("email-1");
@@ -74,10 +103,11 @@ public class UserDaoTest extends AbstractDaoTest {
             user.setHotpSalt("DEADBEEF");
             userDao.createUser(user);
 
-            userDao.addSubsystemWithRole(2L, role.getRoleId());
+            userDao.addSubsystemWithRole(user.getId(), role.getRoleId());
+            userDao.addSubsystemWithRole(user.getId(), subsystem2role1.getRoleId());
 
-               created = true;
-           }
+            created = true;
+        }
     }
 
     @Test
@@ -320,12 +350,75 @@ public class UserDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetUserLoginStatus() {
-           String status;
+        String status;
         status = userDao.getUserLoginStatus("user-1", "abc",
                 subsystem.getName());
         assertEquals("Y", status);
         status = userDao.getUserLoginStatus("user-1", "abcd",
                 subsystem.getName());
         assertEquals("N", status);
-       }
+    }
+
+    @Test
+    public void testChangeUserRole() {
+        // checking that our user has exactly one role (role1) in each of two subsystems
+        final List<UIRoleForCheckbox> rolesInSubsystem1Before = getMappedUserRoles(user.getId(), subsystem.getId());
+        assertEquals(1, rolesInSubsystem1Before.size());
+        UIRoleForCheckbox roleInSubsystem1Before = rolesInSubsystem1Before.get(0);
+        assertEquals("role1", roleInSubsystem1Before.getRoleName());
+        assertEquals("subsystem-for-user", roleInSubsystem1Before.getSubsystemName());
+
+        final List<UIRoleForCheckbox> rolesInSubsystem2Before = getMappedUserRoles(user.getId(), subsystem2.getId());
+        assertEquals(1, rolesInSubsystem2Before.size());
+        UIRoleForCheckbox roleInSubsystem2Before = rolesInSubsystem2Before.get(0);
+        assertEquals("role1", roleInSubsystem2Before.getRoleName());
+        assertEquals("subsystem-for-user-2", roleInSubsystem2Before.getSubsystemName());
+
+        // changing role1 to role2 in first subsystem
+        final RoutineResult status = userDao.changeUserRole("user-1", "role2",
+                "subsystem-for-user");
+        assertTrue(status.isOk());
+
+        // checking that NOW our user has role2 in the first subsystem and role1 in the second one
+        final List<UIRoleForCheckbox> rolesInSubsystem1After = getMappedUserRoles(user.getId(), subsystem.getId());
+        assertEquals(1, rolesInSubsystem1After.size());
+        UIRoleForCheckbox roleInSubsystem1After = rolesInSubsystem1After.get(0);
+        assertEquals("role2", roleInSubsystem1After.getRoleName());
+        assertEquals("subsystem-for-user", roleInSubsystem1After.getSubsystemName());
+
+        final List<UIRoleForCheckbox> rolesInSubsystem2After = getMappedUserRoles(user.getId(), subsystem2.getId());
+        assertEquals(1, rolesInSubsystem2After.size());
+        UIRoleForCheckbox roleInSubsystem2After = rolesInSubsystem2After.get(0);
+        assertEquals("role1", roleInSubsystem2After.getRoleName());
+        assertEquals("subsystem-for-user-2", roleInSubsystem2After.getSubsystemName());
+    }
+
+    @Test
+    public void testChangeUserRoleWrongUser() {
+        final RoutineResult status = userDao.changeUserRole("no-such-user",
+                "role2", subsystem.getName());
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find user by name", status.getErrorMessage());
+    }
+
+    @Test
+    public void testChangeUserRoleWrongRole() {
+        final RoutineResult status = userDao.changeUserRole(user.getUsername(),
+                "no-such-role", subsystem.getName());
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find new role by name", status.getErrorMessage());
+    }
+
+    @Test
+    public void testChangeUserRoleWrongSubsystem() {
+        final RoutineResult status = userDao.changeUserRole(user.getUsername(),
+                "role2", "no-such-subsystem");
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find subsystem by name", status.getErrorMessage());
+    }
+
+    private List<UIRoleForCheckbox> getMappedUserRoles(long userId, long subsystemId) {
+        return userDao.getMappedUserRoles(0, 10, 1, "asc",
+                userId, Long.toString(subsystemId));
+    }
 }

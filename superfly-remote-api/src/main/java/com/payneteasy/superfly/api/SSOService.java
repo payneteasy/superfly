@@ -84,8 +84,10 @@ public interface SSOService {
      * @throws MessageSendException
      * @see RoleGrantSpecification
      * @see #completeUser(String)
+     * @deprecated in favor of {@link #registerUser(UserRegisterRequest)}
      * @since 1.1
      */
+    @Deprecated
     void registerUser(String username, String password, String email, String subsystemHint,
             RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,
@@ -233,6 +235,17 @@ public interface SSOService {
      *
      * @param username name of the user to work with
      * @param newRole  role to grant
+     * @deprecated in favor of {@link #changeUserRole(String, String, String)}
      */
+    @Deprecated
     void changeUserRole(String username, String newRole);
+
+    /**
+     * Revokes from a user all his roles and replaces them with a given role.
+     *
+     * @param username      name of the user to work with
+     * @param newRole       role to grant
+     * @param subsystemHint hint to determine the affected subsystem
+     */
+    void changeUserRole(String username, String newRole, String subsystemHint);
 }

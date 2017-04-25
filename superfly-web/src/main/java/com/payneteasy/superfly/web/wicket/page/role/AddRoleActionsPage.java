@@ -12,7 +12,12 @@ import com.payneteasy.superfly.web.wicket.repeater.BaseDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.Check;
+import org.apache.wicket.markup.html.form.CheckGroup;
+import org.apache.wicket.markup.html.form.CheckGroupSelector;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -24,7 +29,11 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class AddRoleActionsPage extends BasePage {
@@ -38,19 +47,19 @@ public class AddRoleActionsPage extends BasePage {
         final boolean isWizard = params.get("wizard").toBoolean(false);
 
         final Filters filters = new Filters();
-        final Form<Filters> filtersForm = new Form<Filters>("filters-form",
-                new Model<Filters>(filters));
+        final Form<Filters> filtersForm = new Form<>("filters-form",
+                new Model<>(filters));
         add(filtersForm);
-        filtersForm.add(new TextField<String>("action-name-substring",
+        filtersForm.add(new TextField<>("action-name-substring",
                 new PropertyModel<String>(filters, "actionNameSubstring")));
-        final ObjectHolder<List<UIActionForCheckboxForRole>> actionsHolder = new ObjectHolder<List<UIActionForCheckboxForRole>>();
+        final List<UIActionForCheckboxForRole> emptyList = new ArrayList<>();
+        final ObjectHolder<List<UIActionForCheckboxForRole>> actionsHolder = new ObjectHolder<>(emptyList);
         final InitializingModel<Collection<UIActionForCheckboxForRole>> actionsCheckGroupModel = new InitializingModel<Collection<UIActionForCheckboxForRole>>() {
 
             @Override
             protected Collection<UIActionForCheckboxForRole> getInitialValue() {
-                final Collection<UIActionForCheckboxForRole> checkedActions = new HashSet<UIActionForCheckboxForRole>();
-                for (UIActionForCheckboxForRole action : actionsHolder
-                        .getObject()) {
+                final Collection<UIActionForCheckboxForRole> checkedActions = new HashSet<>();
+                for (UIActionForCheckboxForRole action : actionsHolder.getObject()) {
                     if (action.isMapped()) {
                         checkedActions.add(action);
                     }
@@ -63,11 +72,9 @@ public class AddRoleActionsPage extends BasePage {
 
             public Iterator<? extends UIActionForCheckboxForRole> iterator(
                     long first, long count) {
-                List<UIActionForCheckboxForRole> allRoleActions = roleService
-                        .getAllRoleActions(first, count,
-                                DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
-                                true, roleId, filters
-                                        .getActionNameSubstring());
+                List<UIActionForCheckboxForRole> allRoleActions = roleService.getAllRoleActions(first, count,
+                        DaoConstants.DEFAULT_SORT_FIELD_NUMBER,
+                        true, roleId, filters.getActionNameSubstring());
                 actionsHolder.setObject(allRoleActions);
                 actionsCheckGroupModel.clearInitialized();
                 return allRoleActions.iterator();
@@ -86,7 +93,7 @@ public class AddRoleActionsPage extends BasePage {
             }
         };
         add(form);
-        final CheckGroup<UIActionForCheckboxForRole> group = new CheckGroup<UIActionForCheckboxForRole>(
+        final CheckGroup<UIActionForCheckboxForRole> group = new CheckGroup<>(
                 "group", actionsCheckGroupModel);
         form.add(group);
         group.add(new CheckGroupSelector("master-checkbox", group));
@@ -95,11 +102,8 @@ public class AddRoleActionsPage extends BasePage {
             @Override
             protected void populateItem(Item<UIActionForCheckboxForRole> item) {
                 UIActionForCheckboxForRole action = item.getModelObject();
-                item.add(new Check<UIActionForCheckboxForRole>("mapped", item
-                        .getModel(), group));
-                item
-                        .add(new Label("subsystem-name", action
-                                .getSubsystemName()));
+                item.add(new Check<>("mapped", item.getModel(), group));
+                item.add(new Label("subsystem-name", action.getSubsystemName()));
                 item.add(new Label("role-name", action.getRoleName()));
                 item.add(new Label("action-name", action.getActionName()));
             }
@@ -115,18 +119,18 @@ public class AddRoleActionsPage extends BasePage {
         PageParameters pageParams = new PageParameters();
         pageParams.set("id", String.valueOf(roleId));
         pageParams.set("wizard", "true");
-        BookmarkablePageLink<AddRoleGroupsPage> backLink = new BookmarkablePageLink<AddRoleGroupsPage>(
+        BookmarkablePageLink<AddRoleGroupsPage> backLink = new BookmarkablePageLink<>(
                 "back-link", AddRoleGroupsPage.class, pageParams);
         backLink.setVisible(isWizard);
         form.add(backLink);
 
     }
 
-    protected void doSubmit(long roleId,
+    private void doSubmit(long roleId,
             List<UIActionForCheckboxForRole> allActions,
             Collection<UIActionForCheckboxForRole> checkedActions) {
-        List<Long> idsToAdd = new ArrayList<Long>();
-        List<Long> idsToRemove = new ArrayList<Long>();
+        List<Long> idsToAdd = new ArrayList<>();
+        List<Long> idsToRemove = new ArrayList<>();
         for (UIActionForCheckboxForRole action : allActions) {
             if (checkedActions.contains(action)) {
                 idsToAdd.add(action.getActionId());

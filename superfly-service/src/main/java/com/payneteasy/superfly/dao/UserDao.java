@@ -476,10 +476,11 @@ public interface UserDao {
     /**
      * Revokes from a user all his roles and replaces them with a given role.
      *
-     * @param username    name of the user to work with
-     * @param newRole     role to grant
+     * @param username      name of the user to work with
+     * @param newRole       role to grant
+     * @param subsystemName name of the subsystem we work with
      */
     @AStoredProcedure(name = "change_user_role")
-    RoutineResult changeUserRole(String username, String newRole);
+    RoutineResult changeUserRole(String username, String newRole, String subsystemName);
 }
 

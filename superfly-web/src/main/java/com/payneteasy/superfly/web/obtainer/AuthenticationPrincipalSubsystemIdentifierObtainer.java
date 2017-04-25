@@ -14,8 +14,8 @@ import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
  * 
  * @author Roman Puchkovskiy
  * @see X509PreAuthenticatedProcessingFilter
- * @see SubjectDnX509PrincipalExtractor
- * @see X509PrincipalExtractor
+ * @see org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor
+ * @see org.springframework.security.web.authentication.preauth.x509.X509PrincipalExtractor
  */
 public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
         SubsystemIdentifierObtainer {

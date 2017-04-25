@@ -165,8 +165,10 @@ public interface InternalSSOService {
     /**
      * Revokes from a user all his roles and replaces them with a given role.
      *
-     * @param username    name of the user to work with
-     * @param newRole     role to grant
+     * @param username              name of the user to work with
+     * @param newRole               role to grant
+     * @param subsystemIdentifier   identifier of the subsystem which roles
+     *                              are mentioned
      */
-    void changeUserRole(String username, String newRole);
+    void changeUserRole(String username, String newRole, String subsystemIdentifier);
 }
