@@ -235,6 +235,17 @@ public interface SSOService {
      *
      * @param username name of the user to work with
      * @param newRole  role to grant
+     * @deprecated in favor of {@link #changeUserRole(String, String, String)}
      */
+    @Deprecated
     void changeUserRole(String username, String newRole);
+
+    /**
+     * Revokes from a user all his roles and replaces them with a given role.
+     *
+     * @param username      name of the user to work with
+     * @param newRole       role to grant
+     * @param subsystemHint hint to determine the affected subsystem
+     */
+    void changeUserRole(String username, String newRole, String subsystemHint);
 }

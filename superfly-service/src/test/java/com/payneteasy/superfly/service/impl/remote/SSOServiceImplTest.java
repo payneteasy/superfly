@@ -113,4 +113,15 @@ public class SSOServiceImplTest {
 
         verify(internalSSOService);
     }
+
+    @Test
+    public void testChangeUserRoleWithSubsystemHint() {
+        internalSSOService.changeUserRole("username", "ROLE_TO", "test");
+        expectLastCall();
+        replay(internalSSOService);
+
+        ssoService.changeUserRole("username", "ROLE_TO", "test");
+
+        verify(internalSSOService);
+    }
 }
