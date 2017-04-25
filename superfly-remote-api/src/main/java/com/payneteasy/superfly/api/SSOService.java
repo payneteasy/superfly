@@ -84,8 +84,10 @@ public interface SSOService {
      * @throws MessageSendException
      * @see RoleGrantSpecification
      * @see #completeUser(String)
+     * @deprecated in favor of {@link #registerUser(UserRegisterRequest)}
      * @since 1.1
      */
+    @Deprecated
     void registerUser(String username, String password, String email, String subsystemHint,
             RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,

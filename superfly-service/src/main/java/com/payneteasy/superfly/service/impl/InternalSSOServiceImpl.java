@@ -361,7 +361,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public void changeUserRole(String username, String newRole) {
-        userDao.changeUserRole(username, newRole);
+    public void changeUserRole(String username, String newRole, String subsystemIdentifier) {
+        userDao.changeUserRole(username, newRole, subsystemIdentifier);
     }
 }

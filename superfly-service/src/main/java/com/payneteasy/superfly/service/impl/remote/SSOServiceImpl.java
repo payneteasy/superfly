@@ -323,7 +323,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void changeUserRole(String username, String newRole) {
-        internalSSOService.changeUserRole(username, newRole);
+        internalSSOService.changeUserRole(username, newRole, obtainSubsystemIdentifier(null));
     }
 
 }

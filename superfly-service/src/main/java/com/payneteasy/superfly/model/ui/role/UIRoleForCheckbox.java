@@ -82,4 +82,15 @@ public class UIRoleForCheckbox implements Serializable {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "UIRoleForCheckbox{" +
+                "id=" + id +
+                ", subsystemName='" + subsystemName + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", mappingStatus='" + mappingStatus + '\'' +
+                ", mapped=" + mapped +
+                '}';
+    }
 }
