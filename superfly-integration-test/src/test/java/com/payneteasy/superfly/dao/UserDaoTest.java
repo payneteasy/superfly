@@ -393,6 +393,30 @@ public class UserDaoTest extends AbstractDaoTest {
         assertEquals("subsystem-for-user-2", roleInSubsystem2After.getSubsystemName());
     }
 
+    @Test
+    public void testChangeUserRoleWrongUser() {
+        final RoutineResult status = userDao.changeUserRole("no-such-user",
+                "role2", subsystem.getName());
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find user by name", status.getErrorMessage());
+    }
+
+    @Test
+    public void testChangeUserRoleWrongRole() {
+        final RoutineResult status = userDao.changeUserRole(user.getUsername(),
+                "no-such-role", subsystem.getName());
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find new role by name", status.getErrorMessage());
+    }
+
+    @Test
+    public void testChangeUserRoleWrongSubsystem() {
+        final RoutineResult status = userDao.changeUserRole(user.getUsername(),
+                "role2", "no-such-subsystem");
+        assertEquals("Failed", status.getStatus());
+        assertEquals("Cannot find subsystem by name", status.getErrorMessage());
+    }
+
     private List<UIRoleForCheckbox> getMappedUserRoles(long userId, long subsystemId) {
         return userDao.getMappedUserRoles(0, 10, 1, "asc",
                 userId, Long.toString(subsystemId));

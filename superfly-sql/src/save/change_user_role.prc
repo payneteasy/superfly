@@ -15,10 +15,22 @@ create procedure change_user_role(i_user_name varchar(32),
     set group_concat_max_len   = 65536;
 
     select ssys_id into v_ssys_id from subsystems where subsystem_name = i_subsystem_name;
+    if v_ssys_id is null then
+      select 'Failed' status, 'Cannot find subsystem by name' error_message;
+      leave main_sql;
+    end if;
 
     select user_id into v_user_id from users where user_name = i_user_name;
+    if v_user_id is null then
+      select 'Failed' status, 'Cannot find user by name' error_message;
+      leave main_sql;
+    end if;
 
     select role_id into v_role_id from roles where role_name = i_new_role_name and ssys_ssys_id = v_ssys_id;
+    if v_role_id is null then
+      select 'Failed' status, 'Cannot find new role by name' error_message;
+      leave main_sql;
+    end if;
 
     select group_concat(ur.role_role_id) into v_role_list_unlink
       from user_roles ur join users u on ur.user_user_id = u.user_id join roles r on ur.role_role_id = r.role_id

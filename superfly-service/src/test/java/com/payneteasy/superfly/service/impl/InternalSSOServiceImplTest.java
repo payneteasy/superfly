@@ -332,4 +332,20 @@ public class InternalSSOServiceImplTest {
         verify(userDao);
     }
 
+    @Test
+    public void testFailedChangeUserRole() {
+        userDao.changeUserRole("username", "ROLE_TO", "test");
+        expectLastCall().andReturn(new RoutineResult("Failed", "Error message"));
+        replay(userDao);
+
+        try {
+            internalSSOService.changeUserRole("username", "ROLE_TO", "test");
+            fail("An exception should have been thrown");
+        } catch (IllegalStateException e) {
+            assertEquals("Error message", e.getMessage());
+        }
+
+        verify(userDao);
+    }
+
 }
