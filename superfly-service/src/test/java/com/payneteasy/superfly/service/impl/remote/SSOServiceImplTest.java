@@ -98,11 +98,29 @@ public class SSOServiceImplTest {
 
     @Test
     public void testChangeUserRole() {
-        internalSSOService.changeUserRole("username", "ROLE_TO");
+        ssoService.setSubsystemIdentifierObtainer(new SubsystemIdentifierObtainer() {
+            @Override
+            public String obtainSubsystemIdentifier(String systemIdentifier) {
+                return "test";
+            }
+        });
+
+        internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
 
         ssoService.changeUserRole("username", "ROLE_TO");
+
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testChangeUserRoleWithSubsystemHint() {
+        internalSSOService.changeUserRole("username", "ROLE_TO", "test");
+        expectLastCall();
+        replay(internalSSOService);
+
+        ssoService.changeUserRole("username", "ROLE_TO", "test");
 
         verify(internalSSOService);
     }
