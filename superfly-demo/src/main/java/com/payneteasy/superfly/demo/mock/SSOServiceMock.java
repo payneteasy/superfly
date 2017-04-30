@@ -38,6 +38,10 @@ public class SSOServiceMock implements SSOService {
         return new SSOUser(username, Collections.unmodifiableMap(actionsMap), prefs);
     }
 
+    public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
+        return null;
+    }
+
     public void sendSystemData(String systemIdentifier,
             ActionDescription[] actionDescriptions) {
     }
@@ -66,6 +70,18 @@ public class SSOServiceMock implements SSOService {
         return true;
     }
 
+    public void registerUser(String username, String password, String email, String subsystemHint,
+            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+            String secretAnswer, String publicKey,
+            String organization) throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
+
+    }
+
+    public void registerUser(
+            UserRegisterRequest registerRequest) throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
+
+    }
+
     public void registerUser(String s, String s1, String s2, String s3, RoleGrantSpecification[] roleGrantSpecifications, String s4, String s5, String s6, String s7, String s8) throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
     }
 
@@ -82,12 +98,45 @@ public class SSOServiceMock implements SSOService {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public void resetAndSendOTPTable(String subsystemIdentifier,
+            String username) throws UserNotFoundException, MessageSendException {
+
+    }
+
     public void updateUserDescription(UserDescription userDescription) throws UserNotFoundException, BadPublicKeyException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void resetPassword(String s, String s1) throws UserNotFoundException, PolicyValidationException {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void resetPassword(PasswordReset reset) throws UserNotFoundException, PolicyValidationException {
+
+    }
+
+    public List<UserStatus> getUserStatuses(List<String> userNames) {
+        return null;
+    }
+
+    public SSOUser exchangeSubsystemToken(String subsystemToken) {
+        return null;
+    }
+
+    public void touchSessions(List<Long> sessionIds) {
+
+    }
+
+    public void completeUser(String username) {
+
+    }
+
+    public void changeUserRole(String username, String newRole) {
+
+    }
+
+    public void changeUserRole(String username, String newRole, String subsystemHint) {
+
     }
 
     public String getFlagTempPassword(String userName) {

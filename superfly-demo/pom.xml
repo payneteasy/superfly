@@ -182,7 +182,7 @@
     </build>
 
     <properties>
-        <superfly.version>1.2-4</superfly.version>
+        <superfly.version>1.6-12</superfly.version>
     </properties>
 
 
