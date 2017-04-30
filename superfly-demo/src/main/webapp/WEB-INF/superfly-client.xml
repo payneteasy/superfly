@@ -30,7 +30,7 @@
         </property>
     </bean>
 
-    <bean id="ssoServiceHttpInvokerRequestExecutor" class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor">
+    <bean id="ssoServiceHttpInvokerRequestExecutor" class="com.payneteasy.superfly.demo.web.utils.CommonsHttpInvokerRequestExecutor">
         <property name="httpClient" ref="ssoServiceHttpClient"/>
     </bean>
 
@@ -76,7 +76,7 @@
                 <value>com.payneteasy.superfly.demo.web.wicket</value>
             </list>
         </property>
-        <property name="annotationClass" value="org.springframework.security.annotation.Secured"/>
+        <property name="annotationClass" value="org.springframework.security.access.annotation.Secured"/>
     </bean>
 
     <util:list id="scannedActionToRoleNamesTransformers">

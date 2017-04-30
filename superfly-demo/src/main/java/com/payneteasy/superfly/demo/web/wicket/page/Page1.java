@@ -6,7 +6,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
 import com.payneteasy.superfly.demo.web.utils.SecurityUtils;
 

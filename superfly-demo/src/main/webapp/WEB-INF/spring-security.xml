@@ -3,20 +3,17 @@
     xmlns:sec="http://www.springframework.org/schema/security"
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <!-- This is a configuration for Spring Security 2.0.x. For configuration for
-        a more recent version of Spring Security (now it's 3.0.x), see
-        spring-security.xml -->
+    <sec:http security="none" pattern="/favicon.ico"/>
+    <sec:http security="none" pattern="/css*"/>
 
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
         <sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
     
-        <sec:intercept-url pattern="/favicon.ico" filters="none"/>
-        <sec:intercept-url pattern="/css*"   filters="none"/>
         <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         
         <sec:intercept-url pattern="/adminpage1.html" access="ROLE_ADMINPAGE1"/>

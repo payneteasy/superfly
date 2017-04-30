@@ -1,12 +1,13 @@
 package com.payneteasy.superfly.demo.web.utils;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.annotation.Secured;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.userdetails.UserDetails;
+import com.payneteasy.superfly.security.authentication.FastAuthentication;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import com.payneteasy.superfly.security_2_0.authentication.FastAuthentication;
+import java.util.Collection;
 
 public class SecurityUtils {
     public static boolean isUserInRole(String aRole) {
@@ -15,7 +16,7 @@ public class SecurityUtils {
             return false;
         }
         
-        GrantedAuthority[] authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
             return false;
         }
@@ -35,18 +36,18 @@ public class SecurityUtils {
 
         return false;
     }
-    
+
     public static String[] getRoles() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (null == authentication) {
-            return null;
+            return new String[0];
         }
-        GrantedAuthority[] authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (authentication.getPrincipal() == null || authorities == null) {
-            return null;
+            return new String[0];
         }
 
-        String[] roles = new String[authorities.length];
+        String[] roles = new String[authorities.size()];
         int i = 0;
         for (GrantedAuthority authority : authorities) {
             roles[i] = authority.getAuthority();
@@ -73,7 +74,7 @@ public class SecurityUtils {
         if (aComponentClass.isAnnotationPresent(Secured.class)) {
             Secured securedAnnotation = (Secured) aComponentClass.getAnnotation(Secured.class);
             String[] roles = securedAnnotation.value();
-            if (roles != null && roles.length > 0) {
+            if (roles.length > 0) {
                 for (String role : roles) {
                     if (isUserInRole(role)) {
                         return true;

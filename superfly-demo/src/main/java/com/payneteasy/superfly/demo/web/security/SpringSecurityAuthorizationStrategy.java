@@ -6,7 +6,7 @@ import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.component.IRequestableComponent;
-import org.springframework.security.annotation.Secured;
+import org.springframework.security.access.annotation.Secured;
 
 import java.io.File;
 import java.io.FileInputStream;
