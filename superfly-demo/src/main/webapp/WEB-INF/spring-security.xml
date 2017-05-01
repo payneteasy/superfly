@@ -35,8 +35,8 @@
     </sec:authentication-manager>
 
     <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
-        <property name="loginFormUrl" value="/login.jsp"/>
-        <property name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
+        <constructor-arg name="loginFormUrl" value="/login.jsp"/>
+        <constructor-arg name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
     </bean>
     
     <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
