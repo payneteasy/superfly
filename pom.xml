@@ -20,8 +20,6 @@
         <module>superfly-common</module>
         <module>superfly-client</module>
         <module>superfly-client-opt</module>
-        <module>superfly-spring-security-common</module>
-        <module>superfly-spring-security-2.0</module>
         <module>superfly-spring-security</module>
         <module>superfly-spi-support</module>
         <module>superfly-crypto</module>
