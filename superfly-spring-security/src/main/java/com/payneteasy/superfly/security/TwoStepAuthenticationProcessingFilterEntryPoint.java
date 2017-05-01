@@ -21,18 +21,15 @@ import com.payneteasy.superfly.security.exception.StepTwoException;
 public class TwoStepAuthenticationProcessingFilterEntryPoint extends
         LoginUrlAuthenticationEntryPoint {
 
-    private String loginFormStepTwoUrl;
+    private final String loginFormStepTwoUrl;
 
     public TwoStepAuthenticationProcessingFilterEntryPoint(String loginFormUrl, String loginFormStepTwoUrl) {
         super(loginFormUrl);
+        this.loginFormStepTwoUrl = loginFormStepTwoUrl;
     }
 
     public String getLoginFormStepTwoUrl() {
         return loginFormStepTwoUrl;
-    }
-
-    public void setLoginFormStepTwoUrl(String loginFormStepTwoUrl) {
-        this.loginFormStepTwoUrl = loginFormStepTwoUrl;
     }
 
     @Override
