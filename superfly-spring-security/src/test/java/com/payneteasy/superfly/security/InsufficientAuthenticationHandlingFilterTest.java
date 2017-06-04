@@ -1,11 +1,11 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.security.exception.InsufficientAuthenticationException;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;

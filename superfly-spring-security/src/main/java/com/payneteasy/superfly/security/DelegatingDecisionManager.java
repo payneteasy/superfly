@@ -1,12 +1,12 @@
 package com.payneteasy.superfly.security;
 
-import java.util.Collection;
-
+import com.payneteasy.superfly.security.exception.InsufficientAuthenticationException;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+
+import java.util.Collection;
 
 public class DelegatingDecisionManager implements AccessDecisionManager {
 
