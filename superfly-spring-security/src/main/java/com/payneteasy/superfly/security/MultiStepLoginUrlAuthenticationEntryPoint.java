@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.exception.AuthenticationCarrier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +40,10 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
             HttpServletRequest request, HttpServletResponse response,
             AuthenticationException exception) {
         String url = null;
-        Authentication auth = exception.getAuthentication();
+        Authentication auth = null;
+        if (exception instanceof AuthenticationCarrier) {
+            auth = ((AuthenticationCarrier) exception).getAuthentication();
+        }
         if (auth == null) {
             auth = SecurityContextHolder.getContext().getAuthentication();
         }

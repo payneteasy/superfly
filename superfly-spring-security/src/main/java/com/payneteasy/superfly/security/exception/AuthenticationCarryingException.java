@@ -14,7 +14,8 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author rpuch
  */
-abstract class AuthenticationCarryingException extends AuthenticationException {
+abstract class AuthenticationCarryingException extends AuthenticationException
+        implements AuthenticationCarrier {
     private Authentication authentication;
 
     protected AuthenticationCarryingException(String message, Throwable cause) {
@@ -25,6 +26,7 @@ abstract class AuthenticationCarryingException extends AuthenticationException {
         super(message);
     }
 
+    @Override
     public Authentication getAuthentication() {
         return authentication;
     }

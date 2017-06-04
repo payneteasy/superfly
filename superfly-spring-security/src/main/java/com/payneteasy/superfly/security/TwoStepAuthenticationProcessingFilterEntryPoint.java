@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.payneteasy.superfly.security.exception.AuthenticationCarrier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -46,7 +47,13 @@ public class TwoStepAuthenticationProcessingFilterEntryPoint extends
 
     protected void prepareForStepTwo(HttpServletRequest request,
             AuthenticationException reason) {
-        Authentication authentication = reason.getAuthentication();
+        Authentication authentication = null;
+        if (reason instanceof AuthenticationCarrier) {
+            authentication = ((AuthenticationCarrier) reason).getAuthentication();
+        }
+        if (authentication == null) {
+            throw new IllegalStateException("No authentication could be extracted from exception, something is wrong");
+        }
         SSOUserTransportAuthenticationToken token = (SSOUserTransportAuthenticationToken) authentication;
         Set<SSORole> roles = token.getSsoUser().getActionsMap().keySet();
         request.getSession().setAttribute(SSOUserTransportAuthenticationToken.SESSION_KEY, token.getSsoUser());
