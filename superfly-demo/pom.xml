@@ -1,11 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-demo</artifactId>
     <packaging>war</packaging>
     <version>1.2-1-SNAPSHOT</version>
     <name>Superfly Demo Application</name>
-    <description>Demo application which demonstrates the use of a Superfly server for authentication and authorization, as well as integration with Spring Security and SSL with mutual authentication</description>
+    <description>Demo application which demonstrates the use of a Superfly server for authentication and authorization,
+        as well as integration with Spring Security and SSL with mutual authentication
+    </description>
 
     <dependencies>
         <dependency>
@@ -161,13 +164,13 @@
             <scope>provided</scope>
         </dependency>
 
- <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jsp-2.1-jetty</artifactId>
-        <version>6.1.26</version>
-    </dependency>
-
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jsp-2.1-jetty</artifactId>
+            <version>6.1.26</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
