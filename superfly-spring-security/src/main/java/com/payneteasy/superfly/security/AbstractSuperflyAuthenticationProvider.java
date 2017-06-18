@@ -57,7 +57,9 @@ public abstract class AbstractSuperflyAuthenticationProvider implements Authenti
             } else if (authentication instanceof SSOUserTransportAuthenticationToken) {
                 // step 1.5: throwing so ExceptionTranslationFilter will catch it and
                 // give entry point a chance to go to step 2
-                throw new StepTwoException("Going to step two");
+                final StepTwoException stepTwoException = new StepTwoException("Going to step two");
+                stepTwoException.setAuthentication(authentication);
+                throw stepTwoException;
             } else if (authentication instanceof SSOUserAndSelectedRoleAuthenticationToken) {
                 // step 2: auth user+role to final Authentication
                 SSOUserAndSelectedRoleAuthenticationToken authRequest = (SSOUserAndSelectedRoleAuthenticationToken) authentication;
