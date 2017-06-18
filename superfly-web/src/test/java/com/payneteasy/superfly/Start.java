@@ -4,10 +4,13 @@ import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
@@ -40,24 +43,42 @@ public class Start {
         public void startServer() throws NamingException {
             LOG.info("Configuring jetty web server ...");
 
+            HttpConfiguration httpConfig = new HttpConfiguration();
+            httpConfig.setSecureScheme("https");
+            httpConfig.setSecurePort(8443);
+            httpConfig.setOutputBufferSize(32768);
+            httpConfig.setRequestHeaderSize(8192);
+            httpConfig.setResponseHeaderSize(8192);
+            httpConfig.setSendServerVersion(true);
+            httpConfig.setSendDateHeader(false);
+
             final Server server = new Server();
-            SocketConnector connector = new SocketConnector();
+            ServerConnector connector = new ServerConnector(server,
+                    new HttpConnectionFactory(httpConfig));
             // Set some timeout options to make debugging easier.
-            connector.setMaxIdleTime(1000 * 60 * 60);
+            connector.setIdleTimeout(1000 * 60 * 60);
             connector.setSoLingerTime(-1);
             connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8085")));
 
-            SslSocketConnector secureConnector = new SslSocketConnector();
-            // Set some timeout options to make debugging easier.
-            secureConnector.setMaxIdleTime(1000 * 60 * 60);
-            secureConnector.setSoLingerTime(-1);
-            secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
-            final SslContextFactory sslContextFactory = secureConnector.getSslContextFactory();
+            HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+            httpsConfig.addCustomizer(new SecureRequestCustomizer());
+
+            SslContextFactory sslContextFactory = new SslContextFactory();
             sslContextFactory.setKeyStorePath("src/test/resources/superfly_server_ks");
             sslContextFactory.setKeyStorePassword("changeit");
-            sslContextFactory.setTrustStore("src/test/resources/ca_ts");
+            sslContextFactory.setTrustStorePath("src/test/resources/ca_ts");
             sslContextFactory.setTrustStorePassword("changeit");
             sslContextFactory.setNeedClientAuth(true);
+            // FIXME: we've enabled SHA|SHA1 back!
+            sslContextFactory.setExcludeCipherSuites("^.*_(MD5)$");
+
+            ServerConnector secureConnector = new ServerConnector(server,
+                    new SslConnectionFactory(sslContextFactory, "http/1.1"),
+                    new HttpConnectionFactory(httpsConfig));
+            // Set some timeout options to make debugging easier.
+            secureConnector.setIdleTimeout(1000 * 60 * 60);
+            secureConnector.setSoLingerTime(-1);
+            secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
 
             server.setConnectors(new Connector[]{connector, secureConnector});
 

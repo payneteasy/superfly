@@ -73,6 +73,8 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
 
     private void initExpectationsForAuthentication() {
         expect(request.getRequestURI()).andReturn("/j_superfly_password_security_check").anyTimes();
+        expect(request.getServletPath()).andReturn("").anyTimes();
+        expect(request.getPathInfo()).andReturn("/j_superfly_password_security_check").anyTimes();
         expect(request.getParameter("j_username")).andReturn("user").anyTimes();
         expect(request.getParameter("j_password")).andReturn("password").anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();

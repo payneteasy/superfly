@@ -52,6 +52,8 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
 
     private void initExpectationsForAuthentication() {
         expect(request.getRequestURI()).andReturn("/j_superfly_select_role").anyTimes();
+        expect(request.getServletPath()).andReturn("").anyTimes();
+        expect(request.getPathInfo()).andReturn("/j_superfly_select_role").anyTimes();
         expect(request.getParameter("j_role")).andReturn("role0").anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();

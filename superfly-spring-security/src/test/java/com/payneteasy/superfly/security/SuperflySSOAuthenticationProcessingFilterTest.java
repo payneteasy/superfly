@@ -72,6 +72,8 @@ public class SuperflySSOAuthenticationProcessingFilterTest extends
 
     private void initExpectationsForAuthentication() {
         expect(request.getRequestURI()).andReturn("/j_superfly_sso_security_check").anyTimes();
+        expect(request.getServletPath()).andReturn("").anyTimes();
+        expect(request.getPathInfo()).andReturn("/j_superfly_sso_security_check").anyTimes();
         expect(request.getParameter("subsystemToken")).andReturn("abcdef").anyTimes();
         expect(request.getParameter("targetUrl")).andReturn("/my-target").anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();

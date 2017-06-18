@@ -30,6 +30,8 @@ public abstract class AbstractAuthenticationProcessingFilterTest extends
     @Test
     public void testDoNothing() throws Exception {
         expect(request.getRequestURI()).andReturn("/").anyTimes();
+        expect(request.getServletPath()).andReturn("").anyTimes();
+        expect(request.getPathInfo()).andReturn("/").anyTimes();
         // expecting that chain will just proceed
         chain.doFilter(request, response);
         expectLastCall();

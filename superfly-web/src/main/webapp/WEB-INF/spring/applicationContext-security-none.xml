@@ -2,7 +2,7 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:sec="http://www.springframework.org/schema/security"
     xmlns="http://www.springframework.org/schema/beans"
-    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <sec:http security="none" pattern="/favicon.ico"/>
@@ -15,22 +15,27 @@
 
         <!--
             If you're not planning to use client SSL auth to protect your subsystem
-            calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
+            calls, change 'access' property to isAnonymous().
             You will also have to modify ssoService bean properties (see its
             comments in applicationContext-service.xml).
         -->
-        <sec:intercept-url pattern="/remoting/sso.service" access="ROLE_SUBSYSTEM"/>
-        <sec:intercept-url pattern="/remoting/sso.xremoting.service" access="ROLE_SUBSYSTEM"/>
-        <sec:intercept-url pattern="/remoting/sso.hessian.service" access="ROLE_SUBSYSTEM"/>
-        <sec:intercept-url pattern="/remoting/oauth2.hessian.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-        <sec:intercept-url pattern="/remoting/basic.hessian.service" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <sec:intercept-url pattern="/remoting/sso.service" access="hasAuthority('ROLE_SUBSYSTEM')"/>
+        <sec:intercept-url pattern="/remoting/sso.xremoting.service" access="hasAuthority('ROLE_SUBSYSTEM')"/>
+        <sec:intercept-url pattern="/remoting/sso.hessian.service" access="hasAuthority('ROLE_SUBSYSTEM')"/>
+        <sec:intercept-url pattern="/remoting/oauth2.hessian.service" access="isAnonymous()"/>
+        <sec:intercept-url pattern="/remoting/basic.hessian.service" access="isAnonymous()"/>
 
-        <sec:intercept-url pattern="/**" access="ROLE_ADMIN,ROLE_ACTION_TEMP_PASSWORD"/>
+        <sec:intercept-url pattern="/**" access="hasAnyAuthority('ROLE_ADMIN','ROLE_ACTION_TEMP_PASSWORD')"/>
         
-        <sec:logout />
-        <sec:form-login login-page="/loginbase"/>
+        <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
+        <sec:form-login login-page="/loginbase" login-processing-url="/j_spring_security_check"
+                username-parameter="j_username" password-parameter="j_password"/>
         <sec:anonymous/>
         <sec:x509 user-service-ref="subsystemUserDetailsService"/>
+
+        <!-- CSRF protection is disabled because for forms we use Wicket
+             which has a protection of its own -->
+        <sec:csrf disabled="true"/>
 
     </sec:http>
 

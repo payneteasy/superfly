@@ -3,7 +3,7 @@
     xmlns:sec="http://www.springframework.org/schema/security"
     xmlns="http://www.springframework.org/schema/beans"
     xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
@@ -14,16 +14,20 @@
         <sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
         <sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
     
-        <sec:intercept-url pattern="/login*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <sec:intercept-url pattern="/login*" access="isAnonymous()"/>
         
-        <sec:intercept-url pattern="/adminpage1.html" access="ROLE_ADMINPAGE1"/>
-        <sec:intercept-url pattern="/adminpage2.html" access="ROLE_ADMINPAGE2"/>
-        <sec:intercept-url pattern="/userpage1.html" access="ROLE_USERPAGE1"/>
-        <sec:intercept-url pattern="/userpage2.html" access="ROLE_USERPAGE2"/>
-        <sec:intercept-url pattern="/**" access="ROLE_ADMINPAGE1,ROLE_ADMINPAGE2,ROLE_USERPAGE1,ROLE_USERPAGE2"/>
+        <sec:intercept-url pattern="/adminpage1.html" access="hasAuthority('ROLE_ADMINPAGE1')"/>
+        <sec:intercept-url pattern="/adminpage2.html" access="hasAuthority('ROLE_ADMINPAGE2')"/>
+        <sec:intercept-url pattern="/userpage1.html" access="hasAuthority('ROLE_USERPAGE1')"/>
+        <sec:intercept-url pattern="/userpage2.html" access="hasAuthority('ROLE_USERPAGE2')"/>
+        <sec:intercept-url pattern="/**" access="hasAnyAuthority('ROLE_ADMINPAGE1','ROLE_ADMINPAGE2','ROLE_USERPAGE1','ROLE_USERPAGE2')"/>
         
-        <sec:logout />
+        <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
         <sec:anonymous/>
+        <!-- We don't need CSRF protection complexities here as we demonstrate
+             another aspects. But please note that in a real application
+             you have to seriously consider its use! -->
+        <sec:csrf disabled="true"/>
 
     </sec:http>
     
@@ -31,7 +35,7 @@
 <!-- 
         <sec:authentication-provider ref="superflyMockAuthenticationProvider"/>
  -->
-        <sec:authentication-provider ref="superflyAuthenticationProvider"/>
+    <sec:authentication-provider ref="superflyAuthenticationProvider"/>
     </sec:authentication-manager>
 
     <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
@@ -46,6 +50,8 @@
                 <constructor-arg value="/login.jsp"/>
             </bean>
         </property>
+        <property name="usernameParameter" value="j_username"/>
+        <property name="passwordParameter" value="j_password"/>
         <!-- Uncomment the following if you are not using SSL client auth for
             calls to SSOService and write your own subsystem name here. If you
             use SSL client auth, your subsystem name will be extracted from

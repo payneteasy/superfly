@@ -45,7 +45,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
                         return new HOTPCheckedToken(createSSOUserWithOneRole());
                     }
                 });
-        // expecting a redirect to a success
+        // expecting a redirect to success
         expectRedirectTo("/");
         replay(request, response, chain, authenticationManager);
 
@@ -80,6 +80,8 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
 
     private void initExpectationsForAuthentication() {
         expect(request.getRequestURI()).andReturn("/j_superfly_hotp_security_check").anyTimes();
+        expect(request.getServletPath()).andReturn("").anyTimes();
+        expect(request.getPathInfo()).andReturn("/j_superfly_hotp_security_check").anyTimes();
         expect(request.getParameter("j_hotp")).andReturn("123456").anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();
