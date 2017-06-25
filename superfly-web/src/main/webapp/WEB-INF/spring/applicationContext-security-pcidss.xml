@@ -5,8 +5,6 @@
     xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!-- TODO: test this -->
-
     <sec:http security="none" pattern="/favicon.ico"/>
     <sec:http security="none" pattern="/css/**"/>
     <sec:http security="none" pattern="/login*"/>
@@ -21,7 +19,7 @@
     
         <!--
             If you're not planning to use client SSL auth to protect your subsystem
-            calls, change 'access' property to IS_AUTHENTICATED_ANONYMOUSLY.
+            calls, change 'access' property to isAnonymous().
             You will also have to modify ssoService bean properties (see its
             comments in applicationContext-service.xml).
         -->
@@ -155,9 +153,9 @@
     <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <constructor-arg name="decisionVoters">
             <list>
-                <bean class="org.springframework.security.access.vote.RoleVoter">
-                </bean>
+                <bean class="org.springframework.security.access.vote.RoleVoter" />
                 <bean class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+                <bean class="org.springframework.security.web.access.expression.WebExpressionVoter" />
             </list>
         </constructor-arg>
     </bean>
