@@ -46,9 +46,9 @@ public class ViewGroupPage extends BasePage {
 
         //FILTER
         final Filter filter = new Filter();
-        final Form<Filter> filtersForm = new Form<Filter>("filter-form", new Model<Filter>(filter));
+        final Form<Filter> filtersForm = new Form<>("filter-form", new Model<>(filter));
         add(filtersForm);
-        filtersForm.add(new TextField<String>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
+        filtersForm.add(new TextField<>("action-name-substr", new PropertyModel<String>(filter, "actionNameSubstring")));
 
         //GROUP PROPERTIES
         final UIGroupForView curGroup = groupService.getGroupById(groupId);
@@ -93,8 +93,8 @@ public class ViewGroupPage extends BasePage {
         };
 
         add(actionDataView);
-        add(new OrderByLink("order-by-ActionID", "actionId", actionDataProvider));
-        add(new OrderByLink("order-by-ActionName", "actionName", actionDataProvider));
+        add(new OrderByLink<>("order-by-ActionID", "actionId", actionDataProvider));
+        add(new OrderByLink<>("order-by-ActionName", "actionName", actionDataProvider));
 
         add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
 
