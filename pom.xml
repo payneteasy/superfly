@@ -154,11 +154,6 @@
             </dependency>
             <dependency>
                 <groupId>com.payneteasy.superfly</groupId>
-                <artifactId>superfly-spring-security-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-spring-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
