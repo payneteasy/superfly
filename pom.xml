@@ -19,6 +19,7 @@
         <module>superfly-httpclient-ssl</module>
         <module>superfly-common</module>
         <module>superfly-client</module>
+        <module>superfly-client-web-security</module>
         <module>superfly-client-opt</module>
         <module>superfly-spring-security-common</module>
         <module>superfly-spring-security-2.0</module>
@@ -199,6 +200,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
@@ -454,6 +460,12 @@
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
                 <version>4.0.7</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.spullara.mustache.java</groupId>
+                <artifactId>compiler</artifactId>
+                <version>0.9.0</version>
             </dependency>
 
             <dependency>

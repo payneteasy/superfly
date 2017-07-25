@@ -35,4 +35,12 @@ public class SSOSession implements Serializable {
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
+
+    @Override
+    public String toString() {
+        return "SSOSession{" +
+                "id=" + id +
+                ", identifier='" + identifier + '\'' +
+                '}';
+    }
 }
