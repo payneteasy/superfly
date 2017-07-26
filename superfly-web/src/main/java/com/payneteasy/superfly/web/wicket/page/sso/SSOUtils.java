@@ -49,7 +49,8 @@ public class SSOUtils {
         }
     }
 
-    public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData) {
+    public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData, String aReason) {
+        logger.warn("redirectToCantLoginErrorPage: {} - {}", aReason, loginData);
         anonymizeLoginData((SessionAccessorPage) component.getPage());
         redirectToLoginErrorPage(component, new Model<String>("Can't login to " + loginData.getSubsystemIdentifier()));
     }
@@ -124,7 +125,7 @@ public class SSOUtils {
             // can't login: just display an error
             // actually, this should not happen as we've already
             // checked user access, but just in case...
-            SSOUtils.redirectToCantLoginErrorPage(page, loginData);
+            SSOUtils.redirectToCantLoginErrorPage(page, loginData, "Please check if user can login to subsystems. Please note: assign actions to your role only via groups. Do not assign actions directly to role.");
         }
     }
 

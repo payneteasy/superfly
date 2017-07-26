@@ -52,7 +52,9 @@ public class SSOLoginPage extends BaseSSOPage {
                         SSOUtils.redirectToSubsystem(this, loginData, token);
                     } else {
                         // can't login: just display an error
-                        SSOUtils.redirectToCantLoginErrorPage(this, loginData);
+                        String reason = String.format("No subsystem token for sso_session_id '%s' and subsystemIdentifier = '%s', ssoSession = %s"
+                                , ssoSessionId, subsystemIdentifier, ssoSession);
+                        SSOUtils.redirectToCantLoginErrorPage(this, loginData, reason);
                     }
                     needToLogin = false;
                 }

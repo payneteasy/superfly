@@ -35,4 +35,12 @@ public class SubsystemTokenData implements Serializable {
     public void setLandingUrl(String landingUrl) {
         this.landingUrl = landingUrl;
     }
+
+    @Override
+    public String toString() {
+        return "SubsystemTokenData{" +
+                "subsystemToken='" + subsystemToken + '\'' +
+                ", landingUrl='" + landingUrl + '\'' +
+                '}';
+    }
 }
