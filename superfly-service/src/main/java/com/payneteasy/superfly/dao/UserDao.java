@@ -420,6 +420,17 @@ public interface UserDao {
     @AStoredProcedure(name = "ui_suspend_user")
     RoutineResult suspendUser(long anyLong);
 
+    /**
+     * Returns uses which satisfy to 'suspension' criteria.
+     * Now, we suspend users that did not login for N days
+     * (by default, it's 90 days).
+     *
+     * @param days  number of days; if more than this number
+     *              of days passed since last user's login
+     *              (or creation if no login ever occurred),
+     *              the user is subject to suspension
+     * @return users to suspend
+     */
     @AStoredProcedure(name = "get_users_to_suspend")
     List<User> getUsersToSuspend(int days);
 

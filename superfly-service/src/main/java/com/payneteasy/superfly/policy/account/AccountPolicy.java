@@ -21,9 +21,11 @@ public interface AccountPolicy {
 
     /**
      * Suspends users which were inactive for the given period of time if it's
-     * needed.
+     * needed (i.e. if this policy requires such a behavior).
+     * User is inactive for N days if and only if he did not login
+     * for N days.
      *
-     * @param days            number of days
+     * @param days           number of days
      * @param userService    user service
      */
     void suspendUsersIfNeeded(int days, UserService userService);

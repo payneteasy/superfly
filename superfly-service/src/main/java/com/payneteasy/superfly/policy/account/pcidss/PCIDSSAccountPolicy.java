@@ -76,10 +76,10 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     }
 
     public void expirePasswordsIfNeeded(int days, UserService userService) {
-        List<User> users=userDao.getUsersWithExpiredPasswords(days);
-        for(User u:users){
-            logger.debug(String.format("Lock user [%s] with id=%d",u.getUserName(),u.getUserid()));
-            resetPasswordStrategy.resetPassword(u.getUserid(),u.getUserName(), null);
+        List<User> users = userDao.getUsersWithExpiredPasswords(days);
+        for (User u : users) {
+            logger.debug(String.format("Reset password for user [%s] with id=%d", u.getUserName(), u.getUserid()));
+            resetPasswordStrategy.resetPassword(u.getUserid(), u.getUserName(), null);
         }
     }
 
