@@ -59,4 +59,15 @@ public class SSOLoginData implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @Override
+    public String toString() {
+        return "SSOLoginData{" +
+                "subsystemIdentifier='" + subsystemIdentifier + '\'' +
+                ", targetUrl='" + targetUrl + '\'' +
+                ", subsystemTitle='" + subsystemTitle + '\'' +
+                ", subsystemUrl='" + subsystemUrl + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
 }
