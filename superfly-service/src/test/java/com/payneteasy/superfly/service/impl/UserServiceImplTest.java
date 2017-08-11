@@ -133,7 +133,7 @@ public class UserServiceImplTest {
                 .andReturn("Y");
         EasyMock.replay(userDao);
 
-        assertEquals(UserLoginStatus.SUCCESS, userService.getUserLoginStatus("pete", "password", "subsystem"));
+        assertEquals(UserLoginStatus.SUCCESS, userService.checkUserCanLoginWithThisPassword("pete", "password", "subsystem"));
 
         EasyMock.verify(userDao);
     }
@@ -147,7 +147,7 @@ public class UserServiceImplTest {
                 .andReturn("N");
         EasyMock.replay(userDao);
 
-        assertEquals(UserLoginStatus.FAILED, userService.getUserLoginStatus("stranger", "password", "subsystem"));
+        assertEquals(UserLoginStatus.FAILED, userService.checkUserCanLoginWithThisPassword("stranger", "password", "subsystem"));
         assertEquals("stranger", testLockoutStrategy.username);
         assertEquals(LockoutType.PASSWORD, testLockoutStrategy.lockoutType);
 
@@ -161,7 +161,7 @@ public class UserServiceImplTest {
                 .andReturn("T");
         EasyMock.replay(userDao);
 
-        assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.getUserLoginStatus("old-pete", "password", "subsystem"));
+        assertEquals(UserLoginStatus.TEMP_PASSWORD, userService.checkUserCanLoginWithThisPassword("old-pete", "password", "subsystem"));
 
         EasyMock.verify(userDao);
     }

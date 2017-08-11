@@ -72,7 +72,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testSuccessNoHOTP() {
-        expect(userService.getUserLoginStatus("known-user", "password", "test-subsystem"))
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
@@ -97,7 +97,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testSuccessAndHOTP() {
-        expect(userService.getUserLoginStatus("known-user", "password", "test-subsystem"))
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
         expect(settingsService.getPolicy()).andReturn(Policy.PCIDSS);
         expect(settingsService.isHotpDisabled()).andReturn(false);
@@ -118,7 +118,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testFailure() {
-        expect(userService.getUserLoginStatus("unknown-user", "password", "test-subsystem"))
+        expect(userService.checkUserCanLoginWithThisPassword("unknown-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.FAILED);
         replay(userService);
 
@@ -137,7 +137,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testTempPassword() {
-        expect(userService.getUserLoginStatus("known-user", "expired-password", "test-subsystem"))
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "expired-password", "test-subsystem"))
                 .andReturn(UserLoginStatus.TEMP_PASSWORD);
         replay(userService);
 

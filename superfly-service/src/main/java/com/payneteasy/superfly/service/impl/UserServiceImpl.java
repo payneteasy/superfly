@@ -378,7 +378,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier) {
+    public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
         String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
                 userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));

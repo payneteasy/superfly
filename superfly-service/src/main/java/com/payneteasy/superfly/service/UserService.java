@@ -328,5 +328,5 @@ public interface UserService {
      * @param subsystemIdentifier   subsystem identifier
      * @return user login status
      */
-    UserLoginStatus getUserLoginStatus(String username, String password, String subsystemIdentifier);
+    UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier);
 }

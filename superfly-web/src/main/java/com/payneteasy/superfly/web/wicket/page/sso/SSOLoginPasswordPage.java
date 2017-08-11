@@ -64,7 +64,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
-        UserLoginStatus loginStatus = userService.getUserLoginStatus(
+        UserLoginStatus loginStatus = userService.checkUserCanLoginWithThisPassword(
                 loginBean.getUsername(), loginBean.getPassword(),
                 loginData.getSubsystemIdentifier());
         switch (loginStatus) {

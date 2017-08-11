@@ -28,8 +28,8 @@ public class RandomStoredSaltSource implements SaltSource{
     }
 
     public String getSalt(String username) {
-        String salt=userDao.getUserSalt(username);
-        if(salt==null || salt.isEmpty()){
+        String salt = userDao.getUserSalt(username);
+        if (salt == null || salt.isEmpty()) {
             salt = generateNewSaltAndSave(username);
         }
         return salt;
@@ -45,7 +45,7 @@ public class RandomStoredSaltSource implements SaltSource{
 
     private String generateNewSaltAndSave(String username) {
         String salt = generateSalt();
-        userDao.updateUserSalt(username,salt);
+        userDao.updateUserSalt(username, salt);
         return salt;
     }
     

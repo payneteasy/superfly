@@ -12,9 +12,8 @@ import com.payneteasy.superfly.utils.RandomGUID;
 public class SHA256RandomGUIDSaltGenerator implements SaltGenerator {
 
     public String generate() {
-        RandomGUID guid=new RandomGUID(true);
-        String salt=CryptoHelper.SHA256(guid.toString());
-        return salt;
+        RandomGUID guid = new RandomGUID(true);
+        return CryptoHelper.SHA256(guid.toString());
     }
 
 }
