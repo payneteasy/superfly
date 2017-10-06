@@ -83,13 +83,6 @@
        <notes><![CDATA[
        file name: superfly-crypto-1.7-1-SNAPSHOT.jar
        ]]></notes>
-       <sha1>f8a70dae6a56685e4f1ba66d2e2044c79bab5b40</sha1>
-       <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
-    </suppress>
-    <suppress>
-       <notes><![CDATA[
-       file name: superfly-crypto-1.7-1-SNAPSHOT.jar
-       ]]></notes>
        <sha1>31b230d2853993661055176acb0d92f8eb18192c</sha1>
        <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
     </suppress>
