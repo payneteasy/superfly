@@ -114,11 +114,13 @@
             <url>http://download.java.net/maven/2/</url>
         </repository>
         <!-- ibiblio mirror for some artifacts -->
+<!--
         <repository>
             <id>ibiblio-mirrors</id>
             <name>ibiblio mirrors</name>
             <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
         </repository>
+-->
     </repositories>
 
     <dependencyManagement>
@@ -574,7 +576,7 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk15</artifactId>
-                <version>1.45</version>
+                <version>1.46</version>
             </dependency>
 
             <dependency>
