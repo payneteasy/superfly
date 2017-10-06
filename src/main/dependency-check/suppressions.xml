@@ -86,13 +86,30 @@
        <sha1>f8a70dae6a56685e4f1ba66d2e2044c79bab5b40</sha1>
        <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
     </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: superfly-crypto-1.7-1-SNAPSHOT.jar
+       ]]></notes>
+       <sha1>31b230d2853993661055176acb0d92f8eb18192c</sha1>
+       <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
+    </suppress>
 
     <!-- This is not openpgp -->
     <suppress>
        <notes><![CDATA[
-       file name: bcpg-jdk15-1.46.jar
+       file name: bcpg-jdk15on-1.58.jar
        ]]></notes>
-       <sha1>537a072421c86c0c54ece92015bc889398319c52</sha1>
-       <cpe>cpe:/a:openpgp:openpgp:1.46</cpe>
+       <sha1>b92c863d75bbdbfa88f08301cb243f406a58bec4</sha1>
+       <cpe>cpe:/a:openpgp:openpgp:1.58</cpe>
+    </suppress>
+
+    <!-- CVE data is inaccurate: version 1.3.3 has fix for CVE-2016-1000031,
+         see https://commons.apache.org/proper/commons-fileupload/security-reports.html -->
+    <suppress>
+       <notes><![CDATA[
+       file name: commons-fileupload-1.3.3.jar
+       ]]></notes>
+       <sha1>04ff14d809195b711fd6bcc87e6777f886730ca1</sha1>
+       <cve>CVE-2016-1000031</cve>
     </suppress>
 </suppressions>
