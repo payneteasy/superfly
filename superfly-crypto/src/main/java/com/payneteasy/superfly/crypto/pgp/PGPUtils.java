@@ -1,7 +1,6 @@
 package com.payneteasy.superfly.crypto.pgp;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
 import org.bouncycastle.openpgp.PGPEncryptedData;
@@ -20,6 +19,16 @@ import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.bc.BcPGPObjectFactory;
+import org.bouncycastle.openpgp.bc.BcPGPPublicKeyRingCollection;
+import org.bouncycastle.openpgp.bc.BcPGPSecretKeyRingCollection;
+import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.bouncycastle.openpgp.operator.PGPDataEncryptorBuilder;
+import org.bouncycastle.openpgp.operator.bc.BcPBESecretKeyDecryptorBuilder;
+import org.bouncycastle.openpgp.operator.bc.BcPGPDataEncryptorBuilder;
+import org.bouncycastle.openpgp.operator.bc.BcPGPDigestCalculatorProvider;
+import org.bouncycastle.openpgp.operator.bc.BcPublicKeyDataDecryptorFactory;
+import org.bouncycastle.openpgp.operator.bc.BcPublicKeyKeyEncryptionMethodGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,15 +40,12 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchProviderException;
-import java.security.Provider;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Iterator;
 
 public class PGPUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(PGPUtils.class);
-
-    private static Provider provider = new BouncyCastleProvider();
 
     public static void encryptBytesAndArmor(byte[] clearText, String name,
             String armoredPublicKey, OutputStream os) throws IOException {
@@ -93,7 +99,7 @@ public class PGPUtils {
             throws IOException, PGPException {
         in = PGPUtil.getDecoderStream(in);
 
-        PGPPublicKeyRingCollection pgpPub = new PGPPublicKeyRingCollection(in);
+        PGPPublicKeyRingCollection pgpPub = new BcPGPPublicKeyRingCollection(in);
 
         //
         // we just loop through the collection till we find a key suitable for
@@ -142,11 +148,13 @@ public class PGPUtils {
             comData.close();
         }
 
-        PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(
-                PGPEncryptedData.CAST5, withIntegrityCheck,
-                new SecureRandom(), /*"BC"*/provider);
+        PGPDataEncryptorBuilder builder = new BcPGPDataEncryptorBuilder(PGPEncryptedData.CAST5)
+                .setWithIntegrityPacket(withIntegrityCheck)
+                .setSecureRandom(new SecureRandom())
+                ;
+        PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(builder);
 
-        cPk.addMethod(encKey);
+        cPk.addMethod(new BcPublicKeyKeyEncryptionMethodGenerator(encKey));
 
         byte[] outBytes = bOut.toByteArray();
 
@@ -167,7 +175,7 @@ public class PGPUtils {
         in = PGPUtil.getDecoderStream(in);
 
         try {
-            PGPObjectFactory pgpF = new PGPObjectFactory(in);
+            PGPObjectFactory pgpF = new BcPGPObjectFactory(in);
             PGPEncryptedDataList enc;
 
             Object o = pgpF.nextObject();
@@ -186,7 +194,7 @@ public class PGPUtils {
             Iterator it = enc.getEncryptedDataObjects();
             PGPPrivateKey sKey = null;
             PGPPublicKeyEncryptedData pbe = null;
-            PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
+            PGPSecretKeyRingCollection pgpSec = new BcPGPSecretKeyRingCollection(
                     PGPUtil.getDecoderStream(keyIn));
 
             while (sKey == null && it.hasNext()) {
@@ -200,15 +208,15 @@ public class PGPUtils {
                         "secret key for message not found.");
             }
 
-            InputStream clear = pbe.getDataStream(sKey, /*"BC"*/provider);
+            InputStream clear = pbe.getDataStream(new BcPublicKeyDataDecryptorFactory(sKey));
 
-            PGPObjectFactory plainFact = new PGPObjectFactory(clear);
+            PGPObjectFactory plainFact = new BcPGPObjectFactory(clear);
 
             Object message = plainFact.nextObject();
 
             if (message instanceof PGPCompressedData) {
                 PGPCompressedData cData = (PGPCompressedData) message;
-                PGPObjectFactory pgpFact = new PGPObjectFactory(
+                PGPObjectFactory pgpFact = new BcPGPObjectFactory(
                         cData.getDataStream());
 
                 message = pgpFact.nextObject();
@@ -258,7 +266,9 @@ public class PGPUtils {
             return null;
         }
 
-        return pgpSecKey.extractPrivateKey(pass, /*"BC"*/provider);
+        final PBESecretKeyDecryptor decryptor = new BcPBESecretKeyDecryptorBuilder(
+                new BcPGPDigestCalculatorProvider()).build(pass);
+        return pgpSecKey.extractPrivateKey(decryptor);
     }
 
     private static void writeBytesToLiteralData(OutputStream out,

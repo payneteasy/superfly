@@ -581,8 +581,8 @@
 
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpg-jdk15</artifactId>
-                <version>1.46</version>
+                <artifactId>bcpg-jdk15on</artifactId>
+                <version>1.58</version>
             </dependency>
 
             <dependency>
