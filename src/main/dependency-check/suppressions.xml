@@ -77,4 +77,22 @@
         <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
         <cve>CVE-2015-5262</cve>
     </suppress>
+
+    <!-- This is not PGP -->
+    <suppress>
+       <notes><![CDATA[
+       file name: superfly-crypto-1.7-1-SNAPSHOT.jar
+       ]]></notes>
+       <sha1>f8a70dae6a56685e4f1ba66d2e2044c79bab5b40</sha1>
+       <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
+    </suppress>
+
+    <!-- This is not openpgp -->
+    <suppress>
+       <notes><![CDATA[
+       file name: bcpg-jdk15-1.46.jar
+       ]]></notes>
+       <sha1>537a072421c86c0c54ece92015bc889398319c52</sha1>
+       <cpe>cpe:/a:openpgp:openpgp:1.46</cpe>
+    </suppress>
 </suppressions>
