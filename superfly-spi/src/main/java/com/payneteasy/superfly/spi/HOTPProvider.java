@@ -53,7 +53,7 @@ public interface HOTPProvider {
      * @param os        output stream
      * @throws IOException
      */
-    void outputSequenceForDownload(String username, OutputStream os) throws IOException;
+    void outputSequenceForDownload(String username, OutputStream os) throws IOException, ExportException;
 
     /**
      * Returns a name of file in which sequence is downloaded.

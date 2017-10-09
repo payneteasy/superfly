@@ -3,6 +3,7 @@ package com.payneteasy.superfly.hotp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import com.payneteasy.superfly.spi.ExportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -47,17 +48,17 @@ public class HOTPServiceImpl implements HOTPService {
         this.userDao = userDao;
     }
 
-    public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException {
+    public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
         obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, null);
     }
 
-    public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException {
+    public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
         UIUser user = userDao.getUser(userId);
         hotpProvider.resetSequence(user.getUsername());
         obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, user);
     }
 
-    private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException {
+    private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException, ExportException {
         if (hotpProvider.outputsSequenceForDownload()) {
             if (user == null) {
                 user = userDao.getUser(userId);
@@ -79,7 +80,7 @@ public class HOTPServiceImpl implements HOTPService {
         }
     }
 
-    protected void actuallySendTable(String subsystemIdentifier, UIUser user) throws MessageSendException {
+    protected void actuallySendTable(String subsystemIdentifier, UIUser user) throws MessageSendException, ExportException {
         String filename = hotpProvider.getSequenceForDownloadFileName(user.getUsername());
         // TODO: use streams, not buffers
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

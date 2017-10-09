@@ -5,7 +5,6 @@
         <groupId>com.payneteasy.superfly</groupId>
         <version>1.7-1-SNAPSHOT</version>
     </parent>
-    <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-spi-support</artifactId>
     <name>Support classes for SPI mechanism</name>
     <description>Classes which are used by both SPI implementations and Superfly core</description>
