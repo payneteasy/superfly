@@ -8,7 +8,7 @@ package com.payneteasy.superfly.common.singleton;
  * @param <T>
  */
 public abstract class SingletonHolder<T> {
-    private T instance;
+    private volatile T instance;
 
     /**
      * Obtains a singleton instance held by this object.
