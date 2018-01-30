@@ -3,7 +3,7 @@
     <parent>
         <artifactId>superfly-parent</artifactId>
         <groupId>com.payneteasy.superfly</groupId>
-        <version>1.7-3</version>
+        <version>1.7-4-SNAPSHOT</version>
     </parent>
     <artifactId>superfly-wicket</artifactId>
     <name>Superfly wicket extensions</name>
