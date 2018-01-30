@@ -24,14 +24,14 @@ public class CookieEnforcer implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse resp,
+    public void doFilter(final ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) resp;
         HttpServletResponse wrappedResponse = new HttpServletResponseWrapper(response) {
             @Override
             public void addCookie(Cookie cookie) {
                 Cookie clone = (Cookie) cookie.clone();
-                if (enforceSecure) {
+                if (enforceSecure && req.isSecure()) {
                     clone.setSecure(true);
                 }
                 if (enforceHttpOnly) {
