@@ -2,7 +2,12 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.security.authentication.*;
+import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +17,10 @@ import org.springframework.security.core.Authentication;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class SuperflyMultiMockAuthenticationProviderTest extends
         AbstractSuperflyAuthenticationProviderTest {
@@ -22,11 +30,10 @@ public class SuperflyMultiMockAuthenticationProviderTest extends
     @Before
     public void setUp() {
         theProvider = new SuperflyMultiMockAuthenticationProvider();
-        theProvider.setUsername("pete");
-        theProvider.setPassword("password");
+        theProvider.addUsernameAndPassword("pete", "password");
         theProvider.setHotp("123456");
         theProvider.setActionsMapBuilder(new ActionsMapBuilder() {
-            public Map<SSORole, SSOAction[]> build() throws Exception {
+            public Map<SSORole, SSOAction[]> build() {
                 return createSSOUser(5).getActionsMap();
             }
         });

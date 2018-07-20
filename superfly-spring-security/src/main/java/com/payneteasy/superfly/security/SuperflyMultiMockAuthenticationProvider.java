@@ -1,7 +1,9 @@
 package com.payneteasy.superfly.security;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.security.processor.IdAuthenticationPostProcessor;
@@ -34,8 +36,7 @@ import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 public class SuperflyMultiMockAuthenticationProvider extends
         AbstractRoleTransformingAuthenticationProvider {
 
-    private String username;
-    private String password;
+    private final Map<String, String> usernamesToPasswords = new HashMap<>();
     private String hotp;
     private ActionsMapBuilder actionsMapBuilder;
     private boolean enabled = true;
@@ -43,12 +44,8 @@ public class SuperflyMultiMockAuthenticationProvider extends
 
     private Map<SSORole, SSOAction[]> cachedMap = null;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void addUsernameAndPassword(String username, String password) {
+        usernamesToPasswords.put(username, password);
     }
 
     public void setHotp(String hotp) {
@@ -81,13 +78,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
                 auth = authentication;
             }
             if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
-                if (username.equals(auth.getName()) && password.equals(auth.getCredentials())) {
-                    CompoundAuthentication newCompound = new CompoundAuthentication();
-                    newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(auth.getName())));
-                    return newCompound;
-                } else {
-                    throw new BadCredentialsException("Bad username/password");
-                }
+                return processUsernamePasswordAuth(auth);
             } else if (auth instanceof CheckHOTPToken) {
                 CheckHOTPToken token = (CheckHOTPToken) auth;
                 if (hotp.equals(token.getCredentials())) {
@@ -113,6 +104,22 @@ public class SuperflyMultiMockAuthenticationProvider extends
             }
         }
         return null;
+    }
+
+    protected Authentication processUsernamePasswordAuth(Authentication auth) {
+        String username = auth.getName();
+        String password = auth.getCredentials() == null ? null : auth.getCredentials().toString();
+        if (checkUsernamePassword(username, password)) {
+            CompoundAuthentication newCompound = new CompoundAuthentication();
+            newCompound.addReadyAuthentication(new UsernamePasswordCheckedToken(createSSOUser(username)));
+            return newCompound;
+        } else {
+            throw new BadCredentialsException("Bad username/password");
+        }
+    }
+
+    protected boolean checkUsernamePassword(String username, String password) {
+        return Objects.equals(usernamesToPasswords.get(username), password);
     }
 
     protected SSOUser createSSOUser(String username) {
