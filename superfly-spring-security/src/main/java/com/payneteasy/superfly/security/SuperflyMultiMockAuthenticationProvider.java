@@ -123,10 +123,10 @@ public class SuperflyMultiMockAuthenticationProvider extends
     }
 
     protected SSOUser createSSOUser(String username) {
-        return new SSOUser(username, getActionsMap(), Collections.<String, String>emptyMap());
+        return new SSOUser(username, getActionsMap(username), Collections.<String, String>emptyMap());
     }
 
-    private Map<SSORole, SSOAction[]> getActionsMap() {
+    protected Map<SSORole, SSOAction[]> getActionsMap(String username) {
         if (cachedMap == null) {
             try {
                 cachedMap = actionsMapBuilder.build();
