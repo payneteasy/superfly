@@ -808,7 +808,7 @@
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>
     </properties>
 </project>
