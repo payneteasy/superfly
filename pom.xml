@@ -595,8 +595,10 @@
                 <groupId>ca.juliusdavies</groupId>
                 <artifactId>not-yet-commons-ssl</artifactId>
                 <!-- This version contains a fix that implements the same thing
-                     as a fix for CVE-2015-5262 -->
-                <version>0.3.17-20151105</version>
+                     as a fix for CVE-2015-5262.
+                     Also, there is a fix that allows us to run on Java 9+.
+                -->
+                <version>0.3.17-20180724</version>
                 <exclusions>
                     <exclusion>
                         <groupId>log4j</groupId>
