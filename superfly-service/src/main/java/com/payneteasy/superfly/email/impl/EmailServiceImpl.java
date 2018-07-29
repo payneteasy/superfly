@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;

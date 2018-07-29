@@ -187,8 +187,8 @@
                 <version>${spring.version}</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-jcl</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -489,7 +489,7 @@
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity</artifactId>
-                <version>1.6.4</version>
+                <version>1.7</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
@@ -699,7 +699,7 @@
                                     <dependencies />
                                 </banDuplicateClasses>
                             </rules>
-                            <fail>true</fail>
+                            <fail>${fail.on.dup.dependency}</fail>
                         </configuration>
                     </execution>
 
@@ -795,7 +795,7 @@
     <properties>
         <jdbcproc.version>1.1-4</jdbcproc.version>
         <slf4j.version>1.7.12</slf4j.version>
-        <spring.version>4.3.18.RELEASE</spring.version>
+        <spring.version>5.0.8.RELEASE</spring.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
@@ -810,5 +810,6 @@
 
         <java.version>1.8</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>
+        <fail.on.dup.dependency>true</fail.on.dup.dependency>
     </properties>
 </project>

@@ -216,7 +216,7 @@
     <bean id="publicKeyCrypto" class="com.payneteasy.superfly.crypto.pgp.PGPCrypto">
     </bean>
 
-    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+    <bean id="velocityEngine" class="com.payneteasy.superfly.spring.velocity.VelocityEngineFactoryBean">
         <property name="velocityPropertiesMap">
             <map>
                 <entry key="resource.loader" value="file"/>
