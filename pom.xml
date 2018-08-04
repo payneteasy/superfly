@@ -9,7 +9,7 @@
     <artifactId>superfly-parent</artifactId>
     <packaging>pom</packaging>
     <name>Superfly parent project</name>
-    <version>1.7-9</version>
+    <version>1.7-10-SNAPSHOT</version>
     <description>Parent POM of the Superfly project</description>
     <modules>
         <module>superfly-remote-api</module>
