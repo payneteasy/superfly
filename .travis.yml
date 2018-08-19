@@ -3,7 +3,7 @@ jdk: oraclejdk8
 
 before_install:
   - sudo ls -l /usr/local
-  - cat /etc/mavenrc
+#  - cat /etc/mavenrc
   - pwd
   - (cd ./install && ./install.sh)
 
