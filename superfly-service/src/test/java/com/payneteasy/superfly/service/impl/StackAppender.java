@@ -1,30 +1,20 @@
 package com.payneteasy.superfly.service.impl;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.AppenderBase;
+
 import java.util.Stack;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
+class StackAppender extends AppenderBase<ILoggingEvent> {
 
-class StackAppender extends AppenderSkeleton {
-
-    private Stack<LoggingEvent> events = new Stack<LoggingEvent>();
+    private Stack<ILoggingEvent> events = new Stack<>();
 
     @Override
-    protected void append(LoggingEvent event) {
+    protected void append(ILoggingEvent event) {
         events.push(event);
     }
 
-    @Override
-    public void close() {
-        events.clear();
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return false;
-    }
-
-    public Object getLastMessage() {
+    Object getLastMessage() {
         return events.peek().getMessage();
     }
 }

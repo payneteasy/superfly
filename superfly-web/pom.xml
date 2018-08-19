@@ -147,14 +147,18 @@
         </dependency>
 
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
-                    <groupId>cglib</groupId>
-                    <artifactId>cglib</artifactId>
-                    <scope>compile</scope>
-            </dependency>
+            <groupId>org.logback-extensions</groupId>
+            <artifactId>logback-ext-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <resources>
