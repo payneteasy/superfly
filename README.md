@@ -11,6 +11,13 @@ Each web-application usually has some security: users, roles, permissions. When 
 
 ## Project news ##
 
+## August 19, 2018: Superfly supports Java 9 and 10 ##
+
+Starting with release 1.7-11, the project successfully builds and runs on Java 9+ (Java 9 and 10 were checked).
+Please note that Tomcat 7 will not work in Java 9+, so you'll have to upgrade Tomcat as well is you are planning to run Superfly on these recent Java versions.
+Minimal Java version is raised to 8.
+Spring version is upgraded to 5.
+
 ## February 8, 2013: version 1.4-1 released ##
 
 [Single Sign-on](../wiki/SingleSignOn.md) (SSO) based on redirects is implemented. Full spring-security integration is included.
