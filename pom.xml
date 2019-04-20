@@ -809,7 +809,7 @@
         <jdbcproc.version>1.1-4</jdbcproc.version>
         <slf4j.version>1.7.12</slf4j.version>
         <spring.version>5.0.8.RELEASE</spring.version>
-        <spring.security.version>4.2.9.RELEASE</spring.security.version>
+        <spring.security.version>4.2.12.RELEASE</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>7.6.0</wicket.version>
