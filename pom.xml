@@ -107,12 +107,6 @@
             <id>atlassian-m2-repository</id>
             <url>https://maven.atlassian.com/content/groups/public/</url>
         </repository>
-        <!-- Sun repository -->
-        <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
-        </repository>
         <!-- ibiblio mirror for some artifacts -->
 <!--
         <repository>
@@ -813,7 +807,7 @@
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>7.6.0</wicket.version>
-        <jetty.version>9.4.12.v20180830</jetty.version>
+        <jetty.version>9.4.17.v20190418</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
