@@ -782,7 +782,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>4.0.2</version>
+                        <version>${owasp.dependencyCheck.version}</version>
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
                         </configuration>
@@ -818,5 +818,6 @@
         <java.version>1.8</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>
         <fail.on.dup.dependency>true</fail.on.dup.dependency>
+        <owasp.dependencyCheck.version>5.0.0-M3</owasp.dependencyCheck.version>
     </properties>
 </project>
