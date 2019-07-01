@@ -776,6 +776,27 @@
 
         <profile>
             <id>owasp-dependency-check</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <configuration>
+                            <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
+                            <format>xml</format>   
+                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>  
+                            <!--skipDependencyManagement>false</skipDependencyManagement-->
+                        </configuration>
+                        <executions>
+                         <execution>
+                             <goals>
+                                 <goal>check</goal>
+                             </goals>
+                         </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
             <reporting>
                 <plugins>
                     <!-- OWASP dependency check -->
