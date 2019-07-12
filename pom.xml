@@ -783,9 +783,9 @@
                         <artifactId>dependency-check-maven</artifactId>
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
-                            <format>xml</format>   
+                            <!--format>xml</format>   
                             <prettyPrint>true</prettyPrint>
-                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>  
+                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled-->  
                             <!--skipDependencyManagement>false</skipDependencyManagement-->
                         </configuration>
                         <executions>
