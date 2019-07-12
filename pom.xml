@@ -784,6 +784,7 @@
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
                             <format>xml</format>   
+                            <prettyPrint>true</prettyPrint>
                             <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>  
                             <!--skipDependencyManagement>false</skipDependencyManagement-->
                         </configuration>
