@@ -58,6 +58,8 @@ public class EditSubsystemPage extends BasePage {
 
         form.add(new LabelCheckBoxRow("sendCallbacks", subsystem, "subsystem.edit.send-callbacks"));
 
+        form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "subsystemToken", "subsystem.edit.subsystemToken", true));
+
         LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<>(subsystem, "subsystemUrl",
                 "subsystem.edit.subsystemUrl", true);
         subsystemUrlRow.getTextField().add(urlValidator);
