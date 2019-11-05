@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.web.security.securehandler;
 
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.service.SubsystemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,10 +22,12 @@ public class SecuredHttpRequestHandler implements HttpRequestHandler {
 
     private final HttpRequestHandler   delegate;
     private final IAuthorizationParser parser;
+    private final SubsystemService     subsystemService;
 
-    public SecuredHttpRequestHandler(HttpRequestHandler aDelegate, IAuthorizationParser aParser) {
+    public SecuredHttpRequestHandler(HttpRequestHandler aDelegate, IAuthorizationParser aParser, SubsystemService aSubsystemService) {
         delegate = aDelegate;
         parser = aParser;
+        subsystemService = aSubsystemService;
     }
 
     @Override
@@ -58,11 +62,13 @@ public class SecuredHttpRequestHandler implements HttpRequestHandler {
     }
 
     private void checkCredentials(AuthorizationBearer aBearer) throws AuthorizationException {
+        UISubsystem subsystem = subsystemService.getSubsystemByName(aBearer.subsystem);
 
-        String expectedToken = System.getenv(aBearer.subsystem);
-        if(expectedToken == null) {
-            expectedToken = System.getProperty(aBearer.subsystem);
+        if (subsystem == null){
+            throw new AuthorizationException("Subsystem with name {} not found", aBearer.subsystem);
         }
+
+        String expectedToken = subsystem.getSubsystemToken();
 
         if(expectedToken == null) {
             throw new AuthorizationException("There are no token for {}", aBearer.subsystem);
@@ -71,7 +77,5 @@ public class SecuredHttpRequestHandler implements HttpRequestHandler {
         if(!expectedToken.equals(aBearer.token)) {
             throw new AuthorizationException("Wrong access token for {}", aBearer.subsystem);
         }
-
     }
-
 }
