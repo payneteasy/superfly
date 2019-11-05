@@ -23,6 +23,7 @@ create procedure ui_create_subsystem(i_subsystem_name varchar(32),
              fixed,
              allow_list_users,
              ssrv_ssrv_id,
+             subsystem_token,
              subsystem_url,
              landing_url,
              login_form_css_url
