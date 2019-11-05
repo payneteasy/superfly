@@ -13,7 +13,15 @@
         <wicket:container wicket:id="callbackUrl"></wicket:container>
         <wicket:container wicket:id="sendCallbacks"></wicket:container>
         <wicket:container wicket:id="subsystemUrl"></wicket:container>
-        <wicket:container wicket:id="subsystemToken"></wicket:container>
+
+        <div class="control-group">
+            <label class="control-label" wicket:id="subsystemTokenLabel">Subsystem token: </label>
+            <div class="controls token-controls">
+                <span wicket:id="subsystemToken" class="token-field">token</span>
+                <a href="" wicket:id="generateNewToken" class="gen-token-link btn btn-sm"> Generate new token</a>
+            </div>
+        </div>
+
         <wicket:container wicket:id="landingUrl"></wicket:container>
         <wicket:container wicket:id="loginFormCssUrl"></wicket:container>
         <wicket:container wicket:id="allowListUsers"></wicket:container>
