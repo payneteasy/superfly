@@ -10,7 +10,7 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
 /**
  * Service for subsystems.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface SubsystemService {
@@ -79,4 +79,10 @@ public interface SubsystemService {
      * @return subsystem token or null
      */
     SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
+
+    /**
+     *
+     * @return main token for subsystem
+     */
+    String generateMainSubsystemToken();
 }

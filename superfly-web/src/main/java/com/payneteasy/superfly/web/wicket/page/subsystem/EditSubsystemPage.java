@@ -127,6 +127,6 @@ public class EditSubsystemPage extends BasePage {
     }
 
     private String generateNewToken() {
-        return UUID.randomUUID().toString();
+        return subsystemService.generateMainSubsystemToken();
     }
 }
