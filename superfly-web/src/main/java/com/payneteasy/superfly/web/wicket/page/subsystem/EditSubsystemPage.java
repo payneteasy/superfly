@@ -9,6 +9,9 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -16,25 +19,27 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
+import java.util.UUID;
 
 @Secured("ROLE_ADMIN")
 public class EditSubsystemPage extends BasePage {
     @SpringBean
-    private SubsystemService subsystemService;
+    private SubsystemService  subsystemService;
     @SpringBean
     private SmtpServerService smtpServerService;
 
     public EditSubsystemPage(PageParameters parameters) {
         super(ListSubsystemsPage.class, parameters);
 
-        long subsystemId = parameters.get("id").toLong(-1L);
-        final UISubsystem subsystem = subsystemService.getSubsystem(subsystemId);
+        long              subsystemId = parameters.get("id").toLong(-1L);
+        final UISubsystem subsystem   = subsystemService.getSubsystem(subsystemId);
 
         Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
 
@@ -57,6 +62,26 @@ public class EditSubsystemPage extends BasePage {
         form.add(callbackUrlRow);
 
         form.add(new LabelCheckBoxRow("sendCallbacks", subsystem, "subsystem.edit.send-callbacks"));
+
+        // Subsystem token fields
+        final Label labelSubsystemToken = new Label("subsystemToken", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return subsystem.getSubsystemToken();
+            }
+        });
+        labelSubsystemToken.setOutputMarkupId(true);
+
+        form.add(new Label("subsystemTokenLabel", new ResourceModel("subsystem.edit.subsystemToken")));
+        form.add(labelSubsystemToken);
+        form.add(new IndicatingAjaxLink<String>("generateNewToken") {
+            private static final long serialVersionUID = 1L;
+
+            public void onClick(AjaxRequestTarget aTarget) {
+                subsystem.setSubsystemToken(generateNewToken());
+                aTarget.add(labelSubsystemToken);
+            }
+        });
 
         LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<>(subsystem, "subsystemUrl",
                 "subsystem.edit.subsystemUrl", true);
@@ -101,4 +126,7 @@ public class EditSubsystemPage extends BasePage {
         return "Edit subsystem";
     }
 
+    private String generateNewToken() {
+        return subsystemService.generateMainSubsystemToken();
+    }
 }

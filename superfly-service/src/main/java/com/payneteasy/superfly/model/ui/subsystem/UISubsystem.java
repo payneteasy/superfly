@@ -15,6 +15,7 @@ public class UISubsystem implements Serializable {
     private boolean sendCallbacks = true;
     private boolean allowListUsers;
     private UISmtpServerForFilter smtpServer;
+    private String subsystemToken;
     private String subsystemUrl;
     private String landingUrl;
     private String loginFormCssUrl;
@@ -81,6 +82,15 @@ public class UISubsystem implements Serializable {
 
     public void setSmtpServer(UISmtpServerForFilter smtpServer) {
         this.smtpServer = smtpServer;
+    }
+
+    @Column(name = "subsystem_token")
+    public String getSubsystemToken() {
+        return subsystemToken;
+    }
+
+    public void setSubsystemToken(String subsystemToken) {
+        this.subsystemToken = subsystemToken;
     }
 
     @Column(name = "subsystem_url")

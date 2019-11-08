@@ -1,24 +1,27 @@
 /*      STICKY FOOTER       */
-html, body{
+html, body {
     height: 100%;
 }
-#s-wrap-container{
+
+#s-wrap-container {
     min-height: 100%;
     height: auto !important;
     height: 100%;
     margin: 0 auto -50px;
 }
-#s-push, #s-footer{
+
+#s-push, #s-footer {
     height: 40px;
 }
-#s-footer{
+
+#s-footer {
     background-color: #fafafa;
     border-top: 1px solid #d4d4d4;
     padding-top: 15px;
 }
 
 /*            NAVBAR                        */
-.s-navbar-inner{
+.s-navbar-inner {
     border-radius: 0;
     -moz-border-radius: 0;
     -webkit-border-radius: 0;
@@ -26,22 +29,25 @@ html, body{
     color: #fff;
     text-decoration: none;
     background-color: #0081c2;
-    background-image: -moz-linear-gradient(top,#08c,#0077b3);
-    background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#0077b3));
-    background-image: -webkit-linear-gradient(top,#08c,#0077b3);
-    background-image: -o-linear-gradient(top,#08c,#0077b3);
-    background-image: linear-gradient(to bottom,#08c,#0077b3);
+    background-image: -moz-linear-gradient(top, #08c, #0077b3);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#08c), to(#0077b3));
+    background-image: -webkit-linear-gradient(top, #08c, #0077b3);
+    background-image: -o-linear-gradient(top, #08c, #0077b3);
+    background-image: linear-gradient(to bottom, #08c, #0077b3);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0077b3',GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
 }
-.s-navbar-inner>.nav>li>a, .s-navbar-inner .brand{
+
+.s-navbar-inner > .nav > li > a, .s-navbar-inner .brand {
     text-shadow: none;
     color: #fff;
 }
-.s-navbar-inner .nav>li>a:focus, .s-navbar-inner .nav>li>a:hover{
+
+.s-navbar-inner .nav > li > a:focus, .s-navbar-inner .nav > li > a:hover {
     color: #eeeeee;
 }
-.s-navbar-inner .nav>.active>a, .s-navbar-inner .nav>.active>a:hover, .s-navbar-inner .nav>.active>a:focus{
+
+.s-navbar-inner .nav > .active > a, .s-navbar-inner .nav > .active > a:hover, .s-navbar-inner .nav > .active > a:focus {
     background: #ffffff;
 }
 
@@ -59,41 +65,57 @@ html, body{
     padding-top: 14px;
     padding-bottom: 14px;
 }
-    .feedbackPanel li{
-        text-decoration: none;
-        list-style: none;
-    }
+
+.feedbackPanel li {
+    text-decoration: none;
+    list-style: none;
+}
 
 /*        FILTERS               */
-.s-filter{}
-    .s-filter > form{ margin: 0;}
-.s-filter-items{ margin: 0;}
-    .s-filter-items > li{
-        display: inline-block;
-        margin-left: 20px;
-        vertical-align: top;
-    }
-    .s-filter-items > li:first-child {margin-left: 0;}
+.s-filter {
+}
+
+.s-filter > form {
+    margin: 0;
+}
+
+.s-filter-items {
+    margin: 0;
+}
+
+.s-filter-items > li {
+    display: inline-block;
+    margin-left: 20px;
+    vertical-align: top;
+}
+
+.s-filter-items > li:first-child {
+    margin-left: 0;
+}
 
 /*          TABLE                */
-.wicket_orderUp, .wicket_orderDown, .wicket_orderNone{
+.wicket_orderUp, .wicket_orderDown, .wicket_orderNone {
     display: block;
     color: #333;
 }
-    .wicket_orderUp:hover, .wicket_orderDown:hover, .wicket_orderNone:hover{
-        text-decoration: none;
-    }
-    .wicket_orderUp{
-        background: url('../img/sort_asc.png') no-repeat center right;
-    }
-    .wicket_orderDown{
-        background: url('../img/sort_desc.png') no-repeat center right;
-    }
-    .wicket_orderNone{
-        background: url('../img/sort_both.png') no-repeat center right;
-    }
 
-.table > thead > tr{
+.wicket_orderUp:hover, .wicket_orderDown:hover, .wicket_orderNone:hover {
+    text-decoration: none;
+}
+
+.wicket_orderUp {
+    background: url('../img/sort_asc.png') no-repeat center right;
+}
+
+.wicket_orderDown {
+    background: url('../img/sort_desc.png') no-repeat center right;
+}
+
+.wicket_orderNone {
+    background: url('../img/sort_both.png') no-repeat center right;
+}
+
+.table > thead > tr {
     background-color: #fafafa;
     background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
@@ -105,149 +127,199 @@ html, body{
     -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
 }
-.table-action{
+
+.table-action {
     padding: 2px 4px;
 }
-.table tbody > tr > .s-td-action{
+
+.table tbody > tr > .s-td-action {
     width: 10%;
 }
 
-.s-table-subRole{}
-    .s-table-subRole td.role{
-        padding-left: 40px;
-    }
-    .s-table-subRole .btn{
-        padding: 2px 4px;
-        opacity: 0;
-    }
-    .s-table-subRole > tbody > tr:hover .btn{
-        opacity: 1;
-    }
+.s-table-subRole {
+}
+
+.s-table-subRole td.role {
+    padding-left: 40px;
+}
+
+.s-table-subRole .btn {
+    padding: 2px 4px;
+    opacity: 0;
+}
+
+.s-table-subRole > tbody > tr:hover .btn {
+    opacity: 1;
+}
 
 /*      COMPONENTS              */
 .row-fluid .s-offset05 {
     margin-left: 5%;
     *margin-left: 5%;
 }
+
 .row-fluid .s-offset05:first-child {
     margin-left: 4.547008547008547%;
     *margin-left: 4.440625568285142%;
 }
 
-.s-legend-btn{
+.s-legend-btn {
     position: absolute;
     top: 65px;
     right: 30px;
 }
 
-.s-form-actions-default{
+.s-form-actions-default {
     background: #fff;
     border-top: 0;
 }
-.s-details-container{
+
+.s-details-container {
     width: 50%;
 }
-    .s-details-head{
-        margin-bottom: 15px;
-    }
-.controls > label{
+
+.s-details-head {
+    margin-bottom: 15px;
+}
+
+.controls > label {
     margin: 0;
     padding-top: 5px;
 }
 
-.s-mapping .input-append{
+.s-mapping .input-append {
     width: 100%;
     margin-top: 20px;
 }
-    .s-mapping .input-append>input{
-        width: 97.5%;
-    }
-.s-mapping-table{
+
+.s-mapping .input-append > input {
+    width: 97.5%;
+}
+
+.s-mapping-table {
     border: 1px solid #ddd;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
-    .s-mapping-header{
-        background-color: #fafafa;
-        background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
-        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
-        background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
-        background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
-        background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
-        -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-        -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
-    }
-    .s-mapping-body{
-        height: 400px;
-        overflow-y: auto;
-    }
 
-    .s-mapping-input{ width: 97.5%; margin: 15px 0;}
+.s-mapping-header {
+    background-color: #fafafa;
+    background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+    background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+    background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+    -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+}
 
-    .s-mapping-header, .s-mapping-row{
-        min-width: 35px;
-        line-height: 30px;
-    }
-        .s-mapping-row{
-            border-bottom: 1px solid #ddd;
-        }
-    .s-mapping-chb-item{
-        vertical-align: middle;
-        border-right: 1px solid #ddd;
-        text-align: center;
-        padding-top: 8px;
-    }
-    .s-mapping-middle{
-        text-align: center;
-        height: 500px;
-        vertical-align: middle;
-        padding-top: 200px;
-    }
+.s-mapping-body {
+    height: 400px;
+    overflow-y: auto;
+}
 
-div.wicket-modal div.w_caption{
+.s-mapping-input {
+    width: 97.5%;
+    margin: 15px 0;
+}
+
+.s-mapping-header, .s-mapping-row {
+    min-width: 35px;
+    line-height: 30px;
+}
+
+.s-mapping-row {
+    border-bottom: 1px solid #ddd;
+}
+
+.s-mapping-chb-item {
+    vertical-align: middle;
+    border-right: 1px solid #ddd;
+    text-align: center;
+    padding-top: 8px;
+}
+
+.s-mapping-middle {
+    text-align: center;
+    height: 500px;
+    vertical-align: middle;
+    padding-top: 200px;
+}
+
+div.wicket-modal div.w_caption {
     height: 2.6em;
 }
 
-.s-dropdown{
+.s-dropdown {
     display: inline;
 }
-    .s-dropdown-menu{
-        top: 20px;
-        right: 0;
-        left: auto;
-    }
-    .s-dropdown .caret{
-        margin-top: 9px;
-        margin-left: 4px;
-    }
+
+.s-dropdown-menu {
+    top: 20px;
+    right: 0;
+    left: auto;
+}
+
+.s-dropdown .caret {
+    margin-top: 9px;
+    margin-left: 4px;
+}
 
 
-.nav .dropdown-toggle .s-user-caret{
+.nav .dropdown-toggle .s-user-caret {
     border-top-color: #fff;
     border-bottom-color: #fff;
 }
-        .nav .dropdown-toggle:hover .s-user-caret, .nav .dropdown-toggle:focus .s-user-caret{
-            border-top-color: #eee;
-            border-bottom-color: #eee;
-        }
 
-tr.tabelRowPointer{
+.nav .dropdown-toggle:hover .s-user-caret, .nav .dropdown-toggle:focus .s-user-caret {
+    border-top-color: #eee;
+    border-bottom-color: #eee;
+}
+
+tr.tabelRowPointer {
     cursor: pointer;
 }
 
 /*          FORMS        */
-.s-form-horizontal input, .s-form-horizontal textarea, .s-form-horizontal select{
+.s-form-horizontal input, .s-form-horizontal textarea, .s-form-horizontal select {
     width: 300px;
 }
-        .s-form-horizontal textarea{
-            height: 130px;
-        }
-.required > label:after{
+
+.s-form-horizontal textarea {
+    height: 130px;
+}
+
+.required > label:after {
     content: "*";
     font-size: 16px;
 }
-.s-form-modal{
+
+.s-form-modal {
     margin-top: 20px;
+}
+
+.token-controls {
+    display: flex;
+}
+
+.token-controls .token-field {
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+    text-align: center;
+    display: block;
+    width: 300px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    height: 20px;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.token-controls .gen-token-link {
+    margin: 0 12px 0;
+}
+
+.token-controls .wicket-ajax-indicator {
+    margin: 7px 0 0;
 }

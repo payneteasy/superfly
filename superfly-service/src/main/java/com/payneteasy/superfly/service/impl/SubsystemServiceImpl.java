@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 
 import java.util.List;
+import java.util.UUID;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
@@ -51,6 +52,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     public RoutineResult createSubsystem(UISubsystem subsystem) {
+        subsystem.setSubsystemToken(generateMainSubsystemToken());
         RoutineResult result = subsystemDao.createSubsystem(subsystem);
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
@@ -103,4 +105,8 @@ public class SubsystemServiceImpl implements SubsystemService {
         return "ST-" + new RandomGUID().toString().replaceAll("-", "");
     }
 
+    @Override
+    public String generateMainSubsystemToken() {
+        return UUID.randomUUID().toString();
+    }
 }

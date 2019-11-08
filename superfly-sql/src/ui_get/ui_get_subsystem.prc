@@ -12,6 +12,7 @@ create procedure ui_get_subsystem(i_ssys_id int(10))
            ss.allow_list_users,
            smtp.ssrv_id smtp_server_ssrv_id,
            smtp.server_name smtp_server_server_name,
+           ss.subsystem_token,
            ss.subsystem_url,
            ss.landing_url,
            ss.login_form_css_url
@@ -33,6 +34,7 @@ call save_routine_information('ui_get_subsystem',
                                         'allow_list_users varchar',
                                         'smtp_server_ssrv_id int',
                                         'smtp_server_server_name varchar',
+                                        'subsystem_token varchar',
                                         'subsystem_url varchar',
                                         'landing_url varchar',
                                         'login_form_css_url varchar'
