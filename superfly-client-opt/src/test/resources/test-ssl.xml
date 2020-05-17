@@ -6,9 +6,9 @@
     <bean id="httpClient" class="com.payneteasy.superfly.factorybean.HttpClientFactoryBean">
         <property name="hostConfig">
             <bean class="com.payneteasy.superfly.factorybean.StoresAndSSLConfig">
-                <property name="keyStoreResource" value="classpath:stores/superfly_demo_ks"/>
+                <property name="keyStoreResource" value="classpath:stores/superfly-demo.jks"/>
                 <property name="keyStorePassword" value="changeit"/>
-                <property name="trustKeyStoreResource" value="classpath:stores/ca_ts"/>
+                <property name="trustKeyStoreResource" value="classpath:stores/cacert.jks"/>
                 <property name="trustKeyStorePassword" value="changeit"/>
                 <property name="host" value="localhost"/>
                 <property name="securePort" value="8446"/>

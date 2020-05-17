@@ -829,7 +829,7 @@
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>7.6.0</wicket.version>
-        <jetty.version>9.4.17.v20190418</jetty.version>
+        <jetty.version>9.4.26.v20200117</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

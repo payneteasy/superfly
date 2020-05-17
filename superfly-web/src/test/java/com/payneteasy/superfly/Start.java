@@ -57,28 +57,27 @@ public class Start {
                     new HttpConnectionFactory(httpConfig));
             // Set some timeout options to make debugging easier.
             connector.setIdleTimeout(1000 * 60 * 60);
-            connector.setSoLingerTime(-1);
             connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8085")));
 
             HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
             httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
-            SslContextFactory sslContextFactory = new SslContextFactory();
-            sslContextFactory.setKeyStorePath("src/test/resources/superfly_server_ks");
+            SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+            sslContextFactory.setKeyStorePath("src/test/resources/superfly-server.jks");
             sslContextFactory.setKeyStorePassword("changeit");
-            sslContextFactory.setTrustStorePath("src/test/resources/ca_ts");
+            sslContextFactory.setTrustStorePath("src/test/resources/cacert.jks");
             sslContextFactory.setTrustStorePassword("changeit");
             sslContextFactory.setNeedClientAuth(true);
             // FIXME: we've enabled SHA|SHA1 back!
-            sslContextFactory.setExcludeCipherSuites("^.*_(MD5)$");
+            //sslContextFactory.setExcludeCipherSuites("^.*_(MD5)$");
 
             ServerConnector secureConnector = new ServerConnector(server,
                     new SslConnectionFactory(sslContextFactory, "http/1.1"),
                     new HttpConnectionFactory(httpsConfig));
             // Set some timeout options to make debugging easier.
             secureConnector.setIdleTimeout(1000 * 60 * 60);
-            secureConnector.setSoLingerTime(-1);
             secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
+            //secureConnector.setHost("localhost");
 
             server.setConnectors(new Connector[]{connector, secureConnector});
 
