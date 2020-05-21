@@ -1,18 +1,17 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
-import javax.crypto.BadPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 public class MessageDigestPasswordEncoderTest {
 
@@ -63,14 +62,18 @@ public class MessageDigestPasswordEncoderTest {
         String text = "some text to encrypt";
         String secret = "secret";
         String salt = "salt";
-        String encrypt = CryptoHelper.encrypt(text, secret, salt);
-        System.out.println(encrypt);
-        String decrypt = CryptoHelper.decrypt(encrypt, secret, salt);
-        assertEquals(text, decrypt);
+        try {
+            String encrypt = CryptoHelper.encrypt(text, secret, salt);
+            System.out.println(encrypt);
+            String decrypt = CryptoHelper.decrypt(encrypt, secret, salt);
+            assertEquals(text, decrypt);
+        } catch (SsoDecryptException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testWrongSaltWorkOfEncrypting() {
+    @Test(expected = SsoDecryptException.class)
+    public void testWrongSaltWorkOfEncrypting() throws SsoDecryptException {
         String text = "some text to encrypt";
         String secret = "secret";
         String salt = "salt";
@@ -80,8 +83,8 @@ public class MessageDigestPasswordEncoderTest {
         CryptoHelper.decrypt(encrypt, secret, salt + "ups");
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testWrongSecretWorkOfEncrypting() {
+    @Test(expected = SsoDecryptException.class)
+    public void testWrongSecretWorkOfEncrypting() throws SsoDecryptException {
         String text = "some text to encrypt";
         String secret = "secret";
         String salt = "salt";

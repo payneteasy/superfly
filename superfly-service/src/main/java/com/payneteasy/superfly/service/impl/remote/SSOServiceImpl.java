@@ -223,8 +223,13 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
-    public String resetGoogleAuthMasterKey(long userId)  throws UserNotFoundException {
+    public String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException, SsoDecryptException {
         return hotpService.resetGoogleAuthMasterKey(userId);
+    }
+
+    @Override
+    public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
+        return hotpService.getUrlToGoogleAuthQrCode(secretKey, issuer, accountName);
     }
 
     /**

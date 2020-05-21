@@ -7,6 +7,8 @@ import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.spi.ExportException;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -66,7 +68,7 @@ public class HOTPServiceImpl implements HOTPService {
     }
 
     @Override
-    public String resetGoogleAuthMasterKey(long userId) {
+    public String resetGoogleAuthMasterKey(long userId) throws SsoDecryptException {
         UIUser user = userDao.getUser(userId);
         String key = googleAuthenticator.get().createCredentials(user.getUsername()).getKey();
         key = CryptoHelper.encrypt(
@@ -76,6 +78,15 @@ public class HOTPServiceImpl implements HOTPService {
         );
         userDao.persistGoogleAuthMasterKeyForUsername(userId, key);
         return key;
+    }
+
+    @Override
+    public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
+        return GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
+                issuer,
+                accountName,
+                new GoogleAuthenticatorKey.Builder(secretKey).build()
+        );
     }
 
     @Override
@@ -89,9 +100,6 @@ public class HOTPServiceImpl implements HOTPService {
                 GOOGLE_AUTH_OTP_SECRET,
                 GOOGLE_AUTH_OTP_SALT
         );
-        if (masterKey == null) {
-            throw new SsoDecryptException("Can't decrypt master key for Google Auth");
-        }
         return googleAuthenticator.get().authorize(masterKey, verificationCode);
     }
 

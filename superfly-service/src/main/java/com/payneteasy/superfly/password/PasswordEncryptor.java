@@ -165,6 +165,11 @@ public class PasswordEncryptor {
             }
 
             @Override
+            public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
+                return null;
+            }
+
+            @Override
             public boolean validateGoogleTimePassword(String username, String password) {
                 return false;
             }

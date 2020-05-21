@@ -177,7 +177,18 @@ public interface SSOService {
      * @return New master key
      * @since 1.12
      */
-    String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException;
+    String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException, SsoDecryptException;
+
+    /**
+     * Get google auth QR code
+     *
+     * @param secretKey   Google Auth secret key
+     * @param issuer      The issuer name. This parameter cannot contain the colon
+     *                    (:) character. This parameter can be null.
+     * @param accountName The account name. This parameter shall not be null.
+     * @return an otpauth scheme URI for loading into a client application.
+     */
+    String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName);
 
     /**
      * Updates user's fields.
