@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class SSOUser implements Serializable {
     private static final long serialVersionUID = 2939559042187840631L;
-
+    public static final String PREFERENCES_TYPE = "hotp_type";
     private String name;
     private String sessionId;
     private Map<SSORole, SSOAction[]> actionsMap;

@@ -3,7 +3,10 @@ package com.payneteasy.superfly.hotp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.spi.ExportException;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -22,6 +25,10 @@ import com.payneteasy.superfly.spisupport.HOTPService;
 public class HOTPServiceImpl implements HOTPService {
 
     private static final Logger logger = LoggerFactory.getLogger(HOTPServiceImpl.class);
+    private static final String GOOGLE_AUTH_OTP_SECRET = "GOOGLE_AUTH_OTP_SECRET";
+    private static final String GOOGLE_AUTH_OTP_SALT = "GOOGLE_AUTH_OTP_SALT";
+
+    private final ThreadLocal<GoogleAuthenticator> googleAuthenticator = ThreadLocal.withInitial(GoogleAuthenticator::new);
 
     private EmailService emailService;
     private HOTPProvider hotpProvider;
@@ -56,6 +63,36 @@ public class HOTPServiceImpl implements HOTPService {
         UIUser user = userDao.getUser(userId);
         hotpProvider.resetSequence(user.getUsername());
         obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, user);
+    }
+
+    @Override
+    public String resetGoogleAuthMasterKey(long userId) {
+        UIUser user = userDao.getUser(userId);
+        String key = googleAuthenticator.get().createCredentials(user.getUsername()).getKey();
+        key = CryptoHelper.encrypt(
+                key,
+                GOOGLE_AUTH_OTP_SECRET,
+                GOOGLE_AUTH_OTP_SALT
+        );
+        userDao.persistGoogleAuthMasterKeyForUsername(userId, key);
+        return key;
+    }
+
+    @Override
+    public boolean validateGoogleTimePassword(String username, String password) throws SsoDecryptException {
+        if (password == null || !password.matches("^[0-9]{6}$")) {
+            return false;
+        }
+        int verificationCode = Integer.parseInt(password);
+        String masterKey = CryptoHelper.decrypt(
+                userDao.getGoogleAuthMasterKeyByUsername(username),
+                GOOGLE_AUTH_OTP_SECRET,
+                GOOGLE_AUTH_OTP_SALT
+        );
+        if (masterKey == null) {
+            throw new SsoDecryptException("Can't decrypt master key for Google Auth");
+        }
+        return googleAuthenticator.get().authorize(masterKey, verificationCode);
     }
 
     private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException, ExportException {

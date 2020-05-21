@@ -6,11 +6,13 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
+import javax.crypto.BadPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class MessageDigestPasswordEncoderTest {
 
@@ -56,4 +58,36 @@ public class MessageDigestPasswordEncoderTest {
         System.out.println(encoder.encode("123admin123", "3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f"));
     }
 
+    @Test
+    public void testSuccessWorkOfEncrypting() {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+        String encrypt = CryptoHelper.encrypt(text, secret, salt);
+        System.out.println(encrypt);
+        String decrypt = CryptoHelper.decrypt(encrypt, secret, salt);
+        assertEquals(text, decrypt);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testWrongSaltWorkOfEncrypting() {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+
+        String encrypt = CryptoHelper.encrypt(text, secret, salt);
+        System.out.println(encrypt);
+        CryptoHelper.decrypt(encrypt, secret, salt + "ups");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testWrongSecretWorkOfEncrypting() {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+
+        String encrypt = CryptoHelper.encrypt(text, secret, salt);
+        System.out.println(encrypt);
+        CryptoHelper.decrypt(encrypt, secret + "ups", salt);
+    }
 }

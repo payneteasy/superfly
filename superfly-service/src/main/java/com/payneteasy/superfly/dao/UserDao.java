@@ -449,6 +449,12 @@ public interface UserDao {
     @AStoredProcedure(name = "get_user_statuses")
     List<UserWithStatus> getUserStatuses(String userNames);
 
+    @AStoredProcedure(name = "get_google_auth_master_key_by_user_name")
+    String getGoogleAuthMasterKeyByUsername(String username);
+
+    @AStoredProcedure(name = "save_google_auth_master_key")
+    void persistGoogleAuthMasterKeyForUsername(long userId, String masterKey);
+
     /**
      * Checks user login status. That is: tries to login to the
      * specified subsystem and returns one of the following:

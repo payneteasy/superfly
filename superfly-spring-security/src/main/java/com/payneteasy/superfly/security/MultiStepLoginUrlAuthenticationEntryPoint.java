@@ -10,28 +10,25 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
-import java.util.Map;
+import java.util.function.Function;
 
 /**
  * {@link AuthenticationEntryPoint} which is intended to be used for multi-step
  * authentication process. It redirects to URLs determined by the current
  * {@link Authentication} class.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class MultiStepLoginUrlAuthenticationEntryPoint extends
         LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private Map<Class<? extends Authentication>, String> stepInsufficientAuthenticationMapping = Collections.emptyMap();
+    private Function<Authentication, String> stepInsufficientAuthenticationMapping;
 
     public MultiStepLoginUrlAuthenticationEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
     }
 
-    public void setInsufficientAuthenticationMapping(
-            Map<Class<? extends Authentication>,
-            String> mapping) {
+    public void setInsufficientAuthenticationMapping(Function<Authentication, String> mapping) {
         this.stepInsufficientAuthenticationMapping = mapping;
     }
 
@@ -55,7 +52,10 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
             } else {
                 authToChooseUrl = auth;
             }
-            url = stepInsufficientAuthenticationMapping.get(authToChooseUrl.getClass());
+            if (stepInsufficientAuthenticationMapping != null) {
+                url = stepInsufficientAuthenticationMapping.apply(authToChooseUrl);
+            }
+
             if (url != null) {
                 // mapping matched, so restoring authentication...
                 // TODO: is this correct? it's explicitly cleared before...

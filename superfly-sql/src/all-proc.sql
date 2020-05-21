@@ -274,6 +274,9 @@ create table mysql_routines_return_arguments (
 \. get/get_user_for_description.prc
 \. save/update_user_for_description.prc
 
+\. get/get_google_auth_master_key_by_user_name.sql
+\. save/save_google_auth_master_key.prc
+
 \. ui_get/ui_get_smtp_servers_list.prc
 \. ui_get/ui_get_smtp_server.prc
 \. ui_get/ui_get_smtp_server_by_subsystem_identifier.prc

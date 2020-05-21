@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl.remote;
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.HOTPType;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PasswordReset;
 import com.payneteasy.superfly.api.PolicyValidationException;
@@ -10,6 +11,7 @@ import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -117,7 +119,7 @@ public class SSOServiceImpl implements SSOService {
     }
 
     /**
-     * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String, String)
+     * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String, String, HOTPType)
      * @deprecated use #registerUser(UserRegisterRequest) instead
      */
     @Override
@@ -125,11 +127,11 @@ public class SSOServiceImpl implements SSOService {
     public void registerUser(String username, String password, String email,
             String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey, String organization)
+            String publicKey, String organization, HOTPType hotpType)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
         internalSSOService.registerUser(username, password, email,
                 obtainSubsystemIdentifier(subsystemIdentifier), roleGrants,
-                name, surname, secretQuestion, secretAnswer, publicKey, organization);
+                name, surname, secretQuestion, secretAnswer, publicKey, organization, hotpType);
     }
 
     /**
@@ -148,7 +150,8 @@ public class SSOServiceImpl implements SSOService {
                 registerRequest.getSecretQuestion(),
                 registerRequest.getSecretAnswer(),
                 registerRequest.getPublicKey(),
-                registerRequest.getOrganization());
+                registerRequest.getOrganization(),
+                registerRequest.getHotpType());
     }
 
     /**
@@ -158,6 +161,12 @@ public class SSOServiceImpl implements SSOService {
     public boolean authenticateUsingHOTP(String username, String hotp) {
         String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
         return internalSSOService.authenticateHOTP(subsystemIdentifier, username, hotp);
+    }
+
+    @Override
+    public boolean authenticateUsingGoogleAuth(String username, String key) throws SsoDecryptException {
+        String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
+        return internalSSOService.authenticateTOTPGoogleAuth(subsystemIdentifier, username, key);
     }
 
     protected String obtainSubsystemIdentifier(String systemIdentifier) {
@@ -211,6 +220,11 @@ public class SSOServiceImpl implements SSOService {
             throw new UserNotFoundException(username);
         }
         hotpService.sendTableIfSupported(obtainSubsystemIdentifier(subsystemIdentifier), user.getUserId());
+    }
+
+    @Override
+    public String resetGoogleAuthMasterKey(long userId)  throws UserNotFoundException {
+        return hotpService.resetGoogleAuthMasterKey(userId);
     }
 
     /**
@@ -330,5 +344,4 @@ public class SSOServiceImpl implements SSOService {
     public void changeUserRole(String username, String newRole, String subsystemHint) {
         internalSSOService.changeUserRole(username, newRole, obtainSubsystemIdentifier(subsystemHint));
     }
-
 }

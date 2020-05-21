@@ -158,6 +158,16 @@ public class PasswordEncryptor {
 
             public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) {
             }
+
+            @Override
+            public String resetGoogleAuthMasterKey(long userId) {
+                return null;
+            }
+
+            @Override
+            public boolean validateGoogleTimePassword(String username, String password) {
+                return false;
+            }
         };
     }
 

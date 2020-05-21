@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.payneteasy.superfly.api.HOTPType;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.dao.SessionDao;
-import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,15 @@ import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.ActionToSave;
+import com.payneteasy.superfly.model.AuthAction;
+import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
+import com.payneteasy.superfly.model.LockoutType;
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
@@ -141,11 +151,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
-            String sessionInfo) {
+                                String sessionInfo) {
         SSOUser ssoUser;
-        String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
         AuthSession session = userDao.authenticate(username, encPassword,
-                subsystemIdentifier, userIpAddress, sessionInfo);
+                                                   subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
         if (ok) {
@@ -160,9 +170,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
-        SSOUser ssoUser;
+        SSOUser     ssoUser;
         AuthSession session = userDao.pseudoAuthenticate(username, subsystemIdentifier);
-        boolean ok = session != null && session.getSessionId() != null;
+        boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
         if (ok) {
             ssoUser = buildSSOUser(session);
@@ -174,29 +184,44 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     private SSOUser buildSSOUser(AuthSession session) {
-        SSOUser ssoUser;
+        SSOUser        ssoUser;
         List<AuthRole> authRoles = session.getRoles();
         if (authRoles.size() == 1 && authRoles.get(0).getRoleName() == null) {
             // actually it's empty
             authRoles = Collections.emptyList();
         }
+
         Map<SSORole, SSOAction[]> actionsMap = new HashMap<>(authRoles.size());
         for (AuthRole authRole : authRoles) {
-            SSORole ssoRole = new SSORole(authRole.getRoleName());
+            SSORole     ssoRole = new SSORole(authRole.getRoleName());
             SSOAction[] actions = convertToSSOActions(authRole.getActions());
             actionsMap.put(ssoRole, actions);
         }
-        Map<String, String> preferences = Collections.emptyMap();
-        ssoUser = new SSOUser(session.getUsername(), actionsMap, preferences);
+        Map<String, String> preferences = new HashMap<>();
+        preferences.put(SSOUser.PREFERENCES_TYPE, hotpTypeFromActions(authRoles).type());
+        ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.unmodifiableMap(preferences));
         ssoUser.setSessionId(String.valueOf(session.getSessionId()));
         return ssoUser;
+    }
+
+    private HOTPType hotpTypeFromActions(List<AuthRole> roles) {
+        HOTPType hotpType = HOTPType.NONE;
+        for (final AuthRole role : roles) {
+            for (final AuthAction action : role.getActions()) {
+                hotpType = HOTPType.fromAction(action.getActionName());
+                if (hotpType != HOTPType.NONE) {
+                    return hotpType;
+                }
+            }
+        }
+        return hotpType;
     }
 
     protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
         SSOAction[] actions = new SSOAction[authActions.size()];
         for (int i = 0; i < authActions.size(); i++) {
             AuthAction authAction = authActions.get(i);
-            SSOAction ssoAction = new SSOAction(authAction.getActionName(), authAction.isLogAction());
+            SSOAction  ssoAction  = new SSOAction(authAction.getActionName(), authAction.isLogAction());
             actions[i] = ssoAction;
         }
         return actions;
@@ -235,7 +260,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     public void registerUser(String username, String password, String email, String subsystemIdentifier,
             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-            String secretAnswer, String publicKey,String organization) throws UserExistsException, PolicyValidationException,
+            String secretAnswer, String publicKey,String organization, HOTPType hotpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
@@ -272,6 +297,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                 }
             }
 
+            if (hotpType != HOTPType.NONE) {
+            //todo: добавить экшен или группу в которой есть экшен (hotpType.action()) пользователю
+            }
+
             if (result.isOk()) {
                 hotpService.sendTableIfSupported(subsystemIdentifier, registerUser.getUserid());
             }
@@ -304,6 +333,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         return ok;
     }
 
+    @Override
+    public boolean authenticateTOTPGoogleAuth(String subsystemIdentifier, String username, String key) throws SsoDecryptException {
+        return hotpService.validateGoogleTimePassword(username, key);
+    }
+
     protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
         return new SSOUserWithActions(user.getUsername(), user.getEmail(), convertToSSOActions(user.getActions()));
     }
@@ -330,9 +364,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public SSOUser exchangeSubsystemToken(String subsystemToken) {
-        SSOUser ssoUser;
+        SSOUser     ssoUser;
         AuthSession session = userDao.exchangeSubsystemToken(subsystemToken);
-        boolean ok = session != null && session.getSessionId() != null;
+        boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
         if (ok) {
             ssoUser = buildSSOUser(session);

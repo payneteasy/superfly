@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.spisupport;
 
 import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.UserNotFoundException;
 
 /**
  * Service to deal with HOTP management.
@@ -24,4 +26,13 @@ public interface HOTPService {
      * @throws MessageSendException
      */
     void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException;
+
+    /**
+     * Reset Master Key
+     * @param userId ID of a user
+     * @return New master key
+     */
+    String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException;
+
+    boolean validateGoogleTimePassword(String username, String password) throws SsoDecryptException;
 }
