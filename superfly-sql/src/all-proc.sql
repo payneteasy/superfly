@@ -299,5 +299,6 @@ create table mysql_routines_return_arguments (
 
 \. save/change_user_role.prc
 
+\. save/grant_action_to_user.prc
 
 commit;
