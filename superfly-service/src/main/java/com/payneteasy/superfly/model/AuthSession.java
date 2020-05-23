@@ -12,6 +12,8 @@ import java.util.List;
 public class AuthSession {
     private String username;
     private Long sessionId;
+    private Long otpTypeId;
+    private String otpTypeCode;
     private List<AuthRole> roles = new ArrayList<AuthRole>();
 
     public AuthSession() {
@@ -64,6 +66,24 @@ public class AuthSession {
         if (sessionId != null ? !sessionId.equals(session.sessionId) : session.sessionId != null) return false;
 
         return true;
+    }
+
+    @Column(name="otp_type_id")
+    public Long getOtpTypeId() {
+        return otpTypeId;
+    }
+
+    public void setOtpTypeId(Long otpTypeId) {
+        this.otpTypeId = otpTypeId;
+    }
+
+    @Column(name="otp_type_code")
+    public String getOtpTypeCode() {
+        return otpTypeCode;
+    }
+
+    public void setOtpTypeCode(String otpTypeCode) {
+        this.otpTypeCode = otpTypeCode;
     }
 
     @Override

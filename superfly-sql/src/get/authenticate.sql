@@ -38,11 +38,13 @@ delimiter ;
 call save_routine_information('authenticate',
                               concat_ws(',',
                                         'username varchar',
+                                        'otp_code varchar',
+                                        'otp_type_id int',
                                         'session_id int',
                                         'role_role_name varchar',
                                         'role_principal_name varchar',
                                         'role_callback_information varchar',
                                         'role_action_action_name varchar',
-                                        'role_action_log_action varchar'
+                                        'role_action_log_action varchar',
                               )
      );
