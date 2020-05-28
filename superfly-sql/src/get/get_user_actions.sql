@@ -36,6 +36,8 @@ delimiter ;
 call save_routine_information('get_user_actions',
                               concat_ws(',',
                                         'username varchar',
+                                        'otp_code varchar',
+                                        'otp_type_id int',
                                         'session_id int',
                                         'role_role_name varchar',
                                         'role_principal_name varchar',

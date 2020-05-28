@@ -244,6 +244,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_update/ui_expire_invalid_sessions.prc
 
+\. ui_update/update_user_otp_type.prc
+
 \. stub/get_subsystems_allowing_to_list_users.prc
 
 \. stub/register_user.prc

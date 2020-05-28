@@ -102,7 +102,7 @@ create procedure int_get_user_actions(i_user_id int(10),
         set v_sess_id = last_insert_id();
 
         select
-            tu.username,
+            tu.username
             ,ta.*
             ,tu.otp_type_id
             ,tu.otp_code

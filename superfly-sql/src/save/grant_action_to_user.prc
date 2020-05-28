@@ -1,6 +1,6 @@
 drop procedure if exists grant_action_to_user;
 delimiter $$
-create procedure i_subsystem_name (i_subsystem_name varchar(32),
+create procedure grant_action_to_user (i_subsystem_name varchar(32),
                                    i_user_name varchar(32),
                                    i_action_name varchar(128))
  main_sql:

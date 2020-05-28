@@ -45,6 +45,6 @@ call save_routine_information('authenticate',
                                         'role_principal_name varchar',
                                         'role_callback_information varchar',
                                         'role_action_action_name varchar',
-                                        'role_action_log_action varchar',
+                                        'role_action_log_action varchar'
                               )
      );
