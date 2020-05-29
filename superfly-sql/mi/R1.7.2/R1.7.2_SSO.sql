@@ -1,7 +1,6 @@
 call run_install_command('alter table users add column master_key varchar(64) after user_organization', '42S21');
 call run_install_command('alter table users add column otp_otp_type_id int(10) after master_key', '42S21');
-
-
+call run_install_command('alter table users add column is_otp_optional varchar(1) not null default "Y"', '42S21');
 
 drop table if exists otp_types;
 

@@ -286,6 +286,8 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_edit_smtp_server.prc
 \. ui_delete/ui_delete_smtp_server.prc
 
+\. ui_update/ui_update_user_is_otp_optional_value.sql
+
 \. int/int_has_actions.prc
 \. get/get_valid_sso_session.sql
 \. get/get_user_login_status.sql
