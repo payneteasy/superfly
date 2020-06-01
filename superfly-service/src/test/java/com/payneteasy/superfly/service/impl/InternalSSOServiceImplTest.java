@@ -102,7 +102,7 @@ public class InternalSSOServiceImplTest {
         expectLastCall();
         replay(userDao, hotpService);
         internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{}, "user",
-                "user", "question", "answer", null, "test organization", HOTPType.NONE);
+                "user", "question", "answer", null, "test organization", OTPType.NONE);
         verify(userDao, hotpService);
     }
 
@@ -127,7 +127,7 @@ public class InternalSSOServiceImplTest {
             internalSSOService.registerUser("username", "password", "email.domain.com",
                     "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                     "secretQuestion", "secretAnswer",
-                    "not a key, just junk!", "test organization", HOTPType.NONE);
+                    "not a key, just junk!", "test organization", OTPType.NONE);
             fail();
         } catch (BadPublicKeyException e) {
             // expected
@@ -143,7 +143,7 @@ public class InternalSSOServiceImplTest {
                     "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                     "secretQuestion", "secretAnswer",
                     "-----BEGIN PGP PUBLIC KEY BLOCK-----not a key, just junk!-----END PGP PUBLIC KEY BLOCK-----",
-                    "test organization", HOTPType.NONE);
+                    "test organization", OTPType.NONE);
             fail();
         } catch (BadPublicKeyException e) {
             // expected
@@ -168,7 +168,7 @@ public class InternalSSOServiceImplTest {
         internalSSOService.registerUser("username", "password", "email.domain.com",
                 "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                 "secretQuestion", "secretAnswer",
-                null, "test organization", HOTPType.NONE);
+                null, "test organization", OTPType.NONE);
         verify(userDao);
 
         reset(userDao);
@@ -186,7 +186,7 @@ public class InternalSSOServiceImplTest {
         internalSSOService.registerUser("username", "password", "email.domain.com",
                 "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                 "secretQuestion", "secretAnswer",
-                "", "test organization", HOTPType.NONE);
+                "", "test organization", OTPType.NONE);
         verify(userDao);
     }
 

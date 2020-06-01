@@ -4,7 +4,7 @@ package com.payneteasy.superfly.api;
  * Thrown when a can not decrypt message
  *
  * @author Igor Vasilyev
- * @since 1.12
+ * @since 1.7
  */
 public class SsoDecryptException extends SSOException {
 

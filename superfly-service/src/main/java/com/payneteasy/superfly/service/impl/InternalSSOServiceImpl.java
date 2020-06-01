@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.payneteasy.superfly.api.HOTPType;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.dao.SessionDao;
 import com.payneteasy.superfly.utils.StringUtils;
@@ -168,6 +168,32 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         return ssoUser;
     }
 
+    public boolean checkOtp(SSOUser user, String code) {
+        if (user.isOtpOptional() && (code == null || code.trim().isEmpty())) {
+            return true;
+        }
+        boolean ok = false;
+        switch (user.getOtpType()) {
+            case GOOGLE_AUTH:
+                try {
+                    ok = authenticateTOTPGoogleAuth(user.getName(), code);
+                } catch (SsoDecryptException e) {
+                    logger.warn("Can't decrypt secret key for {}", user.getName());
+                }
+                break;
+            case NONE:
+            default:
+                ok = true;
+        }
+
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, user.getName());
+        if (!ok) {
+            logger.warn("OTP check failed {}", user.getName());
+            lockoutStrategy.checkLoginsFailed(user.getName(), LockoutType.HOTP);
+        }
+        return ok;
+    }
+
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
@@ -197,24 +223,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             SSOAction[] actions = convertToSSOActions(authRole.getActions());
             actionsMap.put(ssoRole, actions);
         }
-        Map<String, String> preferences = new HashMap<>();
-        preferences.put(SSOUser.PREFERENCES_TYPE, hotpTypeFromActions(authRoles).type());
-        ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.unmodifiableMap(preferences));
+        ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.emptyMap());
         ssoUser.setSessionId(String.valueOf(session.getSessionId()));
+        ssoUser.setOtpType(session.otpType());
         return ssoUser;
-    }
-
-    private HOTPType hotpTypeFromActions(List<AuthRole> roles) {
-        HOTPType hotpType = HOTPType.NONE;
-        for (final AuthRole role : roles) {
-            for (final AuthAction action : role.getActions()) {
-                hotpType = HOTPType.fromAction(action.getActionName());
-                if (hotpType != HOTPType.NONE) {
-                    return hotpType;
-                }
-            }
-        }
-        return hotpType;
     }
 
     protected SSOAction[] convertToSSOActions(List<AuthAction> authActions) {
@@ -260,7 +272,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     public void registerUser(String username, String password, String email, String subsystemIdentifier,
             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-            String secretAnswer, String publicKey,String organization, HOTPType hotpType) throws UserExistsException, PolicyValidationException,
+            String secretAnswer, String publicKey,String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
@@ -277,6 +289,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setSecretAnswer(secretAnswer);
         registerUser.setPublicKey(publicKey);
         registerUser.setOrganization(organization);
+        registerUser.setOtpTypeCode(otpType.code());
 
         // validate password policy
         policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
@@ -295,10 +308,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                     throw new IllegalStateException("Status: " + result.getStatus() + ", errorMessage: "
                             + result.getErrorMessage());
                 }
-            }
-
-            if (hotpType != HOTPType.NONE) {
-            //todo: добавить экшен или группу в которой есть экшен (hotpType.action()) пользователю
             }
 
             if (result.isOk()) {
@@ -334,8 +343,26 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public boolean authenticateTOTPGoogleAuth(String subsystemIdentifier, String username, String key) throws SsoDecryptException {
-        return hotpService.validateGoogleTimePassword(username, key);
+    public void updateUserOtpType(String username, String otpType) {
+        userDao.updateUserOtpType(username, otpType);
+    }
+
+    @Override
+    public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
+        userDao.updateUserIsOtpOptionalValue(username, isOtpOptional);
+    }
+
+    @Override
+    public boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException {
+        boolean ok = hotpService.validateGoogleTimePassword(username, key);
+        if (!ok) {
+            userDao.incrementHOTPLoginsFailed(username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        } else {
+            userDao.clearHOTPLoginsFailed(username);
+        }
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, username);
+        return ok;
     }
 
     protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

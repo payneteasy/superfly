@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.model.ui.user;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 
 import java.io.Serializable;
@@ -23,7 +24,9 @@ public class UIUser implements Serializable {
     private String secretQuestion;
     private String secretAnswer;
     private String salt;
-    private String publicKey;
+    private String  publicKey;
+    private String  otpType = OTPType.NONE.code();
+    private boolean isOtpOptional;
     private UISubsystemForFilter subsystemForEmail;
     private String organization;
 
@@ -116,6 +119,24 @@ public class UIUser implements Serializable {
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+    }
+
+    @Column(name = "otp_code")
+    public String getOtpType() {
+        return otpType;
+    }
+
+    public void setOtpType(String otpType) {
+        this.otpType = otpType;
+    }
+
+    @Column(name = "is_otp_optional")
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 
     @Transient

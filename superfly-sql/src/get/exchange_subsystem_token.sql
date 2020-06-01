@@ -47,6 +47,7 @@ delimiter ;
 call save_routine_information('exchange_subsystem_token',
                               concat_ws(',',
                                         'username varchar',
+                                        'is_otp_optional varchar',
                                         'otp_code varchar',
                                         'otp_type_id int',
                                         'session_id int',

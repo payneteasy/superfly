@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -9,6 +10,7 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.RoleInCreateUserChoiceRender;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
+import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
@@ -20,18 +22,22 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Secured("ROLE_ADMIN")
 public class CreateUserPage extends BasePage {
@@ -133,6 +139,9 @@ public class CreateUserPage extends BasePage {
 
         form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
 
+        form.add(new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender()));
+
+        form.add(new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional"));
         form.add(new Button("add") {
 
             @Override
@@ -155,6 +164,19 @@ public class CreateUserPage extends BasePage {
 
         });
         form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
+    }
+
+    private IChoiceRenderer<String> otpRender() {
+        return new ChoiceRenderer<String>() {
+            @Override
+            public Object getDisplayValue(String object) {
+                return new ResourceModel("otpType." + object).getObject();
+            }
+        };
+    }
+
+    private List<String> otpTypes() {
+        return Arrays.stream(OTPType.values()).map(OTPType::code).collect(Collectors.toList());
     }
 
     @Override

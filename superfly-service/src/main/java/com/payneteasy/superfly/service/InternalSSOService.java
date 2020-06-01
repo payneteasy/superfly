@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.HOTPType;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
@@ -38,6 +38,8 @@ public interface InternalSSOService {
      */
     SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
             String sessionInfo);
+
+    boolean checkOtp(SSOUser user, String code);
 
     /**
         * Returns the same data as if user was successfully authenticated,
@@ -96,7 +98,7 @@ public interface InternalSSOService {
      */
     void registerUser(String username, String password, String email, String subsystemIdentifier,
             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey,String organization, HOTPType hotpType)
+            String publicKey,String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
 
     /**
@@ -108,6 +110,9 @@ public interface InternalSSOService {
      */
     boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
 
+    void updateUserOtpType(String username, String otpType);
+
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
 
     /**
      * Authenticates using TOTP GoogleAuth
@@ -116,7 +121,7 @@ public interface InternalSSOService {
      * @param key         key
      * @return authentication result
      */
-    boolean authenticateTOTPGoogleAuth(String subsystemIdentifier, String username, String key) throws SsoDecryptException;
+    boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException;
 
     /**
      * 

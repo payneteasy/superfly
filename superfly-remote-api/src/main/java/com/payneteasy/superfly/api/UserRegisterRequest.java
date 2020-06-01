@@ -7,7 +7,7 @@ public class UserRegisterRequest extends UserDescription {
     private String password;
     private String subsystemHint;
     private RoleGrantSpecification[] roleGrants;
-    private HOTPType hotpType;
+    private OTPType                  otpType;
 
     public String getPassword() {
         return password;
@@ -33,11 +33,11 @@ public class UserRegisterRequest extends UserDescription {
         this.roleGrants = roleGrants;
     }
 
-    public HOTPType getHotpType() {
-        return hotpType;
+    public OTPType getOtpType() {
+        return otpType;
     }
 
-    public void setHotpType(HOTPType hotpType) {
-        this.hotpType = hotpType;
+    public void setOtpType(OTPType otpType) {
+        this.otpType = otpType;
     }
 }

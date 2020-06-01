@@ -38,6 +38,7 @@ delimiter ;
 call save_routine_information('authenticate',
                               concat_ws(',',
                                         'username varchar',
+                                        'is_otp_optional varchar',
                                         'otp_code varchar',
                                         'otp_type_id int',
                                         'session_id int',

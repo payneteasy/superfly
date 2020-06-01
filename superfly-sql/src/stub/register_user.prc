@@ -14,7 +14,7 @@ create procedure register_user(i_user_name         varchar(32),
                                i_hotp_salt		   varchar(128),
                                i_public_key		   text, 			 
                                i_user_organization varchar(255),
-                               i_otp_type_code     varchar(16),
+                               i_otp_code          varchar(16),
                                out o_user_id       int(10)
                               )
  main_sql:

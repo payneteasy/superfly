@@ -3,7 +3,7 @@ package com.payneteasy.superfly.service.impl.remote;
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.AuthenticationRequestInfo;
 import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.HOTPType;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PasswordReset;
 import com.payneteasy.superfly.api.PolicyValidationException;
@@ -90,6 +90,11 @@ public class SSOServiceImpl implements SSOService {
                 authRequestInfo.getSessionInfo());
     }
 
+    @Override
+    public boolean checkOtp(SSOUser user, String code) {
+        return internalSSOService.checkOtp(user, code);
+    }
+
     /**
      * @see SSOService#pseudoAuthenticate(String, String)
      */
@@ -119,7 +124,7 @@ public class SSOServiceImpl implements SSOService {
     }
 
     /**
-     * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String, String, HOTPType)
+     * @see SSOService#registerUser(String, String, String, String, com.payneteasy.superfly.api.RoleGrantSpecification[], String, String, String, String, String, String, OTPType)
      * @deprecated use #registerUser(UserRegisterRequest) instead
      */
     @Override
@@ -127,11 +132,11 @@ public class SSOServiceImpl implements SSOService {
     public void registerUser(String username, String password, String email,
             String subsystemIdentifier, RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey, String organization, HOTPType hotpType)
+            String publicKey, String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
         internalSSOService.registerUser(username, password, email,
-                obtainSubsystemIdentifier(subsystemIdentifier), roleGrants,
-                name, surname, secretQuestion, secretAnswer, publicKey, organization, hotpType);
+                                        obtainSubsystemIdentifier(subsystemIdentifier), roleGrants,
+                                        name, surname, secretQuestion, secretAnswer, publicKey, organization, otpType);
     }
 
     /**
@@ -151,7 +156,7 @@ public class SSOServiceImpl implements SSOService {
                 registerRequest.getSecretAnswer(),
                 registerRequest.getPublicKey(),
                 registerRequest.getOrganization(),
-                registerRequest.getHotpType());
+                registerRequest.getOtpType());
     }
 
     /**
@@ -164,9 +169,13 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
+    public void updateUserOtpType(String username, String otpType) {
+        internalSSOService.updateUserOtpType(username, otpType);
+    }
+
+    @Override
     public boolean authenticateUsingGoogleAuth(String username, String key) throws SsoDecryptException {
-        String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
-        return internalSSOService.authenticateTOTPGoogleAuth(subsystemIdentifier, username, key);
+        return internalSSOService.authenticateTOTPGoogleAuth(username, key);
     }
 
     protected String obtainSubsystemIdentifier(String systemIdentifier) {
@@ -223,8 +232,9 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
-    public String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException, SsoDecryptException {
-        return hotpService.resetGoogleAuthMasterKey(userId);
+    public String resetGoogleAuthMasterKey(String username) throws UserNotFoundException, SsoDecryptException {
+        String subsystemIdentifier = obtainSubsystemIdentifier(null); // TODO: take default from API
+        return hotpService.resetGoogleAuthMasterKey(subsystemIdentifier, username);
     }
 
     @Override

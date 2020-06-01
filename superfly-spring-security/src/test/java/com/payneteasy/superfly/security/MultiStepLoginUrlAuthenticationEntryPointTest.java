@@ -15,7 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertSame;
 
@@ -30,12 +31,9 @@ public class MultiStepLoginUrlAuthenticationEntryPointTest {
         request = EasyMock.createNiceMock(HttpServletRequest.class);
         response = EasyMock.createMock(HttpServletResponse.class);
         entryPoint = new MultiStepLoginUrlAuthenticationEntryPoint("/step-one.html");
-        entryPoint.setInsufficientAuthenticationMapping(new Function<Authentication, String>() {
-            @Override
-            public String apply(Authentication authentication) {
-                return Step2Authentication.class.equals(authentication.getClass()) ? "/step-two.html" : null;
-            }
-        });
+        Map<Class<? extends Authentication>, String> mapping = new HashMap<>();
+        mapping.put(Step2Authentication.class, "/step-two.html");
+        entryPoint.setInsufficientAuthenticationMapping(mapping);
 
         EasyMock.expect(request.getServerPort()).andReturn(80).anyTimes();
         EasyMock.expect(request.getScheme()).andReturn("http").anyTimes();

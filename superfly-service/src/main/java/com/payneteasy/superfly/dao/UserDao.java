@@ -453,7 +453,13 @@ public interface UserDao {
     String getGoogleAuthMasterKeyByUsername(String username);
 
     @AStoredProcedure(name = "save_google_auth_master_key")
-    void persistGoogleAuthMasterKeyForUsername(long userId, String masterKey);
+    void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
+
+    @AStoredProcedure(name = "update_user_otp_type")
+    void updateUserOtpType(String username, String otpType);
+
+    @AStoredProcedure(name = "ui_update_user_is_otp_optional_value")
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
 
     /**
      * Checks user login status. That is: tries to login to the

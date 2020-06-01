@@ -12,9 +12,10 @@ import java.util.Map;
  */
 public class SSOUser implements Serializable {
     private static final long serialVersionUID = 2939559042187840631L;
-    public static final String PREFERENCES_TYPE = "hotp_type";
     private String name;
     private String sessionId;
+    private OTPType otpType;
+    private boolean isOtpOptional;
     private Map<SSORole, SSOAction[]> actionsMap;
     private Map<String, String> preferences;
 
@@ -69,6 +70,33 @@ public class SSOUser implements Serializable {
      */
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    /**
+     * Return a otp type
+     *
+     * @return otp type
+     * @since 1.7
+     */
+    public OTPType getOtpType() {
+        return otpType;
+    }
+
+    /**
+     * Sets a otp type
+     * @param otpType otp type
+     * @since 1.7
+     */
+    public void setOtpType(OTPType otpType) {
+        this.otpType = otpType;
+    }
+
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 
     /**

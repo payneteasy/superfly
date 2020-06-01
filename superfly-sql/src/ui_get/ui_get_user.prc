@@ -16,7 +16,7 @@ create procedure ui_get_user(i_user_id int(10))
          , is_account_suspended
          , is_account_locked
          , user_organization
-         , otp.otp_name
+         , otp.otp_code
          , is_otp_optional
     from users u
       left join otp_types otp on u.otp_otp_type_id=otp.otp_type_id
@@ -39,7 +39,7 @@ call save_routine_information('ui_get_user',
                                         'is_account_suspended varchar',
                                         'is_account_locked varchar',
                                         'user_organization varchar',
-                                        'otp_name varchar',
+                                        'otp_code varchar',
                                         'is_otp_optional varchar'
                               )
      );

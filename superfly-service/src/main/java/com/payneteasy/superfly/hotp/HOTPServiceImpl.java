@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.spi.ExportException;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -68,21 +69,20 @@ public class HOTPServiceImpl implements HOTPService {
     }
 
     @Override
-    public String resetGoogleAuthMasterKey(long userId) throws SsoDecryptException {
-        UIUser user = userDao.getUser(userId);
-        String key = googleAuthenticator.get().createCredentials(user.getUsername()).getKey();
-        key = CryptoHelper.encrypt(
+    public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
+        String key = googleAuthenticator.get().createCredentials().getKey();
+        String encryptKey = CryptoHelper.encrypt(
                 key,
                 GOOGLE_AUTH_OTP_SECRET,
                 GOOGLE_AUTH_OTP_SALT
         );
-        userDao.persistGoogleAuthMasterKeyForUsername(userId, key);
+        userDao.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
         return key;
     }
 
     @Override
     public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
-        return GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(
                 issuer,
                 accountName,
                 new GoogleAuthenticatorKey.Builder(secretKey).build()

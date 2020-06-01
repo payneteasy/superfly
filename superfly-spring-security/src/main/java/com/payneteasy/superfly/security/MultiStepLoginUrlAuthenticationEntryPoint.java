@@ -10,7 +10,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * {@link AuthenticationEntryPoint} which is intended to be used for multi-step
@@ -22,13 +23,15 @@ import java.util.function.Function;
 public class MultiStepLoginUrlAuthenticationEntryPoint extends
         LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private Function<Authentication, String> stepInsufficientAuthenticationMapping;
+    private Map<Class<? extends Authentication>, String> stepInsufficientAuthenticationMapping = Collections.emptyMap();
 
     public MultiStepLoginUrlAuthenticationEntryPoint(String loginFormUrl) {
         super(loginFormUrl);
     }
 
-    public void setInsufficientAuthenticationMapping(Function<Authentication, String> mapping) {
+    public void setInsufficientAuthenticationMapping(
+            Map<Class<? extends Authentication>,
+            String> mapping) {
         this.stepInsufficientAuthenticationMapping = mapping;
     }
 
@@ -52,10 +55,7 @@ public class MultiStepLoginUrlAuthenticationEntryPoint extends
             } else {
                 authToChooseUrl = auth;
             }
-            if (stepInsufficientAuthenticationMapping != null) {
-                url = stepInsufficientAuthenticationMapping.apply(authToChooseUrl);
-            }
-
+            url = stepInsufficientAuthenticationMapping.get(authToChooseUrl.getClass());
             if (url != null) {
                 // mapping matched, so restoring authentication...
                 // TODO: is this correct? it's explicitly cleared before...

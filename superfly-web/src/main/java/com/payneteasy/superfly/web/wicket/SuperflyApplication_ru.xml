@@ -61,6 +61,8 @@
 <entry key="user.create.password2.EqualPasswordInputValidator">Password and confirmation must match</entry>
 <entry key="user.create.password2.Required">Password confirmation is required</entry>
 <entry key="user.create.publicKey">Public key</entry>
+<entry key="user.create.otpTypeCode">Тип OTP</entry>
+<entry key="user.create.isOtpOptional">OTP необязательна</entry>
 <entry key="user.create.name">Name</entry>
 <entry key="user.create.name.Required">Name is required</entry>
 <entry key="user.create.surname">Surname</entry>
@@ -97,4 +99,12 @@
 <entry key="role.create.name.Required">Требуется ввести имя роли</entry>
 <entry key="role.create.principal-name">Principal name</entry>
 <entry key="role.create.principal-name.Required">Principal name is required</entry>
+
+
+<!--
+# OTP TYPE
+-->
+<entry key="otpType.none">None</entry>
+<entry key="otpType.google_auth">Google Auth</entry>
+
 </properties>

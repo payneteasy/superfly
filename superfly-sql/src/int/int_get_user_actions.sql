@@ -12,6 +12,7 @@ create procedure int_get_user_actions(i_user_id int(10),
     declare v_temp      varchar(1);
     declare v_sess_id	int(10);
     declare v_user_name varchar(32);
+    declare v_is_otp_optional varchar(1);
     declare v_otp_code  varchar(32);
     declare v_otp_type_id int(10);
 
@@ -30,7 +31,8 @@ create procedure int_get_user_actions(i_user_id int(10),
     select user_name, is_password_temp
            , otp.otp_type_id
            , otp.otp_code
-      into v_user_name, v_temp ,v_otp_type_id ,v_otp_code
+           , is_otp_optional
+      into v_user_name, v_temp ,v_otp_type_id ,v_otp_code, v_is_otp_optional
       from users u
          left join otp_types otp on u.otp_otp_type_id=otp.otp_type_id
      where     u.user_id = i_user_id;
@@ -195,6 +197,7 @@ create procedure int_get_user_actions(i_user_id int(10),
                ss.callback_information role_callback_information,
                'action_temp_password' as  role_action_action_name,
                'Y' as role_action_log_action
+               ,v_is_otp_optional as is_otp_optional
                ,v_otp_type_id as otp_type_id
                ,v_otp_code as otp_code
           from           user_roles ur

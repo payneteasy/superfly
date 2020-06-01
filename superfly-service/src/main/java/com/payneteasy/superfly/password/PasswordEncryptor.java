@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
 import com.payneteasy.superfly.hotp.HOTPProviderUtils;
 import com.payneteasy.superfly.hotp.NullHOTPProvider;
@@ -160,7 +162,7 @@ public class PasswordEncryptor {
             }
 
             @Override
-            public String resetGoogleAuthMasterKey(long userId) {
+            public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
                 return null;
             }
 

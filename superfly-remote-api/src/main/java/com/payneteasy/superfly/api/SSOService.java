@@ -23,6 +23,8 @@ public interface SSOService {
      */
     SSOUser authenticate(String username, String password, AuthenticationRequestInfo authRequestInfo);
 
+    boolean checkOtp(SSOUser user, String code);
+
     /**
      * Returns the same data as if user was successfully authenticated,
      * but no actual authentication is made. This could be useful for
@@ -65,6 +67,8 @@ public interface SSOService {
      */
     boolean authenticateUsingHOTP(String username, String hotp);
 
+    void updateUserOtpType(String username, String otpType);
+
     /**
      * Authenticates a user using an Google Auth implementation configured on the
      * Superfly server.
@@ -102,7 +106,7 @@ public interface SSOService {
     void registerUser(String username, String password, String email, String subsystemHint,
             RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey, String organization, HOTPType hotpType)
+            String publicKey, String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException;
 
@@ -172,12 +176,12 @@ public interface SSOService {
 
     /**
      * Reset Master Key
-     * @param userId ID of a user
+     * @param username            name of the user
      * @throws UserNotFoundException if no such user
      * @return New master key
-     * @since 1.12
+     * @since 1.7
      */
-    String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException, SsoDecryptException;
+    String resetGoogleAuthMasterKey(String username) throws UserNotFoundException, SsoDecryptException;
 
     /**
      * Get google auth QR code

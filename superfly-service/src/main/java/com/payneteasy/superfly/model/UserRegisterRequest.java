@@ -157,7 +157,7 @@ public class UserRegisterRequest implements Serializable {
         this.organization = organization;
     }
 
-    @Column(name="otp_type_code")
+    @Column(name="otp_code")
     public String getOtpTypeCode() {
         return otpTypeCode;
     }

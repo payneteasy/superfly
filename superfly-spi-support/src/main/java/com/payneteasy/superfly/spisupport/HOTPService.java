@@ -29,10 +29,14 @@ public interface HOTPService {
 
     /**
      * Reset Master Key
-     * @param userId ID of a user
+     * @param subsystemIdentifier identifier of subsystem
+     *                            which smtp server to user when sending message
+     * @param username            name of the user
+     * @throws UserNotFoundException if no such user
      * @return New master key
+     * @since 1.7
      */
-    String resetGoogleAuthMasterKey(long userId) throws UserNotFoundException, SsoDecryptException;
+    String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException;
 
     /**
      * Get google auth QR code
