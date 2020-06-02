@@ -242,6 +242,11 @@ public class SSOServiceImpl implements SSOService {
         return hotpService.getUrlToGoogleAuthQrCode(secretKey, issuer, accountName);
     }
 
+    @Override
+    public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
+        internalSSOService.updateUserIsOtpOptionalValue(username, isOtpOptional);
+    }
+
     /**
      * @see SSOService#updateUserDescription(UserDescription)
      */

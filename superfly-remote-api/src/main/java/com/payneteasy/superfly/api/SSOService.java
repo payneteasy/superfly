@@ -194,6 +194,8 @@ public interface SSOService {
      */
     String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName);
 
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
+
     /**
      * Updates user's fields.
      *
