@@ -226,6 +226,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.emptyMap());
         ssoUser.setSessionId(String.valueOf(session.getSessionId()));
         ssoUser.setOtpType(session.otpType());
+        ssoUser.setOtpOptional(session.isOtpOptional());
         return ssoUser;
     }
 
