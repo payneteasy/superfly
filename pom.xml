@@ -32,7 +32,7 @@
 
     <scm>
         <connection>scm:git:git@github.com:payneteasy/superfly.git</connection>
-        <developerConnection>scm:git:git@github.com:paynetaesy/superfly.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:payneteasy/superfly.git</developerConnection>
         <url>https://github.com/paynetesy/superfly</url>
       <tag>superfly-parent-1.7-12</tag>
   </scm>
