@@ -17,7 +17,7 @@ import java.util.Map;
  * {@link AuthenticationEntryPoint} which is intended to be used for multi-step
  * authentication process. It redirects to URLs determined by the current
  * {@link Authentication} class.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class MultiStepLoginUrlAuthenticationEntryPoint extends

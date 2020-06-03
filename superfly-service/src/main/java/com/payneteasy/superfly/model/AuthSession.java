@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.model;
 
+import com.payneteasy.superfly.api.OTPType;
+
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -12,6 +14,9 @@ import java.util.List;
 public class AuthSession {
     private String username;
     private Long sessionId;
+    private Long otpTypeId;
+    private String otpTypeCode;
+    private boolean isOtpOptional;
     private List<AuthRole> roles = new ArrayList<AuthRole>();
 
     public AuthSession() {
@@ -36,13 +41,13 @@ public class AuthSession {
     }
 
     @Column(name = "session_id")
-       public Long getSessionId() {
-           return sessionId;
-       }
+    public Long getSessionId() {
+       return sessionId;
+    }
 
-       public void setSessionId(Long sessionId) {
-           this.sessionId = sessionId;
-       }
+    public void setSessionId(Long sessionId) {
+       this.sessionId = sessionId;
+    }
 
     @OneToMany
     @JoinColumn(table = "role")
@@ -64,6 +69,37 @@ public class AuthSession {
         if (sessionId != null ? !sessionId.equals(session.sessionId) : session.sessionId != null) return false;
 
         return true;
+    }
+
+    @Column(name="otp_type_id")
+    public Long getOtpTypeId() {
+        return otpTypeId;
+    }
+
+    public void setOtpTypeId(Long otpTypeId) {
+        this.otpTypeId = otpTypeId;
+    }
+
+    @Column(name="otp_code")
+    public String getOtpTypeCode() {
+        return otpTypeCode;
+    }
+
+    public void setOtpTypeCode(String otpTypeCode) {
+        this.otpTypeCode = otpTypeCode;
+    }
+
+    public OTPType otpType() {
+        return OTPType.fromCode(otpTypeCode);
+    }
+
+    @Column(name="is_otp_optional")
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 
     @Override

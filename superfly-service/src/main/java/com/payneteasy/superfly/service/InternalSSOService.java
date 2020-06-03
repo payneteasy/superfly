@@ -4,11 +4,13 @@ import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
@@ -36,6 +38,8 @@ public interface InternalSSOService {
      */
     SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
             String sessionInfo);
+
+    boolean checkOtp(SSOUser user, String code);
 
     /**
         * Returns the same data as if user was successfully authenticated,
@@ -93,7 +97,8 @@ public interface InternalSSOService {
      * @throws MessageSendException
      */
     void registerUser(String username, String password, String email, String subsystemIdentifier,
-            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer, String publicKey,String organization)
+            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer,
+            String publicKey,String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
 
     /**
@@ -105,6 +110,19 @@ public interface InternalSSOService {
      */
     boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
 
+    void updateUserOtpType(String username, String otpType);
+
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
+
+    /**
+     * Authenticates using TOTP GoogleAuth
+     *
+     * @param username    username
+     * @param key         key
+     * @return authentication result
+     */
+    boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException;
+
     /**
      * 
      * @param userName user name
@@ -112,7 +130,7 @@ public interface InternalSSOService {
      */
     void changeTempPassword(String userName, String password) throws PolicyValidationException;
 
-    /**
+    /**`
      * Returns a user description.
      * 
      * @param username    username

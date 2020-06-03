@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.model.ui.user;
 
+import com.payneteasy.superfly.api.OTPType;
+
 import javax.persistence.Column;
 import java.io.Serializable;
 
@@ -28,4 +30,7 @@ public class UIUserDetails extends UIUser implements Serializable{
         this.accountSuspended = accountSuspended;
     }
 
+    public String getOtpName() {
+        return OTPType.fromCode(getOtpType()).name();
+    }
 }

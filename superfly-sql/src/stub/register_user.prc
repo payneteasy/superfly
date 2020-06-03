@@ -14,11 +14,16 @@ create procedure register_user(i_user_name         varchar(32),
                                i_hotp_salt		   varchar(128),
                                i_public_key		   text, 			 
                                i_user_organization varchar(255),
+                               i_otp_code          varchar(16),
                                out o_user_id       int(10)
                               )
  main_sql:
   begin
     declare v_completed varchar(1);
+    declare v_otp_otp_type_id   int(10);
+
+    select otp_type_id into v_otp_otp_type_id
+      from otp_types where otp_code=i_otp_code;
 
 	select user_id, completed from users where user_name = i_user_name into o_user_id, v_completed;
 	
@@ -35,8 +40,15 @@ create procedure register_user(i_user_name         varchar(32),
 		end if;
 	end if;
   
-    insert into users(user_name, user_password, email, is_account_locked, `name`, surname, secret_question ,secret_answer, is_password_temp,salt, hotp_salt, create_date, public_key, completed, user_organization)
-         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question, i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key, 'N', i_user_organization);
+    insert into users(user_name, user_password
+                      , email
+                      , is_account_locked, `name`, surname, secret_question ,secret_answer
+                      , is_password_temp,salt, hotp_salt, create_date, public_key, completed
+                      , user_organization
+                      , otp_otp_type_id )
+         values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question,
+                 i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key, 'N',
+                 i_user_organization,v_otp_otp_type_id);
 
     set o_user_id   = last_insert_id();
 

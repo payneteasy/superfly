@@ -20,6 +20,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
 
     private String usernameParameter = "j_username";
     private String passwordParameter = "j_password";
+    private String secondFactoryParameter = "j_second";
     private String subsystemIdentifier;
 
     public SuperflyUsernamePasswordAuthenticationProcessingFilter() {
@@ -45,8 +46,9 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
 
         String username = obtainUsername(request);
         String password = obtainPassword(request);
+        String secondFactory = obtainSecondFactory(request);
 
-        authRequest = createUsernamePasswordAuthRequest(request, username, password);
+        authRequest = createUsernamePasswordAuthRequest(request, username, password, secondFactory);
 
         return getAuthenticationManager().authenticate(new CompoundAuthentication(authRequest));
     }
@@ -58,12 +60,15 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilter extends
     protected String obtainPassword(HttpServletRequest request) {
         return request.getParameter(passwordParameter);
     }
+    protected String obtainSecondFactory(HttpServletRequest request) {
+        return request.getParameter(secondFactoryParameter);
+    }
 
     protected Authentication createUsernamePasswordAuthRequest(
-            HttpServletRequest request, String username, String password) {
+            HttpServletRequest request, String username, String password, String secondFactory) {
         AuthenticationRequestInfo authRequestInfo = createAuthRequestInfo(request);
         Authentication authRequest = new UsernamePasswordAuthRequestInfoAuthenticationToken(
-                username, password, authRequestInfo);
+                username, password, authRequestInfo).withSecondFactory(secondFactory);
         return authRequest;
     }
 

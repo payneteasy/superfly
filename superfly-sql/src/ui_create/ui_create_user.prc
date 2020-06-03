@@ -13,12 +13,19 @@ create procedure ui_create_user(i_user_name varchar(32),
                                 i_is_password_temp varchar(1),
                                 i_public_key text,
                                 i_user_organization varchar(255),
+                                i_otp_code          varchar(16),
+                                i_is_otp_optional varchar(1),
                                 out o_user_id int(10)
 )
  main_sql:
   begin
+    declare v_otp_otp_type_id   int(10);
+
+    select otp_type_id into v_otp_otp_type_id
+          from otp_types where otp_code=i_otp_code;
+
     select user_id from users where user_name = i_user_name into o_user_id;
-    
+
     if o_user_id is not null then
     	select 'duplicate' status, 'User already exists' error_message;
     	leave main_sql;
@@ -28,7 +35,7 @@ create procedure ui_create_user(i_user_name varchar(32),
           (
              user_name, user_password, email, is_account_locked, name, 
              surname, secret_question, secret_answer, salt, hotp_salt, is_password_temp, create_date,
-             public_key, completed , user_organization
+             public_key, completed , user_organization, is_otp_optional, otp_otp_type_id
           )
     values (i_user_name, i_user_password, i_user_email,'N', 
             i_name, 
@@ -38,7 +45,7 @@ create procedure ui_create_user(i_user_name varchar(32),
             i_salt, 
             i_hotp_salt, 
             i_is_password_temp , now(),
-            i_public_key, 'Y', i_user_organization);
+            i_public_key, 'Y', i_user_organization, i_is_otp_optional, v_otp_otp_type_id);
 
     set o_user_id   = last_insert_id();
 

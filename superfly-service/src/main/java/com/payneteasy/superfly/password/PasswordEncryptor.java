@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
 import com.payneteasy.superfly.hotp.HOTPProviderUtils;
 import com.payneteasy.superfly.hotp.NullHOTPProvider;
@@ -157,6 +159,21 @@ public class PasswordEncryptor {
             }
 
             public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) {
+            }
+
+            @Override
+            public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
+                return null;
+            }
+
+            @Override
+            public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
+                return null;
+            }
+
+            @Override
+            public boolean validateGoogleTimePassword(String username, String password) {
+                return false;
             }
         };
     }

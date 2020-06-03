@@ -244,6 +244,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_update/ui_expire_invalid_sessions.prc
 
+\. ui_update/update_user_otp_type.prc
+
 \. stub/get_subsystems_allowing_to_list_users.prc
 
 \. stub/register_user.prc
@@ -274,12 +276,17 @@ create table mysql_routines_return_arguments (
 \. get/get_user_for_description.prc
 \. save/update_user_for_description.prc
 
+\. get/get_google_auth_master_key_by_user_name.sql
+\. save/save_google_auth_master_key.prc
+
 \. ui_get/ui_get_smtp_servers_list.prc
 \. ui_get/ui_get_smtp_server.prc
 \. ui_get/ui_get_smtp_server_by_subsystem_identifier.prc
 \. ui_create/ui_create_smtp_server.prc
 \. ui_update/ui_edit_smtp_server.prc
 \. ui_delete/ui_delete_smtp_server.prc
+
+\. ui_update/ui_update_user_is_otp_optional_value.sql
 
 \. int/int_has_actions.prc
 \. get/get_valid_sso_session.sql
@@ -296,5 +303,6 @@ create table mysql_routines_return_arguments (
 
 \. save/change_user_role.prc
 
+\. save/grant_action_to_user.prc
 
 commit;

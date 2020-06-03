@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.security.authentication.UsernamePasswordAndOtpCheckedToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,7 +36,8 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
             if (authRequest.getCredentials() == null) {
                 throw new BadCredentialsException("Null credentials");
             }
-            SSOUser ssoUser = ssoService.authenticate(authRequest.getName(),
+            SSOUser ssoUser = ssoService.authenticate(
+                    authRequest.getName(),
                     authRequest.getCredentials().toString(),
                     authRequest.getAuthRequestInfo());
             if (ssoUser == null) {
@@ -42,6 +46,10 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
             if (ssoUser.getActionsMap().isEmpty()) {
                 throw new BadCredentialsException("No roles");
             }
+            if (!ssoService.checkOtp(ssoUser, authRequest.secondFactory())) {
+                throw new BadOTPValueException("Otp check failed!");
+            }
+
             return createAuthentication(ssoUser);
         }
         return null;
@@ -52,6 +60,9 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
     }
 
     protected Authentication createAuthentication(SSOUser ssoUser) {
+        if (ssoUser.getOtpType() != OTPType.NONE) {
+            return new UsernamePasswordAndOtpCheckedToken(ssoUser);
+        }
         return new UsernamePasswordCheckedToken(ssoUser);
     }
 

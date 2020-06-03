@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.apache.commons.codec.binary.Hex;
@@ -56,4 +57,40 @@ public class MessageDigestPasswordEncoderTest {
         System.out.println(encoder.encode("123admin123", "3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f"));
     }
 
+    @Test
+    public void testSuccessWorkOfEncrypting() {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+        try {
+            String encrypt = CryptoHelper.encrypt(text, secret, salt);
+            System.out.println(encrypt);
+            String decrypt = CryptoHelper.decrypt(encrypt, secret, salt);
+            assertEquals(text, decrypt);
+        } catch (SsoDecryptException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test(expected = SsoDecryptException.class)
+    public void testWrongSaltWorkOfEncrypting() throws SsoDecryptException {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+
+        String encrypt = CryptoHelper.encrypt(text, secret, salt);
+        System.out.println(encrypt);
+        CryptoHelper.decrypt(encrypt, secret, salt + "ups");
+    }
+
+    @Test(expected = SsoDecryptException.class)
+    public void testWrongSecretWorkOfEncrypting() throws SsoDecryptException {
+        String text = "some text to encrypt";
+        String secret = "secret";
+        String salt = "salt";
+
+        String encrypt = CryptoHelper.encrypt(text, secret, salt);
+        System.out.println(encrypt);
+        CryptoHelper.decrypt(encrypt, secret + "ups", salt);
+    }
 }

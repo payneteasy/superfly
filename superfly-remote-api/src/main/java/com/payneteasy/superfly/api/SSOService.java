@@ -23,6 +23,8 @@ public interface SSOService {
      */
     SSOUser authenticate(String username, String password, AuthenticationRequestInfo authRequestInfo);
 
+    boolean checkOtp(SSOUser user, String code);
+
     /**
      * Returns the same data as if user was successfully authenticated,
      * but no actual authentication is made. This could be useful for
@@ -65,6 +67,19 @@ public interface SSOService {
      */
     boolean authenticateUsingHOTP(String username, String hotp);
 
+    void updateUserOtpType(String username, String otpType);
+
+    /**
+     * Authenticates a user using an Google Auth implementation configured on the
+     * Superfly server.
+     *
+     * @param username name of the user to authenticate
+     * @param key      one-time password
+     * @return true if authentication is successful
+     * @since 1.2
+     */
+    boolean authenticateUsingGoogleAuth(String username, String key) throws SsoDecryptException;
+
     /**
      * Registers user and gives him requested principal.
      * User is created in incomplete state. In that state, if
@@ -91,7 +106,7 @@ public interface SSOService {
     void registerUser(String username, String password, String email, String subsystemHint,
             RoleGrantSpecification[] roleGrants,
             String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey, String organization)
+            String publicKey, String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException;
 
@@ -158,6 +173,28 @@ public interface SSOService {
      */
     void resetAndSendOTPTable(String subsystemIdentifier,
             String username) throws UserNotFoundException, MessageSendException;
+
+    /**
+     * Reset Master Key
+     * @param username            name of the user
+     * @throws UserNotFoundException if no such user
+     * @return New master key
+     * @since 1.7
+     */
+    String resetGoogleAuthMasterKey(String username) throws UserNotFoundException, SsoDecryptException;
+
+    /**
+     * Get google auth QR code
+     *
+     * @param secretKey   Google Auth secret key
+     * @param issuer      The issuer name. This parameter cannot contain the colon
+     *                    (:) character. This parameter can be null.
+     * @param accountName The account name. This parameter shall not be null.
+     * @return an otpauth scheme URI for loading into a client application.
+     */
+    String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName);
+
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
 
     /**
      * Updates user's fields.

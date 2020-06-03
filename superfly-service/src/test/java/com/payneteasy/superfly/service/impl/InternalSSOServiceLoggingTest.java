@@ -5,6 +5,7 @@ import static org.easymock.EasyMock.eq;
 
 import java.util.Collections;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.AuthSession;
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -57,7 +58,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(true), eq("new-user"));
         EasyMock.replay(loggerSink, userDao);
 
-        internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
+        internalSSOService.registerUser("new-user", "new-password", "new-email", null, new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization", OTPType.NONE);
 
         EasyMock.verify(loggerSink);
     }
@@ -72,7 +73,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
         try {
             internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-                    new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
+                    new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization", OTPType.NONE);
         } catch (UserExistsException e) {
             // expected
         }
@@ -90,7 +91,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
         try {
             internalSSOService.registerUser("new-user", "new-password", "new-email", null,
-                    new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null,"test organization");
+                                            new RoleGrantSpecification[] {}, "user", "user", "question", "answer", null, "test organization", OTPType.NONE);
         } catch (IllegalStateException e) {
             // expected
         }

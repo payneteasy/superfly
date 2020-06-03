@@ -1,8 +1,7 @@
 package com.payneteasy.superfly.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
+import java.io.Serializable;
 
 public class UserRegisterRequest implements Serializable {
     private static final long serialVersionUID = -4093140271801747768L;
@@ -22,6 +21,7 @@ public class UserRegisterRequest implements Serializable {
     private String hotpSalt;
     private String publicKey;
     private String organization;
+    private String otpTypeCode;
 
     @Column(name = "user_id")
     public long getUserid() {
@@ -155,5 +155,14 @@ public class UserRegisterRequest implements Serializable {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    @Column(name="otp_code")
+    public String getOtpTypeCode() {
+        return otpTypeCode;
+    }
+
+    public void setOtpTypeCode(String otpTypeCode) {
+        this.otpTypeCode = otpTypeCode;
     }
 }

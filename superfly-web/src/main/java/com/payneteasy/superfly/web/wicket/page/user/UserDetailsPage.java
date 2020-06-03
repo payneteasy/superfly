@@ -107,6 +107,8 @@ public class UserDetailsPage extends BasePage {
         add(new LabelValueRow<UIUserDetails>("secretQuestion", uiUserDetailsIModel.getObject(), "user.create.secret-question"));
         add(new LabelValueRow<UIUserDetails>("secretAnswer", uiUserDetailsIModel.getObject(), "user.create.secret-answer"));
         add(new LabelValueRow<UIUserDetails>("publicKey", uiUserDetailsIModel.getObject(), "user.create.publicKey"));
+        add(new LabelValueRow<UIUserDetails>("otpName", uiUserDetailsIModel.getObject(), "user.create.otpTypeCode"));
+        add(new LabelValueRow<UIUserDetails>("isOtpOptional", uiUserDetailsIModel.getObject(), "user.create.isOtpOptional"));
 
 
         //ADD SUBSYSTEM

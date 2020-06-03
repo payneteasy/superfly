@@ -10,11 +10,17 @@ create procedure ui_update_user(i_user_id int(10),
                                 i_secret_answer varchar(255),
                                 i_salt varchar(64), -- not used
                                 i_public_key text,
-                                i_user_organization varchar(255)
+                                i_user_organization varchar(255),
+                                i_otp_code          varchar(16),
+                                i_is_otp_optional   varchar(1)
 )
  main_sql:
   begin
     declare v_start_date       datetime default now();
+    declare v_otp_otp_type_id   int(10);
+
+    select otp_type_id into v_otp_otp_type_id
+          from otp_types where otp_code=i_otp_code;
 
     update users
        set /*user_password     = coalesce(i_user_password, user_password),
@@ -25,7 +31,9 @@ create procedure ui_update_user(i_user_id int(10),
            secret_question = i_secret_question, 
            secret_answer = i_secret_answer,
            public_key = i_public_key,
-           user_organization = i_user_organization
+           user_organization = i_user_organization,
+           otp_otp_type_id = v_otp_otp_type_id,
+           is_otp_optional = i_is_otp_optional
 
      where user_id = i_user_id;
 
