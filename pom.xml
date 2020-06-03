@@ -31,9 +31,9 @@
     <url>https://github.com/rpuch/superfly</url>
 
     <scm>
-        <connection>scm:git:git@github.com:rpuch/superfly.git</connection>
-        <developerConnection>scm:git:git@github.com:rpuch/superfly.git</developerConnection>
-        <url>https://github.com/rpuch/superfly</url>
+        <connection>scm:git:git@github.com:paynetesy/superfly.git</connection>
+        <developerConnection>scm:git:git@github.com:paynetesy/superfly.git</developerConnection>
+        <url>https://github.com/paynetesy/superfly</url>
     </scm>
 
     <licenses>
@@ -71,6 +71,9 @@
         </developer>
         <developer>
             <email>gendlin@gmail.com</email>
+        </developer>
+        <developer>
+            <email>kuccyp@gmail.com</email>
         </developer>
     </developers>
 
