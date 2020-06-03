@@ -108,11 +108,13 @@ create procedure int_get_user_actions(i_user_id int(10),
             ,ta.*
             ,tu.otp_type_id
             ,tu.otp_code
+            ,tu.is_otp_optional
           from
             (
                 select u.user_name as username
                        , otp.otp_type_id
                        , otp.otp_code
+                       , u.is_otp_optional
                    from users u
                      left join otp_types otp on u.otp_otp_type_id=otp.otp_type_id
                     where user_id = i_user_id
