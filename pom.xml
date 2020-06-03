@@ -31,8 +31,8 @@
     <url>https://github.com/rpuch/superfly</url>
 
     <scm>
-        <connection>scm:git:git@github.com:paynetesy/superfly.git</connection>
-        <developerConnection>scm:git:git@github.com:paynetesy/superfly.git</developerConnection>
+        <connection>scm:git:git@github.com:payneteasy/superfly.git</connection>
+        <developerConnection>scm:git:git@github.com:payneteasy/superfly.git</developerConnection>
         <url>https://github.com/paynetesy/superfly</url>
     </scm>
 
