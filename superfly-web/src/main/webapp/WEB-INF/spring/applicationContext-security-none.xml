@@ -50,32 +50,38 @@
     <bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
         <property name="subsystemService" ref="subsystemService"/>
     </bean>
-   
-<!-- 
-    <bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
-        <property name="userMap">
-            <bean class="org.springframework.security.userdetails.memory.UserMap">
-                <property name="users">
-                    <map>
-                        <entry key="superfly-client">
-                            <bean class="org.springframework.security.userdetails.User">
-                                <constructor-arg value="superfly-client"/>
-                                <constructor-arg value="not-used"/>
-                                <constructor-arg value="true"/>
-                                <constructor-arg>
-                                    <list>
-                                        <bean class="org.springframework.security.GrantedAuthorityImpl">
-                                            <constructor-arg value="ROLE_SUBSYSTEM"/>
-                                        </bean>
-                                    </list>
-                                </constructor-arg>
-                            </bean>
-                        </entry>
-                    </map>
-                </property>
-            </bean>
-        </property>
+
+    <bean id="customHttpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
+        <property name="allowSemicolon" value="true"/>
     </bean>
- -->
+    <sec:http-firewall ref="customHttpFirewall"/>
+
+
+    <!--
+        <bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
+            <property name="userMap">
+                <bean class="org.springframework.security.userdetails.memory.UserMap">
+                    <property name="users">
+                        <map>
+                            <entry key="superfly-client">
+                                <bean class="org.springframework.security.userdetails.User">
+                                    <constructor-arg value="superfly-client"/>
+                                    <constructor-arg value="not-used"/>
+                                    <constructor-arg value="true"/>
+                                    <constructor-arg>
+                                        <list>
+                                            <bean class="org.springframework.security.GrantedAuthorityImpl">
+                                                <constructor-arg value="ROLE_SUBSYSTEM"/>
+                                            </bean>
+                                        </list>
+                                    </constructor-arg>
+                                </bean>
+                            </entry>
+                        </map>
+                    </property>
+                </bean>
+            </property>
+        </bean>
+     -->
 
 </beans>
