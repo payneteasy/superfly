@@ -2,7 +2,7 @@
     <parent>
         <artifactId>superfly-parent</artifactId>
         <groupId>com.payneteasy.superfly</groupId>
-        <version>1.7-15</version>
+        <version>1.7-16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>superfly-spring-security</artifactId>
