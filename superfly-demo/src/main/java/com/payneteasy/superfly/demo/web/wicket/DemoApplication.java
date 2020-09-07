@@ -1,11 +1,10 @@
 package com.payneteasy.superfly.demo.web.wicket;
 
+import com.payneteasy.superfly.demo.web.security.SpringSecurityAuthorizationStrategy;
+import com.payneteasy.superfly.demo.web.wicket.page.HomePage;
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
-
-import com.payneteasy.superfly.demo.web.security.SpringSecurityAuthorizationStrategy;
-import com.payneteasy.superfly.demo.web.wicket.page.HomePage;
 import org.apache.wicket.util.file.Path;
 
 public class DemoApplication extends WebApplication{

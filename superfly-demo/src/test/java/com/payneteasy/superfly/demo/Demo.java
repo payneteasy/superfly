@@ -1,13 +1,13 @@
 package com.payneteasy.superfly.demo;
 
-import javax.naming.NamingException;
-
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.naming.NamingException;
 
 public class Demo {
      private static final Logger LOG = LoggerFactory.getLogger(Demo.class);

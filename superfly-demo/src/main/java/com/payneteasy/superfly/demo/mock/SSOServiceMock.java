@@ -1,13 +1,14 @@
 package com.payneteasy.superfly.demo.mock;
 
 
+import com.payneteasy.superfly.api.AuthenticationRequestInfo;
+import com.payneteasy.superfly.api.SSOService;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.payneteasy.superfly.api.*;
 
 /**
  * Mock SSOService implementation.
