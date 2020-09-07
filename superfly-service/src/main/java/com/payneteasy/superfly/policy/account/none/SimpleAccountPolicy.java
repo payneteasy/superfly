@@ -1,10 +1,8 @@
 package com.payneteasy.superfly.policy.account.none;
 
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.service.UserService;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link AccountPolicy} which behaves as simple as it's possible.
@@ -13,15 +11,15 @@ import com.payneteasy.superfly.service.UserService;
  */
 public class SimpleAccountPolicy implements AccountPolicy {
 
-    private UserDao userDao;
+    private UserService userService;
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public String unlockUser(long userId, boolean unlockingSuspendedUser) {
-        userDao.unlockUser(userId);
+        userService.unlockUser(userId);
         return null;
     }
 

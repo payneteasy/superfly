@@ -1,14 +1,13 @@
 package com.payneteasy.superfly.spring;
 
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.password.PasswordGenerator;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.policy.account.pcidss.PCIDSSAccountPolicy;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
+import com.payneteasy.superfly.service.UserService;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Factory bean for {@link AccountPolicy}.
@@ -18,7 +17,7 @@ import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 public class AccountPolicyFactoryBean extends
         AbstractPolicyDependingFactoryBean<AccountPolicy> {
 
-    private UserDao userDao;
+    private UserService userService;
 
     private AccountPolicy accountPolicy;
     private UserPasswordEncoder userPasswordEncoder;
@@ -31,8 +30,8 @@ public class AccountPolicyFactoryBean extends
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userDao) {
+        this.userService = userDao;
     }
 
     @Required
@@ -51,12 +50,12 @@ public class AccountPolicyFactoryBean extends
             switch (policy) {
             case NONE:
                 SimpleAccountPolicy simpleAccountPolicy = new SimpleAccountPolicy();
-                simpleAccountPolicy.setUserDao(userDao);
+                simpleAccountPolicy.setUserService(userService);
                 accountPolicy = simpleAccountPolicy;
                 break;
             case PCIDSS:
                 PCIDSSAccountPolicy pcidssAccountPolicy = new PCIDSSAccountPolicy();
-                pcidssAccountPolicy.setUserDao(userDao);
+                pcidssAccountPolicy.setUserService(userService);
                 pcidssAccountPolicy.setUserPasswordEncoder(userPasswordEncoder);
                 pcidssAccountPolicy.setPasswordGenerator(passwordGenerator);
                 pcidssAccountPolicy.setResetPasswordStrategy(resetPasswordStrategy);

@@ -45,7 +45,7 @@ public class UserServiceImplTest {
         userService.setSaltSource(new ConstantSaltSource("c3pio"));
         userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
-        userService.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
+        userService.setCreateUserStrategy(new NoneCreateUserStrategy(userService));
     }
 
     @Test

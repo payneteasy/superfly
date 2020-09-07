@@ -5,9 +5,14 @@ import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.User;
 import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.*;
@@ -17,6 +22,7 @@ import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
@@ -388,4 +394,154 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public List<User> getUsersWithExpiredPasswords(int days) {
+        return userDao.getUsersWithExpiredPasswords(days);
+    }
+
+    @Override
+    public List<User> getUsersToSuspend(int days) {
+        return userDao.getUsersToSuspend(days);
+    }
+
+    @Override
+    public RoutineResult unlockUser(long userId) {
+        return userDao.unlockUser(userId);
+    }
+
+    @Override
+    public RoutineResult unlockSuspendedUser(long userId, String newPassword) {
+        return userDao.unlockSuspendedUser(userId,newPassword);
+    }
+
+    @Override
+    public RoutineResult cloneUser(UICloneUserRequest cloneUserRequest) {
+        return userDao.cloneUser(cloneUserRequest);
+    }
+
+    @Override
+    public RoutineResult registerUser(UserRegisterRequest registerUser) {
+        return userDao.registerUser(registerUser);
+    }
+
+    @Override
+    public RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType) {
+        return userDao.lockoutConditionnally(userName,maxLoginsFailed,lockoutType);
+    }
+
+    @Override
+    public void persistGoogleAuthMasterKeyForUsername(String username, String masterKey) {
+        userDao.persistGoogleAuthMasterKeyForUsername(username,masterKey);
+    }
+
+    @Override
+    public String getGoogleAuthMasterKeyByUsername(String username) {
+        return userDao.getGoogleAuthMasterKeyByUsername(username);
+    }
+
+    @Override
+    public String getUserSalt(String userName) {
+        return userDao.getUserSalt(userName);
+    }
+
+    @Override
+    public RoutineResult createUser(UIUserForCreate user) {
+        return userDao.createUser(user);
+    }
+
+    @Override
+    public RoutineResult resetPassword(long userId, String password) {
+        return userDao.resetPassword(userId,password);
+    }
+
+    @Override
+    public void updateUserSalt(String username, String salt) {
+        userDao.updateUserSalt(username,salt);
+    }
+
+    @Override
+    public String getUserSaltByUserId(long userId) {
+        return userDao.getUserSaltByUserId(userId);
+    }
+
+    @Override
+    public void updateUserSaltByUserId(long userId, String salt) {
+        userDao.updateUserSaltByUserId(userId,salt);
+    }
+
+    @Override
+    public AuthSession authenticate(String username, String password, String subsystemName, String ipAddress, String sessionInfo) {
+        return userDao.authenticate(username,password,subsystemName,ipAddress,sessionInfo);
+    }
+
+    @Override
+    public AuthSession pseudoAuthenticate(String username, String subsystemName) {
+        return userDao.pseudoAuthenticate(username,subsystemName);
+    }
+
+    @Override
+    public RoutineResult changeUserRole(String username, String newRole, String subsystemName) {
+        return userDao.changeUserRole(username,newRole,subsystemName);
+    }
+
+    @Override
+    public void completeUser(String username) {
+        userDao.completeUser(username);
+    }
+
+    @Override
+    public List<UserWithActions> getUsersAndActions(String subsystemName) {
+        return userDao.getUsersAndActions(subsystemName);
+    }
+
+    @Override
+    public List<PasswordSaltPair> getUserPasswordHistoryAndCurrentPassword(String username) {
+        return userDao.getUserPasswordHistoryAndCurrentPassword(username);
+    }
+
+    @Override
+    public RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames) {
+        return userDao.grantRolesToUser(userId,subsystemName,principalNames);
+    }
+
+    @Override
+    public AuthSession exchangeSubsystemToken(String subsystemToken) {
+        return userDao.exchangeSubsystemToken(subsystemToken);
+    }
+
+    @Override
+    public List<UserWithStatus> getUserStatuses(String userNames) {
+        return userDao.getUserStatuses(userNames);
+    }
+
+    @Override
+    public UserForDescription getUserForDescription(String username) {
+        return userDao.getUserForDescription(username);
+    }
+
+    @Override
+    public void updateUserForDescription(UserForDescription user) {
+        userDao.updateUserForDescription(user);
+    }
+
+    @Override
+    public void incrementHOTPLoginsFailed(String username) {
+        userDao.incrementHOTPLoginsFailed(username);
+    }
+
+    @Override
+    public void clearHOTPLoginsFailed(String username) {
+        userDao.clearHOTPLoginsFailed(username);
+    }
+
+
+    @Override
+    public void updateUserOtpType(String username, String otpType) {
+        userDao.updateUserOtpType(username,otpType);
+    }
+
+    @Override
+    public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
+        userDao.updateUserIsOtpOptionalValue(username,isOtpOptional);
+    }
 }

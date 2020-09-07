@@ -1,19 +1,31 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOAction;
+import com.payneteasy.superfly.api.SSORole;
+import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.crypto.pgp.PGPCrypto;
-import com.payneteasy.superfly.dao.SessionDao;
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
-import com.payneteasy.superfly.model.*;
+import com.payneteasy.superfly.model.AuthAction;
+import com.payneteasy.superfly.model.AuthRole;
+import com.payneteasy.superfly.model.AuthSession;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
-import com.payneteasy.superfly.password.*;
+import com.payneteasy.superfly.password.ConstantSaltSource;
+import com.payneteasy.superfly.password.MessageDigestPasswordEncoder;
+import com.payneteasy.superfly.password.NullSaltSource;
+import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.policy.password.none.DefaultPasswordPolicyValidation;
 import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -30,27 +42,27 @@ import static org.junit.Assert.*;
 
 public class InternalSSOServiceImplTest {
 
-    private UserDao userDao;
-    private SessionDao sessionDao;
+    private UserService userService;
+    private SessionService sessionService;
     private InternalSSOServiceImpl internalSSOService;
     private HOTPProvider hotpProvider;
     private HOTPService hotpService;
 
     @Before
     public void setUp() {
-        userDao = createStrictMock(UserDao.class);
-        sessionDao = createStrictMock(SessionDao.class);
+        userService = createStrictMock(UserService.class);
+        sessionService = createStrictMock(SessionService.class);
         hotpProvider = createMock(HOTPProvider.class);
         hotpService = createMock(HOTPService.class);
         InternalSSOServiceImpl service = new InternalSSOServiceImpl();
-        service.setUserDao(userDao);
-        service.setSessionDao(sessionDao);
+        service.setUserService(userService);
+        service.setSessionService(sessionService);
         service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
         service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
         service.setHotpProvider(hotpProvider);
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(LockoutStrategy.class));
-        service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userDao));
+        service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userService));
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         service.setHotpService(hotpService);
         service.setSaltSource(new ConstantSaltSource("abc"));
@@ -61,24 +73,24 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new NullSaltSource());
-        userDao.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
-        replay(userDao);
+        replay(userService);
         internalSSOService.authenticate("user", "pass", null, null, null);
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
-        userDao.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
-        replay(userDao);
+        replay(userService);
         internalSSOService.authenticate("user", "pass", null, null, null);
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
@@ -87,9 +99,9 @@ public class InternalSSOServiceImplTest {
         encoder.setAlgorithm("md5");
         internalSSOService.setPasswordEncoder(encoder);
         internalSSOService.setSaltSource(new ConstantSaltSource("e2e4"));
-        expect(userDao.getUserPasswordHistoryAndCurrentPassword("user")).andReturn(
+        expect(userService.getUserPasswordHistoryAndCurrentPassword("user")).andReturn(
                 Collections.<PasswordSaltPair>emptyList());
-        expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+        expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
                 assertEquals(DigestUtils.md5Hex("secret{e2e4}"), user.getPassword());
@@ -100,10 +112,10 @@ public class InternalSSOServiceImplTest {
         });
         hotpService.sendTableIfSupported("subsystem", 1L);
         expectLastCall();
-        replay(userDao, hotpService);
+        replay(userService, hotpService);
         internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{}, "user",
                 "user", "question", "answer", null, "test organization", OTPType.NONE);
-        verify(userDao, hotpService);
+        verify(userService, hotpService);
     }
 
     @Test
@@ -155,39 +167,39 @@ public class InternalSSOServiceImplTest {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setPublicKeyCrypto(new PGPCrypto());
 
-        expect(userDao.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
+        expect(userService.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
                 Collections.<PasswordSaltPair>emptyList());
-        expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+        expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
                 assertEquals(null, user.getPublicKey());
                 return RoutineResult.okResult();
             }
         });
-        replay(userDao);
+        replay(userService);
         internalSSOService.registerUser("username", "password", "email.domain.com",
                 "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                 "secretQuestion", "secretAnswer",
                 null, "test organization", OTPType.NONE);
-        verify(userDao);
+        verify(userService);
 
-        reset(userDao);
+        reset(userService);
 
-        expect(userDao.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
+        expect(userService.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
                 Collections.<PasswordSaltPair>emptyList());
-        expect(userDao.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
+        expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
                 assertEquals("", user.getPublicKey());
                 return RoutineResult.okResult();
             }
         });
-        replay(userDao);
+        replay(userService);
         internalSSOService.registerUser("username", "password", "email.domain.com",
                 "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
                 "secretQuestion", "secretAnswer",
                 "", "test organization", OTPType.NONE);
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
@@ -233,55 +245,55 @@ public class InternalSSOServiceImplTest {
     public void testExchangeSubsystemTokenSuccess() {
         AuthSession session = new AuthSession("pete", 1L);
         session.setRoles(Collections.singletonList(new AuthRole("test-role")));
-        expect(userDao.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token"))
                 .andReturn(session);
-        replay(userDao);
+        replay(userService);
 
         SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
         assertNotNull(user);
         assertEquals("pete", user.getName());
         assertEquals("1", user.getSessionId());
 
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testExchangeSubsystemTokenNullResult() {
-        expect(userDao.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token"))
                 .andReturn(null);
-        replay(userDao);
+        replay(userService);
 
         assertNull(internalSSOService.exchangeSubsystemToken("valid-token"));
 
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testTouchSessions() {
-        sessionDao.touchSessions("1,2,3");
+        sessionService.touchSessions("1,2,3");
         expectLastCall();
-        replay(sessionDao);
+        replay(sessionService);
         internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
-        verify(sessionDao);
+        verify(sessionService);
 
-        reset(sessionDao);
-        replay(sessionDao);
+        reset(sessionService);
+        replay(sessionService);
         internalSSOService.touchSessions(Collections.<Long>emptyList());
-        verify(sessionDao);
+        verify(sessionService);
 
-        reset(sessionDao);
-        replay(sessionDao);
+        reset(sessionService);
+        replay(sessionService);
         internalSSOService.touchSessions(null);
-        verify(sessionDao);
+        verify(sessionService);
     }
 
     @Test
     public void testCompleteUser() {
-        userDao.completeUser("username");
+        userService.completeUser("username");
         expectLastCall();
-        replay(userDao);
+        replay(userService);
         internalSSOService.completeUser("username");
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
@@ -295,8 +307,8 @@ public class InternalSSOServiceImplTest {
         authRole.setActions(Arrays.asList(action1, action2));
         session.setRoles(Collections.singletonList(authRole));
 
-        expect(userDao.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(session);
-        replay(userDao);
+        expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(session);
+        replay(userService);
 
         SSOUser user = internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier");
         Assert.assertEquals("username", user.getName());
@@ -307,36 +319,36 @@ public class InternalSSOServiceImplTest {
         SSOAction[] actions = user.getActionsMap().get(role);
         Assert.assertArrayEquals(new SSOAction[]{new SSOAction("a1", false), new SSOAction("a2", false)}, actions);
 
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testPseudoAuthenticateNoSuchUser() {
-        expect(userDao.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(null);
-        replay(userDao);
+        expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(null);
+        replay(userService);
 
         SSOUser user = internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier");
         assertNull(user);
 
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testChangeUserRole() {
-        userDao.changeUserRole("username", "ROLE_TO", "test");
+        userService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall().andReturn(new RoutineResult("OK", null));
-        replay(userDao);
+        replay(userService);
 
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
 
-        verify(userDao);
+        verify(userService);
     }
 
     @Test
     public void testFailedChangeUserRole() {
-        userDao.changeUserRole("username", "ROLE_TO", "test");
+        userService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall().andReturn(new RoutineResult("Failed", "Error message"));
-        replay(userDao);
+        replay(userService);
 
         try {
             internalSSOService.changeUserRole("username", "ROLE_TO", "test");
@@ -345,7 +357,7 @@ public class InternalSSOServiceImplTest {
             assertEquals("Error message", e.getMessage());
         }
 
-        verify(userDao);
+        verify(userService);
     }
 
 }

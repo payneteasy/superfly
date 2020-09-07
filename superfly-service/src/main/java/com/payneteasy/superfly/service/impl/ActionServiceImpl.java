@@ -1,17 +1,18 @@
 package com.payneteasy.superfly.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.payneteasy.superfly.dao.ActionDao;
 import com.payneteasy.superfly.dao.DaoConstants;
+import com.payneteasy.superfly.model.ActionToSave;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 @Transactional
 public class ActionServiceImpl implements ActionService {
     private ActionDao actionDao;
@@ -53,5 +54,10 @@ public class ActionServiceImpl implements ActionService {
 
     public UIAction getAction(long actionId) {
         return actionDao.getAction(actionId);
+    }
+
+    @Override
+    public RoutineResult saveActions(String subsystemIdentifier, List<ActionToSave> actions) {
+        return actionDao.saveActions(subsystemIdentifier,actions);
     }
 }

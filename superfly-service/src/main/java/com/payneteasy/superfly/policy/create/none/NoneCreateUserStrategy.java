@@ -1,25 +1,25 @@
 package com.payneteasy.superfly.policy.create.none;
 
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
+import com.payneteasy.superfly.service.UserService;
 
 public class NoneCreateUserStrategy implements CreateUserStrategy {
-    private UserDao userDao;
+    private final UserService userService;
 
-    public NoneCreateUserStrategy(UserDao userDao) {
-        this.userDao = userDao;
+    public NoneCreateUserStrategy(UserService userService) {
+        this.userService = userService;
     }
 
     public RoutineResult createUser(UIUserForCreate createUser) {
         createUser.setIsPasswordTemp(false);
-        return userDao.createUser(createUser);
+        return userService.createUser(createUser);
     }
 
     public RoutineResult cloneUser(UICloneUserRequest cloneUser) {
         cloneUser.setIsPasswordTemp(false);
-        return userDao.cloneUser(cloneUser);
+        return userService.cloneUser(cloneUser);
     }
 }

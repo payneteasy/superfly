@@ -1,17 +1,16 @@
 package com.payneteasy.superfly.spring;
 
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.resetpassword.deflt.DefaultResetPasswordStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserService;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Required;
 
 public class ResetPasswordStrategyFactoryBean implements FactoryBean<ResetPasswordStrategy> {
     private ResetPasswordStrategy resetPasswordStrategy;
-    private UserDao userDao;
+    private UserService userService;
     private UserPasswordEncoder userPasswordEncoder;
     private LoggerSink loggerSink;
 
@@ -26,13 +25,13 @@ public class ResetPasswordStrategyFactoryBean implements FactoryBean<ResetPasswo
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public ResetPasswordStrategy getObject() throws Exception {
         if (resetPasswordStrategy == null) {
-            resetPasswordStrategy = new DefaultResetPasswordStrategy(userDao,
+            resetPasswordStrategy = new DefaultResetPasswordStrategy(userService,
                     userPasswordEncoder, loggerSink);
         }
         return resetPasswordStrategy;

@@ -115,4 +115,6 @@ public interface SessionService {
      * @param ssoSessionIdentifier  identifier of SSO session
      */
     void deleteSSOSession(String ssoSessionIdentifier);
+
+    void touchSessions(String sessionIds);
 }

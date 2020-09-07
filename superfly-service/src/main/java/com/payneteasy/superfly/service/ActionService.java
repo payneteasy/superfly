@@ -1,10 +1,12 @@
 package com.payneteasy.superfly.service;
 
-import java.util.List;
-
+import com.payneteasy.superfly.model.ActionToSave;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+
+import java.util.List;
 
 public interface ActionService {
     List<UIActionForList> getActions(long startFrom, long recordsCount,
@@ -21,4 +23,7 @@ public interface ActionService {
     void copyActionProperties(long actionId, long actionIdCopy,
             boolean userPrivileges);
     UIAction getAction(long actionId);
+
+    RoutineResult saveActions(String subsystemIdentifier,
+                              List<ActionToSave> actions);
 }

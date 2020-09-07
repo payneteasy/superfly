@@ -1,19 +1,16 @@
 package com.payneteasy.superfly.spring;
 
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.policy.create.CreateUserStrategy;
 import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import com.payneteasy.superfly.policy.create.pcidss.PCIDSSCreateUserStrategy;
-import com.payneteasy.superfly.register.RegisterUserStrategy;
-import com.payneteasy.superfly.register.none.NoneRegisterUserStrategy;
-import com.payneteasy.superfly.register.pcidss.PCIDSSRegisterUserStrategy;
+import com.payneteasy.superfly.service.UserService;
 
 public class CreateUserStrategyFactoryBean extends AbstractPolicyDependingFactoryBean<CreateUserStrategy> {
     private CreateUserStrategy createUserStrategy;
-    private UserDao userDao;
+    private UserService userService;
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public CreateUserStrategy getObject() throws Exception {
@@ -21,10 +18,10 @@ public class CreateUserStrategyFactoryBean extends AbstractPolicyDependingFactor
             Policy p = findPolicyByIdentifier();
             switch (p) {
             case NONE:
-                createUserStrategy = new NoneCreateUserStrategy(userDao);
+                createUserStrategy = new NoneCreateUserStrategy(userService);
                 break;
             case PCIDSS:
-                createUserStrategy = new PCIDSSCreateUserStrategy(userDao);
+                createUserStrategy = new PCIDSSCreateUserStrategy(userService);
                 break;
             default:
                 throw new IllegalArgumentException();

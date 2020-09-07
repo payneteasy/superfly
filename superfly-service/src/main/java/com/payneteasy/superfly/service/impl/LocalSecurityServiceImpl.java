@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
@@ -8,6 +7,7 @@ import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
 
-    private UserDao userDao;
+    private UserService userService;
     private String localSubsystemName = "superfly";
     private String localRoleName = "admin";
     private LoggerSink loggerSink;
@@ -30,8 +30,8 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     private LockoutStrategy lockoutStrategy;
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public void setLocalSubsystemName(String localSubsystemName) {
@@ -64,7 +64,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 
     public String[] authenticate(String username, String password) {
         String encPassword = userPasswordEncoder.encode(password, username);
-        AuthSession session = userDao.authenticate(username, encPassword,
+        AuthSession session = userService.authenticate(username, encPassword,
                 localSubsystemName, null, null);
         AuthRole role = null;
         if (session != null) {
@@ -97,10 +97,10 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     public boolean authenticateUsingHOTP(String username, String hotp) {
         boolean ok = hotpProvider.authenticate(localSubsystemName, username, hotp);
         if (!ok) {
-            userDao.incrementHOTPLoginsFailed(username);
+            userService.incrementHOTPLoginsFailed(username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
         } else {
-            userDao.clearHOTPLoginsFailed(username);
+            userService.clearHOTPLoginsFailed(username);
         }
         loggerSink.info(logger, "LOCAL_HOTP_CHECK", false, username);
         return ok;

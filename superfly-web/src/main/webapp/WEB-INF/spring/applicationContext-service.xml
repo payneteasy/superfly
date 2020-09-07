@@ -17,9 +17,9 @@
 
     <bean id="internalSsoService"
         class="com.payneteasy.superfly.service.impl.InternalSSOServiceImpl">
-        <property name="userDao" ref="userDao" />
-        <property name="sessionDao" ref="sessionDao" />
-        <property name="actionDao" ref="actionDao" />
+        <property name="userService" ref="userService" />
+        <property name="sessionService" ref="sessionService" />
+        <property name="actionService" ref="actionService" />
         <property name="notificationService" ref="notificationService" />
         <property name="loggerSink" ref="loggerSink" />
         <property name="passwordEncoder" ref="passwordEncoder" />
@@ -35,7 +35,7 @@
 
     <bean id="localSecurityService"
         class="com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl">
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
         <property name="loggerSink" ref="loggerSink" />
         <property name="userPasswordEncoder" ref="userPasswordEncoder" />
         <property name="hotpProvider" ref="hotpProvider" />
@@ -146,7 +146,7 @@
     </bean>
 
     <bean id="randomStoredSaltSouce" class="com.payneteasy.superfly.password.RandomStoredSaltSource">
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
         <property name="saltGenerator" ref="saltGenerator"/>
     </bean>
 
@@ -174,7 +174,7 @@
         class="com.payneteasy.superfly.spring.LockoutStrategyFactoryBean">
         <property name="policyName" ref="policyName" />
         <property name="maxLoginsFailed" ref="maxLoginsFailed" />
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
     </bean>
 
     <bean id="hotpProvider" class="com.payneteasy.superfly.spring.HOTPProviderFactoryBean">
@@ -187,20 +187,20 @@
     <bean id="registerUserStrategy"
         class="com.payneteasy.superfly.spring.RegisterUserStrategyFactoryBean">
         <property name="policyName" ref="policyName" />
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
     </bean>
 
 
     <bean id="createUserStrategy"
         class="com.payneteasy.superfly.spring.CreateUserStrategyFactoryBean">
         <property name="policyName" ref="policyName" />
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
     </bean>
 
 
     <bean id="accountPolicy" class="com.payneteasy.superfly.spring.AccountPolicyFactoryBean">
         <property name="policyName" ref="policyName" />
-        <property name="userDao" ref="userDao"/>
+        <property name="userService" ref="userService"/>
         <property name="userPasswordEncoder" ref="userPasswordEncoder"/>
         <property name="passwordGenerator" ref="passwordGenerator"/>
         <property name="resetPasswordStrategy" ref="resetPasswordStrategy"/>
@@ -208,7 +208,7 @@
 
     <bean id="resetPasswordStrategy"
         class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
-        <property name="userDao" ref="userDao" />
+        <property name="userService" ref="userService" />
         <property name="userPasswordEncoder" ref="userPasswordEncoder" />
         <property name="loggerSink" ref="loggerSink" />
     </bean>
@@ -239,6 +239,6 @@
         <property name="emailService" ref="emailService"/>
         <property name="hotpProvider" ref="hotpProvider"/>
         <property name="publicKeyCrypto" ref="publicKeyCrypto"/>
-        <property name="userDao" ref="userDao"/>
+        <property name="userService" ref="userService"/>
     </bean>
 </beans>

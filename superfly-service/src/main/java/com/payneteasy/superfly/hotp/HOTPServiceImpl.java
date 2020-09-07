@@ -1,12 +1,17 @@
 package com.payneteasy.superfly.hotp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
+import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.email.EmailService;
+import com.payneteasy.superfly.email.RuntimeMessagingException;
+import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.ExportException;
+import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
@@ -15,14 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.crypto.PublicKeyCrypto;
-import com.payneteasy.superfly.dao.UserDao;
-import com.payneteasy.superfly.email.EmailService;
-import com.payneteasy.superfly.email.RuntimeMessagingException;
-import com.payneteasy.superfly.model.ui.user.UIUser;
-import com.payneteasy.superfly.spi.HOTPProvider;
-import com.payneteasy.superfly.spisupport.HOTPService;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @Transactional
 public class HOTPServiceImpl implements HOTPService {
@@ -36,7 +35,7 @@ public class HOTPServiceImpl implements HOTPService {
     private EmailService emailService;
     private HOTPProvider hotpProvider;
     private PublicKeyCrypto publicKeyCrypto;
-    private UserDao userDao;
+    private UserService userService;
 
     @Required
     public void setEmailService(EmailService emailService) {
@@ -54,8 +53,8 @@ public class HOTPServiceImpl implements HOTPService {
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
@@ -63,7 +62,7 @@ public class HOTPServiceImpl implements HOTPService {
     }
 
     public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
-        UIUser user = userDao.getUser(userId);
+        UIUser user = userService.getUser(userId);
         hotpProvider.resetSequence(user.getUsername());
         obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, user);
     }
@@ -76,7 +75,7 @@ public class HOTPServiceImpl implements HOTPService {
                 GOOGLE_AUTH_OTP_SECRET,
                 GOOGLE_AUTH_OTP_SALT
         );
-        userDao.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
+        userService.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
         return key;
     }
 
@@ -96,7 +95,7 @@ public class HOTPServiceImpl implements HOTPService {
         }
         int verificationCode = Integer.parseInt(password);
         String masterKey = CryptoHelper.decrypt(
-                userDao.getGoogleAuthMasterKeyByUsername(username),
+                userService.getGoogleAuthMasterKeyByUsername(username),
                 GOOGLE_AUTH_OTP_SECRET,
                 GOOGLE_AUTH_OTP_SALT
         );
@@ -106,7 +105,7 @@ public class HOTPServiceImpl implements HOTPService {
     private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException, ExportException {
         if (hotpProvider.outputsSequenceForDownload()) {
             if (user == null) {
-                user = userDao.getUser(userId);
+                user = userService.getUser(userId);
             }
             if (user.getPublicKey() != null && user.getPublicKey().trim().length() > 0) {
                 actuallySendTable(subsystemIdentifier, user);

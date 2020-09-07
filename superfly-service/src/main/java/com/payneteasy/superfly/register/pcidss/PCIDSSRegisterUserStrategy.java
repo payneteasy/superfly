@@ -1,20 +1,20 @@
 package com.payneteasy.superfly.register.pcidss;
 
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
+import com.payneteasy.superfly.service.UserService;
 
 public class PCIDSSRegisterUserStrategy implements RegisterUserStrategy {
-    private UserDao userDao;
+    private final UserService userService;
 
-    public PCIDSSRegisterUserStrategy(UserDao userDao) {
-       this.userDao = userDao;
+    public PCIDSSRegisterUserStrategy(UserService userService) {
+       this.userService = userService;
     }
 
     public RoutineResult registerUser(UserRegisterRequest registerUser) {
         registerUser.setIsPasswordTemp(true);
-        return userDao.registerUser(registerUser);
+        return userService.registerUser(registerUser);
     }
 
 }

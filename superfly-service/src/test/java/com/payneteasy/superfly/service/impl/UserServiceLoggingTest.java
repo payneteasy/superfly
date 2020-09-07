@@ -1,19 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
 
-import static org.easymock.EasyMock.anyLong;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
-
-import java.util.Collections;
-
-import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
@@ -23,9 +10,19 @@ import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
 import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
+import com.payneteasy.superfly.policy.create.none.NoneCreateUserStrategy;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+
+import java.util.Collections;
+
+import static org.easymock.EasyMock.*;
 
 public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 
@@ -43,10 +40,10 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
         service.setSaltSource(new NullSaltSource());
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         SimpleAccountPolicy accountPolicy = new SimpleAccountPolicy();
-        accountPolicy.setUserDao(userDao);
+        accountPolicy.setUserService(userService);
         service.setAccountPolicy(accountPolicy);
         service.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
-        service.setCreateUserStrategy(new NoneCreateUserStrategy(userDao));
+        service.setCreateUserStrategy(new NoneCreateUserStrategy(userService));
         userService = service;
     }
 

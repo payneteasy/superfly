@@ -24,7 +24,7 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(PCIDSSAccountPolicy.class);
 
-    private UserDao userDao;
+    private UserService userService;
     private PasswordGenerator passwordGenerator;
     private UserPasswordEncoder userPasswordEncoder;
     private ResetPasswordStrategy resetPasswordStrategy;
@@ -35,8 +35,8 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Required
@@ -53,13 +53,13 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
         if (unlockingSuspendedUser) {
             String password = passwordGenerator.generate();
             String encPassword = userPasswordEncoder.encode(password, userId);
-            RoutineResult result = userDao.unlockSuspendedUser(userId, encPassword);
+            RoutineResult result = userService.unlockSuspendedUser(userId, encPassword);
             if (!result.isOk()) {
                 throw new IllegalStateException(result.getErrorMessage());
             }
             return password;
         } else {
-            RoutineResult result = userDao.unlockUser(userId);
+            RoutineResult result = userService.unlockUser(userId);
             if (!result.isOk()) {
                 throw new IllegalStateException(result.getErrorMessage());
             }
@@ -68,7 +68,7 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     }
 
     public void suspendUsersIfNeeded(int days, UserService userService) {
-        List<User> users = userDao.getUsersToSuspend(days);
+        List<User> users = userService.getUsersToSuspend(days);
         for (User user : users) {
             logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
             userService.suspendUser(user.getUserid());
@@ -76,7 +76,7 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     }
 
     public void expirePasswordsIfNeeded(int days, UserService userService) {
-        List<User> users = userDao.getUsersWithExpiredPasswords(days);
+        List<User> users = userService.getUsersWithExpiredPasswords(days);
         for (User u : users) {
             logger.debug(String.format("Reset password for user [%s] with id=%d", u.getUserName(), u.getUserid()));
             resetPasswordStrategy.resetPassword(u.getUserid(), u.getUserName(), null);

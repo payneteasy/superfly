@@ -4,18 +4,19 @@ import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.lockout.pcidss.PCIDSSLockoutStrategy;
+import com.payneteasy.superfly.service.UserService;
 
 public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBean<LockoutStrategy> {
     private LockoutStrategy lockoutStrategy;
     private Long maxLoginsFailed;
-    private UserDao userDao;
+    private UserService userService;
 
     public void setMaxLoginsFailed(Long maxLoginsFailed) {
         this.maxLoginsFailed = maxLoginsFailed;
     }
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public LockoutStrategy getObject() throws Exception {
@@ -26,7 +27,7 @@ public class LockoutStrategyFactoryBean extends AbstractPolicyDependingFactoryBe
                 lockoutStrategy = new NoneLockoutStrategy();
                 break;
             case PCIDSS:
-                lockoutStrategy = new PCIDSSLockoutStrategy(userDao, maxLoginsFailed);
+                lockoutStrategy = new PCIDSSLockoutStrategy(userService, maxLoginsFailed);
                 break;
             default:
                 throw new IllegalArgumentException();

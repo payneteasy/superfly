@@ -1,15 +1,29 @@
 package com.payneteasy.superfly.service;
 
-import java.util.Collection;
-import java.util.List;
-
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.User;
 import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.UserRegisterRequest;
+import com.payneteasy.superfly.model.UserWithActions;
+import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
-import com.payneteasy.superfly.model.ui.user.*;
+import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
+import com.payneteasy.superfly.model.ui.user.UIUser;
+import com.payneteasy.superfly.model.ui.user.UIUserDetails;
+import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
+import com.payneteasy.superfly.model.ui.user.UIUserForList;
+import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
+import com.payneteasy.superfly.model.ui.user.UserCloningResult;
+import com.payneteasy.superfly.model.ui.user.UserCreationResult;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Service to work with users.
@@ -306,6 +320,8 @@ public interface UserService {
      */
     RoutineResult addSubsystemWithRole(long userId, long roleId);
 
+    RoutineResult resetPassword(long userId, String password);
+
     void validatePassword(String username,String password) throws PolicyValidationException;
 
     void expirePasswords(int days);
@@ -329,4 +345,63 @@ public interface UserService {
      * @return user login status
      */
     UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier);
+
+    List<User> getUsersWithExpiredPasswords(int days);
+
+    List<User> getUsersToSuspend(int days);
+
+    RoutineResult unlockUser(long userId);
+
+    RoutineResult unlockSuspendedUser(long userId, String newPassword);
+
+    RoutineResult createUser(UIUserForCreate user);
+
+    RoutineResult cloneUser(UICloneUserRequest cloneUserRequest);
+
+    RoutineResult registerUser(UserRegisterRequest registerUser);
+
+    RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType);
+
+    void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
+
+    String getGoogleAuthMasterKeyByUsername(String username);
+
+    String getUserSalt(String userName);
+
+    void updateUserSalt(String username, String salt);
+
+    String getUserSaltByUserId(long userId);
+
+    void updateUserSaltByUserId(long userId, String salt);
+
+    AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
+                             String sessionInfo);
+
+    AuthSession pseudoAuthenticate(String username, String subsystemName);
+
+    RoutineResult changeUserRole(String username, String newRole, String subsystemName);
+
+    void completeUser(String username);
+
+    List<UserWithActions> getUsersAndActions(String subsystemName);
+
+    List<PasswordSaltPair> getUserPasswordHistoryAndCurrentPassword(String username);
+
+    RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames);
+
+    AuthSession exchangeSubsystemToken(String subsystemToken);
+
+    List<UserWithStatus> getUserStatuses(String userNames);
+
+    UserForDescription getUserForDescription(String username);
+
+    void updateUserForDescription(UserForDescription user);
+
+    void incrementHOTPLoginsFailed(String username);
+
+    void clearHOTPLoginsFailed(String username);
+
+    void updateUserOtpType(String username, String otpType);
+
+    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
 }

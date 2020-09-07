@@ -1,35 +1,18 @@
 package com.payneteasy.superfly.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
-import com.payneteasy.superfly.dao.SessionDao;
-import com.payneteasy.superfly.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
 import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
-import com.payneteasy.superfly.dao.ActionDao;
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
@@ -46,22 +29,38 @@ import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
+import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
 import com.payneteasy.superfly.utils.PGPKeyValidator;
+import com.payneteasy.superfly.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
 
-    private UserDao userDao;
-    private ActionDao actionDao;
-    private SessionDao sessionDao;
+    private UserService userService;
+    private ActionService actionService;
+    private SessionService sessionService;
     private NotificationService notificationService;
     private LoggerSink loggerSink;
     private PasswordEncoder passwordEncoder;
@@ -82,18 +81,18 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Required
-    public void setSessionDao(SessionDao sessionDao) {
-        this.sessionDao = sessionDao;
+    public void setSessionService(SessionService sessionService) {
+        this.sessionService = sessionService;
     }
 
     @Required
-    public void setActionDao(ActionDao actionDao) {
-        this.actionDao = actionDao;
+    public void setActionService(ActionService actionService) {
+        this.actionService = actionService;
     }
 
     @Required
@@ -154,7 +153,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                                 String sessionInfo) {
         SSOUser ssoUser;
         String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-        AuthSession session = userDao.authenticate(username, encPassword,
+        AuthSession session = userService.authenticate(username, encPassword,
                                                    subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
@@ -197,7 +196,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
-        AuthSession session = userDao.pseudoAuthenticate(username, subsystemIdentifier);
+        AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
         boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
         if (ok) {
@@ -242,7 +241,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     public void saveSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions) {
         List<ActionToSave> actions = convertActionDescriptions(actionDescriptions);
-        actionDao.saveActions(subsystemIdentifier, actions);
+        actionService.saveActions(subsystemIdentifier, actions);
         if (logger.isDebugEnabled()) {
             logger.debug("Saved actions for subsystem " + subsystemIdentifier + ": " + actions.size());
             logger.debug("Actions are: " + Arrays.asList(actionDescriptions));
@@ -263,7 +262,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
-        List<UserWithActions> users = userDao.getUsersAndActions(subsystemIdentifier);
+        List<UserWithActions> users = userService.getUsersAndActions(subsystemIdentifier);
         List<SSOUserWithActions> result = new ArrayList<>(users.size());
         for (UserWithActions user : users) {
             result.add(convertToSSOUser(user));
@@ -293,7 +292,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setOtpTypeCode(otpType.code());
 
         // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(username)));
 
         validatePublicKey(publicKey);
@@ -301,7 +300,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         RoutineResult result = registerUserStrategy.registerUser(registerUser);
         if (result.isOk()) {
             for (RoleGrantSpecification roleGrant : roleGrants) {
-                result = userDao.grantRolesToUser(
+                result = userService.grantRolesToUser(
                         registerUser.getUserid(),
                         roleGrant.isDetectSubsystemIdentifier() ? subsystemIdentifier : roleGrant
                                 .getSubsystemIdentifier(), roleGrant.getPrincipalName());
@@ -334,10 +333,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp) {
         boolean ok = hotpProvider.authenticate(subsystemIdentifier, username, hotp);
         if (!ok) {
-            userDao.incrementHOTPLoginsFailed(username);
+            userService.incrementHOTPLoginsFailed(username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
         } else {
-            userDao.clearHOTPLoginsFailed(username);
+            userService.clearHOTPLoginsFailed(username);
         }
         loggerSink.info(logger, "REMOTE_HOTP_CHECK", ok, username);
         return ok;
@@ -345,22 +344,22 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public void updateUserOtpType(String username, String otpType) {
-        userDao.updateUserOtpType(username, otpType);
+        userService.updateUserOtpType(username, otpType);
     }
 
     @Override
     public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
-        userDao.updateUserIsOtpOptionalValue(username, isOtpOptional);
+        userService.updateUserIsOtpOptionalValue(username, isOtpOptional);
     }
 
     @Override
     public boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException {
         boolean ok = hotpService.validateGoogleTimePassword(username, key);
         if (!ok) {
-            userDao.incrementHOTPLoginsFailed(username);
+            userService.incrementHOTPLoginsFailed(username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
         } else {
-            userDao.clearHOTPLoginsFailed(username);
+            userService.clearHOTPLoginsFailed(username);
         }
         loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, username);
         return ok;
@@ -371,29 +370,29 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public void changeTempPassword(String userName, String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(userName)));
-        userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+        userService.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
     }
 
     public UserForDescription getUserDescription(String username) {
-        return userDao.getUserForDescription(username);
+        return userService.getUserForDescription(username);
     }
 
     public void updateUserForDescription(UserForDescription user) throws BadPublicKeyException {
         validatePublicKey(user.getPublicKey());
-        userDao.updateUserForDescription(user);
+        userService.updateUserForDescription(user);
     }
 
     @Override
     public List<UserWithStatus> getUserStatuses(String userNames) {
-        return userDao.getUserStatuses(userNames);
+        return userService.getUserStatuses(userNames);
     }
 
     @Override
     public SSOUser exchangeSubsystemToken(String subsystemToken) {
         SSOUser     ssoUser;
-        AuthSession session = userDao.exchangeSubsystemToken(subsystemToken);
+        AuthSession session = userService.exchangeSubsystemToken(subsystemToken);
         boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
         if (ok) {
@@ -413,18 +412,18 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             if (logger.isDebugEnabled()) {
                 logger.debug("Touching sessions " + sessionIds);
             }
-            sessionDao.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
+            sessionService.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
         }
     }
 
     @Override
     public void completeUser(String username) {
-        userDao.completeUser(username);
+        userService.completeUser(username);
     }
 
     @Override
     public void changeUserRole(String username, String newRole, String subsystemIdentifier) {
-        final RoutineResult result = userDao.changeUserRole(username, newRole, subsystemIdentifier);
+        final RoutineResult result = userService.changeUserRole(username, newRole, subsystemIdentifier);
         if (!result.isOk()) {
             throw new IllegalStateException(result.getErrorMessage());
         }

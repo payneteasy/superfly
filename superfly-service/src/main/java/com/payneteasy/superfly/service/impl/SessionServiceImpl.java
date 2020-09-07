@@ -1,5 +1,19 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.dao.SessionDao;
+import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.model.ui.session.UISession;
+import com.payneteasy.superfly.notification.LogoutNotification;
+import com.payneteasy.superfly.notification.Notifier;
+import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.utils.RandomGUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,21 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.payneteasy.superfly.model.SSOSession;
-import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.utils.RandomGUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.payneteasy.superfly.dao.SessionDao;
-import com.payneteasy.superfly.model.RoutineResult;
-import com.payneteasy.superfly.model.ui.session.UISession;
-import com.payneteasy.superfly.notification.LogoutNotification;
-import com.payneteasy.superfly.notification.Notifier;
-import com.payneteasy.superfly.service.SessionService;
 
 @Transactional
 public class SessionServiceImpl implements SessionService {
@@ -132,6 +131,11 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public void deleteSSOSession(String ssoSessionIdentifier) {
         sessionDao.deleteSSOSession(ssoSessionIdentifier);
+    }
+
+    @Override
+    public void touchSessions(String sessionIds) {
+        sessionDao.touchSessions(sessionIds);
     }
 
 }

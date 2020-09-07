@@ -1,9 +1,8 @@
 package com.payneteasy.superfly.password;
 
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.dao.UserDao;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Kuccyp
@@ -14,12 +13,12 @@ import com.payneteasy.superfly.spisupport.SaltGenerator;
  */
 public class RandomStoredSaltSource implements SaltSource{
 
-    private UserDao userDao;
+    private UserService userService;
     private SaltGenerator saltGenerator;
 
     @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Required
@@ -28,7 +27,7 @@ public class RandomStoredSaltSource implements SaltSource{
     }
 
     public String getSalt(String username) {
-        String salt = userDao.getUserSalt(username);
+        String salt = userService.getUserSalt(username);
         if (salt == null || salt.isEmpty()) {
             salt = generateNewSaltAndSave(username);
         }
@@ -36,7 +35,7 @@ public class RandomStoredSaltSource implements SaltSource{
     }
 
     public String getSalt(long userId) {
-        String salt = userDao.getUserSaltByUserId(userId);
+        String salt = userService.getUserSaltByUserId(userId);
         if (salt == null || salt.isEmpty()) {
             salt = generateNewSaltAndSave(userId);
         }
@@ -45,13 +44,13 @@ public class RandomStoredSaltSource implements SaltSource{
 
     private String generateNewSaltAndSave(String username) {
         String salt = generateSalt();
-        userDao.updateUserSalt(username, salt);
+        userService.updateUserSalt(username, salt);
         return salt;
     }
     
     private String generateNewSaltAndSave(long userId) {
         String salt = generateSalt();
-        userDao.updateUserSaltByUserId(userId, salt);
+        userService.updateUserSaltByUserId(userId, salt);
         return salt;
     }
 
