@@ -32,6 +32,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
     @Before
     public void setUp() {
         UserServiceImpl service = new UserServiceImpl();
+        userService = service;
         userDao = EasyMock.createStrictMock(UserDao.class);
         service.setUserDao(userDao);
         service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
@@ -40,11 +41,10 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
         service.setSaltSource(new NullSaltSource());
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         SimpleAccountPolicy accountPolicy = new SimpleAccountPolicy();
-        accountPolicy.setUserService(userService);
+        accountPolicy.setUserService(service);
         service.setAccountPolicy(accountPolicy);
         service.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
-        service.setCreateUserStrategy(new NoneCreateUserStrategy(userService));
-        userService = service;
+        service.setCreateUserStrategy(new NoneCreateUserStrategy(service));
     }
 
     @Test
