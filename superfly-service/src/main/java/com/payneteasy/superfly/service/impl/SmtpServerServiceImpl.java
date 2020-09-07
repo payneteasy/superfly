@@ -11,12 +11,14 @@ import com.payneteasy.superfly.service.SmtpServerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * @author rpuch
  */
+@Transactional
 public class SmtpServerServiceImpl implements SmtpServerService {
     private static final Logger logger = LoggerFactory.getLogger(SmtpServerServiceImpl.class);
 
