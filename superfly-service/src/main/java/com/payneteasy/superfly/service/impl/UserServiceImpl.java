@@ -112,6 +112,7 @@ public class UserServiceImpl implements UserService {
         this.lockoutStrategy = lockoutStrategy;
     }
 
+    @Override
     public List<UIUserForList> getUsers(String userNamePrefix, Long roleId,
             Long complectId, Long subsystemId, long startFrom, long recordsCount,
             int orderFieldNumber, boolean asc) {
@@ -120,12 +121,14 @@ public class UserServiceImpl implements UserService {
                 roleId, complectId, subsystemId);
     }
 
+    @Override
     public long getUsersCount(String userNamePrefix, Long roleId,
             Long complectId, Long subsystemId) {
         return userDao.getUsersCount(userNamePrefix, roleId, complectId,
                 subsystemId);
     }
 
+    @Override
     public UserCreationResult createUser(UIUserForCreate user, String subsystemIdentifier) {
         UIUserForCreate userForDao = new UIUserForCreate();
         copyUserAndEncryptPassword(user, userForDao);
@@ -160,10 +163,12 @@ public class UserServiceImpl implements UserService {
         userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
     }
 
+    @Override
     public UIUserDetails getUser(long userId) {
         return userDao.getUser(userId);
     }
 
+    @Override
     public RoutineResult updateUser(UIUser user) {
         UIUserForCreate userForDao = new UIUserForCreate();
         copyUserAndEncryptPassword(user, userForDao);
@@ -173,6 +178,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public RoutineResult deleteUser(long userId) {
         RoutineResult result = userDao.deleteUser(userId);
         if (result.isOk()) {
@@ -182,6 +188,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public RoutineResult lockUser(long userId) {
         RoutineResult result = userDao.lockUser(userId);
         if (result.isOk()) {
@@ -191,6 +198,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public String unlockUser(long userId, boolean unlockingSuspendedUser) {
         String newPassword = accountPolicy.unlockUser(userId, unlockingSuspendedUser);
         notificationService.notifyAboutUsersChanged();
@@ -198,6 +206,7 @@ public class UserServiceImpl implements UserService {
         return newPassword;
     }
 
+    @Override
     public UserCloningResult cloneUser(long templateUserId, String newUsername,
             String newPassword, String newEmail, String newPublicKey,
             String subsystemForEmailIdentifier) {
@@ -228,6 +237,7 @@ public class UserServiceImpl implements UserService {
         return userCloningResult;
     }
 
+    @Override
     public List<UIRoleForCheckbox> getAllUserRoles(long userId,
             Long subsystemId, int startFrom, int recordsCount) {
         List<UIRoleForCheckbox> allRoles = userDao.getAllUserRoles(startFrom,
@@ -236,11 +246,13 @@ public class UserServiceImpl implements UserService {
         return allRoles;
     }
 
+    @Override
     public int getAllUserRolesCount(long userId, Long subsystemId) {
         return userDao.getAllUserRolesCount(userId, subsystemId == null ? null
                 : String.valueOf(subsystemId));
     }
 
+    @Override
     public List<UIRoleForCheckbox> getUnmappedUserRoles(long userId,
             Long subsystemId, int startFrom, int recordsCount) {
         List<UIRoleForCheckbox> allRoles = userDao.getUnmappedUserRoles(
@@ -250,11 +262,13 @@ public class UserServiceImpl implements UserService {
         return allRoles;
     }
 
+    @Override
     public int getUnmappedUserRolesCount(long userId, Long subsystemId) {
         return userDao.getUnmappedUserRolesCount(userId,
                 subsystemId == null ? null : String.valueOf(subsystemId));
     }
 
+    @Override
     public RoutineResult changeUserRoles(long userId,
             Collection<Long> rolesToAddIds, Collection<Long> rolesToRemoveIds,
             Collection<Long> rolesToGrantActionsIds) {
@@ -275,6 +289,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public List<UIActionForCheckboxForUser> getAllUserActions(long userId,
             Long subsystemId, String actionSubstring, int startFrom,
             int recordsCount) {
@@ -285,6 +300,7 @@ public class UserServiceImpl implements UserService {
                 userId, subsystemIds, actionSubstring);
     }
 
+    @Override
     public int getAllUserActionsCount(long userId, Long subsystemId,
             String actionSubstring) {
         String subsystemIds = subsystemId == null ? null : subsystemId
@@ -293,6 +309,7 @@ public class UserServiceImpl implements UserService {
                 actionSubstring);
     }
 
+    @Override
     public List<UIActionForCheckboxForUser> getUnmappedUserActions(long userId,
             Long subsystemId, long roleId, String actionSubstring, int startFrom,
             int recordsCount) {
@@ -303,6 +320,7 @@ public class UserServiceImpl implements UserService {
                 userId, subsystemIds, roleId, actionSubstring);
     }
 
+    @Override
     public int getUnmappedUserActionsCount(long userId, Long subsystemId,
             long roleId, String actionSubstring) {
         String subsystemIds = subsystemId == null ? null : subsystemId
@@ -311,6 +329,7 @@ public class UserServiceImpl implements UserService {
                 roleId, actionSubstring);
     }
 
+    @Override
     public RoutineResult changeUserRoleActions(long userId,
             Collection<Long> roleActionToAddIds,
             Collection<Long> roleActionToRemoveIds) {
@@ -325,6 +344,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public UIUserWithRolesAndActions getUserRoleActions(long userId,
             String subsystemIds, String actionNameSubstring,
             String roleNameSubstring) {
@@ -332,6 +352,7 @@ public class UserServiceImpl implements UserService {
                 actionNameSubstring, roleNameSubstring);
     }
 
+    @Override
     public RoutineResult addSubsystemWithRole(long userId, long roleId) {
         RoutineResult result = userDao.addSubsystemWithRole(userId, roleId);
         if (result.isOk()) {
@@ -340,14 +361,17 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
     public void validatePassword(String username,String password) throws PolicyValidationException {
         policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
     }
 
+    @Override
     public void expirePasswords(int days) {
         accountPolicy.expirePasswordsIfNeeded(days, this);
     }
 
+    @Override
     public List<UIActionForCheckboxForUser> getMappedUserActions(long userId,
             Long subsystemId, long roleId, String actionSubstring, int startFrom,
             int recordsCount) {
@@ -358,6 +382,7 @@ public class UserServiceImpl implements UserService {
                 userId, subsystemIds, roleId, actionSubstring);
     }
 
+    @Override
     public int getMappedUserActionsCount(long userId, Long subsystemId,
             long roleId, String actionSubstring) {
         String subsystemIds = subsystemId == null ? null : subsystemId
@@ -366,6 +391,7 @@ public class UserServiceImpl implements UserService {
                 actionSubstring);
     }
 
+    @Override
     public void suspendUser(long userId) {
         RoutineResult result = userDao.suspendUser(userId);
         if (result.isOk()) {
@@ -374,10 +400,12 @@ public class UserServiceImpl implements UserService {
         loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
     }
 
+    @Override
     public void suspendUsers(int days) {
         accountPolicy.suspendUsersIfNeeded(days, this);
     }
 
+    @Override
     public void changeTempPassword(String userName, String password) {
         RoutineResult result = userDao.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
         loggerSink.info(logger, "CHANGE_TEMP_PASSWORD", result.isOk(), userName);

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Transactional
 public class ActionServiceImpl implements ActionService {
     private ActionDao actionDao;
@@ -23,21 +24,21 @@ public class ActionServiceImpl implements ActionService {
     }
 
     public void changeActionsLogLevel(List<Long> actnListLogOn,
-            List<Long> actnListLogOff) {
+                                      List<Long> actnListLogOff) {
         this.actionDao.changeActionsLogLevel(StringUtils
                 .collectionToCommaDelimitedString(actnListLogOn), StringUtils
                 .collectionToCommaDelimitedString(actnListLogOff));
     }
 
     public long getActionCount(String actionName, String description,
-            List<Long> subsystemIds) {
+                               List<Long> subsystemIds) {
         return actionDao.getActionCount(actionName, description, StringUtils
                 .collectionToCommaDelimitedString(subsystemIds));
     }
 
     public List<UIActionForList> getActions(long startFrom, long recordsCount,
-            int orderFieldNumber, boolean asc, String actionNamePrefix,
-            String description, List<Long> subsystemIds) {
+                                            int orderFieldNumber, boolean asc, String actionNamePrefix,
+                                            String description, List<Long> subsystemIds) {
         return actionDao.getActions(startFrom, recordsCount, orderFieldNumber,
                 asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
                         .collectionToCommaDelimitedString(subsystemIds));
@@ -48,7 +49,7 @@ public class ActionServiceImpl implements ActionService {
     }
 
     public void copyActionProperties(long actionId, long actionIdCopy,
-            boolean userPrivileges) {
+                                     boolean userPrivileges) {
         actionDao.copyActionProperties(actionId, actionIdCopy, userPrivileges);
     }
 
@@ -58,6 +59,6 @@ public class ActionServiceImpl implements ActionService {
 
     @Override
     public RoutineResult saveActions(String subsystemIdentifier, List<ActionToSave> actions) {
-        return actionDao.saveActions(subsystemIdentifier,actions);
+        return actionDao.saveActions(subsystemIdentifier, actions);
     }
 }

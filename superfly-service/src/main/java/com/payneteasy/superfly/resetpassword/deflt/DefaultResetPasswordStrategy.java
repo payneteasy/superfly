@@ -7,9 +7,7 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class DefaultResetPasswordStrategy implements ResetPasswordStrategy {
     private static final Logger logger = LoggerFactory.getLogger(DefaultResetPasswordStrategy.class);
 

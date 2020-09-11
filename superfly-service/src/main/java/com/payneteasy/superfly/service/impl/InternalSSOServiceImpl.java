@@ -149,6 +149,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         this.notSavedActions = notSavedActions;
     }
 
+    @Override
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
