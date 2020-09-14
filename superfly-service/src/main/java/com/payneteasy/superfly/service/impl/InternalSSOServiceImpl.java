@@ -373,7 +373,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public void changeTempPassword(String userName, String password) throws PolicyValidationException {
         policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(userName)));
-        userService.changeTempPassword(userName, passwordEncoder.encode(password, saltSource.getSalt(userName)));
+        userService.changeTempPassword(userName, password);
     }
 
     public UserForDescription getUserDescription(String username) {
