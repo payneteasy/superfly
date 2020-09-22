@@ -13,21 +13,26 @@
 </head>
 <body>
 <wicket:extend>
-        <h2>Authentication</h2>
+
         
 
-        <form wicket:id="form" action="/j_superfly_hotp_security_check" method="POST">
+        <form wicket:id="form" action="/j_superfly_hotp_security_check" method="POST" class="container">
+            <div class="row">
+                <div class="col-12 col-sm-5 col-md-4 m-auto">
+                    <h2 class="mb-4">Authentication</h2>
+                    <div class="form-group">
+                        <label class='form-label' for="j_hotp">One-time password value</label>
+                        <input class='form-control' name="j_hotp" id="j_hotp" type="password" autocomplete="off" value="" maxlength="6">
+                    </div>
 
-            <div>
-                <label class='form-htop-label' for="j_hotp">One-time password value</label>
-                <input class='form-htop-input-text' name="j_hotp" id="j_hotp" type="password" autocomplete="off" value="" maxlength="6">
+                    <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>
+
+                    <div class="button-row">
+                        <input type="submit" class="btn btn-primary btn-block" value="Login">
+                    </div>
+                </div>
             </div>
 
-            <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>
-
-            <div class="button-row">
-                <input type="submit" class="button" value="Login">
-            </div>
         </form>
 </wicket:extend>
 </body>

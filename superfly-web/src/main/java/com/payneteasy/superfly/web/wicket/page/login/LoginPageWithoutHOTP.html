@@ -53,17 +53,18 @@
 
     <div class="container">
 
-                <form wicket:id="form" action="/j_superfly_password_security_check" method="POST" class="form-signin">
-                    <legend>Authentication</legend>
+                <form wicket:id="form" action="/j_superfly_password_security_check" method="POST" class="form-signin shadow">
+                    <legend class="pb-2">Authentication</legend>
+                    <div wicket:id="reason" class="alert alert-danger">The username or password you entered is incorrect.</div>
 
-                    <div wicket:id="reason" class="alert">The username or password you entered is incorrect.</div>
 
+                    <input class="form-control" type="text" id="j_username" name="j_username" value="" maxlength="32" placeholder="Username">
 
-                    <input class="input-block-level" type="text" id="j_username" name="j_username" value="" maxlength="32" placeholder="Username">
+                    <input class="form-control" name="j_password" id="j_password" type="password" autocomplete="off" value="" maxlength="32" placeholder="Password">
 
-                    <input class="input-block-level" name="j_password" id="j_password" type="password" autocomplete="off" value="" maxlength="32" placeholder="Password">
-
-                    <input type="submit" class="btn btn-large btn-info pull-right" value="Login">
+                    <div class="text-right pt-2">
+                        <input type="submit" class="btn btn-block btn-primary shadow" value="Login">
+                    </div>
                     <div class="clearfix"></div>
 
                 </form>

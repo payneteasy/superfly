@@ -9,20 +9,21 @@
 <form wicket:id="filters-form">
 
 
-     <strong>Action Name: </strong> <span wicket:id="name-action"></span>&nbsp;&nbsp;<a href="#" wicket:id="back">back to list actions</a>
-    <br/><br/>
-     <strong>Description: </strong><span wicket:id="name-description"></span>&nbsp;&nbsp;
-     <strong>Subsystem Name: </strong><span wicket:id="subname-action"></span>
-    <br/><br/>
+     <strong>Action Name: </strong> <span class="badge badge-dark" wicket:id="name-action"></span>&nbsp;&nbsp;<a href="#" wicket:id="back">back to list actions</a>
+     <div class="my-3">
+         <strong>Description: </strong><span class="badge badge-dark" wicket:id="name-description"></span>&nbsp;&nbsp;
+         <strong>Subsystem Name: </strong><span class="badge badge-dark" wicket:id="subname-action"></span>
+     </div>
+
 
     <div class="well s-filter">
         <ul class="s-filter-items">
-            <li><input type="text" wicket:id="auto" size="33" placeholder="Action Name"/></li>
-            <li><input type="submit" value="Filter" class="btn"/></li>
+            <li><input class="form-control" type="text" wicket:id="auto" size="33" placeholder="Action Name"/></li>
+            <li><input type="submit" value="Filter" class="btn btn-outline-primary"/></li>
         </ul>
     </div>
 
-    <table class="table table-bordered table-hover">
+    <table class="table table-sm table-bordered table-hover table-striped">
         <thead>
             <tr>
                 <th><a wicket:id="order-by-actionName">Action Name</a></th>

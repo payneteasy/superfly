@@ -10,13 +10,13 @@
 <h5>Add to the role of groups</h5>
     <form wicket:id="form" >
         <input type="submit" value="Apply" wicket:id="save-actions-link" class="btn btn-primary"/>
-        <input type="submit" value="Next" wicket:id="next-link" class="btn"/>
-        <input type="submit" value="Cancel" wicket:id="cancel" class="btn"/>
+        <input type="submit" value="Next" wicket:id="next-link" class="btn btn-outline-primary"/>
+        <input type="submit" value="Cancel" wicket:id="cancel" class="btn btn-light"/>
         <div wicket:id="group">
-            <table class="table table-bordered table-hover">
+            <table class="table table-sm table-bordered table-hover table-striped mt-3">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox" /></th>
                         <th>Group Name</th>
                         <th>Subsystem Name</th>
 

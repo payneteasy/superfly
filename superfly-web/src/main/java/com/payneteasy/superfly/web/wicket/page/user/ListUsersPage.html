@@ -14,15 +14,15 @@
     <div wicket:id="reset-hotp-window"></div>
 
     <!--FILTER-->
-    <div class="well s-filter">
+
         <form wicket:id="filters-form" class="form-inline">
             <ul class="s-filter-items">
                 <li>
-                    <input wicket:id="username-filter" type="text" placeholder="Username prefix"/>
+                    <input class="form-control" wicket:id="username-filter" type="text" placeholder="Username prefix"/>
                 </li>
                 <li>
                     <span>Role:</span>
-                    <select wicket:id="role-filter">
+                    <select class="form-control" wicket:id="role-filter">
                         <option>Role 1</option>
                         <option>Role 2</option>
                         <option>Role 3</option>
@@ -30,28 +30,27 @@
                 </li>
                 <li>
                     <span>Subsystem:</span>
-                    <select wicket:id="subsystem-filter">
+                    <select class="form-control" wicket:id="subsystem-filter">
                         <option>Subsystem 1</option>
                         <option>Subsystem 2</option>
                         <option>Subsystem 3</option>
                     </select>
                 </li>
                 <li>
-                    <input type="submit" value="Filter" class="btn"/>
+                    <input type="submit" value="Filter" class="btn btn-outline-primary"/>
                 </li>
             </ul>
         </form>
-    </div>
 
     <!--TABLE-->
-    <table class="table table-bordered table-hover">
+    <table class="table table-sm table-bordered table-hover table-striped">
         <thead>
             <tr class="s-table-head">
                 <th><a wicket:id="order-by-username">Username</a></th>
                 <th>Email</th>
-                <th><a wicket:id="order-by-logins-failed">Logins failed</a></th>
+                <th class="text-center"><a wicket:id="order-by-logins-failed">Logins failed</a></th>
                 <th><a wicket:id="order-by-last-login-date">Last login date</a></th>
-                <th title="Next OTP counter">NC</th>
+                <th  class="text-center" title="Next OTP counter">NC</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -73,15 +72,15 @@
                     <span wicket:id="next-otp-counter">3</span>
                 </td>
                 <td class="s-td-action">
-                    <div class="dropdown s-dropdown">
-                        <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
-                        <ul class="dropdown-menu s-dropdown-menu">
-                            <li><a href="#" wicket:id="edit-user">Edit</a></li>
-                            <li><a href="#" wicket:id="clone-user">Clone</a></li>
-                            <li><a href="#" wicket:id="reset-password-link">Reset password</a></li>
-                            <li><a href="#" wicket:id="download-hotp-table">OTP table</a></li>
-                            <li><a href="#" wicket:id="reset-table-link">Reset table</a></li>
-                        </ul>
+                    <div class="dropdown">
+                        <a class="btn btn-sm btn-primary dropdown-toggle"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Actions</a>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" wicket:id="edit-user">Edit</a>
+                            <a href="#" class="dropdown-item " wicket:id="clone-user">Clone</a>
+                            <a href="#" class="dropdown-item text-danger" wicket:id="reset-password-link">Reset password</a>
+                            <a href="#" class="dropdown-item" wicket:id="download-hotp-table">OTP table</a>
+                            <a href="#" class="dropdown-item text-danger" wicket:id="reset-table-link">Reset table</a>
+                        </div>
                     </div>
                 </td>
             </tr>

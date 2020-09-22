@@ -11,14 +11,14 @@
     <form wicket:id="form">
         <div class="s-legend-btn">
             <input type="submit" wicket:id="add-subsystem" value="Add Subsystem" class="btn btn-primary">
-            <input type="submit" wicket:id="delete-sub" value="Delete selected" class="btn btn-warning">
+            <input type="submit" wicket:id="delete-sub" value="Delete selected" class="btn btn-warning ml-2">
         </div>
 
         <div wicket:id="group">
-            <table class="table table-bordered table-hover">
+            <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                     <tr class="s-table-head">
-                        <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                        <th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox" /></th>
                         <th>Name</th>
                         <th>Callback Info</th>
                         <th>Send callbacks</th>
@@ -34,12 +34,14 @@
                         <td><span wicket:id="send-callbacks">Yes</span></td>
                         <td><span wicket:id="allow-list-users">Yes</span></td>
                         <td class="s-td-action">
-                            <div class="dropdown s-dropdown">
-                                <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
-                                <ul class="dropdown-menu s-dropdown-menu">
-                                    <li><a href=# wicket:id="subsystem-edit">Edit</a></li>
-                                    <li><a href="#" wicket:id="delete-subsystem">Delete</a></li>
-                                </ul>
+                            <div class="dropdown">
+                                <a class="btn btn-sm btn-primary dropdown-toggle"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                                    Actions
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="#" class="dropdown-item" wicket:id="subsystem-edit">Edit</a>
+                                    <a href="#" class="dropdown-item text-danger" wicket:id="delete-subsystem">Delete</a>
+                                </div>
                             </div>
                         </td>
                     </tr>

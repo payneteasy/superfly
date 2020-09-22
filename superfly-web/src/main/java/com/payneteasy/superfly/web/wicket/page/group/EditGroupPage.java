@@ -75,7 +75,7 @@ public class EditGroupPage extends BasePage {
 
     @Override
     protected String getTitle() {
-        return "Edit group";
+        return "";
     }
 
 }

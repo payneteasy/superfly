@@ -10,21 +10,20 @@
         <a href="#" wicket:id="group-actions" class="btn btn-primary">Add Actions to group</a>
     </div>
 
-    <div class="well s-filter">
+
       <form wicket:id="filter-form" class="form-inline">
           <ul class="s-filter-items">
-              <li><input type="text" wicket:id="action-name-substr" placeholder="Action name"/></li>
-              <li><input type="submit" value="Filter" class="btn"/></li>
+              <li><input type="text" wicket:id="action-name-substr" class="form-control" placeholder="Action name"/></li>
+              <li><input type="submit" value="Filter" class="btn btn-outline-primary"/></li>
           </ul>
       </form>
-    </div>
 
 <p>
-    <strong>Group name: </strong><span wicket:id="groupName"></span>&nbsp;&nbsp;<strong>Subsystem: </strong>
-    <span wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" >Back to list groups</a>
+    <strong>Group name: </strong><span class="badge badge-dark" wicket:id="groupName"></span>&nbsp;&nbsp;<strong>Subsystem: </strong>
+    <span class="badge badge-dark" wicket:id="groupSubsystem"></span>&nbsp;&nbsp;<a href="#" wicket:id="back-to-groups" >Back to list groups</a>
 </p>
 
-    <table class="table table-bordered table-hover">
+    <table class="table table-sm table-bordered table-hover table-striped">
         <thead>
             <tr>
                 <th><a wicket:id="order-by-ActionID">ID</a></th>

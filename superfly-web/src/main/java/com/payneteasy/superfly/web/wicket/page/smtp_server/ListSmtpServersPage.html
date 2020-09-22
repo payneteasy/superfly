@@ -11,7 +11,7 @@
     </div>
 
     <div wicket:id="test-window"></div>
-    <table class="table table-bordered table-hover">
+    <table class="table table-sm table-bordered table-hover table-striped mt-3">
         <thead>
             <tr>
                 <th>Name</th>
@@ -26,13 +26,15 @@
                 </td>
                 <td><span wicket:id="address">[Address]</span></td>
                 <td class="s-td-action">
-                    <div class="dropdown s-dropdown">
-                        <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
-                        <ul class="dropdown-menu s-dropdown-menu">
-                            <li><a href="#" wicket:id="edit-link">Edit</a></li>
-                            <li><a href="#" wicket:id="delete-link" onclick="return confirm('Are you sure you want to delete this SMTP server?');">Delete</a></li>
-                            <li><a href="#" wicket:id="test-link">Test</a></li>
-                        </ul>
+                    <div class="dropdown">
+                        <a class="btn btn-sm btn-primary dropdown-toggle"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                            Actions
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" wicket:id="edit-link">Edit</a>
+                            <a href="#" class="dropdown-item text-danger" wicket:id="delete-link" onclick="return confirm('Are you sure you want to delete this SMTP server?');">Delete</a>
+                            <a href="#" class="dropdown-item" wicket:id="test-link">Test</a>
+                        </div>
                     </div>
                 </td>
             </tr>

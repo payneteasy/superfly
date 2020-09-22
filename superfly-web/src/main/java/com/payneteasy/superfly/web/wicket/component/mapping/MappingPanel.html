@@ -8,51 +8,52 @@
 <wicket:panel>
  <form wicket:id="form-mapping">
 
-     <div class="row-fluid s-mapping">
+     <div class="row">
 
-         <div class="span5">
+         <div class="col-12 col-sm-5">
 
-            <input type="text" id="unmapped-query" class="s-mapping-input" autocomplete="off" placeholder="Type to search"/>
+            <input type="text" id="unmapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
             <!--table     -->
              <wicket:container wicket:id="checkgroup-unmapped">
                  <div  class="s-mapping-table">
-                     <div class="s-mapping-header row-fluid">
-                         <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-unmap"/></div>
-                         <div class="span11">Available <span wicket:id="unmapped-item-name"></span></div>
+                     <div class="s-mapping-header row">
+                         <div class="col-1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-unmap"/></div>
+                         <div class="col-11">Available <span wicket:id="unmapped-item-name"></span></div>
                      </div>
-                     <ul id="unmapped-list" class="s-mapping-body unstyled">
-                         <li class="s-mapping-row row-fluid" wicket:id="unmapped-list">
-                             <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
-                             <div class="span11" wicket:id="mapped-name"></div>
+                     <ul id="unmapped-list" class="s-mapping-body list-unstyled">
+                         <li class="s-mapping-row row" wicket:id="unmapped-list">
+                             <div class="col-1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
+                             <div class="col-11" wicket:id="mapped-name"></div>
                          </li>
                      </ul>
                  </div>
              </wicket:container>
          </div>
 
-         <div class="span2 s-mapping-middle">
-             <input type="submit" value="Grant &gt;"wicket:id="add-items" class="btn span6"/>
-              <br/><br/>
-             <input type="submit" value="&lt; Prohibit"wicket:id="remove-items" class="btn span6"/>
+         <div class="col-sm-2 s-mapping-middle">
+             <input type="submit" value="Grant &gt;"wicket:id="add-items" class="btn btn-sm btn-block btn-outline-success"/>
+             <input type="submit" value="&lt; Prohibit"wicket:id="remove-items" class="btn btn-sm btn-block btn-outline-danger mt-3"/>
          </div>
 
-         <div class="span5">
+         <div class="col-sm-5">
 
-             <input type="text" id="mapped-query" class="s-mapping-input" autocomplete="off" placeholder="Type to search"/>
+             <input type="text" id="mapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
              <!--table-->
              <wicket:container wicket:id="checkgroup-mapped">
-                 <div class="s-mapping-table">
-                     <div class="s-mapping-header row-fluid">
-                         <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-map"/></div>
-                         <div class="span11">Granted <span wicket:id="mapped-item-name"></span></div>
-                     </div>
+                 <div class="s-mapping-table border-success shadow">
+                     <ul class="s-mapping-header list-unstyled">
+                         <li class="s-mapping-row row" >
+                             <div class="col-1 s-mapping-chb-item"><input type="checkbox" wicket:id="master-checkbox-map"/></div>
+                             <div class="col-11">Granted <span wicket:id="mapped-item-name"></span></div>
+                         </li>
+                     </ul>
 
-                     <ul id="mapped-list" class="s-mapping-body unstyled">
-                         <li class="s-mapping-row row-fluid" wicket:id="mapped-list">
-                             <div class="span1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
-                             <div class="span11" wicket:id="mapped-name"></div>
+                     <ul id="mapped-list" class="s-mapping-body list-unstyled">
+                         <li class="s-mapping-row row" wicket:id="mapped-list">
+                             <div class="col-1 s-mapping-chb-item"><input type="checkbox" wicket:id="selected" /></div>
+                             <div class="col-11" wicket:id="mapped-name"></div>
                          </li>
                      </ul>
 

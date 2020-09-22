@@ -7,23 +7,29 @@
 <body>
 <wicket:extend>
 
-<form action="#" wicket:id="form" class="form-horizontal s-form-horizontal" >
-    <div wicket:id="username"></div>
-    <div wicket:id="email"></div>
-    <div wicket:id="name"></div>
-    <div wicket:id="surname"></div>
-    <div wicket:id="secretQuestion"></div>
-    <div wicket:id="secretAnswer"></div>
-    <div wicket:id="organization"></div>
-    <div wicket:id="publicKey"></div>
-    <div wicket:id="otpType"></div>
-    <div wicket:id="isOtpOptional"></div>
-
-    <div class="form-actions">
-        <button class="btn btn-primary">Save</button>
-        <button wicket:id="cancel" class="btn">Cancel</button>
+<form action="#" wicket:id="form" class="form-horizontal mb-4 col-8 m-auto" >
+    <div class="row">
+        <div class="col-6">
+            <div wicket:id="username"></div>
+            <div wicket:id="email"></div>
+            <div wicket:id="name"></div>
+            <div wicket:id="surname"></div>
+            <div wicket:id="secretQuestion"></div>
+            <div wicket:id="secretAnswer"></div>
+        </div>
+        <div class="col-6">
+            <div wicket:id="organization"></div>
+            <div wicket:id="publicKey"></div>
+            <div wicket:id="otpType"></div>
+            <div wicket:id="isOtpOptional"></div>
+        </div>
     </div>
 
+
+    <div class="btn-panel mt-2">
+        <button class="btn btn-primary shadow">Save</button>
+        <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
+    </div>
 </form>
 
 </wicket:extend>

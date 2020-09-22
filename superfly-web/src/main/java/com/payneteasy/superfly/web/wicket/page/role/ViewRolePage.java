@@ -60,7 +60,7 @@ public class ViewRolePage extends BasePage {
 
         add(new Label("roleName", curRole.getRoleName()));
         add(new Label("principalName", curRole.getPrincipalName()));
-        add(new Label("roleSubsystem", curRole.getRoleName()));
+        add(new Label("roleSubsystem", curRole.getSubsystemName()));
 
         PageParameters pageParameters = PageParametersBuilder.fromPair("id", roleId);
         add(new BookmarkablePageLink<Page>("role-groups", ChangeRoleGroupsPage.class, pageParameters));

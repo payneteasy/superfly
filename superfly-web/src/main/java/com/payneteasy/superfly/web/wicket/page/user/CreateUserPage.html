@@ -7,26 +7,35 @@
 <body>
 <wicket:extend>
 
-<form wicket:id="form" class="form-horizontal s-form-horizontal">
+<form wicket:id="form" class="form-horizontal mb-4 col-8 m-auto">
+    <div class="row">
+        <div class="col-6">
+            <div wicket:id="username"></div>
+            <div wicket:id="email"></div>
+            <div class="row">
+                <div wicket:id="password" class="col-6"></div>
+                <div wicket:id="password2" class="col-6"></div>
+            </div>
+            <div wicket:id="subsystem"></div>
+            <div wicket:id="role"></div>
+            <div wicket:id="name"></div>
+            <div wicket:id="surname"></div>
+        </div>
+        <div class="col-6">
 
-    <div wicket:id="username"></div>
-    <div wicket:id="email"></div>
-    <div wicket:id="password"></div>
-    <div wicket:id="password2"></div>
-    <div wicket:id="subsystem"></div>
-    <div wicket:id="role"></div>
-    <div wicket:id="name"></div>
-    <div wicket:id="surname"></div>
-    <div wicket:id="secretQuestion"></div>
-    <div wicket:id="secretAnswer"></div>
-    <div wicket:id="organization"></div>
-    <div wicket:id="publicKey"></div>
-    <div wicket:id="otpType"></div>
-    <div wicket:id="isOtpOptional"></div>
+            <div wicket:id="secretQuestion"></div>
+            <div wicket:id="secretAnswer"></div>
+            <div wicket:id="organization"></div>
+            <div wicket:id="publicKey"></div>
+            <div wicket:id="otpType"></div>
+            <div wicket:id="isOtpOptional"></div>
+        </div>
+    </div>
 
-    <div class="form-actions">
-       <button wicket:id="add" class="btn btn-primary">Add User</button>
-       <button wicket:id="cancel" class="btn">Cancel</button>
+
+    <div class="btn-panel mt-2">
+        <button wicket:id="add" class="btn btn-primary shadow">Add User</button>
+        <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
     </div>
 
 </form>
