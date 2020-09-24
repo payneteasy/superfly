@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.service.impl;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserInfoService;
@@ -10,7 +10,7 @@ public class LoggerSinkImpl implements LoggerSink {
 
     private UserInfoService userInfoService;
 
-    @Required
+    @Autowired
     public void setUserInfoService(UserInfoService userInfoService) {
         this.userInfoService = userInfoService;
     }

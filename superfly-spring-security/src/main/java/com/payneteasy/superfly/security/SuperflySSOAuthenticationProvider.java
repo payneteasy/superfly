@@ -4,7 +4,7 @@ import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -20,7 +20,7 @@ public class SuperflySSOAuthenticationProvider implements AuthenticationProvider
 
     private SSOService ssoService;
 
-    @Required
+    @Autowired
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;
     }

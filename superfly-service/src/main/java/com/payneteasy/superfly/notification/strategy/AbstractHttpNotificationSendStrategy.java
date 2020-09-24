@@ -8,7 +8,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.payneteasy.superfly.notification.NotificationException;
 
@@ -47,7 +47,7 @@ public abstract class AbstractHttpNotificationSendStrategy implements
         }
     }
 
-    @Required
+    @Autowired
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }

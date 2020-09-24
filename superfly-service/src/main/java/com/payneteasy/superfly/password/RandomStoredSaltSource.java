@@ -2,7 +2,7 @@ package com.payneteasy.superfly.password;
 
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Kuccyp
@@ -16,12 +16,12 @@ public class RandomStoredSaltSource implements SaltSource{
     private UserService userService;
     private SaltGenerator saltGenerator;
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Required
+    @Autowired
     public void setSaltGenerator(SaltGenerator saltGenerator) {
         this.saltGenerator = saltGenerator;
     }

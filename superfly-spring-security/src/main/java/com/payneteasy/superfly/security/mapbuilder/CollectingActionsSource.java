@@ -2,7 +2,7 @@ package com.payneteasy.superfly.security.mapbuilder;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.SSOAction;
@@ -17,7 +17,7 @@ public class CollectingActionsSource implements ActionsSource {
 
     private ActionDescriptionCollector actionDescriptionCollector;
 
-    @Required
+    @Autowired
     public void setActionDescriptionCollector(
             ActionDescriptionCollector actionDescriptionCollector) {
         this.actionDescriptionCollector = actionDescriptionCollector;

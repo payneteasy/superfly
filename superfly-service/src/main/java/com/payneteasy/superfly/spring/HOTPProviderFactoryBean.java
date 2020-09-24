@@ -8,7 +8,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
@@ -44,7 +44,7 @@ public class HOTPProviderFactoryBean implements FactoryBean, BeanFactoryAware, I
         this.beanFactory = beanFactory;
     }
 
-    @Required
+    @Autowired
     public void setMasterKey(String masterKey) {
         this.masterKey = masterKey;
     }

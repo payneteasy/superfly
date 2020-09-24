@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -21,7 +21,7 @@ public class SuperflyLocalAuthenticationProvider extends
     private LocalSecurityService localSecurityService;
     private String rolePrefix = "ROLE_";
 
-    @Required
+    @Autowired
     public void setLocalSecurityService(LocalSecurityService localSecurityService) {
         this.localSecurityService = localSecurityService;
     }

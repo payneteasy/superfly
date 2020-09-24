@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.security.mapbuilder;
 
 import com.payneteasy.superfly.api.SSOAction;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
@@ -23,7 +23,7 @@ public class ResourceActionsSource implements ActionsSource {
     private Resource resource;
     private Charset charset = StandardCharsets.UTF_8;
 
-    @Required
+    @Autowired
     public void setResource(Resource resource) {
         this.resource = resource;
     }

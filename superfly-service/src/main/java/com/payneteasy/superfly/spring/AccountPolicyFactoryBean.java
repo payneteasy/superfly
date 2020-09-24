@@ -7,7 +7,7 @@ import com.payneteasy.superfly.policy.account.none.SimpleAccountPolicy;
 import com.payneteasy.superfly.policy.account.pcidss.PCIDSSAccountPolicy;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.UserService;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Factory bean for {@link AccountPolicy}.
@@ -24,22 +24,22 @@ public class AccountPolicyFactoryBean extends
     private PasswordGenerator passwordGenerator;
     private ResetPasswordStrategy resetPasswordStrategy;
 
-    @Required
+    @Autowired
     public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
         this.resetPasswordStrategy = resetPasswordStrategy;
     }
 
-    @Required
+    @Autowired
     public void setUserService(UserService userDao) {
         this.userService = userDao;
     }
 
-    @Required
+    @Autowired
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }
