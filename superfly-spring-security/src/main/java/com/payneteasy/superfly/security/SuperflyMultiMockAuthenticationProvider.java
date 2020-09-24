@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.security.processor.IdAuthenticationPostProcessor;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,7 +52,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
         this.hotp = hotp;
     }
 
-    @Required
+    @Autowired
     public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
         this.actionsMapBuilder = actionsMapBuilder;
     }

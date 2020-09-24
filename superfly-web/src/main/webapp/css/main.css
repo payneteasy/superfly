@@ -50,7 +50,12 @@ html, body {
 .s-navbar-inner .nav > .active > a, .s-navbar-inner .nav > .active > a:hover, .s-navbar-inner .nav > .active > a:focus {
     background: #ffffff;
 }
-
+.logout {
+    color: var(--danger)
+}
+.logout:hover {
+    color:#ff4c5d
+}
 /*            FEEDBACK PANEL              */
 .feedbackPanel {
     padding: 8px 35px 8px 14px;
@@ -81,12 +86,15 @@ html, body {
 
 .s-filter-items {
     margin: 0;
+    padding: 0 0 30px 0;
 }
-
 .s-filter-items > li {
     display: inline-block;
     margin-left: 20px;
     vertical-align: top;
+}
+.s-filter-items > li + li {
+    margin-left: 20px;
 }
 
 .s-filter-items > li:first-child {
@@ -127,7 +135,9 @@ html, body {
     -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
     box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
 }
-
+.table td, .table th {
+    vertical-align: middle;
+}
 .table-action {
     padding: 2px 4px;
 }
@@ -153,16 +163,10 @@ html, body {
 }
 
 /*      COMPONENTS              */
-.row-fluid .s-offset05 {
-    margin-left: 5%;
-    *margin-left: 5%;
+th.checkbox-cell, td.checkbox-cell {
+    text-align: center;
+    width: 40px
 }
-
-.row-fluid .s-offset05:first-child {
-    margin-left: 4.547008547008547%;
-    *margin-left: 4.440625568285142%;
-}
-
 .s-legend-btn {
     position: absolute;
     top: 65px;
@@ -184,7 +188,15 @@ html, body {
 
 .controls > label {
     margin: 0;
-    padding-top: 5px;
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-label {
+    font-weight: bold;
+    margin: 0;
 }
 
 .s-mapping .input-append {
@@ -201,6 +213,7 @@ html, body {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
+    overflow: hidden;
 }
 
 .s-mapping-header {
@@ -221,13 +234,14 @@ html, body {
 }
 
 .s-mapping-input {
-    width: 97.5%;
     margin: 15px 0;
 }
 
 .s-mapping-header, .s-mapping-row {
+    margin: 0;
     min-width: 35px;
     line-height: 30px;
+    border-bottom: 1px solid #dddddd;
 }
 
 .s-mapping-row {
@@ -290,7 +304,13 @@ tr.tabelRowPointer {
 .s-form-horizontal textarea {
     height: 130px;
 }
-
+.form-group.required > label {
+    color: var(--danger)
+}
+.from-check {
+    position: relative;
+    left: 1.25rem;
+}
 .required > label:after {
     content: "*";
     font-size: 16px;

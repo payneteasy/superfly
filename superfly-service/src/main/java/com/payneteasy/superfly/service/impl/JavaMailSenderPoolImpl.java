@@ -8,7 +8,7 @@ import javax.mail.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import com.payneteasy.superfly.common.pool.Pool;
@@ -69,7 +69,7 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
         }
     }
 
-    @Required
+    @Autowired
     public void setSmtpServerService(SmtpServerService smtpServerService) {
         this.smtpServerService = smtpServerService;
     }

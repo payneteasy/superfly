@@ -11,7 +11,7 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spi.HOTPProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     private HOTPProvider hotpProvider;
     private LockoutStrategy lockoutStrategy;
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
@@ -42,22 +42,22 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         this.localRoleName = localRoleName;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setHotpProvider(HOTPProvider hotpProvider) {
         this.hotpProvider = hotpProvider;
     }
 
-    @Required
+    @Autowired
     public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
         this.lockoutStrategy = lockoutStrategy;
     }

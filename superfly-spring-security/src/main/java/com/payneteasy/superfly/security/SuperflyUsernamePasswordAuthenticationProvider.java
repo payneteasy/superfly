@@ -3,7 +3,7 @@ package com.payneteasy.superfly.security;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAndOtpCheckedToken;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,7 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
 
     private SSOService ssoService;
 
-    @Required
+    @Autowired
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;
     }

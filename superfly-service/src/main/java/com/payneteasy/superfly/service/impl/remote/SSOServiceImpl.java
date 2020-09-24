@@ -25,7 +25,7 @@ import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,17 +48,17 @@ public class SSOServiceImpl implements SSOService {
     private EmailService emailService;
     private PublicKeyCrypto publicKeyCrypto;
 
-    @Required
+    @Autowired
     public void setInternalSSOService(InternalSSOService internalSSOService) {
         this.internalSSOService = internalSSOService;
     }
 
-    @Required
+    @Autowired
     public void setHotpService(HOTPService hotpService) {
         this.hotpService = hotpService;
     }
 
-    @Required
+    @Autowired
     public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
         this.resetPasswordStrategy = resetPasswordStrategy;
     }
@@ -68,12 +68,12 @@ public class SSOServiceImpl implements SSOService {
         this.subsystemIdentifierObtainer = subsystemIdentifierObtainer;
     }
 
-    @Required
+    @Autowired
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    @Required
+    @Autowired
     public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
         this.publicKeyCrypto = publicKeyCrypto;
     }

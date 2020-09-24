@@ -7,29 +7,29 @@
 </head>
 <body>
 <wicket:extend>
-    <form wicket:id="form" class="form-horizontal s-form-horizontal">
-        <wicket:container wicket:id="name"></wicket:container>
-        <wicket:container wicket:id="title"></wicket:container>
-        <wicket:container wicket:id="callbackUrl"></wicket:container>
-        <wicket:container wicket:id="sendCallbacks"></wicket:container>
-        <wicket:container wicket:id="subsystemUrl"></wicket:container>
+    <form wicket:id="form" class="form-horizontal col-4 mb-4">
+        <wicket:container wicket:id="name"/>
+        <wicket:container wicket:id="title"/>
+        <wicket:container wicket:id="callbackUrl"/>
+        <wicket:container wicket:id="sendCallbacks"/>
+        <wicket:container wicket:id="subsystemUrl"/>
 
-        <div class="control-group">
-            <label class="control-label" wicket:id="subsystemTokenLabel">Subsystem token: </label>
-            <div class="controls token-controls">
-                <span wicket:id="subsystemToken" class="token-field">token</span>
-                <a href="" wicket:id="generateNewToken" class="gen-token-link btn btn-sm"> Generate new token</a>
-            </div>
+        <div class="form-group">
+            <label  wicket:id="subsystemTokenLabel">Subsystem token: </label>
+            <div wicket:id="subsystemToken" class="shadow p-3 bg-light">token</div>
+            <small id="emailHelp" class="form-text mt-2">
+                <a href="" wicket:id="generateNewToken" class="gen-token-link btn btn-sm btn-outline-primary"> Generate new token</a>
+            </small>
         </div>
 
-        <wicket:container wicket:id="landingUrl"></wicket:container>
-        <wicket:container wicket:id="loginFormCssUrl"></wicket:container>
-        <wicket:container wicket:id="allowListUsers"></wicket:container>
-        <wicket:container wicket:id="smtpServer"></wicket:container>
+        <wicket:container wicket:id="landingUrl"/>
+        <wicket:container wicket:id="loginFormCssUrl"/>
+        <wicket:container wicket:id="allowListUsers"/>
+        <wicket:container wicket:id="smtpServer"/>
 
         <div class="form-actions">
-            <button wicket:id="form-submit" class="btn btn-primary">Save Subsystem</button>
-            <button wicket:id="cancel" class="btn">Cancel</button>
+            <button wicket:id="form-submit" class="btn btn-primary shadow">Save Subsystem</button>
+            <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
         </div>
     </form>
 </wicket:extend>

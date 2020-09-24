@@ -7,7 +7,7 @@
 <body>
 <wicket:extend>
     <h3>Invalid sessions</h3>
-    <table class="table table-bordered table-hover">
+    <table class="table table-sm table-bordered table-hover table-striped">
         <thead>
             <tr class="s-table-head">
                 <th>Session ID</th>
@@ -30,10 +30,10 @@
         </tbody>
     </table>
 
-    <input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="btn btn-primary"/>
+    <input type="submit" value="Expire invalid sessions" wicket:id="expire-invalid-sessions-link" class="btn btn-outline-warning"/>
 
-    <h3>Expired sessions</h3>
-    <table class="table table-bordered table-hover">
+    <h3 class="mt-5">Expired sessions</h3>
+    <table class="table table-sm table-bordered table-hover table-striped">
         <thead>
             <tr class="s-table-head">
                 <th>Session ID</th>
@@ -55,7 +55,7 @@
             </tr>
         </tbody>
     </table>
-    <input type="submit" value="Delete expired sessions" wicket:id="delete-expired-sessions-link" class="btn btn-primary"/>
+    <input type="submit" value="Delete expired sessions" wicket:id="delete-expired-sessions-link" class="btn btn-outline-danger"/>
 </wicket:extend>
 </body>
 </html>

@@ -11,20 +11,20 @@
     <div class="well s-filter">
       <form wicket:id="filters-form" class="form-inline">
           <ul class="s-filter-items">
-              <li><input type="text" wicket:id="action-name-substring" placeholder="Action name substring"/></li>
-              <li><input type="submit" value="Filter" class="btn" /></li>
+              <li><input class="form-control" type="text" wicket:id="action-name-substring" placeholder="Action name substring"/></li>
+              <li><input type="submit" value="Filter" class="btn btn-outline-primary" /></li>
           </ul>
       </form>
     </div>
     <form wicket:id="form">
         <input type="submit" value="Apply" wicket:id="save-actions-link" class="btn btn-primary"/>
-        <input type="submit" value="Back" wicket:id="back-link" class="btn"/>
-        <input type="submit" value="Cancel" wicket:id="cancel" class="btn"/>
+        <input type="submit" value="Back" wicket:id="back-link" class="btn btn-outline-dark ml-2"/>
+        <input type="submit" value="Cancel" wicket:id="cancel" class="btn btn-light ml-2"/>
     <div wicket:id="group">
-        <table class="table table-bordered table-hover">
+        <table class="table table-sm table-bordered table-hover table-striped mt-3">
             <thead>
                 <tr>
-                    <th><input type="checkbox" wicket:id="master-checkbox" /></th>
+                    <th class="checkbox-cell"><input type="checkbox" wicket:id="master-checkbox" /></th>
                     <th>Subsystem</th>
                     <th>Role</th>
                     <th>Action</th>

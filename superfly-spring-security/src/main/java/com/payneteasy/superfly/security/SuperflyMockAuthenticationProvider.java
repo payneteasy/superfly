@@ -3,7 +3,7 @@ package com.payneteasy.superfly.security;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 
@@ -29,17 +29,17 @@ public class SuperflyMockAuthenticationProvider extends AbstractSuperflyAuthenti
 
     private Map<SSORole, SSOAction[]> cachedActionsMap;
 
-    @Required
+    @Autowired
     public void setUsername(String username) {
         this.username = username;
     }
 
-    @Required
+    @Autowired
     public void setPassword(String password) {
         this.password = password;
     }
 
-    @Required
+    @Autowired
     public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
         this.actionsMapBuilder = actionsMapBuilder;
     }

@@ -7,15 +7,15 @@
 <body>
 <wicket:extend>
 
-<form wicket:id="form" class="form-horizontal s-form-horizontal">
-    <h5 wicket:id="msg"></h5>
+<form wicket:id="form" class="form-horizontal col-4 mb-4">
+    <div class="alert alert-info" wicket:id="msg"></div>
 
     <wicket:container wicket:id="groupName"></wicket:container>
     <wicket:container wicket:id="groupSubsystem"></wicket:container>
 
     <div class="form-actions">
-        <button class="btn btn-primary">Next</button>
-        <button wicket:id="btn-cancel" class="btn">Cancel</button>
+        <button class="btn btn-primary shadow">Next</button>
+        <button wicket:id="btn-cancel" class="btn btn-light ml-2">Cancel</button>
     </div>
 </form>
 

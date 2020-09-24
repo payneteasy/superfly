@@ -9,54 +9,54 @@
 <wicket:extend>
     <div class="s-legend-btn">
         <a href="#" wicket:id="role-groups" class="btn btn-primary">Grant Groups</a>
-        <a href="#" wicket:id="role-actions" class="btn btn-warning">Grant Actions</a>
+        <a href="#" wicket:id="role-actions" class="btn btn-warning ml-2">Grant Actions</a>
     </div>
 
 
 
     <p>
         <strong>Role name: </strong>
-        <span wicket:id="roleName">some-role</span>&nbsp;&nbsp;
+        <span class="badge badge-dark" wicket:id="roleName">some-role</span>&nbsp;&nbsp;
 
         <strong>Principal name:</strong>
-        <span wicket:id="principalName">some-principal</span>&nbsp;&nbsp;
+        <span class="badge badge-dark" wicket:id="principalName">some-principal</span>&nbsp;&nbsp;
 
         <strong>Subsystem:</strong>
-        <span wicket:id="roleSubsystem">some-subsystem</span>&nbsp;&nbsp;
+        <span class="badge badge-dark" wicket:id="roleSubsystem">some-subsystem</span>&nbsp;&nbsp;
 
         <a href="#" wicket:id="btn-back">Back to role's list</a>
     </p>
 
-    <div class="row-fluid">
-        <div class="span6">
-            <input type="text" id="group-query" class="s-mapping-input" autocomplete="off" placeholder="Search in Grant Groups"/>
+    <div class="row">
+        <div class="col-12 col-sm-6">
+            <input type="text" id="group-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Search in Grant Groups"/>
 
             <div class="s-mapping-table">
-                <div class="s-mapping-header row-fluid">
-                    <div class="span2 s-offset05">Group Id</div>
-                    <div class="span8">Group Name</div>
+                <div class="s-mapping-header row">
+                    <div class="col-2">Group Id</div>
+                    <div class="col-10">Group Name</div>
                 </div>
-                <ul id="groups-list" class="s-mapping-body unstyled">
-                    <li class="s-mapping-row row-fluid" wicket:id="grant-groups">
-                        <div class="span2 s-offset05" wicket:id="group-id"></div>
-                        <div class="span8" wicket:id="group-name"></div>
+                <ul id="groups-list" class="s-mapping-body list-unstyled">
+                    <li class="s-mapping-row row" wicket:id="grant-groups">
+                        <div class="col-2" wicket:id="group-id"></div>
+                        <div class="col-10" wicket:id="group-name"></div>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="span6">
+        <div class="col-12 col-sm-6">
 
-            <input type="text" id="action-query" class="s-mapping-input" autocomplete="off" placeholder="Search in Grant Actions"/>
+            <input type="text" id="action-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Search in Grant Actions"/>
 
             <div class="s-mapping-table">
-                <div class="s-mapping-header row-fluid">
-                    <div class="span2 s-offset05">Action Id</div>
-                    <div class="span8">Action Name</div>
+                <div class="s-mapping-header row">
+                    <div class="col-2">Action Id</div>
+                    <div class="col-10">Action Name</div>
                 </div>
-                <ul id="actions-list" class="s-mapping-body unstyled">
-                    <li class="s-mapping-row row-fluid" wicket:id="grant-actions">
-                        <div class="span2 s-offset05" wicket:id="action-id"></div>
-                        <div class="span8" wicket:id="action-name"></div>
+                <ul id="actions-list" class="s-mapping-body list-unstyled">
+                    <li class="s-mapping-row row" wicket:id="grant-actions">
+                        <div class="col-2" wicket:id="action-id"></div>
+                        <div class="col-10" wicket:id="action-name"></div>
                     </li>
                 </ul>
             </div>

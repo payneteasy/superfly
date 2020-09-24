@@ -1,71 +1,72 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
 <head>
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
- <title wicket:id="page-head-title">Superfly service web</title>
- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
- <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css" />
- <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title wicket:id="page-head-title">Superfly service web</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
 
- <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
- <script type="text/javascript" src="js/bootstrap.min.js"></script>
- <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/jquery-3.5.1.js"></script>
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
 </head>
 <body>
 <div id="s-wrap-container">
     <!--HEADER NAVBAR-->
-    <div class="navbar ">
-        <div class="navbar-inner s-navbar-inner">
-            <!--BRAND-->
-            <a class="brand" href="#" wicket:id="self-link">SUPERFLY</a>
-            <!--MENU-->
-            <ul class="nav">
-                <li wicket:id="list-item-users"><a href="#" wicket:id="users">Users</a></li>
-                <li wicket:id="list-item-subsystems"><a href="#" wicket:id="subsystems">Subsystems</a></li>
-                <li wicket:id="list-item-actions"><a href="#" wicket:id="actions">Actions</a></li>
-                <li wicket:id="list-item-groups"><a href="#" wicket:id="groups">Groups</a></li>
-                <li wicket:id="list-item-roles"><a href="#" wicket:id="roles">Roles</a></li>
-                <li wicket:id="list-item-sessions"><a href="#" wicket:id="sessions">Sessions</a></li>
-                <li wicket:id="list-item-smtp"><a href="#" wicket:id="smtp">SMTP servers</a></li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!--BRAND-->
+        <a class="navbar-brand" href="#" wicket:id="self-link">SUPERFLY</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--MENU-->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" wicket:id="list-item-users"><a class="nav-link" href="#"
+                                                                    wicket:id="users">Users</a></li>
+                <li class="nav-item" wicket:id="list-item-subsystems"><a class="nav-link" href="#"
+                                                                         wicket:id="subsystems">Subsystems</a></li>
+                <li class="nav-item" wicket:id="list-item-actions"><a class="nav-link" href="#" wicket:id="actions">Actions</a>
+                </li>
+                <li class="nav-item" wicket:id="list-item-groups"><a class="nav-link" href="#"
+                                                                     wicket:id="groups">Groups</a></li>
+                <li class="nav-item" wicket:id="list-item-roles"><a class="nav-link" href="#"
+                                                                    wicket:id="roles">Roles</a></li>
+                <li class="nav-item" wicket:id="list-item-sessions"><a class="nav-link" href="#" wicket:id="sessions">Sessions</a>
+                </li>
+                <li class="nav-item" wicket:id="list-item-smtp"><a class="nav-link" href="#" wicket:id="smtp">SMTP
+                    servers</a></li>
             </ul>
 
+            <form class="form-inline my-2 my-lg-0">
             <!--USER INFO  -->
-            <ul class="nav pull-right">
-                <li wicket:id="user-container">
-                    <a href="#" id="user-container-dropdown" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="icon-user icon-white"></i>
-                        <span wicket:id="user-name">Admin</span>
-                        <b class="s-user-caret caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a href="j_spring_security_logout"><i class="icon-off"></i> Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+            <div wicket:id="user-container">
+                <span wicket:id="user-name" class="text-white">Admin</span>
+                <span class="text-muted px-1">|</span>
+                <a class="btn btn-sm btn-danger" href="j_spring_security_logout"><i class="icon-off"></i> Logout</a>
+            </div>
+            </form>
         </div>
-    </div>
+    </nav>
 
     <!--BODY-->
-    <div class="container-fluid">
+    <div class="container-fluid py-2">
         <span wicket:id="feedback"></span>
         <legend wicket:id="page-title">Hello there!</legend>
 
-        <wicket:child />
+        <wicket:child/>
     </div>
 
     <div id="s-push"></div>
 </div>
 
-    <!--FOOTER-->
-    <div id="s-footer">
-         <span class="pull-right" wicket:id="superfly-version">1.2.3</span>
-    </div>
-
-
-
-<script type="text/javascript">
-    $('#user-container-dropdown').dropdown();
-</script>
+<!--FOOTER-->
+<div id="s-footer" class="text-right">
+    <span class="px-3" wicket:id="superfly-version">1.2.3</span>
+</div>
 
 </body>
 </html>

@@ -6,7 +6,7 @@
 </head>
 <body>
 <wicket:extend>
-    <form wicket:id="form" class="form-horizontal s-form-horizontal">
+    <form wicket:id="form" class="form-horizontal col-4 mb-4">
         <wicket:container wicket:id="name"></wicket:container>
         <wicket:container wicket:id="title"></wicket:container>
         <wicket:container wicket:id="callbackUrl"></wicket:container>
@@ -17,8 +17,8 @@
         <wicket:container wicket:id="allowListUsers"></wicket:container>
         <wicket:container wicket:id="smtpServer"></wicket:container>
         <div class="form-actions">
-            <button wicket:id="submit-link" class="btn btn-primary">Add Subsystem</button>
-            <button wicket:id="cancel" class="btn">Cancel</button>
+            <button wicket:id="submit-link" class="btn btn-primary shadow">Add Subsystem</button>
+            <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
         </div>
     </form>
 </wicket:extend>

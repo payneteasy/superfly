@@ -31,7 +31,7 @@ import com.payneteasy.superfly.spisupport.SaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -57,57 +57,57 @@ public class UserServiceImpl implements UserService {
     private LockoutStrategy lockoutStrategy;
 
 
-    @Required
+    @Autowired
     public void setPolicyValidation(IPolicyValidation<PasswordCheckContext> policyValidation) {
         this.policyValidation = policyValidation;
     }
 
-    @Required
+    @Autowired
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
-    @Required
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }
 
-    @Required
+    @Autowired
     public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
         this.hotpSaltGenerator = hotpSaltGenerator;
     }
 
-    @Required
+    @Autowired
     public void setAccountPolicy(AccountPolicy accountPolicy) {
         this.accountPolicy = accountPolicy;
     }
 
-    @Required
+    @Autowired
     public void setHotpService(HOTPService hotpService) {
         this.hotpService = hotpService;
     }
 
-    @Required
+    @Autowired
     public void setCreateUserStrategy(CreateUserStrategy createUserStrategy) {
         this.createUserStrategy = createUserStrategy;
     }
 
-    @Required
+    @Autowired
     public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
         this.lockoutStrategy = lockoutStrategy;
     }

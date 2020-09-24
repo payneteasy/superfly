@@ -9,7 +9,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 public class ActionServiceImpl implements ActionService {
     private ActionDao actionDao;
 
-    @Required
+    @Autowired
     public void setActionDao(ActionDao actionDao) {
         this.actionDao = actionDao;
     }

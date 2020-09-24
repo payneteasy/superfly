@@ -13,14 +13,14 @@
             <ul class="s-filter-items">
                 <li>
                     <span>Subsystem:</span>
-                        <select wicket:id="subsystem-filter">
+                        <select class="form-control" wicket:id="subsystem-filter">
                             <option>Subsystem 1</option>
                             <option>Subsystem 2</option>
                             <option>Subsystem 3</option>
                         </select>
                 </li>
                 <li>
-                    <input type="submit" value="Filter" class="btn"/>
+                    <input type="submit" value="Filter" class="btn btn-outline-primary"/>
                 </li>
             </ul>
         </form>
@@ -30,12 +30,12 @@
         <div wicket:id="group">
             <div class="s-legend-btn">
                 <input type="submit" wicket:id="add-group" value="Add Group" class="btn btn-primary"/>
-                <input type="submit" value="Delete selected" class="btn btn-warning"/>
+                <input type="submit" value="Delete selected" class="btn btn-warning ml-2"/>
             </div>
-            <table class="table table-bordered table-hover">
+            <table class="table table-sm table-bordered table-hover table-striped">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" wicket:id="groupselector"/></th>
+                        <th  class="checkbox-cell"><input type="checkbox" wicket:id="groupselector"/></th>
                         <th><a wicket:id="order-by-groupName">Name</a></th>
                         <th><a wicket:id="order-by-subsystemName">Subsystem</a></th>
                         <th>Actions</th>
@@ -47,14 +47,16 @@
                         <td><span wicket:id="group-name">[Name]</span></td>
                         <td><span wicket:id="group-ssys">[Subsystem]</span></td>
                         <td class="s-td-action">
-                            <div class="dropdown s-dropdown">
-                                <a class="btn btn-info table-action dropdown-toggle" data-toggle="dropdown" href="#">Actions<b class="caret"></b></a>
-                                <ul class="dropdown-menu s-dropdown-menu">
-                                    <li><a href="#" wicket:id="group-edit">Edit</a></li>
-                                    <li><a href="#" wicket:id="group-actions">Add Actions to group</a></li>
-                                    <li><a href="#" wicket:id="group-clone">Clone</a></li>
-                                    <li><a href="#" wicket:id="group-delete">Delete</a></li>
-                                </ul>
+                            <div class="dropdown">
+                                <a class="btn btn-sm btn-primary dropdown-toggle"data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">
+                                    Actions
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="#" class="dropdown-item" wicket:id="group-edit">Edit</a>
+                                    <a href="#" class="dropdown-item" wicket:id="group-actions">Add Actions to group</a>
+                                    <a href="#" class="dropdown-item" wicket:id="group-clone">Clone</a>
+                                    <a href="#" class="dropdown-item text-danger" wicket:id="group-delete">Delete</a>
+                                </div>
                             </div>
                         </td>
                     </tr>
