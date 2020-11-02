@@ -6,7 +6,8 @@ import org.apache.commons.digester.Digester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 import org.xml.sax.SAXException;
 
@@ -27,7 +28,7 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 
     private Resource resource;
 
-    @Autowired
+    @Required
     public void setResource(Resource resource) {
         this.resource = resource;
     }
