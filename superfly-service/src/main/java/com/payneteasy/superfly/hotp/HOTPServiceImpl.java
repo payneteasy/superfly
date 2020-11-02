@@ -17,7 +17,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
@@ -37,22 +37,22 @@ public class HOTPServiceImpl implements HOTPService {
     private PublicKeyCrypto publicKeyCrypto;
     private UserService userService;
 
-    @Autowired
+    @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    @Autowired
+    @Required
     public void setHotpProvider(HOTPProvider hotpProvider) {
         this.hotpProvider = hotpProvider;
     }
 
-    @Autowired
+    @Required
     public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
         this.publicKeyCrypto = publicKeyCrypto;
     }
 
-    @Autowired
+    @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

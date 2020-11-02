@@ -8,7 +8,7 @@ import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
 import com.payneteasy.superfly.security.exception.BadGoogleAuthValueException;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,7 @@ public class SuperflyGoogleAuthenticationProvider implements AuthenticationProvi
     private SSOService ssoService;
     private Class<?> supportedAuthenticationClass = CheckGoogleAuthToken.class;
 
-    @Autowired
+    @Required
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;
     }

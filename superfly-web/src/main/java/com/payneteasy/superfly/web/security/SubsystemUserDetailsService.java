@@ -2,7 +2,7 @@ package com.payneteasy.superfly.web.security;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SubsystemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +23,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
     private SubsystemService subsystemService;
     private String[] authorities = {"ROLE_SUBSYSTEM"};
 
-    @Autowired
+    @Required
     public void setSubsystemService(SubsystemService subsystemService) {
         this.subsystemService = subsystemService;
     }

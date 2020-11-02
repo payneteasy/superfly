@@ -11,7 +11,7 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -31,17 +31,17 @@ public class SessionServiceImpl implements SessionService {
     private Notifier notifier;
     private LoggerSink loggerSink;
 
-    @Autowired
+    @Required
     public void setSessionDao(SessionDao sessionDao) {
         this.sessionDao = sessionDao;
     }
 
-    @Autowired
+    @Required
     public void setNotifier(Notifier notifier) {
         this.notifier = notifier;
     }
 
-    @Autowired
+    @Required
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }

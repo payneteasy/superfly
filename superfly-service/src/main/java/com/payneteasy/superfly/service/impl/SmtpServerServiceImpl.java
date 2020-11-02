@@ -10,7 +10,7 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SmtpServerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,17 +26,17 @@ public class SmtpServerServiceImpl implements SmtpServerService {
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
 
-    @Autowired
+    @Required
     public void setSmtpServerDao(SmtpServerDao smtpServerDao) {
         this.smtpServerDao = smtpServerDao;
     }
 
-    @Autowired
+    @Required
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Autowired
+    @Required
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
         this.javaMailSenderPool = javaMailSenderPool;
     }

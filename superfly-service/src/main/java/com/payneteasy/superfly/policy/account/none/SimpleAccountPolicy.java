@@ -2,7 +2,7 @@ package com.payneteasy.superfly.policy.account.none;
 
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * {@link AccountPolicy} which behaves as simple as it's possible.
@@ -13,7 +13,7 @@ public class SimpleAccountPolicy implements AccountPolicy {
 
     private UserService userService;
 
-    @Autowired
+    @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

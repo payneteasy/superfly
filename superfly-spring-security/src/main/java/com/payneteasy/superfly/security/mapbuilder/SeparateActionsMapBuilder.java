@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
@@ -19,7 +19,7 @@ public class SeparateActionsMapBuilder implements ActionsMapBuilder {
 
     private Map<String, ActionsSource> roleNamesToActionsSources;
 
-    @Autowired
+    @Required
     public void setRoleNamesToActionsSources(
             Map<String, ActionsSource> roleNamesToActionsSources) {
         this.roleNamesToActionsSources = roleNamesToActionsSources;

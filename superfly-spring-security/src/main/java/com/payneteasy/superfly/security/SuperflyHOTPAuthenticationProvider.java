@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.intercept.RunAsUserToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -22,7 +22,7 @@ public class SuperflyHOTPAuthenticationProvider implements AuthenticationProvide
     private SSOService ssoService;
     private Class<?> supportedAuthenticationClass = CheckHOTPToken.class;
 
-    @Autowired
+    @Required
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;
     }

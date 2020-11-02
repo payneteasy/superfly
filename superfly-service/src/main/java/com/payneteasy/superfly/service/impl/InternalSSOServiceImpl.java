@@ -42,7 +42,7 @@ import com.payneteasy.superfly.utils.PGPKeyValidator;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -75,72 +75,72 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
-    @Autowired
+    @Required
     public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
         this.policyValidation = policyValidation;
     }
 
-    @Autowired
+    @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Autowired
+    @Required
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
     }
 
-    @Autowired
+    @Required
     public void setActionService(ActionService actionService) {
         this.actionService = actionService;
     }
 
-    @Autowired
+    @Required
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Autowired
+    @Required
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Autowired
+    @Required
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Autowired
+    @Required
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }
 
-    @Autowired
+    @Required
     public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
         this.hotpSaltGenerator = hotpSaltGenerator;
     }
 
-    @Autowired
+    @Required
     public void setHotpProvider(HOTPProvider hotpProvider) {
         this.hotpProvider = hotpProvider;
     }
 
-    @Autowired
+    @Required
     public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
         this.lockoutStrategy = lockoutStrategy;
     }
 
-    @Autowired
+    @Required
     public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
         this.registerUserStrategy = registerUserStrategy;
     }
 
-    @Autowired
+    @Required
     public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
         this.publicKeyCrypto = publicKeyCrypto;
     }
 
-    @Autowired
+    @Required
     public void setHotpService(HOTPService hotpService) {
         this.hotpService = hotpService;
     }

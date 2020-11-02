@@ -5,7 +5,7 @@ import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.spring.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +28,12 @@ public class SettingsServiceImpl implements SettingsService {
                 "/META-INF/maven/com.payneteasy.superfly/superfly-service/pom.properties");
     }
 
-    @Autowired
+    @Required
     public void setHotpDisabled(boolean hotpDisabled) {
         this.hotpDisabled = hotpDisabled;
     }
 
-    @Autowired
+    @Required
     public void setPolicyName(String name) {
         this.policy = Policy.valueOf(name.toUpperCase());
     }

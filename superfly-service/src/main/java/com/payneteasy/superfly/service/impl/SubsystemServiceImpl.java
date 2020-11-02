@@ -9,7 +9,7 @@ import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
@@ -31,22 +31,22 @@ public class SubsystemServiceImpl implements SubsystemService {
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
 
-    @Autowired
+    @Required
     public void setSubsystemDao(SubsystemDao subsystemDao) {
         this.subsystemDao = subsystemDao;
     }
 
-    @Autowired
+    @Required
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Autowired
+    @Required
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Autowired
+    @Required
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
         this.javaMailSenderPool = javaMailSenderPool;
     }

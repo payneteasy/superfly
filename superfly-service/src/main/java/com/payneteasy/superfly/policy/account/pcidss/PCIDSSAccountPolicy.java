@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -29,22 +29,22 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     private UserPasswordEncoder userPasswordEncoder;
     private ResetPasswordStrategy resetPasswordStrategy;
 
-    @Autowired
+    @Required
     public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
         this.resetPasswordStrategy = resetPasswordStrategy;
     }
 
-    @Autowired
+    @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Autowired
+    @Required
     public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }
 
-    @Autowired
+    @Required
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }

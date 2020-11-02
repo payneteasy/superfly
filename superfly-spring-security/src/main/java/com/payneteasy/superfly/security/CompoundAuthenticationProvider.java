@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -24,7 +24,7 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
     private AuthenticationValidator authenticationValidator = null;
     private AuthenticationPostProcessor authenticationPostProcessor = null;
 
-    @Autowired
+    @Required
     public void setDelegateProvider(AuthenticationProvider authenticationProvider) {
         this.delegateProvider = authenticationProvider;
     }

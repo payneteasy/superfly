@@ -3,7 +3,7 @@ package com.payneteasy.superfly.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
@@ -18,12 +18,12 @@ public class NotificationServiceImpl implements NotificationService {
     private Notifier notifier;
     private SubsystemDao subsystemDao;
 
-    @Autowired
+    @Required
     public void setNotifier(Notifier notifier) {
         this.notifier = notifier;
     }
 
-    @Autowired
+    @Required
     public void setSubsystemDao(SubsystemDao subsystemDao) {
         this.subsystemDao = subsystemDao;
     }

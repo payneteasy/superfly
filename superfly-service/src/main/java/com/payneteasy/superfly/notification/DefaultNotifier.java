@@ -9,7 +9,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.service.job.TryToSendNotificationJob;
 import com.payneteasy.superfly.utils.SchedulerUtils;
@@ -27,12 +27,12 @@ public class DefaultNotifier implements Notifier {
     private String sendStrategyBeanName;
     private int maxRetries = 3;
 
-    @Autowired
+    @Required
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
-    @Autowired
+    @Required
     public void setSendStrategyBeanName(String sendStrategyBeanName) {
         this.sendStrategyBeanName = sendStrategyBeanName;
     }

@@ -8,7 +8,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -40,7 +40,7 @@ public class ScanningActionDescriptionCollector implements
     private ValuesExtractor valuesExtractor = new ValueAttributeValuesExtractor();
     private Set<String> notCollectedActions = Collections.singleton("action_temp_password");
 
-    @Autowired
+    @Required
     public void setBasePackages(String[] basePackages) {
         this.basePackages = basePackages;
     }

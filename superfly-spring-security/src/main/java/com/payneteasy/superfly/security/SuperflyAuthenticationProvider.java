@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
@@ -16,7 +16,7 @@ public class SuperflyAuthenticationProvider extends AbstractSuperflyAuthenticati
 
     private SSOService ssoService;
 
-    @Autowired
+    @Required
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;
     }

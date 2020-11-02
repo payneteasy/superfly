@@ -5,7 +5,7 @@ import com.payneteasy.superfly.email.RuntimeMessagingException;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.service.JavaMailSenderPool.ConfiguredSender;
 import org.apache.velocity.app.VelocityEngine;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -23,12 +23,12 @@ public class EmailServiceImpl implements EmailService {
     private String templatePrefix = "velocity/";
     private boolean enableHotpEmails = true;
 
-    @Autowired
+    @Required
     public void setVelocityEngine(VelocityEngine velocityEngine) {
         this.velocityEngine = velocityEngine;
     }
 
-    @Autowired
+    @Required
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
         this.javaMailSenderPool = javaMailSenderPool;
     }
