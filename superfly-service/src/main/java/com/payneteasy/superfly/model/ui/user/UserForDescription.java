@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.model.ui.user;
 
+import com.payneteasy.superfly.api.OTPType;
+
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -14,6 +16,9 @@ public class UserForDescription implements Serializable {
     private String secretAnswer;
     private String publicKey;
     private String organization;
+    private String  otpTypeCode = OTPType.NONE.code();
+    private OTPType otpType;
+    private boolean isOtpOptional;
 
     @Column(name = "user_id")
     public long getUserId() {
@@ -94,5 +99,30 @@ public class UserForDescription implements Serializable {
 
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public OTPType getOtpType() {
+        if (otpType == null) {
+            otpType = OTPType.fromCode(otpTypeCode);
+        }
+        return otpType;
+    }
+
+    @Column(name = "otp_code")
+    public String getOtpTypeCode() {
+        return otpTypeCode;
+    }
+
+    public void setOtpTypeCode(String otpTypeCode) {
+        this.otpTypeCode = otpTypeCode;
+    }
+
+    @Column(name = "is_otp_optional")
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 }
