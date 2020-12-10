@@ -3,7 +3,7 @@ delimiter $$
 create function int_check_user_password(
         i_user_name         varchar(32),
         i_user_password     text,
-        i_ip_address        varchar(15),
+        i_ip_address        varchar(64),
         i_session_info      text
 ) returns int(10) language sql not deterministic
  main_sql:

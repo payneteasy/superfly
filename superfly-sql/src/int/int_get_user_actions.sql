@@ -2,7 +2,7 @@ drop procedure if exists int_get_user_actions;
 delimiter $$
 create procedure int_get_user_actions(i_user_id int(10),
                                       i_subsystem_name varchar(32),
-                                      i_ip_address varchar(15),
+                                      i_ip_address varchar(64),
                                       i_session_info text,
                                       i_ignore_temp varchar(1),
                                       i_sso_session_id int(10)
