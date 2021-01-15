@@ -173,11 +173,6 @@ public class SSOServiceImpl implements SSOService {
         internalSSOService.updateUserOtpType(username, otpType);
     }
 
-    @Override
-    public boolean authenticateUsingGoogleAuth(String username, String key) throws SsoDecryptException {
-        return internalSSOService.authenticateTOTPGoogleAuth(username, key);
-    }
-
     protected String obtainSubsystemIdentifier(String systemIdentifier) {
         return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
     }
@@ -205,6 +200,8 @@ public class SSOServiceImpl implements SSOService {
             result.setSecretQuestion(user.getSecretQuestion());
             result.setSecretAnswer(user.getSecretAnswer());
             result.setPublicKey(user.getPublicKey());
+            result.setOtpOptional(user.isOtpOptional());
+            result.setOtpType(user.getOtpType());
         }
 
         return result;

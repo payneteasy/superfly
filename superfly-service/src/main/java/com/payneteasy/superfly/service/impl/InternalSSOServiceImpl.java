@@ -172,26 +172,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         if (user.isOtpOptional() && (code == null || code.trim().isEmpty())) {
             return true;
         }
-        boolean ok = false;
-        switch (user.getOtpType()) {
-            case GOOGLE_AUTH:
-                try {
-                    ok = authenticateTOTPGoogleAuth(user.getName(), code);
-                } catch (SsoDecryptException e) {
-                    logger.warn("Can't decrypt secret key for {}", user.getName());
-                }
-                break;
-            case NONE:
-            default:
-                ok = true;
-        }
-
-        loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, user.getName());
-        if (!ok) {
-            logger.warn("OTP check failed {}", user.getName());
-            lockoutStrategy.checkLoginsFailed(user.getName(), LockoutType.HOTP);
-        }
-        return ok;
+        return authenticateByOtpType(user.getOtpType(), user.getName(), code);
     }
 
     @Override
@@ -354,14 +335,29 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException {
-        boolean ok = hotpService.validateGoogleTimePassword(username, key);
+    public boolean authenticateByOtpType(OTPType otp, String username, String code) {
+        boolean ok = false;
+        switch (otp) {
+            case GOOGLE_AUTH:
+                try {
+                    ok = hotpService.validateGoogleTimePassword(username, code);
+                } catch (SsoDecryptException e) {
+                    logger.warn("Can't decrypt secret key for {}", username);
+                }
+                break;
+            case NONE:
+            default:
+                ok = true;
+        }
+
         if (!ok) {
+            logger.warn("OTP check failed {}", username);
             userService.incrementHOTPLoginsFailed(username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
         } else {
             userService.clearHOTPLoginsFailed(username);
         }
+
         loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, username);
         return ok;
     }

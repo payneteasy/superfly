@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.authentication.CheckGoogleAuthToken;
+import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -10,17 +10,17 @@ import org.springframework.security.core.Authentication;
  *
  * @author Igor Vasilyev
  */
-public class SuperflyGoogleAuthenticationProcessingFilter extends
+public class SuperflyOTPAuthenticationProcessingFilter extends
         SuperflyHOTPAuthenticationProcessingFilter {
 
-    public SuperflyGoogleAuthenticationProcessingFilter() {
+    public SuperflyOTPAuthenticationProcessingFilter() {
         super();
         setFilterProcessesUrl("/j_superfly_ga_security_check");
     }
 
     @Override
     protected Authentication createCheckHotpAuthRequest(String hotp, SSOUser ssoUser) {
-        return new CheckGoogleAuthToken(ssoUser, hotp);
+        return new CheckOTPToken(ssoUser, hotp);
     }
 
 }
