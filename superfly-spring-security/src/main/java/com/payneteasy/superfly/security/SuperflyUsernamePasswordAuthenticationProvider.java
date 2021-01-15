@@ -47,7 +47,7 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
                 throw new BadCredentialsException("No roles");
             }
             if (ssoUser.getOtpType() != null && ssoUser.getOtpType() != OTPType.NONE) {
-                if (authRequest.secondFactory() == null) {
+                if (!ssoUser.isOtpOptional() && authRequest.secondFactory() == null) {
                     return createOtpAuthentication(ssoUser);
                 } else if (ssoService.checkOtp(ssoUser, authRequest.secondFactory())) {
                     return createAuthentication(ssoUser);
