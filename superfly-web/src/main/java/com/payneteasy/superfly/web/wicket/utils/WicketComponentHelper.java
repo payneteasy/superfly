@@ -27,6 +27,6 @@ public class WicketComponentHelper {
     }
 
     public static void tableRowInfo(ListItem listItem){
-        listItem.add(new AttributeAppender("class", new Model<String>("info"), " "));
+        listItem.add(new AttributeAppender("class", new Model<String>("bg-info"), " "));
     }
 }

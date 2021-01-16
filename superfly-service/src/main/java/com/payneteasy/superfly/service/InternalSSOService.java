@@ -121,7 +121,7 @@ public interface InternalSSOService {
      * @param key         key
      * @return authentication result
      */
-    boolean authenticateTOTPGoogleAuth(String username, String key) throws SsoDecryptException;
+    boolean authenticateByOtpType(OTPType otp, String username, String key);
 
     /**
      * 

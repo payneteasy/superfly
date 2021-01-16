@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
-import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUserForList;
@@ -17,17 +16,8 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
@@ -181,7 +171,7 @@ public class ListUsersPage extends BasePage {
     //PRIVATE METHODS
     private void checkAccountForLocked(Item<UIUserForList> item, UIUserForList user) {
         if(user.isAccountLocked()){
-            item.add(new AttributeModifier("class", new Model<String>("error")));
+            item.add(new AttributeModifier("class", new Model<String>("bg-danger text-white")));
         }
     }
 

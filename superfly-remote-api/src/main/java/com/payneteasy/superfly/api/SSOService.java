@@ -70,17 +70,6 @@ public interface SSOService {
     void updateUserOtpType(String username, String otpType);
 
     /**
-     * Authenticates a user using an Google Auth implementation configured on the
-     * Superfly server.
-     *
-     * @param username name of the user to authenticate
-     * @param key      one-time password
-     * @return true if authentication is successful
-     * @since 1.2
-     */
-    boolean authenticateUsingGoogleAuth(String username, String key) throws SsoDecryptException;
-
-    /**
      * Registers user and gives him requested principal.
      * User is created in incomplete state. In that state, if
      * a registration with the same username is made, existing user

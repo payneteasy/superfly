@@ -94,8 +94,12 @@ public class HOTPServiceImpl implements HOTPService {
             return false;
         }
         int verificationCode = Integer.parseInt(password);
+        String masterKeyEncrypt = userService.getGoogleAuthMasterKeyByUsername(username);
+        if (masterKeyEncrypt == null) {
+            throw new SsoDecryptException("GA master key for " + username + " is null");
+        }
         String masterKey = CryptoHelper.decrypt(
-                userService.getGoogleAuthMasterKeyByUsername(username),
+                masterKeyEncrypt,
                 GOOGLE_AUTH_OTP_SECRET,
                 GOOGLE_AUTH_OTP_SALT
         );

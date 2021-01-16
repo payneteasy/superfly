@@ -2,11 +2,8 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.api.SsoDecryptException;
-import com.payneteasy.superfly.security.authentication.CheckGoogleAuthToken;
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
-import com.payneteasy.superfly.security.exception.BadGoogleAuthValueException;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.intercept.RunAsUserToken;
@@ -17,12 +14,12 @@ import org.springframework.security.core.AuthenticationException;
 /**
  * {@link AuthenticationProvider} which authenticates using the Superfly HOTP.
  * 
- * @author Roman Puchkovskiy
+ * @author Igor Vasilyev
  */
-public class SuperflyGoogleAuthenticationProvider implements AuthenticationProvider {
+public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider {
 
     private SSOService ssoService;
-    private Class<?> supportedAuthenticationClass = CheckGoogleAuthToken.class;
+    private Class<?> supportedAuthenticationClass = CheckOTPToken.class;
 
     @Required
     public void setSsoService(SSOService ssoService) {
@@ -36,19 +33,14 @@ public class SuperflyGoogleAuthenticationProvider implements AuthenticationProvi
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         Authentication result = null;
-        if (authentication instanceof CheckGoogleAuthToken) {
-            CheckGoogleAuthToken authRequest = (CheckGoogleAuthToken) authentication;
+        if (authentication instanceof CheckOTPToken) {
+            CheckOTPToken authRequest = (CheckOTPToken) authentication;
             if (authRequest.getCredentials() == null) {
-                throw new BadGoogleAuthValueException("Null GoogleAuth key");
+                throw new BadOTPValueException("Null OTP secret");
             }
-            boolean ok = false;
-            try {
-                ok = ssoService.authenticateUsingGoogleAuth(authRequest.getName(), authRequest.getCredentials().toString());
-            } catch (SsoDecryptException e) {
-                throw new BadGoogleAuthValueException("Can't decrypt master key for Google Auth", e);
-            }
+            boolean ok = ssoService.checkOtp(authRequest.getSsoUser(), authRequest.getCredentials().toString());
             if (!ok) {
-                throw new BadGoogleAuthValueException("Invalid GoogleAuth key");
+                throw new BadOTPValueException("Invalid OTP secret");
             }
             result = createAuthentication(authRequest.getSsoUser());
         }

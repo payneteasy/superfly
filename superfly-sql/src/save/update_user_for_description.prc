@@ -8,7 +8,9 @@ create procedure update_user_for_description(i_user_id		int(11),
 					     i_secret_question	varchar(255),
 					     i_secret_answer	varchar(255),
 					     i_public_key 	text,
-                                             i_user_organization varchar(255) 
+					     i_user_organization varchar(255),
+					     i_otp_code          varchar(16),
+					     i_is_otp_optional varchar(1)
 )
  main_sql:
   begin

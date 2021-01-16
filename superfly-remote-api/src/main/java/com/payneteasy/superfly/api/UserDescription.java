@@ -17,6 +17,8 @@ public class UserDescription implements Serializable {
     private String secretAnswer;
     private String publicKey;
     private String organization;
+    private OTPType otpType;
+    private boolean isOtpOptional;
 
     /**
      * Returns a username.
@@ -158,5 +160,21 @@ public class UserDescription implements Serializable {
      */
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+
+    public OTPType getOtpType() {
+        return otpType;
+    }
+
+    public void setOtpType(OTPType otpType) {
+        this.otpType = otpType;
+    }
+
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 }
