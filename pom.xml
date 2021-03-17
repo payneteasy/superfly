@@ -480,17 +480,6 @@
                 <artifactId>xremoting-core</artifactId>
                 <version>1.0-10</version>
             </dependency>
-            <dependency>
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>1.4.15</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>xpp3</groupId>
-                        <artifactId>xpp3_min</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
 
             <dependency>
                 <groupId>com.caucho</groupId>
@@ -606,7 +595,7 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk15on</artifactId>
-                <version>1.66</version>
+                <version>1.68</version>
             </dependency>
 
             <dependency>
@@ -629,12 +618,6 @@
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>24.1.1-jre</version>
             </dependency>
 
             <dependency>
