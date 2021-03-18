@@ -5,9 +5,9 @@
 
     <!-- Data-source -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
         <property name="url"
-                  value="jdbc:mysql://localhost/ssotest?autoReconnect=true&amp;characterEncoding=utf8"/>
+                  value="jdbc:mysql://localhost/ssotest?autoReconnect=true&amp;characterEncoding=utf8&amp;serverTimezone=Europe/Moscow"/>
         <!--&amp;profileSQL=true-->
         <property name="username"  value="sso"     />
         <property name="password"  value="123sso123" />

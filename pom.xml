@@ -474,11 +474,28 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <!--override googleauth's httpclient-->
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
             <dependency>
                 <groupId>com.googlecode.xremoting</groupId>
                 <artifactId>xremoting-core</artifactId>
                 <version>1.0-10</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>1.4.16</version>
             </dependency>
 
             <dependency>
@@ -537,6 +554,16 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>3.2.5</version>
+                <exclusions>
+                    <exclusion>
+                        <!--
+                        https://github.com/cglib/cglib/issues/144
+                        https://github.com/cglib/cglib/pull/87
+                        -->
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
@@ -617,7 +644,7 @@
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
-                <version>0.9.11</version>
+                <version>0.9.12</version>
             </dependency>
 
             <dependency>
@@ -850,11 +877,11 @@
         <jdbcproc.version>1.1-4</jdbcproc.version>
         <slf4j.version>1.7.12</slf4j.version>
         <spring.version>5.2.9.RELEASE</spring.version>
-        <spring.security.version>5.4.0</spring.security.version>
+        <spring.security.version>5.4.5</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>7.6.0</wicket.version>
-        <jetty.version>9.4.35.v20201120</jetty.version>
+        <jetty.version>9.4.38.v20210224</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

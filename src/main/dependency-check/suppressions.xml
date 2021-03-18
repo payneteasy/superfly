@@ -105,4 +105,82 @@
        <sha1>04ff14d809195b711fd6bcc87e6777f886730ca1</sha1>
        <cve>CVE-2016-1000031</cve>
     </suppress>
+
+    <!--CVE-2018-1258: The bug is present only in Spring Framework 5.0.5.RELEASE. If the application does not use
+        Spring Framework 5.0.5.RELEASE then it is not impacted. The bug does not impact any Spring Framework 4.x versions
+        or any other versions of Spring Framework.-->
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-core-5.4.5.jar
+        ]]></notes>
+        <sha1>90f805783a261f5cdfaf924e4a5ab418ae026671</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-web-5.4.5.jar
+        ]]></notes>
+        <sha1>0450d209579c49b4e5373394b23444fa034a8bd3</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-config-5.4.5.jar
+        ]]></notes>
+        <sha1>3835ea09e7bb914249fe03041d3a70d0a23de6cb</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+        file name: logback-ext-spring-0.1.2.jar
+        CVE is about logback, not logback-ext-spring.
+        ]]></notes>
+        <sha1>3466779c4cae1d39b0deac1615dc01c46cef1c10</sha1>
+        <cve>CVE-2017-5929</cve>
+    </suppress>
+
+    <!--All these CVEs are about XStream, not mxparser.-->
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2013-7285</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2016-3674</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2017-7957</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2020-26217</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2020-26258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: mxparser-1.2.1.jar
+        ]]></notes>
+        <sha1>2a7e50b9831efc7785a4d276d94eadee343a4729</sha1>
+        <cve>CVE-2020-26259</cve>
+    </suppress>
 </suppressions>

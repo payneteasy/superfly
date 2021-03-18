@@ -271,7 +271,7 @@ public class PasswordEncryptor {
     private static Connection createAndInitConnection(String url,
             String username, String password) throws InstantiationException,
             IllegalAccessException, ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
         Connection conn = DriverManager.getConnection(url, username, password);
         conn.setAutoCommit(false);
         return conn;

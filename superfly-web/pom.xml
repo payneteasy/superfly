@@ -69,6 +69,10 @@
             <groupId>com.googlecode.xremoting</groupId>
             <artifactId>xremoting-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.caucho</groupId>
