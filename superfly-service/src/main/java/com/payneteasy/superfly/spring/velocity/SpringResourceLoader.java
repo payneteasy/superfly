@@ -16,18 +16,19 @@
 
 package com.payneteasy.superfly.spring.velocity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
-
+import org.apache.velocity.util.ExtProperties;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * Velocity ResourceLoader adapter that loads via a Spring ResourceLoader.
@@ -71,7 +72,7 @@ public class SpringResourceLoader extends ResourceLoader {
 
 
 	@Override
-	public void init(ExtendedProperties configuration) {
+	public void init(ExtProperties configuration) {
 		this.resourceLoader = (org.springframework.core.io.ResourceLoader)
 				this.rsvc.getApplicationAttribute(SPRING_RESOURCE_LOADER);
 		String resourceLoaderPath = (String) this.rsvc.getApplicationAttribute(SPRING_RESOURCE_LOADER_PATH);
@@ -97,7 +98,7 @@ public class SpringResourceLoader extends ResourceLoader {
 	}
 
 	@Override
-	public InputStream getResourceStream(String source) throws ResourceNotFoundException {
+	public Reader getResourceReader(String source, String encoding) throws ResourceNotFoundException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking for Velocity resource with name [" + source + "]");
 		}
@@ -105,7 +106,7 @@ public class SpringResourceLoader extends ResourceLoader {
 			org.springframework.core.io.Resource resource =
 					this.resourceLoader.getResource(resourceLoaderPath + source);
 			try {
-				return resource.getInputStream();
+				return new InputStreamReader(resource.getInputStream(), Charset.forName(encoding));
 			}
 			catch (IOException ex) {
 				if (logger.isDebugEnabled()) {

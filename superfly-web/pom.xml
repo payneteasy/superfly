@@ -60,11 +60,7 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>com.googlecode.xremoting</groupId>
             <artifactId>xremoting-core</artifactId>
