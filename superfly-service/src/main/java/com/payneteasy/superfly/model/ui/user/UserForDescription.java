@@ -125,4 +125,11 @@ public class UserForDescription implements Serializable {
     public void setOtpOptional(boolean otpOptional) {
         isOtpOptional = otpOptional;
     }
+
+    public boolean otpRequiredAndInit() {
+        return getOtpType() != OTPType.NONE;
+    }
+    public boolean otpRequiredAndNotInit() {
+        return getOtpType() != OTPType.NONE;
+    }
 }

@@ -1,0 +1,21 @@
+<html xmlns:wicket>
+<wicket:panel>
+    <div wicket:id="refreshable" class="animated fadeIn">
+        <div>
+            <span>Your secret key for google authenticator: </span><b>
+            <wicket:container wicket:id="key"/>
+            <input type="hidden" wicket:id="key-input" name="j_key">
+        </b>
+        </div>
+        <div class="img mt-4">
+            <img wicket:id="qr" src=""/>
+        </div>
+    </div>
+    <div class="py-4">
+        <small class="text-muted">
+            Learn more about <b><a href="https://support.google.com/accounts/answer/1066447" target="_blank">Google
+            authenticator</a></b>
+        </small>
+    </div>
+</wicket:panel>
+</html>

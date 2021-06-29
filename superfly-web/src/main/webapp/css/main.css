@@ -3,11 +3,18 @@ html, body {
     height: 100%;
 }
 
+#s-wrap-container .container-fw {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 1600px;
+}
 #s-wrap-container {
     min-height: 100%;
     height: auto !important;
     height: 100%;
     margin: 0 auto -50px;
+
 }
 
 #s-push, #s-footer {
@@ -169,7 +176,7 @@ th.checkbox-cell, td.checkbox-cell {
 }
 .s-legend-btn {
     position: absolute;
-    top: 65px;
+    top: 25px;
     right: 30px;
 }
 

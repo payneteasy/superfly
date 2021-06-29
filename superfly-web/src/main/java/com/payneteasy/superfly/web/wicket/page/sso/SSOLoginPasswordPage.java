@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -82,13 +84,27 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
-        if (settingsService.getPolicy() != Policy.PCIDSS || settingsService.isHotpDisabled()) {
-            SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
-                    this, loginData, sessionService, subsystemService);
-        } else {
-            loginData.setUsername(loginBean.getUsername());
-            getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+        loginData.setUsername(loginBean.getUsername());
+        OTPType otpType = OTPType.GOOGLE_AUTH;
+        switch (otpType) {
+            case GOOGLE_AUTH:
+                UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
+                if (userDescription.isOtpOptional()) {
+                    SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                            this, loginData, sessionService, subsystemService);
+                }
+                if (userDescription.getOtpType() == OTPType.NONE) {
+                    getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
+                } else {
+                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                }
+                break;
+            case NONE:
+            default:
+                SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                        this, loginData, sessionService, subsystemService);
         }
+
     }
 
     private static class LoginBean implements Serializable {

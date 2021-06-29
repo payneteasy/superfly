@@ -6,7 +6,7 @@
 
     <script type="text/javascript">
         function startup() {
-            document.getElementById('j_hotp').focus();
+            document.getElementById('j_otp').focus();
         }
     </script>
 </wicket:head>
@@ -16,13 +16,13 @@
 
         
 
-        <form wicket:id="form" action="/j_superfly_hotp_security_check" method="POST" class="container">
+        <form wicket:id="form" action="/j_superfly_otp_security_check" method="POST" class="container">
             <div class="row">
                 <div class="col-12 col-sm-5 col-md-4 m-auto">
                     <h2 class="mb-4">Authentication</h2>
                     <div class="form-group">
-                        <label class='form-label' for="j_hotp">One-time password value</label>
-                        <input class='form-control' name="j_hotp" id="j_hotp" type="password" autocomplete="off" value="" maxlength="6">
+                        <label class='form-label' for="j_otp">One-time password value</label>
+                        <input class='form-control' name="j_otp" id="j_otp" type="password" autocomplete="off" value="" maxlength="6">
                     </div>
 
                     <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>

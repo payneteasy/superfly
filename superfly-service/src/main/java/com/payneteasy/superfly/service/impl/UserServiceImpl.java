@@ -1,7 +1,8 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -141,16 +142,6 @@ public class UserServiceImpl implements UserService {
         UserCreationResult userCreationResult = new UserCreationResult();
         userCreationResult.setResult(result);
 
-        if (result.isOk()) {
-            try {
-                hotpService.sendTableIfSupported(
-                        subsystemIdentifier,
-                        userForDao.getId());
-            } catch (MessageSendException e) {
-                userCreationResult.setMailSendError(e.getMessage());
-            }
-        }
-
         return userCreationResult;
         // we're not notifying about this as user does not yet have any roles
         // or actions
@@ -226,11 +217,6 @@ public class UserServiceImpl implements UserService {
         }
 
         if (result.isOk()) {
-            try {
-                hotpService.sendTableIfSupported(subsystemForEmailIdentifier, request.getId());
-            } catch (MessageSendException e) {
-                userCloningResult.setMailSendError(e.getMessage());
-            }
             notificationService.notifyAboutUsersChanged();
         }
         loggerSink.info(logger, "CLONE_USER", result.isOk(), String.format("%s->%s", templateUserId, newUsername));
@@ -499,6 +485,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthSession authenticate(String username, String password, String subsystemName, String ipAddress, String sessionInfo) {
+        if (ipAddress != null && ipAddress.length() > 15) {
+            ipAddress = ipAddress.substring(0, 15);
+        }
         return userDao.authenticate(username,password,subsystemName,ipAddress,sessionInfo);
     }
 
@@ -572,4 +561,43 @@ public class UserServiceImpl implements UserService {
     public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
         userDao.updateUserIsOtpOptionalValue(username,isOtpOptional);
     }
+
+    @Override
+    public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
+        hotpService.persistOtpKey(otpType, username, key);
+    }
+
+    @Override
+    public boolean authenticateUsingOTP(String username, String otp) {
+        UserForDescription userForDescription = getUserForDescription(username);
+        if (userForDescription == null) {
+            return false;
+        }
+        boolean ok = false;
+        switch (userForDescription.getOtpType()) {
+            case GOOGLE_AUTH:
+                try {
+                    ok = hotpService.validateGoogleTimePassword(username, otp);
+                } catch (SsoDecryptException e) {
+                    logger.warn("Can't decrypt secret key for {}", username);
+                }
+                break;
+            case NONE:
+            default:
+                ok = true;
+        }
+
+        if (!ok) {
+            logger.warn("OTP check failed {}", username);
+            incrementHOTPLoginsFailed(username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        } else {
+            clearHOTPLoginsFailed(username);
+        }
+
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, username);
+        return ok;
+    }
+
+
 }

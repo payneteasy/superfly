@@ -42,8 +42,15 @@
 
     <context-param>
         <param-name>superfly-policy</param-name>
-        <param-value>none</param-value> <!-- none or pcidss -->
+        <param-value>pcidss</param-value> <!-- none or pcidss -->
     </context-param>
+
+    <!-- multi-factor authentication-->
+    <context-param>
+        <param-name>superfly-mfa-method</param-name> <!-- Force users to use this OTP type -->
+        <param-value>google_auth</param-value> <!-- none or google_auth -->
+    </context-param>
+
     <!-- This is for constant salt generator -->
     <context-param>
         <param-name>superfly-salt</param-name>
@@ -55,7 +62,10 @@
         <param-value>6</param-value>
     </context-param>
 
-    <!-- Modification of ANY of HOTP-related parameters here (except for
+    <!--
+        ### Deprecated, use superfly-mfa-force-method for multi-factor authentication
+
+        Modification of ANY of HOTP-related parameters here (except for
         lookahead window size) must be followed by regeneration of user tokens
         as server-side HOTP sequences will be changed.
         Table size leads to table of distinct size, but the sequence remains
@@ -78,14 +88,8 @@
     </context-param>
     <context-param>
         <param-name>superfly-enable-hotp-emails</param-name>
-        <param-value>true</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>disable-hotp</param-name>
         <param-value>false</param-value>
     </context-param>
-
     <context-param>
            <param-name>superfly-max-sso-session-age-minutes</param-name>
            <param-value>30</param-value>

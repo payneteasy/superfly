@@ -13,7 +13,8 @@
 
     <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
-        <sec:custom-filter ref="hotpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
+        <sec:custom-filter ref="initOtpAuthenticationProcessingFilter" after="BASIC_AUTH_FILTER"/>
+        <sec:custom-filter ref="otpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
 
         <sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
     
@@ -43,7 +44,7 @@
     
     <sec:authentication-manager alias="authenticationManager">
         <sec:authentication-provider ref="passwordAuthenticationProvider"/>
-        <sec:authentication-provider ref="hotpAuthenticationProvider"/>
+        <sec:authentication-provider ref="otpAuthenticationProvider"/>
     </sec:authentication-manager>
     
     <bean id="authenticationEntryPoint" class="com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint">
@@ -51,6 +52,7 @@
         <property name="insufficientAuthenticationMapping">
             <map>
                 <entry key="org.springframework.security.authentication.UsernamePasswordAuthenticationToken" value="/login-step2"/>
+                <entry key="com.payneteasy.superfly.web.security.LocalNeedOTPToken" value="/login-setup"/>
             </map>
         </property>
     </bean>
@@ -68,8 +70,12 @@
             parent="abstractAuthenticationProcessingFilter">
     </bean>
     
-    <bean id="hotpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProcessingFilter"
+    <bean id="otpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
+    </bean>
+    <bean id="initOtpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter"
+            parent="abstractAuthenticationProcessingFilter">
+        <property name="localSecurityService" ref="localSecurityService"/>
     </bean>
 
     <bean id="insufficientAuthenticationHandlingFilter" class="com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter">
@@ -78,6 +84,12 @@
                 <value>com.payneteasy.superfly.security.authentication.CompoundAuthentication</value>
             </list>
         </property>
+    </bean>
+
+    <bean id="checkRequiredInitOtpPostProcessor" class="com.payneteasy.superfly.web.security.CheckRequiredInitOtpAuthenticationPostProcessor">
+        <property name="localSecurityService" ref="localSecurityService"/>
+        <property name="multiFactorAuthMethod" ref="mfaMethod"/>
+        <property name="policyName" ref="policyName"/>
     </bean>
     
     <bean id="passwordAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
@@ -93,14 +105,16 @@
         </property>
         <property name="notSupportedSimpleAuthenticationClasses">
             <list>
-                <value>com.payneteasy.superfly.web.security.LocalCheckHOTPToken</value>
+                <value>com.payneteasy.superfly.web.security.LocalCheckOTPToken</value>
             </list>
         </property>
+        <property name="authenticationPostProcessor" ref="checkRequiredInitOtpPostProcessor">
+        </property>
     </bean>
-    
-    <bean id="hotpAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
+
+    <bean id="otpAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
         <property name="delegateProvider">
-            <bean class="com.payneteasy.superfly.web.security.SuperflyLocalHOTPAuthenticationProvider">
+            <bean class="com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProvider">
                 <property name="localSecurityService" ref="localSecurityService"/>
             </bean>
         </property>

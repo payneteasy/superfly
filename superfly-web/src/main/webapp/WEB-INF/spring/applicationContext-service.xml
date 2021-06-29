@@ -11,7 +11,6 @@
     </bean>
 
     <bean id="settingsService" class="com.payneteasy.superfly.service.impl.SettingsServiceImpl">
-        <property name="hotpDisabled" value="#{contextParameters['disable-hotp']}"/>
         <property name="policyName" value="#{contextParameters['superfly-policy']}"/>
     </bean>
 
@@ -38,7 +37,6 @@
         <property name="userService" ref="userService" />
         <property name="loggerSink" ref="loggerSink" />
         <property name="userPasswordEncoder" ref="userPasswordEncoder" />
-        <property name="hotpProvider" ref="hotpProvider" />
         <property name="lockoutStrategy" ref="lockoutStrategy" />
     </bean>
 

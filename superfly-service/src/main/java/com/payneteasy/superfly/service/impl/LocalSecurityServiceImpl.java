@@ -1,14 +1,17 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.LockoutType;
+import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spi.HOTPProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -26,7 +29,6 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     private String localRoleName = "admin";
     private LoggerSink loggerSink;
     private UserPasswordEncoder userPasswordEncoder;
-    private HOTPProvider hotpProvider;
     private LockoutStrategy lockoutStrategy;
 
     @Required
@@ -50,11 +52,6 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     @Required
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
-    }
-
-    @Required
-    public void setHotpProvider(HOTPProvider hotpProvider) {
-        this.hotpProvider = hotpProvider;
     }
 
     @Required
@@ -94,16 +91,22 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         return null;
     }
 
-    public boolean authenticateUsingHOTP(String username, String hotp) {
-        boolean ok = hotpProvider.authenticate(localSubsystemName, username, hotp);
-        if (!ok) {
-            userService.incrementHOTPLoginsFailed(username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-        } else {
-            userService.clearHOTPLoginsFailed(username);
-        }
-        loggerSink.info(logger, "LOCAL_HOTP_CHECK", false, username);
-        return ok;
+    public boolean authenticateUsingOTP(String username, String otp) {
+        return userService.authenticateUsingOTP(username, otp);
     }
 
+    public OtpUserDescription getOtpUserForDescription(String username) {
+        OtpUserDescription user = new OtpUserDescription();
+        UserForDescription userForDescription = userService.getUserForDescription(username);
+        if (userForDescription.getOtpType() == OTPType.GOOGLE_AUTH) {
+            user.setHasOtpMasterKey(userService.getGoogleAuthMasterKeyByUsername(username) != null
+                    && userService.getGoogleAuthMasterKeyByUsername(username).length() > 0);
+        }
+        return user.setUserForDescription(userForDescription);
+    }
+
+    @Override
+    public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
+        userService.persistOtpKey(otpType, username, key);
+    }
 }

@@ -9,6 +9,9 @@
     <bean id="policyName" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-policy"/>
     </bean>
+    <bean id="mfaMethod" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+        <property name="initParamName" value="superfly-mfa-method"/>
+    </bean>
     <bean id="salt" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-salt"/>
     </bean>
@@ -17,6 +20,7 @@
         <property name="initParamName" value="superfly-max-logins-failed"/>
     </bean>
 
+    <!-- Deprecated -->
     <bean id="hotpMasterKey" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-hotpMasterKey"/>
     </bean>

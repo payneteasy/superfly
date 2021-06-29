@@ -3,12 +3,15 @@ package com.payneteasy.superfly.web.wicket.page.login;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 
 public abstract class AbstractLoginPage extends WebPage {
     protected String getSpringSecurityExceptionMessageAndRemoveException() {
@@ -33,6 +36,19 @@ public abstract class AbstractLoginPage extends WebPage {
             }
         }
         return result;
+    }
+
+    protected Authentication getLatestReadyAuthentication() {
+        ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
+        HttpServletRequest request = servletWebRequest.getContainerRequest();
+
+        HttpSession session = request.getSession(false);
+        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        if (context == null) {
+            return null;
+        }
+        CompoundAuthentication compoundAuthentication = (CompoundAuthentication) context.getAuthentication();
+        return compoundAuthentication != null ? compoundAuthentication.getLatestReadyAuthentication() : null;
     }
     
     protected void addMessage(Form<Void> form) {

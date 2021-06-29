@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -70,12 +71,7 @@ public class HOTPServiceImpl implements HOTPService {
     @Override
     public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
         String key = googleAuthenticator.get().createCredentials().getKey();
-        String encryptKey = CryptoHelper.encrypt(
-                key,
-                GOOGLE_AUTH_OTP_SECRET,
-                GOOGLE_AUTH_OTP_SALT
-        );
-        userService.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
+        encryptAndPersistMasterKey(OTPType.GOOGLE_AUTH, username, key);
         return key;
     }
 
@@ -125,6 +121,34 @@ public class HOTPServiceImpl implements HOTPService {
         } catch (RuntimeMessagingException e) {
             logger.error("Could not send a message to " + email, e);
             throw new MessageSendException(e);
+        }
+    }
+
+
+    @Override
+    public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
+        userService.updateUserOtpType(username, otpType.code());
+        switch (otpType) {
+            case NONE:
+                break;
+            case GOOGLE_AUTH:
+                encryptAndPersistMasterKey(otpType, key, username);
+                break;
+        }
+    }
+
+    private void encryptAndPersistMasterKey(OTPType otpType, String key, String username) throws SsoDecryptException {
+        switch (otpType) {
+            case GOOGLE_AUTH:
+                String encryptKey = CryptoHelper.encrypt(
+                        key,
+                        GOOGLE_AUTH_OTP_SECRET,
+                        GOOGLE_AUTH_OTP_SALT
+                );
+                userService.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
+                break;
+            case NONE:
+                break;
         }
     }
 

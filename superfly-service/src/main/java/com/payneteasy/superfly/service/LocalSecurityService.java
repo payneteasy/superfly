@@ -1,5 +1,11 @@
 package com.payneteasy.superfly.service;
 
+import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.UserDescription;
+import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
+
 /**
  * Service used for local security-related purposes.
  * 
@@ -21,8 +27,12 @@ public interface LocalSecurityService {
      * Authenticates a user's one-time password.
      *
      * @param username    user name
-     * @param hotp        one-time password
+     * @param otp        one-time password
      * @return authentication result
      */
-    boolean authenticateUsingHOTP(String username, String hotp);
+    boolean authenticateUsingOTP(String username, String otp);
+
+    OtpUserDescription getOtpUserForDescription(String username);
+
+    void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException;
 }

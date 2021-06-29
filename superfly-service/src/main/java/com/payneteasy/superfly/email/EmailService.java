@@ -17,6 +17,7 @@ public interface EmailService {
      * @param table                    table content
      * @throws RuntimeMessagingException if something is wrong
      */
+    @Deprecated
     void sendHOTPTable(String subsystemIdentifier, String to,
             String fileName, byte[] table) throws RuntimeMessagingException;
 
@@ -28,6 +29,7 @@ public interface EmailService {
      * @param email        to address
      * @throws RuntimeMessagingException if something is wrong
      */
+    @Deprecated
     void sendNoPublicKeyMessage(String subsystemIdentifier,
             String email) throws RuntimeMessagingException;
 

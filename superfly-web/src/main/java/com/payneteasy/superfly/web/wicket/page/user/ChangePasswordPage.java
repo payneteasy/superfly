@@ -33,7 +33,7 @@ public class ChangePasswordPage extends BasePage {
 
     @Override
     protected String getTitle() {
-        return "Change user password";
+        return "";
     }
 
 }

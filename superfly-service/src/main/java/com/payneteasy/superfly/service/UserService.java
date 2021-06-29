@@ -1,7 +1,9 @@
 package com.payneteasy.superfly.service;
 
 import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.User;
@@ -404,4 +406,15 @@ public interface UserService {
     void updateUserOtpType(String username, String otpType);
 
     void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
+
+    void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException;
+
+    /**
+     * Authenticates a user's one-time password.
+     *
+     * @param username    user name
+     * @param otp         one-time password
+     * @return authentication result
+     */
+    boolean authenticateUsingOTP(String username, String otp);
 }

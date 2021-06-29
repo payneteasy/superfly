@@ -19,7 +19,6 @@ import java.util.Properties;
 public class SettingsServiceImpl implements SettingsService {
     private static final Logger logger = LoggerFactory.getLogger(SettingsServiceImpl.class);
 
-    private boolean hotpDisabled;
     private Policy policy;
     private String superflyVersion;
 
@@ -28,19 +27,10 @@ public class SettingsServiceImpl implements SettingsService {
                 "/META-INF/maven/com.payneteasy.superfly/superfly-service/pom.properties");
     }
 
-    @Required
-    public void setHotpDisabled(boolean hotpDisabled) {
-        this.hotpDisabled = hotpDisabled;
-    }
 
     @Required
     public void setPolicyName(String name) {
         this.policy = Policy.valueOf(name.toUpperCase());
-    }
-
-    @Override
-    public boolean isHotpDisabled() {
-        return hotpDisabled;
     }
 
     @Override

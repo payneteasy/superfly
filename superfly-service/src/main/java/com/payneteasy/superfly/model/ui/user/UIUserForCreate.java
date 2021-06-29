@@ -6,7 +6,6 @@ public class UIUserForCreate extends UIUser {
     private Long roleId;
     private String hotpSalt;
     private boolean isPasswordTemp;
-    private boolean isOtpOptional;
 
     @Column(name = "role_id")
     public Long getRoleId() {

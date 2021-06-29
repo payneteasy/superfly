@@ -22,10 +22,6 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
         if (policy == null) {
             policy = Policy.NONE.getIdentifier();
         }
-        String disableHotp = servletContext.getInitParameter("disable-hotp");
-        if ("true".equals(disableHotp)) {
-            policy = Policy.NONE.getIdentifier();
-        }
         String[] oldLocations = applicationContext.getConfigLocations();
         String[] newLocations = new String[oldLocations.length];
         for (int i = 0; i < oldLocations.length; i++) {

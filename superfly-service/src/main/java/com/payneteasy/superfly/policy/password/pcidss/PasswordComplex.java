@@ -72,7 +72,7 @@ public class PasswordComplex implements IPolicy<PasswordCheckContext> {
         }
 
 
-        if(!has_numeric && (!has_lower || !has_upper)){
+        if(!has_numeric || !has_lower || !has_upper || !has_signs){
             throw new PolicyValidationException(PolicyValidationException.SIMPLE_PASSWORD);
         }
     }

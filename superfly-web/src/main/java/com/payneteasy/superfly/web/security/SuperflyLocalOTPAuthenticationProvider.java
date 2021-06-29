@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -14,10 +15,10 @@ import com.payneteasy.superfly.service.LocalSecurityService;
  * 
  * @author Roman Puchkovskiy
  */
-public class SuperflyLocalHOTPAuthenticationProvider implements
-        AuthenticationProvider {
+public class SuperflyLocalOTPAuthenticationProvider implements AuthenticationProvider {
 
     private LocalSecurityService localSecurityService;
+    private Class<?> supportedAuthenticationClass = LocalCheckOTPToken.class;
 
     @Required
     public void setLocalSecurityService(LocalSecurityService localSecurityService) {
@@ -27,8 +28,8 @@ public class SuperflyLocalHOTPAuthenticationProvider implements
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         String username = authentication.getName();
-        String hotp = (String) authentication.getCredentials();
-        boolean ok = localSecurityService.authenticateUsingHOTP(username, hotp);
+        String otp = (String) authentication.getCredentials();
+        boolean ok = localSecurityService.authenticateUsingOTP(username, otp);
         if (!ok) {
             throw new BadOTPValueException("Did not find a user with matching password");
         }
@@ -36,7 +37,7 @@ public class SuperflyLocalHOTPAuthenticationProvider implements
     }
 
     public boolean supports(Class<?> authentication) {
-        return LocalCheckHOTPToken.class.isAssignableFrom(authentication);
+        return supportedAuthenticationClass.isAssignableFrom(authentication);
     }
 
 }

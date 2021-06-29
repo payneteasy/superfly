@@ -1,9 +1,11 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -74,13 +76,15 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
     public void testSuccessNoHOTP() {
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
+        UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
+        expect(userForDescription.isOtpOptional()).andReturn(Boolean.TRUE).anyTimes();
+        expect(userService.getUserForDescription("known-user"))
+                .andReturn(userForDescription).anyTimes();
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
-        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
-        expect(settingsService.isHotpDisabled()).andReturn(true).anyTimes();
-        replay(userService, sessionService, subsystemService, settingsService);
+        replay(userForDescription, userService, sessionService, subsystemService, settingsService);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -99,9 +103,12 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
     public void testSuccessAndHOTP() {
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
-        expect(settingsService.getPolicy()).andReturn(Policy.PCIDSS);
-        expect(settingsService.isHotpDisabled()).andReturn(false);
-        replay(userService, settingsService, subsystemService);
+        UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
+        expect(userForDescription.isOtpOptional()).andReturn(Boolean.FALSE).anyTimes();
+        expect(userForDescription.getOtpType()).andReturn(OTPType.GOOGLE_AUTH).anyTimes();
+        expect(userService.getUserForDescription("known-user"))
+                .andReturn(userForDescription).anyTimes();
+        replay(userForDescription, userService, settingsService, subsystemService);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);

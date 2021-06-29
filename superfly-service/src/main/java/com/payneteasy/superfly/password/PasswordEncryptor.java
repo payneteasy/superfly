@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
@@ -174,6 +175,11 @@ public class PasswordEncryptor {
             @Override
             public boolean validateGoogleTimePassword(String username, String password) {
                 return false;
+            }
+
+            @Override
+            public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
+
             }
         };
     }

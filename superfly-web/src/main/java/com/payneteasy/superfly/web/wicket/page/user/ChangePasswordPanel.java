@@ -1,7 +1,10 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -20,9 +23,13 @@ public abstract class ChangePasswordPanel extends Panel {
 
     @SpringBean
     private UserService userService;
+    @SpringBean
+    private SettingsService settingsService;
 
     public ChangePasswordPanel(String id) {
         super(id);
+
+
 
         add(new FeedbackPanel("feedback"));
         
@@ -40,6 +47,9 @@ public abstract class ChangePasswordPanel extends Panel {
         };
 
         add(form);
+
+        form.add(new WebMarkupContainer("password-description")
+                .setVisible(settingsService.getPolicy() == Policy.PCIDSS));
 
         FormComponent<String> password1Field = new PasswordTextField(
                 "password", new PropertyModel<String>(user, "password"))
