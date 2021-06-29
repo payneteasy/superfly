@@ -9,9 +9,8 @@
             <div class="row">
                 <div class="col-12 col-sm-5 col-md-4 m-auto">
                     <h2 class="mb-4">Initializing Google Authenticator</h2>
-                    <wicket:container wicket:id="otp"/>
-                    <!--                    <input type="text" name="j_key" value="NONE">-->
-                    <!--                    <a class="btn btn-link" wicket:id="ajax">Test ajax</a>-->
+                    <div wicket:id="otp"></div>
+                    <input wicket:id="_csrf" type="hidden" name="_csrf"  />
                     <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>
                     <div class="button-row">
                         <input type="submit" class="btn btn-primary btn-block" value="Initialize and continue">

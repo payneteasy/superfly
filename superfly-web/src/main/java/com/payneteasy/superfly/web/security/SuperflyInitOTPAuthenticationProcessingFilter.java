@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.security.AbstractSingleStepAuthenticationProcessingFilter;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +28,17 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends
     private static final Logger logger = LoggerFactory.getLogger(SuperflyInitOTPAuthenticationProcessingFilter.class);
 
     private LocalSecurityService localSecurityService;
+    private CsrfValidator csrfValidator;
 
     private String otpKeyParameter = "j_key";
 
     @Required
     public void setLocalSecurityService(LocalSecurityService localSecurityService) {
         this.localSecurityService = localSecurityService;
+    }
+
+    public void setCsrfValidator(CsrfValidator csrfValidator) {
+        this.csrfValidator = csrfValidator;
     }
 
     public SuperflyInitOTPAuthenticationProcessingFilter() {
@@ -42,6 +48,8 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
+        csrfValidator.validateToken(request);
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
@@ -71,4 +79,5 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends
     protected String obtainOtpKey(HttpServletRequest request) {
         return request.getParameter(otpKeyParameter);
     }
+
 }

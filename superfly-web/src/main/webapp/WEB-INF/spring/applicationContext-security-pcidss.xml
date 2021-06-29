@@ -68,14 +68,17 @@
     
     <bean id="passwordAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
+        <property name="csrfValidator" ref="csrfValidator"/>
     </bean>
     
     <bean id="otpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
+        <property name="csrfValidator" ref="csrfValidator"/>
     </bean>
     <bean id="initOtpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
         <property name="localSecurityService" ref="localSecurityService"/>
+        <property name="csrfValidator" ref="csrfValidator"/>
     </bean>
 
     <bean id="insufficientAuthenticationHandlingFilter" class="com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter">

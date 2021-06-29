@@ -1,8 +1,11 @@
 package com.payneteasy.superfly.web.wicket;
 
-import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginPage;
-import com.payneteasy.superfly.web.wicket.page.sso.SSOLogoutPage;
+import com.payneteasy.superfly.web.wicket.page.sso.*;
 import org.apache.wicket.Page;
+import org.apache.wicket.core.request.mapper.CryptoMapper;
+import org.apache.wicket.core.util.crypt.KeyInSessionSunJceCryptFactory;
+import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.settings.RequestCycleSettings;
 
 public class SSOApplication extends BaseApplication {
@@ -13,6 +16,9 @@ public class SSOApplication extends BaseApplication {
         mountBookmarkablePageWithParameters("/login", SSOLoginPage.class);
         // single sign-out
         mountBookmarkablePageWithParameters("/logout", SSOLogoutPage.class);
+        mountBookmarkablePageWithParameters("/login-otp", SSOLoginHOTPPage.class);
+        mountBookmarkablePageWithParameters("/error-page", SSOLoginErrorPage.class);
+        mountBookmarkablePageWithParameters("/ga-setup", SSOSetupGoogleAuthPage.class);
 
         getRequestCycleSettings().setRenderStrategy(RequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
     }

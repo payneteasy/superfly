@@ -85,15 +85,14 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
 
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
         loginData.setUsername(loginBean.getUsername());
-        OTPType otpType = OTPType.GOOGLE_AUTH;
+        UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
+        OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
             case GOOGLE_AUTH:
-                UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
                 if (userDescription.isOtpOptional()) {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
-                }
-                if (userDescription.getOtpType() == OTPType.NONE) {
+                } else if (StringUtils.isEmpty(userService.getGoogleAuthMasterKeyByUsername(loginBean.getUsername()))) {
                     getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 } else {
                     getRequestCycle().setResponsePage(new SSOLoginHOTPPage());

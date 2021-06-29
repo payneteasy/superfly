@@ -2,8 +2,11 @@ package com.payneteasy.superfly.web.wicket;
 
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
+import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
+import org.apache.wicket.core.util.crypt.KeyInSessionSunJceCryptFactory;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
@@ -47,6 +50,10 @@ public abstract class BaseApplication extends WebApplication {
         }
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
+        getRequestCycleListeners().add(new CsrfPreventionRequestCycleListener());
+        getSecuritySettings().setCryptFactory(new KeyInSessionSunJceCryptFactory()); // diff key per user
+        final IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
+        setRootRequestMapper(cryptoMapper);
         
         customInit();
     }

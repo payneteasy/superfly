@@ -11,7 +11,7 @@ public class LoginOTPStepPage extends AbstractLoginPage {
         String url = buildSuperflyHOTPSecurityCheckUrl(relativePath);
         Form<Void> form = new Form<Void>("form");
         form.add(new AttributeModifier("action", new Model<String>(url)));
-
+        form.add(createCsrfHiddenInput("_csrf"));
         addMessage(form);
     }
 

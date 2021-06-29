@@ -15,10 +15,10 @@
 <wicket:extend>
     <h2>Generate key for Google Auth</h2>
     <form action="#" wicket:id="form">
-        <b>Тут будет QR код</b>
+        <div wicket:id="otp"></div>
         <div class="superfly-reason" wicket:id="message">[error message]</div>
         <div class="superfly-button-row">
-            <input class="superfly-button" type="submit" value="Login"/>
+            <input class="superfly-button" type="submit" value="Initialize and continue"/>
         </div>
     </form>
 </wicket:extend>

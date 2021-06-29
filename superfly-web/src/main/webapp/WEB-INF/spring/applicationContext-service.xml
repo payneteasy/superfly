@@ -158,6 +158,10 @@
         </property>
     </bean>
 
+    <bean id="csrfValidator" class="com.payneteasy.superfly.security.csrf.CsrfValidatorImpl">
+        <property name="disabled" value="#{contextParameters['superfly-csrf-login-validator-disabled']}"/>
+    </bean>
+
     <bean id="userPasswordEncoder" class="com.payneteasy.superfly.password.UserPasswordEncoderImpl">
         <property name="passwordEncoder" ref="passwordEncoder"/>
         <property name="saltSource" ref="saltSource"/>
