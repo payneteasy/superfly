@@ -17,10 +17,10 @@ public class CsrfValidatorImpl implements CsrfValidator {
     private static final Logger logger = LoggerFactory.getLogger(CsrfValidatorImpl.class);
     private static final String ATTRIBUTE_NAME = CsrfValidatorImpl.class.getName().concat(".CSRF_TOKEN");
 
-    private boolean disabled;
+    private boolean enable;
 
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     @Override
@@ -32,6 +32,11 @@ public class CsrfValidatorImpl implements CsrfValidator {
 
     @Override
     public void validateToken(HttpServletRequest request) {
+        if (!enable) {
+            logger.warn("CSRF login token check is disabled");
+            return;
+        }
+
         if (request == null) {
             throw new IllegalStateException("Cannot get request attribute - request is null!");
         }
@@ -42,10 +47,6 @@ public class CsrfValidatorImpl implements CsrfValidator {
         }
 
         String token = (String) session.getAttribute(ATTRIBUTE_NAME);
-
-        if (disabled) {
-            logger.warn("CSRF login token check is disabled");
-        }
 
         if (token == null) {
             logger.error("No {} value in session", ATTRIBUTE_NAME);

@@ -91,8 +91,8 @@
         <param-value>false</param-value>
     </context-param>
     <context-param>
-        <param-name>superfly-csrf-login-validator-disabled</param-name>
-        <param-value>false</param-value>
+        <param-name>superfly-csrf-login-validator-enable</param-name>
+        <param-value>true</param-value>
     </context-param>
     <context-param>
            <param-name>superfly-max-sso-session-age-minutes</param-name>
