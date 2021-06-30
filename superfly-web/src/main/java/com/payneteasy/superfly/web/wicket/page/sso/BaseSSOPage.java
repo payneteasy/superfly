@@ -1,19 +1,32 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.http.WebResponse;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author rpuch
  */
 public abstract class BaseSSOPage extends SessionAccessorPage {
+
+    @SpringBean
+    protected CsrfValidator csrfValidator;
+
     protected BaseSSOPage() {
         SSOLoginData loginData = getSession().getSsoLoginData();
         WebMarkupContainer subsystemInfoContainer = new WebMarkupContainer("subsystem-info");
@@ -33,6 +46,34 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         add(cssUrlContainer);
     }
 
+    protected Component createCsrfHiddenInput(String markupId) {
+        String token = csrfValidator.persistTokenIntoSession(getHttpSession());
+        return new HiddenField<>(markupId, Model.of(token)).add(new AttributeModifier("name", "_csrf"));
+    }
+
+    protected boolean validateCsrfToken() {
+        try {
+            csrfValidator.validateToken(getHttpServletRequest());
+            return true;
+        } catch (Exception e) {
+            getRequestCycle().setResponsePage(getApplication().getHomePage());
+            WebSession.get().invalidate();
+            SecurityContextHolder.clearContext();
+            setResponsePage(new SSOLoginErrorPage(new Model<>("No login data found")));
+            return false;
+        }
+    }
+
+    private HttpSession getHttpSession() {
+        HttpServletRequest request = getHttpServletRequest();
+        return request.getSession(false);
+    }
+
+    private HttpServletRequest getHttpServletRequest() {
+        ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
+        return servletWebRequest.getContainerRequest();
+    }
+
     private IModel<String> createCssUrlModel() {
         IModel<String> customModel = createCustomCssUrlModel();
         if (StringUtils.hasText(customModel.getObject())) {
@@ -48,14 +89,14 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
     }
 
     @Override
-       protected void configureResponse(WebResponse response) {
-           super.configureResponse(response);
-           response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
+    protected void configureResponse(WebResponse response) {
+        super.configureResponse(response);
+        response.setHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
 
-           //for IE
-           response.setHeader("Expires", "-1");
-           response.setHeader("Pragma", "no-cache");
-       }
+        //for IE
+        response.setHeader("Expires", "-1");
+        response.setHeader("Pragma", "no-cache");
+    }
 
     protected boolean isSubsystemInfoShown() {
         return true;

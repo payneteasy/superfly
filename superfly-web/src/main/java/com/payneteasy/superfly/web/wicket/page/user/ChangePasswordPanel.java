@@ -4,6 +4,7 @@ import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -41,8 +42,10 @@ public abstract class ChangePasswordPanel extends Panel {
                 new Model<UIUserCheckPassword>(user)) {
                    @Override
                     public void onSubmit() {
-                        userService.changeTempPassword(user.getUsername(), user.getPassword());
-                        onPasswordChanged();
+                       if (validateCsrf()) {
+                           userService.changeTempPassword(user.getUsername(), user.getPassword());
+                           onPasswordChanged();
+                       }
                     }
         };
 
@@ -65,11 +68,17 @@ public abstract class ChangePasswordPanel extends Panel {
                         password2Field));
         form.add(new PasswordInputValidator(getCurrentUserName(), password1Field, userService));
 
+        form.add(createCsrfInput("_csrf"));
+
         Button submitButton = new Button("change");
         submitButton.setOutputMarkupId(true);
         submitButton.setMarkupId("change-button");
         form.add(submitButton);
     }
+
+    protected abstract Component createCsrfInput(String aMarkupId);
+
+    protected abstract boolean validateCsrf();
 
     protected abstract String getCurrentUserName();
 

@@ -40,19 +40,22 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     public SSOLoginPasswordPage() {
         final SSOLoginData loginData = SSOUtils.getSsoLoginData(this);
         if (loginData == null) {
-            RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<String>("No login data found")));
+            RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<>("No login data found")));
         }
 
         final LoginBean loginBean = new LoginBean();
         Form<Void> form = new Form<Void>("form") {
             @Override
             protected void onSubmit() {
-                doOnSubmit(loginBean, loginData);
+                if (validateCsrfToken()) {
+                    doOnSubmit(loginBean, loginData);
+                }
             }
         };
         add(form);
         form.add(new TextField<String>("username", new PropertyModel<String>(loginBean, "username")));
         form.add(new PasswordTextField("password", new PropertyModel<String>(loginBean, "password")));
+        form.add(createCsrfHiddenInput("_csrf"));
 
         errorMessageLabel = new Label("message", errorMessageModel);
         errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));

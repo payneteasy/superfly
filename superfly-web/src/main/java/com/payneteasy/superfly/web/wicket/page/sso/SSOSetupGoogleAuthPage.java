@@ -5,7 +5,6 @@ import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.web.wicket.component.otp.GoogleAuthSetupPanel;
 import org.apache.wicket.markup.html.basic.Label;
@@ -42,16 +41,19 @@ public class SSOSetupGoogleAuthPage extends BaseSSOPage {
         Form<Void> form = new Form<Void>("form") {
             @Override
             protected void onSubmit() {
-                try {
-                    hotpService.persistOtpKey(OTPType.GOOGLE_AUTH, loginData.getUsername(), masterKey.getObject());
-                } catch (SsoDecryptException e) {
-                    error("Please try again");
+                if (validateCsrfToken()) {
+                    try {
+                        hotpService.persistOtpKey(OTPType.GOOGLE_AUTH, loginData.getUsername(), masterKey.getObject());
+                    } catch (SsoDecryptException e) {
+                        error("Please try again");
+                    }
+                    doOnSubmit();
                 }
-                doOnSubmit();
             }
         };
         add(form);
         form.add(new GoogleAuthSetupPanel("otp", loginData.getSubsystemTitle(), loginData.getUsername(), masterKey));
+        form.add(createCsrfHiddenInput("_csrf"));
 
         errorMessageLabel = new Label("message", errorMessageModel);
         errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));
@@ -65,7 +67,6 @@ public class SSOSetupGoogleAuthPage extends BaseSSOPage {
     }
 
     private void doOnSubmit() {
-
         getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
     }
 }

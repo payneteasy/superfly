@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import org.easymock.EasyMock;
 import org.junit.Before;
 
@@ -20,6 +21,7 @@ public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
     protected FilterChain chain;
     protected HttpSession session;
     protected Filter filter;
+    protected CsrfValidator csrfValidator;
 
     @Before
     public void initFilterTest() {
@@ -30,6 +32,7 @@ public abstract class AbstractFilterTest extends AbstractSSOUserAwareTest {
         expect(response.isCommitted()).andReturn(false).anyTimes();
         chain = EasyMock.createMock(FilterChain.class);
         session = EasyMock.createMock(HttpSession.class);
+        csrfValidator = EasyMock.createMock(CsrfValidator.class);
     }
 
     protected void expectRedirectTo(String url) throws IOException {

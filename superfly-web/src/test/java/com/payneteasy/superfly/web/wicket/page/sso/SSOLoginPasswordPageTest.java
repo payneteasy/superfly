@@ -6,6 +6,7 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -28,6 +29,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
     private SettingsService settingsService;
+    private CsrfValidator csrfValidator;
 
     @Before
     public void setUp() {
@@ -35,9 +37,14 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
         settingsService = EasyMock.createStrictMock(SettingsService.class);
+        csrfValidator = EasyMock.createStrictMock(CsrfValidator.class);
 
         expect(subsystemService.getSubsystemByName("test-subsystem"))
                         .andReturn(createSubsystem()).anyTimes();
+
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("123").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
     }
 
     @Override
@@ -53,6 +60,9 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         }
         if (type == SettingsService.class) {
             return settingsService;
+        }
+        if (type == CsrfValidator.class) {
+            return csrfValidator;
         }
         return super.getBean(type);
     }
@@ -77,14 +87,15 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
         UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
-        expect(userForDescription.isOtpOptional()).andReturn(Boolean.TRUE).anyTimes();
+        expect(userForDescription.getOtpType()).andReturn(OTPType.NONE).anyTimes();
+        expect(userForDescription.isOtpOptional()).andReturn(Boolean.FALSE).anyTimes();
         expect(userService.getUserForDescription("known-user"))
                 .andReturn(userForDescription).anyTimes();
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
-        replay(userForDescription, userService, sessionService, subsystemService, settingsService);
+        replay(userForDescription, userService, sessionService, subsystemService, settingsService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -96,11 +107,15 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
-        verify(userService, sessionService, subsystemService, settingsService);
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
     }
 
     @Test
     public void testSuccessAndHOTP() {
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("1234").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
+
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.SUCCESS);
         UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
@@ -108,7 +123,11 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         expect(userForDescription.getOtpType()).andReturn(OTPType.GOOGLE_AUTH).anyTimes();
         expect(userService.getUserForDescription("known-user"))
                 .andReturn(userForDescription).anyTimes();
-        replay(userForDescription, userService, settingsService, subsystemService);
+        expect(userService.getGoogleAuthMasterKeyByUsername("known-user"))
+                .andReturn("123").anyTimes();
+
+
+        replay(userForDescription, userService, settingsService, subsystemService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -120,14 +139,14 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         assertEquals("known-user", tester.getSession().getSsoLoginData().getUsername());
 
-        verify(userService, settingsService, subsystemService);
+        verify(userService, settingsService, subsystemService, csrfValidator);
     }
 
     @Test
     public void testFailure() {
         expect(userService.checkUserCanLoginWithThisPassword("unknown-user", "password", "test-subsystem"))
                 .andReturn(UserLoginStatus.FAILED);
-        replay(userService);
+        replay(userService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -139,14 +158,17 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
         tester.assertLabel("form:message", "The username or password you entered is incorrect or user is locked.");
 
-        verify(userService);
+        verify(userService, csrfValidator);
     }
 
     @Test
     public void testTempPassword() {
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("1234").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "expired-password", "test-subsystem"))
                 .andReturn(UserLoginStatus.TEMP_PASSWORD);
-        replay(userService);
+        replay(userService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(SSOLoginPasswordPage.class);
@@ -157,6 +179,6 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         form.submit();
         tester.assertRenderedPage(SSOChangePasswordPage.class);
 
-        verify(userService);
+        verify(userService, csrfValidator);
     }
 }

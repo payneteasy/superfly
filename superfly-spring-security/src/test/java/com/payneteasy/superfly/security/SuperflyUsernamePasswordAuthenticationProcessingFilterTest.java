@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,7 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
     public void setUp() {
         SuperflyUsernamePasswordAuthenticationProcessingFilter procFilter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
         procFilter.setAuthenticationManager(authenticationManager);
+        procFilter.setCsrfValidator(csrfValidator);
         procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
         procFilter.setSubsystemIdentifier("my-subsystem");
         procFilter.afterPropertiesSet();
@@ -45,14 +47,19 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
                         return new UsernamePasswordCheckedToken(createSSOUserWithOneRole());
                     }
                 });
+
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().once();
+
         // expecting a redirect to a success
+
         expectRedirectTo("/");
-        replay(request, response, chain, authenticationManager);
+        replay(request, response, chain, authenticationManager, csrfValidator);
 
         filter.doFilter(request, response, chain);
         assertTrue(SecurityContextHolder.getContext().getAuthentication() instanceof UsernamePasswordCheckedToken);
 
-        verify(request, response, chain, authenticationManager);
+        verify(request, response, chain, authenticationManager, csrfValidator);
     }
 
     @Test
@@ -62,6 +69,10 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
         // expecting authentication attempt
         expect(authenticationManager.authenticate(anyObject(UsernamePasswordAuthRequestInfoAuthenticationToken.class)))
                 .andThrow(new BadCredentialsException("must fail here"));
+
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().once();
+
         // expecting a redirect to a failure page
         expectRedirectTo("/login-failed");
         replay(request, response, chain, authenticationManager);

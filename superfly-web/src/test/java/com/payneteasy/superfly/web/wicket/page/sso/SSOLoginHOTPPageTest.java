@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -22,15 +23,21 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     private InternalSSOService internalSSOService;
     private SessionService sessionService;
     private SubsystemService subsystemService;
+    private CsrfValidator csrfValidator;
 
     @Before
     public void setUp() {
         internalSSOService = EasyMock.createStrictMock(InternalSSOService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
+        csrfValidator = EasyMock.createStrictMock(CsrfValidator.class);
 
         expect(subsystemService.getSubsystemByName("test-subsystem"))
                 .andReturn(createSubsystem()).anyTimes();
+
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("123").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
     }
 
     @Override
@@ -43,6 +50,9 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         }
         if (type == SubsystemService.class) {
             return subsystemService;
+        }
+        if (type == CsrfValidator.class) {
+            return csrfValidator;
         }
         return super.getBean(type);
     }
@@ -62,7 +72,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
-        replay(internalSSOService, sessionService, subsystemService);
+        replay(internalSSOService, sessionService, subsystemService, csrfValidator);
 
         SSOLoginData loginData = createLoginData();
         tester.getSession().setSsoLoginData(loginData);
@@ -74,7 +84,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
-        verify(internalSSOService, sessionService, subsystemService);
+        verify(internalSSOService, sessionService, subsystemService, csrfValidator);
     }
 
     private UISubsystem createSubsystem() {
@@ -95,7 +105,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     public void testFailure() {
         expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "222222"))
                         .andReturn(false);
-        replay(internalSSOService);
+        replay(internalSSOService, csrfValidator);
 
         tester.getSession().setSsoLoginData(createLoginData());
         tester.startPage(SSOLoginHOTPPage.class);
@@ -106,6 +116,6 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         tester.assertLabel("form:message", "One-time password value did not match.");
 
-        verify(internalSSOService);
+        verify(internalSSOService, csrfValidator);
     }
 }

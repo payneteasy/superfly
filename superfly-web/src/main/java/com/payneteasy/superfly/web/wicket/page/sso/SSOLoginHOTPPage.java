@@ -40,11 +40,14 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
         Form<Void> form = new Form<Void>("form") {
             @Override
             protected void onSubmit() {
-                doOnSubmit(loginBean, loginData);
+                if (validateCsrfToken()) {
+                    doOnSubmit(loginBean, loginData);
+                }
             }
         };
         add(form);
         form.add(new PasswordTextField("hotp", new PropertyModel<String>(loginBean, "hotp")));
+        form.add(createCsrfHiddenInput("_csrf"));
 
         errorMessageLabel = new Label("message", errorMessageModel);
         errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));

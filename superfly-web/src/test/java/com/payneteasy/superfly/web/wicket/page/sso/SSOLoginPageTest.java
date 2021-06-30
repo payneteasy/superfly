@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
@@ -23,11 +24,17 @@ import static org.junit.Assert.assertEquals;
 public class SSOLoginPageTest extends AbstractPageTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
+    private CsrfValidator csrfValidator;
 
     @Before
     public void setUp() {
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
+        csrfValidator = EasyMock.createStrictMock(CsrfValidator.class);
+
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("123").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
     }
 
     @Override
@@ -36,6 +43,8 @@ public class SSOLoginPageTest extends AbstractPageTest {
             return sessionService;
         } else if (SubsystemService.class == type) {
             return subsystemService;
+        } else if (type == CsrfValidator.class) {
+            return csrfValidator;
         }
         return super.getBean(type);
     }
@@ -45,7 +54,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         UISubsystem subsystem = createTestSubsystem();
         expect(subsystemService.getSubsystemByName("test-subsystem"))
                 .andReturn(subsystem).anyTimes();
-        replay(subsystemService);
+        replay(subsystemService, csrfValidator);
         tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
             put("subsystemIdentifier", "test-subsystem");
             put("targetUrl", "/target");
@@ -54,7 +63,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         assertEquals("the subsystem", tester.getSession().getSsoLoginData().getSubsystemTitle());
         assertEquals("subsystem-url", tester.getSession().getSsoLoginData().getSubsystemUrl());
 
-        verify(subsystemService);
+        verify(subsystemService, csrfValidator);
     }
 
     private UISubsystem createTestSubsystem() {
@@ -73,7 +82,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         expect(subsystemService.getSubsystemByName("test-subsystem"))
                         .andReturn(createTestSubsystem()).anyTimes();
 
-        replay(sessionService, subsystemService);
+        replay(sessionService, subsystemService, csrfValidator);
 
         tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
         tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
@@ -82,7 +91,7 @@ public class SSOLoginPageTest extends AbstractPageTest {
         }}));
         tester.assertRenderedPage(SSOLoginPasswordPage.class);
 
-        verify(sessionService, subsystemService);
+        verify(sessionService, subsystemService, csrfValidator);
     }
 
     @Test

@@ -1,11 +1,8 @@
 package com.payneteasy.superfly.security.csrf;
 
 import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
-import com.sun.tools.javac.util.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,7 +32,9 @@ public class CsrfValidatorImpl implements CsrfValidator {
 
     @Override
     public void validateToken(HttpServletRequest request) {
-        Assert.checkNonNull(request);
+        if (request == null) {
+            throw new IllegalStateException("Cannot get request attribute - request is null!");
+        }
         HttpSession session = request.getSession(false);
         if (session == null) {
             logger.warn("No session");
