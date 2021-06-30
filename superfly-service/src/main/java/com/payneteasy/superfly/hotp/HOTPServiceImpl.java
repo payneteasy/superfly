@@ -1,11 +1,13 @@
 package com.payneteasy.superfly.hotp;
 
-import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
-import com.payneteasy.superfly.common.utils.CryptoHelper;
+import com.payneteasy.superfly.crypto.CryptoService;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.crypto.exception.DecryptException;
+import com.payneteasy.superfly.crypto.exception.EncryptException;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.email.RuntimeMessagingException;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -28,8 +30,6 @@ import java.io.IOException;
 public class HOTPServiceImpl implements HOTPService {
 
     private static final Logger logger = LoggerFactory.getLogger(HOTPServiceImpl.class);
-    private static final String GOOGLE_AUTH_OTP_SECRET = "GOOGLE_AUTH_OTP_SECRET";
-    private static final String GOOGLE_AUTH_OTP_SALT = "GOOGLE_AUTH_OTP_SALT";
 
     private final ThreadLocal<GoogleAuthenticator> googleAuthenticator = ThreadLocal.withInitial(GoogleAuthenticator::new);
 
@@ -37,6 +37,7 @@ public class HOTPServiceImpl implements HOTPService {
     private HOTPProvider hotpProvider;
     private PublicKeyCrypto publicKeyCrypto;
     private UserService userService;
+    private CryptoService cryptoService;
 
     @Required
     public void setEmailService(EmailService emailService) {
@@ -56,6 +57,11 @@ public class HOTPServiceImpl implements HOTPService {
     @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Required
+    public void setCryptoService(CryptoService cryptoService) {
+        this.cryptoService = cryptoService;
     }
 
     public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
@@ -94,11 +100,12 @@ public class HOTPServiceImpl implements HOTPService {
         if (masterKeyEncrypt == null) {
             throw new SsoDecryptException("GA master key for " + username + " is null");
         }
-        String masterKey = CryptoHelper.decrypt(
-                masterKeyEncrypt,
-                GOOGLE_AUTH_OTP_SECRET,
-                GOOGLE_AUTH_OTP_SALT
-        );
+        String masterKey;
+        try {
+            masterKey = cryptoService.decrypt(masterKeyEncrypt);
+        } catch (DecryptException e) {
+            throw new SsoDecryptException(e);
+        }
         return googleAuthenticator.get().authorize(masterKey, verificationCode);
     }
 
@@ -129,25 +136,29 @@ public class HOTPServiceImpl implements HOTPService {
     public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
         userService.updateUserOtpType(username, otpType.code());
         switch (otpType) {
-            case NONE:
-                break;
             case GOOGLE_AUTH:
                 encryptAndPersistMasterKey(otpType, key, username);
                 break;
+            case NONE:
+            default:
+                break;
+
         }
     }
 
     private void encryptAndPersistMasterKey(OTPType otpType, String key, String username) throws SsoDecryptException {
         switch (otpType) {
             case GOOGLE_AUTH:
-                String encryptKey = CryptoHelper.encrypt(
-                        key,
-                        GOOGLE_AUTH_OTP_SECRET,
-                        GOOGLE_AUTH_OTP_SALT
-                );
+                String encryptKey = null;
+                try {
+                    encryptKey = cryptoService.encrypt(key);
+                } catch (EncryptException e) {
+                    throw new SsoDecryptException(e);
+                }
                 userService.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
                 break;
             case NONE:
+            default:
                 break;
         }
     }

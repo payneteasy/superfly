@@ -12,6 +12,12 @@
     <bean id="mfaMethod" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-mfa-method"/>
     </bean>
+    <bean id="cryptoSalt" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+        <property name="initParamName" value="superfly-cryptoSalt"/>
+    </bean>
+    <bean id="cryptoSecret" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+        <property name="initParamName" value="superfly-cryptoSecret"/>
+    </bean>
     <bean id="salt" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-salt"/>
     </bean>

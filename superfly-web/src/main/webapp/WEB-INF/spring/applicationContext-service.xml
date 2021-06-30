@@ -208,6 +208,11 @@
         <property name="resetPasswordStrategy" ref="resetPasswordStrategy"/>
     </bean>
 
+    <bean id="cryptoService" class="com.payneteasy.superfly.crypto.CryptoServiceImpl">
+        <property name="cryptoSecret" ref="cryptoSecret" />
+        <property name="cryptoSalt" ref="cryptoSalt" />
+    </bean>
+
     <bean id="resetPasswordStrategy"
         class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
         <property name="userService" ref="userService" />
@@ -242,5 +247,6 @@
         <property name="hotpProvider" ref="hotpProvider"/>
         <property name="publicKeyCrypto" ref="publicKeyCrypto"/>
         <property name="userService" ref="userService"/>
+        <property name="cryptoService" ref="cryptoService"/>
     </bean>
 </beans>
