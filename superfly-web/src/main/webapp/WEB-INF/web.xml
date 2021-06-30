@@ -47,14 +47,14 @@
 
     <context-param>
         <param-name>superfly-cryptoSecret</param-name>
-        <param-value>GOOGLE_AUTH_OTP_SECRET</param-value>
+        <param-value>lsjdflsdifusodf87s8df78391231f</param-value>
     </context-param>
     <context-param>
         <param-name>superfly-cryptoSalt</param-name>
-        <param-value>GOOGLE_AUTH_OTP_SALT</param-value>
+        <param-value>ssudyfsudifs8d7fsd8f6s8df72y2uy3tu23f48</param-value>
     </context-param>
 
-    <!-- multi-factor authentication-->
+    <!-- multi-factor authentication, work only with superfly-policy=pcidss-->
     <context-param>
         <param-name>superfly-mfa-method</param-name> <!-- Force users to use this OTP type -->
         <param-value>google_auth</param-value> <!-- none or google_auth -->
