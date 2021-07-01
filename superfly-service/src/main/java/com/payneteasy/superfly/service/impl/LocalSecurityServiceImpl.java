@@ -84,8 +84,13 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
             loggerSink.info(logger, "LOCAL_LOGIN", true, username);
             return result;
         }
-        if (session == null || session.getRoles().isEmpty()) {
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
+
+        if (session == null) {
+            logger.warn("Login failed. No session for user <{}>", username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.SESSION);
+        } else if (session.getRoles().isEmpty()) {
+            logger.warn("Login failed. There are no roles for user <{}>", username);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.ROLES);
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
         return null;

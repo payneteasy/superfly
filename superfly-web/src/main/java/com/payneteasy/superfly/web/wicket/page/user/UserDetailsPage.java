@@ -9,6 +9,8 @@ import com.payneteasy.superfly.model.ui.user.UIUserDetails;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -140,7 +142,7 @@ public class UserDetailsPage extends BasePage {
         switchLockedStatusLink.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
             @Override
             public String getObject() {
-                return uiUserDetailsIModel.getObject().isAccountLocked()?"btn-warning":"btn-danger";
+                return uiUserDetailsIModel.getObject().isAccountLocked()?"btn-success":"btn-danger";
             }
         }, " "));
         switchLockedStatusLink.add(new Label("switch-info", new AbstractReadOnlyModel<String>() {
@@ -150,6 +152,23 @@ public class UserDetailsPage extends BasePage {
             }
         }));
         add(switchLockedStatusLink);
+        add(new AjaxLink<Void>("reset-otp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                userService.persistGoogleAuthMasterKeyForUsername(uiUserDetailsIModel.getObject().getUsername(), null);
+                info("Reset OTP key was successful");
+                target.add(getFeedbackPanel());
+            }
+        });
+        final PageParameters actionsParameters = new PageParameters();
+        actionsParameters.set("userId", String.valueOf(user.getId()));
+        add(new BookmarkablePageLink<EditUserPage>("edit-user", EditUserPage.class, actionsParameters));
+        add(new Link<String>("reset-password-link") {
+            @Override
+            public void onClick() {
+                setResponsePage(ResetPasswordUserPage.class, actionsParameters);
+            }
+        });
     }
 
     @Override

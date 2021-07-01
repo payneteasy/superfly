@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
+import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.page.sso.SSOLoginErrorPage;
@@ -70,9 +71,11 @@ public class ChangePasswordPage extends BasePage {
             csrfValidator.validateToken(getHttpServletRequest());
             return true;
         } catch (Exception e) {
-            getRequestCycle().setResponsePage(getApplication().getHomePage());
-            WebSession.get().invalidate();
-            SecurityContextHolder.clearContext();
+            if (e instanceof CsrfLoginTokenException) {
+                error(((CsrfLoginTokenException)e).getPublicMsg());
+            } else {
+                error("Please refresh page and try again");
+            }
             return false;
         }
     }

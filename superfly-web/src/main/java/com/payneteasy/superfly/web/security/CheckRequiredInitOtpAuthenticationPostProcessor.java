@@ -20,41 +20,39 @@ public class CheckRequiredInitOtpAuthenticationPostProcessor implements
         AuthenticationPostProcessor {
 
     private LocalSecurityService localSecurityService;
-    private OTPType multiFactorAuthMethod;
-    private String policyName;
+    private OTPType forceMultiFactorAuthMethod;
+    private boolean enableMultiFactorAuth;
 
     public void setLocalSecurityService(LocalSecurityService localSecurityService) {
         this.localSecurityService = localSecurityService;
     }
 
-    public void setMultiFactorAuthMethod(String multiFactorAuthMethod) {
-        this.multiFactorAuthMethod = OTPType.strictFromCode(multiFactorAuthMethod);
+    public void setForceMultiFactorAuthMethod(String forceMultiFactorAuthMethod) {
+        this.forceMultiFactorAuthMethod = OTPType.fromCode(forceMultiFactorAuthMethod);
     }
 
-    public void setPolicyName(String policyName) {
-        this.policyName = policyName;
-    }
-
-    @PostConstruct
-    protected void init() {
-        if (policyName.equals("pcidss") && multiFactorAuthMethod == OTPType.NONE) {
-            throw new IllegalStateException("For pcidss, you must set context param 'superfly-mfa-method' different than 'none'");
-        }
+    public void setEnableMultiFactorAuth(boolean enableMultiFactorAuth) {
+        this.enableMultiFactorAuth = enableMultiFactorAuth;
     }
 
     public Authentication postProcess(Authentication auth) {
         CompoundAuthentication compoundAuthentication = (CompoundAuthentication) auth;
         if (compoundAuthentication != null) {
+            if (!enableMultiFactorAuth) {
+                return compoundAuthentication.getLatestReadyAuthentication();
+            }
             Authentication lastAuth = compoundAuthentication.getLatestReadyAuthentication();
             OtpUserDescription user = localSecurityService.getOtpUserForDescription(lastAuth.getName());
 
             if (isUserOtpDifferentThanSystemOtp(user)) {
-                compoundAuthentication.addReadyAuthentication(new LocalNeedOTPToken(lastAuth.getName(), multiFactorAuthMethod));
+                compoundAuthentication.addReadyAuthentication(new LocalNeedOTPToken(lastAuth.getName(), forceMultiFactorAuthMethod));
             } else if (isUserOtpRequiredButNotInit(user)) {
                 //For example, when reset otp user's master key
                 compoundAuthentication.addReadyAuthentication(
                         new LocalNeedOTPToken(lastAuth.getName(), user.getOtpType())
                 );
+            } else if (user.getOtpType() == OTPType.NONE) {
+                return lastAuth;
             }
         }
 
@@ -66,7 +64,7 @@ public class CheckRequiredInitOtpAuthenticationPostProcessor implements
     }
 
     private boolean isUserOtpDifferentThanSystemOtp(OtpUserDescription userForDescription) {
-        return multiFactorAuthMethod != OTPType.NONE
-                && multiFactorAuthMethod != userForDescription.getOtpType();
+        return forceMultiFactorAuthMethod != OTPType.NONE
+                && forceMultiFactorAuthMethod != userForDescription.getOtpType();
     }
 }

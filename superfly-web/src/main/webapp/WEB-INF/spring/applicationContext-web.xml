@@ -9,8 +9,11 @@
     <bean id="policyName" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-policy"/>
     </bean>
-    <bean id="mfaMethod" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
-        <property name="initParamName" value="superfly-mfa-method"/>
+    <bean id="forceMfaMethod" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+        <property name="initParamName" value="superfly-mfa-method-force"/>
+    </bean>
+    <bean id="mfaEnabled" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
+        <property name="initParamName" value="superfly-mfa-enabled"/>
     </bean>
     <bean id="cryptoSalt" class="org.springframework.web.context.support.ServletContextParameterFactoryBean">
         <property name="initParamName" value="superfly-cryptoSalt"/>

@@ -6,5 +6,5 @@ package com.payneteasy.superfly.model;
  * @author Roman Puchkovskiy
  */
 public enum LockoutType {
-    PASSWORD, HOTP;
+    SESSION, ROLES, PASSWORD, HOTP;
 }

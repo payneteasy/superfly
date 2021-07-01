@@ -91,8 +91,8 @@
 
     <bean id="checkRequiredInitOtpPostProcessor" class="com.payneteasy.superfly.web.security.CheckRequiredInitOtpAuthenticationPostProcessor">
         <property name="localSecurityService" ref="localSecurityService"/>
-        <property name="multiFactorAuthMethod" ref="mfaMethod"/>
-        <property name="policyName" ref="policyName"/>
+        <property name="forceMultiFactorAuthMethod" ref="forceMfaMethod"/>
+        <property name="enableMultiFactorAuth" ref="mfaEnabled"/>
     </bean>
     
     <bean id="passwordAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
@@ -144,6 +144,7 @@
         <property name="allowSemicolon" value="true"/>
     </bean>
     <sec:http-firewall ref="customHttpFirewall"/>
+
 
     <!--
         <bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">

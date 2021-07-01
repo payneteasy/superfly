@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
+import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -59,7 +60,11 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
             getRequestCycle().setResponsePage(getApplication().getHomePage());
             WebSession.get().invalidate();
             SecurityContextHolder.clearContext();
-            setResponsePage(new SSOLoginErrorPage(new Model<>("No login data found")));
+            if (e instanceof CsrfLoginTokenException) {
+                setResponsePage(new SSOLoginErrorPage(new Model<>(((CsrfLoginTokenException)e).getPublicMsg())));
+            } else {
+                setResponsePage(new SSOLoginErrorPage(new Model<>("No login data found")));
+            }
             return false;
         }
     }

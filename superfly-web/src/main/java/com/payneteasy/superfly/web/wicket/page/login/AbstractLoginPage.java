@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
+import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebPage;
@@ -34,6 +35,8 @@ public abstract class AbstractLoginPage extends WebPage {
         if (ex != null) {
             if (ex instanceof BadOTPValueException) {
                 result = "The one-time password value you entered is incorrect.";
+            } else if (ex instanceof CsrfLoginTokenException) {
+                result = ((CsrfLoginTokenException) ex).getPublicMsg();
             } else {
                 result = "The username or password you entered is incorrect or user is locked.";
             }

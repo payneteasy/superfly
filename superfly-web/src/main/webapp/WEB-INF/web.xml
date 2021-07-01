@@ -16,7 +16,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            /WEB-INF/spring/applicationContext-security-!policy!.xml
+            /WEB-INF/spring/applicationContext-security.xml
             /WEB-INF/spring/applicationContext-common.xml
             /WEB-INF/spring/applicationContext-datasource.xml
             /WEB-INF/spring/applicationContext-dao.xml
@@ -42,7 +42,7 @@
 
     <context-param>
         <param-name>superfly-policy</param-name>
-        <param-value>none</param-value> <!-- none or pcidss -->
+        <param-value>pcidss</param-value> <!-- none or pcidss -->
     </context-param>
 
     <context-param>
@@ -54,10 +54,15 @@
         <param-value>ssudyfsudifs8d7fsd8f6s8df72y2uy3tu23f48</param-value>
     </context-param>
 
-    <!-- multi-factor authentication, work only with superfly-policy=pcidss-->
+    <!-- multi-factor authentication -->
     <context-param>
-        <param-name>superfly-mfa-method</param-name> <!-- Force users to use this OTP type -->
-        <param-value>google_auth</param-value> <!-- none or google_auth -->
+        <param-name>superfly-mfa-enabled</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <!-- Force users to use this MFA method, if superfly-mfa-enabled = true -->
+    <context-param>
+        <param-name>superfly-mfa-method-force</param-name>
+        <param-value>none</param-value> <!-- none or google_auth -->
     </context-param>
 
     <!-- This is for constant salt generator -->
@@ -72,7 +77,7 @@
     </context-param>
 
     <!--
-        ### Deprecated, use superfly-mfa-force-method for multi-factor authentication
+        ### Deprecated, use superfly-mfa-method-force for multi-factor authentication
 
         Modification of ANY of HOTP-related parameters here (except for
         lookahead window size) must be followed by regeneration of user tokens

@@ -43,25 +43,31 @@ public class CsrfValidatorImpl implements CsrfValidator {
         HttpSession session = request.getSession(false);
         if (session == null) {
             logger.warn("No session");
-            throw new CsrfLoginTokenException("No session.");
+            throw new CsrfLoginTokenException("No session.", "Something was wrong with your session. Please try again.");
         }
 
         String token = (String) session.getAttribute(ATTRIBUTE_NAME);
 
         if (token == null) {
             logger.error("No {} value in session", ATTRIBUTE_NAME);
-            throw new CsrfLoginTokenException("No any CSRF token in the session. Please check server config.");
+            throw new CsrfLoginTokenException(
+                    "No any CSRF token in the session. Please check server config.",
+                    "Missing login token. This can be caused by ad- or script-blocking plugins, " +
+                            "but also by the browser itself if it's not allowed to set cookies.\n");
         }
 
         String csrf = request.getParameter("_csrf");
         if (csrf == null || csrf.isEmpty()) {
             logger.error("Field _csrf is empty in request");
-            throw new CsrfLoginTokenException("Missing CSRF token. This can be caused by ad- or script-blocking plugins, but also by the browser itself if it's not allowed to set cookies.");
+            throw new CsrfLoginTokenException("Missing CSRF token. This can be caused by ad- or script-blocking plugins, but also by the browser itself if it's not allowed to set cookies.",
+                    "Missing login token. This can be caused by ad- or script-blocking plugins, " +
+                            "but also by the browser itself if it's not allowed to set cookies.\n");
         }
 
         if (!csrf.equals(token)) {
             logger.error("CSRF is invalid. Expected {} but was {}", token, csrf);
-            throw new CsrfLoginTokenException("Invalid CSRF token.");
+            throw new CsrfLoginTokenException("Invalid CSRF token.",
+                    "Invalid login token. This can be caused if you trying to login with multiple browser tabs.");
         }
     }
 }
