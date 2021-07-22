@@ -104,10 +104,13 @@ public interface InternalSSOService {
     /**
      * Authenticates using HOTP (HMAC-based One Time Password).
      *
+     * Deprecated. Use the {@link #authenticateByOtpType(OTPType, String, String)} authenticateByOtpType} method.
+     *
      * @param username    username
      * @param hotp        HOTP
      * @return authentication result
      */
+    @Deprecated
     boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
 
     void updateUserOtpType(String username, String otpType);

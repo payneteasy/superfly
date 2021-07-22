@@ -16,44 +16,46 @@
 <div id="s-wrap-container">
     <!--HEADER NAVBAR-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <!--BRAND-->
-        <a class="navbar-brand" href="#" wicket:id="self-link">SUPERFLY</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <!--MENU-->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item" wicket:id="list-item-users"><a class="nav-link" href="#"
-                                                                    wicket:id="users">Users</a></li>
-                <li class="nav-item" wicket:id="list-item-subsystems"><a class="nav-link" href="#"
-                                                                         wicket:id="subsystems">Subsystems</a></li>
-                <li class="nav-item" wicket:id="list-item-actions"><a class="nav-link" href="#" wicket:id="actions">Actions</a>
-                </li>
-                <li class="nav-item" wicket:id="list-item-groups"><a class="nav-link" href="#"
-                                                                     wicket:id="groups">Groups</a></li>
-                <li class="nav-item" wicket:id="list-item-roles"><a class="nav-link" href="#"
-                                                                    wicket:id="roles">Roles</a></li>
-                <li class="nav-item" wicket:id="list-item-sessions"><a class="nav-link" href="#" wicket:id="sessions">Sessions</a>
-                </li>
-                <li class="nav-item" wicket:id="list-item-smtp"><a class="nav-link" href="#" wicket:id="smtp">SMTP
-                    servers</a></li>
-            </ul>
+        <div class="container-fw d-flex">
+            <!--BRAND-->
+            <a class="navbar-brand" href="#" wicket:id="self-link">SUPERFLY</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!--MENU-->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" wicket:id="list-item-users"><a class="nav-link" href="#"
+                                                                        wicket:id="users">Users</a></li>
+                    <li class="nav-item" wicket:id="list-item-subsystems"><a class="nav-link" href="#"
+                                                                             wicket:id="subsystems">Subsystems</a></li>
+                    <li class="nav-item" wicket:id="list-item-actions"><a class="nav-link" href="#" wicket:id="actions">Actions</a>
+                    </li>
+                    <li class="nav-item" wicket:id="list-item-groups"><a class="nav-link" href="#"
+                                                                         wicket:id="groups">Groups</a></li>
+                    <li class="nav-item" wicket:id="list-item-roles"><a class="nav-link" href="#"
+                                                                        wicket:id="roles">Roles</a></li>
+                    <li class="nav-item" wicket:id="list-item-sessions"><a class="nav-link" href="#" wicket:id="sessions">Sessions</a>
+                    </li>
+                    <li class="nav-item" wicket:id="list-item-smtp"><a class="nav-link" href="#" wicket:id="smtp">SMTP
+                        servers</a></li>
+                </ul>
 
-            <form class="form-inline my-2 my-lg-0">
-            <!--USER INFO  -->
-            <div wicket:id="user-container">
-                <span wicket:id="user-name" class="text-white">Admin</span>
-                <span class="text-muted px-1">|</span>
-                <a class="btn btn-sm btn-danger" href="j_spring_security_logout"><i class="icon-off"></i> Logout</a>
+                <form class="form-inline my-2 my-lg-0">
+                <!--USER INFO  -->
+                <div wicket:id="user-container">
+                    <span wicket:id="user-name" class="text-white">Admin</span>
+                    <span class="text-muted px-1">|</span>
+                    <a class="btn btn-sm btn-danger" href="j_spring_security_logout"><i class="icon-off"></i> Logout</a>
+                </div>
+                </form>
             </div>
-            </form>
         </div>
     </nav>
 
     <!--BODY-->
-    <div class="container-fluid py-2">
+    <div class="container-fluid container-fw py-4">
         <span wicket:id="feedback"></span>
         <legend wicket:id="page-title">Hello there!</legend>
 

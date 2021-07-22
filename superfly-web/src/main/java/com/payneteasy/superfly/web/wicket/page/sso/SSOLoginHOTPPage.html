@@ -19,6 +19,7 @@
             <label class="superfly-form-label" for="hotp">One-time password value</label>
             <input class="superfly-form-input-text" id="hotp" wicket:id="hotp" type="password" autocomplete="off"/>
         </div>
+        <input wicket:id="_csrf" type="hidden" name="_csrf"/>
         <div class="superfly-reason" wicket:id="message">[error message]</div>
         <div class="superfly-button-row">
             <input class="superfly-button" type="submit" value="Login"/>

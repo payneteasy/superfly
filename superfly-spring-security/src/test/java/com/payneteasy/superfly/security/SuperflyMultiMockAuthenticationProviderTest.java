@@ -2,7 +2,7 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
@@ -43,7 +43,7 @@ public class SuperflyMultiMockAuthenticationProviderTest extends
     @Test
     public void testSupports() {
         assertTrue(provider.supports(UsernamePasswordAuthRequestInfoAuthenticationToken.class));
-        assertTrue(provider.supports(CheckHOTPToken.class));
+        assertTrue(provider.supports(CheckOTPToken.class));
         assertTrue(provider.supports(SSOUserAndSelectedRoleAuthenticationToken.class));
         assertFalse(provider.supports(UsernamePasswordAuthenticationToken.class));
     }
@@ -57,12 +57,12 @@ public class SuperflyMultiMockAuthenticationProviderTest extends
 
     @Test
     public void testHotpSuccess() {
-        Authentication auth = provider.authenticate(new CompoundAuthentication(new CheckHOTPToken(createSSOUser(2), "123456")));
+        Authentication auth = provider.authenticate(new CompoundAuthentication(new CheckOTPToken(createSSOUser(2), "123456")));
         assertNotNull(auth);
         assertTrue(auth instanceof CompoundAuthentication);
 
         // short-circuiting
-        auth = provider.authenticate(new CheckHOTPToken(createSSOUserWithOneRole(), "123456"));
+        auth = provider.authenticate(new CheckOTPToken(createSSOUserWithOneRole(), "123456"));
         assertNotNull(auth);
         assertTrue(auth instanceof SSOUserAuthenticationToken);
     }

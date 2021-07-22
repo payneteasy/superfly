@@ -3,7 +3,7 @@ package com.payneteasy.superfly.security;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.authentication.CheckOTPToken;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.access.intercept.RunAsUserToken;
@@ -52,7 +52,7 @@ public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider
     }
 
     protected Authentication createAuthentication(SSOUser ssoUser) {
-        return new HOTPCheckedToken(ssoUser);
+        return new OTPCheckedToken(ssoUser);
     }
 
 }

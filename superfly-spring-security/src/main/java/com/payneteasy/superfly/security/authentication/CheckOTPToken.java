@@ -1,26 +1,27 @@
 package com.payneteasy.superfly.security.authentication;
 
-import com.payneteasy.superfly.api.SSOUser;
 import org.springframework.security.core.Authentication;
 
+import com.payneteasy.superfly.api.SSOUser;
+
 /**
- * {@link Authentication} which is a request to check an OTP.
+ * {@link Authentication} which is a request to check an HOTP.
  * 
- * @author Igor Vasilyev
+ * @author Roman Puchkovskiy
  */
 public class CheckOTPToken extends SSOUserTransportAuthenticationToken {
     private static final long serialVersionUID = 2290145086843797962L;
 
-    private String hotp;
+    private String otp;
 
-    public CheckOTPToken(SSOUser ssoUser, String hotp) {
+    public CheckOTPToken(SSOUser ssoUser, String otp) {
         super(ssoUser);
-        this.hotp = hotp;
+        this.otp = otp;
     }
 
     @Override
     public Object getCredentials() {
-        return hotp;
+        return otp;
     }
 
 }

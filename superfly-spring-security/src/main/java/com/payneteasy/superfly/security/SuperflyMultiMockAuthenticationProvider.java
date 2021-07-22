@@ -17,9 +17,9 @@ import org.springframework.security.core.AuthenticationException;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
@@ -79,8 +79,8 @@ public class SuperflyMultiMockAuthenticationProvider extends
             }
             if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
                 return processUsernamePasswordAuth(auth);
-            } else if (auth instanceof CheckHOTPToken) {
-                CheckHOTPToken token = (CheckHOTPToken) auth;
+            } else if (auth instanceof CheckOTPToken) {
+                CheckOTPToken token = (CheckOTPToken) auth;
                 if (hotp.equals(token.getCredentials())) {
                     if (token.getSsoUser().getActionsMap().size() == 1) {
                         return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
@@ -90,7 +90,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
                         throw new IllegalStateException("CompoundAuthentication cannot be null here");
                     }
                     CompoundAuthentication newCompound = new CompoundAuthentication(compound.getReadyAuthentications(), auth);
-                    newCompound.addReadyAuthentication(new HOTPCheckedToken(token.getSsoUser()));
+                    newCompound.addReadyAuthentication(new OTPCheckedToken(token.getSsoUser()));
                     return newCompound;
                 } else {
                     throw new BadOTPValueException("Bad HOTP");
@@ -142,7 +142,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
             return false;
         }
         return (UsernamePasswordAuthRequestInfoAuthenticationToken.class.isAssignableFrom(authentication)
-                || CheckHOTPToken.class.isAssignableFrom(authentication)
+                || CheckOTPToken.class.isAssignableFrom(authentication)
                 || SSOUserAndSelectedRoleAuthenticationToken.class.isAssignableFrom(authentication)
                 || CompoundAuthentication.class.isAssignableFrom(authentication));
     }

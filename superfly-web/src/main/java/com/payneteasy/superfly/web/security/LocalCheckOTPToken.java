@@ -7,19 +7,19 @@ import org.springframework.security.core.GrantedAuthority;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 
 /**
- * Request to check an HOTP.
+ * Request to check an OTP.
  *
  * @author Roman Puchkovskiy
  */
-public class LocalCheckHOTPToken extends EmptyAuthenticationToken {
+public class LocalCheckOTPToken extends EmptyAuthenticationToken {
     private String username;
     private Collection<GrantedAuthority> authorities;
-    private String hotp;
+    private String otp;
 
-    public LocalCheckHOTPToken(String username, String hotp, Collection<GrantedAuthority> authorities) {
+    public LocalCheckOTPToken(String username, String otp, Collection<GrantedAuthority> authorities) {
         super();
         this.username = username;
-        this.hotp = hotp;
+        this.otp = otp;
         this.authorities = authorities;
     }
 
@@ -30,7 +30,7 @@ public class LocalCheckHOTPToken extends EmptyAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return hotp;
+        return otp;
     }
 
     @Override

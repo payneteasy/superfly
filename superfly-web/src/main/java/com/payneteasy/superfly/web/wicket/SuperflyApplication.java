@@ -10,9 +10,10 @@ import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ViewGroupPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.wizard.GroupPropertiesPage;
-import com.payneteasy.superfly.web.wicket.page.login.LoginHOTPStepPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPageWithoutHOTP;
 import com.payneteasy.superfly.web.wicket.page.login.LoginPasswordStepPage;
+import com.payneteasy.superfly.web.wicket.page.login.LoginSetupOTPStepPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleActionsPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRoleGroupsPage;
 import com.payneteasy.superfly.web.wicket.page.role.AddRolePage;
@@ -56,7 +57,8 @@ public class SuperflyApplication extends BaseApplication {
 
         mountBookmarkablePageWithPath("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePageWithPath("/login", LoginPasswordStepPage.class);
-        mountBookmarkablePageWithPath("/login-step2", LoginHOTPStepPage.class);
+        mountBookmarkablePageWithPath("/login-step2", LoginOTPStepPage.class);
+        mountBookmarkablePageWithPath("/login-setup", LoginSetupOTPStepPage.class);
 
         mountBookmarkablePageWithPath("/actions", ListActionsPage.class);
         mountBookmarkablePageWithPath("/actions/copyAction", CopyActionPropertiesPage.class);

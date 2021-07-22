@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.security;
 
-import com.payneteasy.superfly.security.authentication.CheckHOTPToken;
+import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.HOTPCheckedToken;
+import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -18,12 +18,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-public class SuperflyHOTPAuthenticationProcessingFilterTest extends
+public class SuperflyOTPAuthenticationProcessingFilterTest extends
         AbstractAuthenticationProcessingFilterTest {
 
     @Before
     public void setUp() {
-        SuperflyHOTPAuthenticationProcessingFilter procFilter = new SuperflyHOTPAuthenticationProcessingFilter();
+        SuperflyOTPAuthenticationProcessingFilter procFilter = new SuperflyOTPAuthenticationProcessingFilter();
         procFilter.setAuthenticationManager(authenticationManager);
         procFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login-failed"));
         procFilter.afterPropertiesSet();
@@ -35,14 +35,14 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
         // expecting some request examination...
         initExpectationsForAuthentication();
         // expecting authentication attempt
-        expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
+        expect(authenticationManager.authenticate(anyObject(CheckOTPToken.class)))
                 .andAnswer(new IAnswer<Authentication>() {
                     public Authentication answer() throws Throwable {
                         CompoundAuthentication compound = (CompoundAuthentication) EasyMock.getCurrentArguments()[0];
-                        CheckHOTPToken token = (CheckHOTPToken) compound.getCurrentAuthenticationRequest();
+                        CheckOTPToken token = (CheckOTPToken) compound.getCurrentAuthenticationRequest();
                         assertEquals("pete", token.getName());
                         assertEquals("123456", token.getCredentials().toString());
-                        return new HOTPCheckedToken(createSSOUserWithOneRole());
+                        return new OTPCheckedToken(createSSOUserWithOneRole());
                     }
                 });
         // expecting a redirect to success
@@ -52,7 +52,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
         SecurityContextHolder.getContext().setAuthentication(createInputAuthentication());
         filter.doFilter(request, response, chain);
         assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(),
-                SecurityContextHolder.getContext().getAuthentication() instanceof HOTPCheckedToken);
+                SecurityContextHolder.getContext().getAuthentication() instanceof OTPCheckedToken);
 
         verify(request, response, chain, authenticationManager);
     }
@@ -62,7 +62,7 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
         // expecting some request examination...
         initExpectationsForAuthentication();
         // expecting authentication attempt
-        expect(authenticationManager.authenticate(anyObject(CheckHOTPToken.class)))
+        expect(authenticationManager.authenticate(anyObject(CheckOTPToken.class)))
                 .andThrow(new BadCredentialsException("must fail here"));
         // expecting a redirect to a failure page
         expectRedirectTo("/login-failed");
@@ -79,10 +79,10 @@ public class SuperflyHOTPAuthenticationProcessingFilterTest extends
     }
 
     private void initExpectationsForAuthentication() {
-        expect(request.getRequestURI()).andReturn("/j_superfly_hotp_security_check").anyTimes();
+        expect(request.getRequestURI()).andReturn("/j_superfly_otp_security_check").anyTimes();
         expect(request.getServletPath()).andReturn("").anyTimes();
-        expect(request.getPathInfo()).andReturn("/j_superfly_hotp_security_check").anyTimes();
-        expect(request.getParameter("j_hotp")).andReturn("123456").anyTimes();
+        expect(request.getPathInfo()).andReturn("/j_superfly_otp_security_check").anyTimes();
+        expect(request.getParameter("j_otp")).andReturn("123456").anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();

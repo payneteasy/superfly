@@ -47,10 +47,11 @@ public class PasswordPolicyTest {
         boolean throwsException=false;
 
         // validate normal password
-        password=new PasswordCheckContext("ивnmdn74");
+        password=new PasswordCheckContext("#asdfBsdf74");
         try{
             validation.validate(password);
         } catch (PolicyValidationException e){
+            System.out.println(e.getMessage());
             throwsException=true;
         }
 

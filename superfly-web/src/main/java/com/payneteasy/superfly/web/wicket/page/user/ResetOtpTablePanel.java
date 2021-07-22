@@ -56,14 +56,14 @@ public class ResetOtpTablePanel extends Panel {
         form.add(new AjaxSubmitLink("submit-link") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                try {
-                    hotpService.resetTableAndSendIfSupported(subsystemModel.getObject().getName(), userId);
-                    info("Done");
-                    target.add(feedbackPanel);
-                } catch (MessageSendException e) {
-                    error("Could not send a message: " + e.getMessage());
-                    target.add(feedbackPanel);
-                }
+//                try {
+//                    hotpService.resetTableAndSendIfSupported(subsystemModel.getObject().getName(), userId);
+//                    info("Done");
+//                    target.add(feedbackPanel);
+//                } catch (MessageSendException e) {
+//                    error("Could not send a message: " + e.getMessage());
+//                    target.add(feedbackPanel);
+//                }
                 window.close(target);
             }
             

@@ -1,11 +1,12 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.UserLoginStatus;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spring.Policy;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -38,19 +39,22 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     public SSOLoginPasswordPage() {
         final SSOLoginData loginData = SSOUtils.getSsoLoginData(this);
         if (loginData == null) {
-            RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<String>("No login data found")));
+            RequestCycle.get().setResponsePage(new SSOLoginErrorPage(new Model<>("No login data found")));
         }
 
         final LoginBean loginBean = new LoginBean();
         Form<Void> form = new Form<Void>("form") {
             @Override
             protected void onSubmit() {
-                doOnSubmit(loginBean, loginData);
+                if (validateCsrfToken()) {
+                    doOnSubmit(loginBean, loginData);
+                }
             }
         };
         add(form);
         form.add(new TextField<String>("username", new PropertyModel<String>(loginBean, "username")));
         form.add(new PasswordTextField("password", new PropertyModel<String>(loginBean, "password")));
+        form.add(createCsrfHiddenInput("_csrf"));
 
         errorMessageLabel = new Label("message", errorMessageModel);
         errorMessageLabel.setVisible(StringUtils.hasLength(errorMessageModel.getObject()));
@@ -82,13 +86,26 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
-        if (settingsService.getPolicy() != Policy.PCIDSS || settingsService.isHotpDisabled()) {
-            SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
-                    this, loginData, sessionService, subsystemService);
-        } else {
-            loginData.setUsername(loginBean.getUsername());
-            getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+        loginData.setUsername(loginBean.getUsername());
+        UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
+        OTPType otpType = userDescription.getOtpType();
+        switch (otpType) {
+            case GOOGLE_AUTH:
+                if (userDescription.isOtpOptional()) {
+                    SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                            this, loginData, sessionService, subsystemService);
+                } else if (StringUtils.isEmpty(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
+                    getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
+                } else {
+                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                }
+                break;
+            case NONE:
+            default:
+                SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                        this, loginData, sessionService, subsystemService);
         }
+
     }
 
     private static class LoginBean implements Serializable {

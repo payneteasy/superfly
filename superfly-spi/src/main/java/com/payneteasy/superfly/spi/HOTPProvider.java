@@ -11,6 +11,7 @@ import com.payneteasy.superfly.spisupport.HOTPProviderContext;
  * @author Roman Puchkovskiy
  * @since 1.2
  */
+@Deprecated
 public interface HOTPProvider {
 
     /**

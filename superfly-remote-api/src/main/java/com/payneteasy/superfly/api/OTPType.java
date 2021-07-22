@@ -23,4 +23,18 @@ public enum OTPType {
         }
         return NONE;
     }
+
+    public static OTPType strictFromCode(String type) {
+        if (type == null) {
+            return null;
+        }
+        switch (type.toLowerCase().trim()) {
+            case "google_auth":
+                return GOOGLE_AUTH;
+            case "none":
+                return NONE;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
 }

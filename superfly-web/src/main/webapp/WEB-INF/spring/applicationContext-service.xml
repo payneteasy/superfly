@@ -11,7 +11,6 @@
     </bean>
 
     <bean id="settingsService" class="com.payneteasy.superfly.service.impl.SettingsServiceImpl">
-        <property name="hotpDisabled" value="#{contextParameters['disable-hotp']}"/>
         <property name="policyName" value="#{contextParameters['superfly-policy']}"/>
     </bean>
 
@@ -38,7 +37,6 @@
         <property name="userService" ref="userService" />
         <property name="loggerSink" ref="loggerSink" />
         <property name="userPasswordEncoder" ref="userPasswordEncoder" />
-        <property name="hotpProvider" ref="hotpProvider" />
         <property name="lockoutStrategy" ref="lockoutStrategy" />
     </bean>
 
@@ -160,6 +158,10 @@
         </property>
     </bean>
 
+    <bean id="csrfValidator" class="com.payneteasy.superfly.security.csrf.CsrfValidatorImpl">
+        <property name="enable" value="#{contextParameters['superfly-csrf-login-validator-enable']}"/>
+    </bean>
+
     <bean id="userPasswordEncoder" class="com.payneteasy.superfly.password.UserPasswordEncoderImpl">
         <property name="passwordEncoder" ref="passwordEncoder"/>
         <property name="saltSource" ref="saltSource"/>
@@ -206,6 +208,11 @@
         <property name="resetPasswordStrategy" ref="resetPasswordStrategy"/>
     </bean>
 
+    <bean id="cryptoService" class="com.payneteasy.superfly.crypto.CryptoServiceImpl">
+        <property name="cryptoSecret" ref="cryptoSecret" />
+        <property name="cryptoSalt" ref="cryptoSalt" />
+    </bean>
+
     <bean id="resetPasswordStrategy"
         class="com.payneteasy.superfly.spring.ResetPasswordStrategyFactoryBean">
         <property name="userService" ref="userService" />
@@ -240,5 +247,6 @@
         <property name="hotpProvider" ref="hotpProvider"/>
         <property name="publicKeyCrypto" ref="publicKeyCrypto"/>
         <property name="userService" ref="userService"/>
+        <property name="cryptoService" ref="cryptoService"/>
     </bean>
 </beans>

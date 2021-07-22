@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPanel;
+import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -22,6 +23,16 @@ public class SSOChangePasswordPage extends BaseSSOPage {
         }
 
         add(new ChangePasswordPanel("change-password-panel") {
+            @Override
+            protected Component createCsrfInput(String aMarkupId) {
+                return createCsrfHiddenInput(aMarkupId);
+            }
+
+            @Override
+            protected boolean validateCsrf() {
+                return validateCsrfToken();
+            }
+
             @Override
             protected String getCurrentUserName() {
                 return username;

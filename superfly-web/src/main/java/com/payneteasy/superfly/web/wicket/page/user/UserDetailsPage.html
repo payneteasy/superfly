@@ -10,6 +10,9 @@
 
     <div class="s-legend-btn">
         <a href="" wicket:id="switch-locked-status" class="btn"><span wicket:id="switch-info"></span></a>
+        <a href="" wicket:id="reset-password-link" class="btn btn-outline-danger ml-2">Reset password</a>
+        <a href="" wicket:id="reset-otp" class="btn btn-warning ml-2">Reset OTP key</a>
+        <a href="" wicket:id="edit-user" class="btn btn-outline-primary ml-4">Edit user</a>
     </div>
     <div class="row">
         <!--LEFT SIDE-->
@@ -50,16 +53,16 @@
         <!--RIGHT SIDE-->
         <div class="col-12 col-sm-7">
             <div class="form-horizontal s-form-horizontal">
-                <wicket:container wicket:id="username"></wicket:container>
-                <wicket:container wicket:id="email"></wicket:container>
-                <wicket:container wicket:id="accountLocked"></wicket:container>
-                <wicket:container wicket:id="name"></wicket:container>
-                <wicket:container wicket:id="surname"></wicket:container>
-                <wicket:container wicket:id="secretQuestion"></wicket:container>
-                <wicket:container wicket:id="secretAnswer"></wicket:container>
-                <wicket:container wicket:id="publicKey"></wicket:container>
-                <wicket:container wicket:id="otpName"></wicket:container>
-                <wicket:container wicket:id="isOtpOptional"></wicket:container>
+                <div class="border-bottom pt-3" wicket:id="username"></div>
+                <div class="border-bottom pt-3" wicket:id="email"></div>
+                <div class="border-bottom pt-3" wicket:id="accountLocked"></div>
+                <div class="border-bottom pt-3" wicket:id="name"></div>
+                <div class="border-bottom pt-3" wicket:id="surname"></div>
+                <div class="border-bottom pt-3" wicket:id="secretQuestion"></div>
+                <div class="border-bottom pt-3" wicket:id="secretAnswer"></div>
+                <div class="border-bottom pt-3" wicket:id="publicKey"></div>
+                <div class="border-bottom pt-3" wicket:id="otpName"></div>
+                <div class="pt-3" wicket:id="isOtpOptional"></div>
             </div>
         </div>
 

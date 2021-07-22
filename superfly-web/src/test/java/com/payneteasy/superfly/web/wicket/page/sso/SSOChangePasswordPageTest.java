@@ -3,9 +3,12 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.SessionService;
+import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
@@ -19,14 +22,22 @@ import static org.easymock.EasyMock.*;
  */
 public class SSOChangePasswordPageTest extends AbstractPageTest {
     private UserService userService;
+    private SettingsService settingsService;
     private SessionService sessionService;
     private SubsystemService subsystemService;
+    private CsrfValidator csrfValidator;
 
     @Before
     public void setUp() {
         userService = EasyMock.createStrictMock(UserService.class);
         sessionService = EasyMock.createStrictMock(SessionService.class);
         subsystemService = EasyMock.createStrictMock(SubsystemService.class);
+        settingsService = EasyMock.createStrictMock(SettingsService.class);
+        csrfValidator = EasyMock.createStrictMock(CsrfValidator.class);
+
+        expect(csrfValidator.persistTokenIntoSession(anyObject())).andReturn("123").anyTimes();
+        csrfValidator.validateToken(anyObject());
+        expectLastCall().anyTimes();
     }
 
     @Override
@@ -39,6 +50,12 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         }
         if (type == SubsystemService.class) {
             return subsystemService;
+        }
+        if (type == SettingsService.class) {
+            return settingsService;
+        }
+        if (type == CsrfValidator.class) {
+            return csrfValidator;
         }
         return super.getBean(type);
     }
@@ -55,11 +72,12 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         expectLastCall();
         userService.changeTempPassword("user", "password");
         expectLastCall();
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         expect(sessionService.createSSOSession("user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
-        replay(userService, sessionService, subsystemService);
+        replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
@@ -71,13 +89,15 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
-        verify(userService, sessionService, subsystemService);
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
     }
 
     @Test
     public void testMismatchingPassword() throws PolicyValidationException {
         userService.validatePassword("user", "password");
-        replay(userService);
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        replay(userService, settingsService, csrfValidator);
+
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
@@ -92,6 +112,8 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         // still on the same page
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         tester.assertLabel("change-password-panel:feedback:feedbackul:messages:0:message", "password and password2 must be equal.");
+
+        verify(settingsService, csrfValidator);
     }
 
     @Test
@@ -99,7 +121,10 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         // password validation logic
         userService.validatePassword("user", "invalid-password");
         expectLastCall().andThrow(new PolicyValidationException("P003"));
-        replay(userService);
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        replay(userService, settingsService, csrfValidator);
+
+
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
@@ -112,6 +137,6 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         tester.assertLabel("change-password-panel:feedback:feedbackul:messages:0:message", "Password was already used");
 
-        verify(userService);
+        verify(userService, settingsService, csrfValidator);
     }
 }
