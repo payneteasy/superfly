@@ -151,17 +151,15 @@ public class ListUsersPage extends BasePage {
         add(usersDataView);
 
         // ordering, paging...
-        add(new OrderByLink("order-by-username", "username", usersDataProvider));
-        add(new OrderByLink("order-by-logins-failed", "loginsFailed", usersDataProvider));
-        add(new OrderByLink("order-by-last-login-date", "lastLoginDate", usersDataProvider));
+        add(new OrderByLink<>("order-by-username", "username", usersDataProvider));
+        add(new OrderByLink<>("order-by-logins-failed", "loginsFailed", usersDataProvider));
+        add(new OrderByLink<>("order-by-last-login-date", "lastLoginDate", usersDataProvider));
 
         //add(new PagingNavigator("paging-navigator", usersDataView));
         add(new SuperflyPagingNavigator("paging-navigator", usersDataView));
 
         add(new BookmarkablePageLink<CreateUserPage>("add-user", CreateUserPage.class));
     }
-
-
 
     @Override
     protected String getTitle() {

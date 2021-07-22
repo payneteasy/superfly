@@ -3,11 +3,9 @@ package com.payneteasy.superfly.web.wicket.page.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.payneteasy.superfly.common.utils.StringUtils;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UIUserDetails;
 import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -25,7 +23,6 @@ import org.springframework.security.access.annotation.Secured;
 
 import com.payneteasy.superfly.model.ui.role.UIRoleWithActions;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
-import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserWithRolesAndActions;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
@@ -155,7 +152,7 @@ public class UserDetailsPage extends BasePage {
         add(new AjaxLink<Void>("reset-otp") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                userService.persistGoogleAuthMasterKeyForUsername(uiUserDetailsIModel.getObject().getUsername(), null);
+                userService.persistOtpMasterKeyForUsername(uiUserDetailsIModel.getObject().getUsername(), null);
                 info("Reset OTP key was successful");
                 target.add(getFeedbackPanel());
             }

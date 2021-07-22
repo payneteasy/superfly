@@ -11,7 +11,6 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
@@ -123,7 +122,7 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         expect(userForDescription.getOtpType()).andReturn(OTPType.GOOGLE_AUTH).anyTimes();
         expect(userService.getUserForDescription("known-user"))
                 .andReturn(userForDescription).anyTimes();
-        expect(userService.getGoogleAuthMasterKeyByUsername("known-user"))
+        expect(userService.getOtpMasterKeyByUsername("known-user"))
                 .andReturn("123").anyTimes();
 
 

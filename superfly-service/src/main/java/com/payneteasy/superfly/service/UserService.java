@@ -364,9 +364,9 @@ public interface UserService {
 
     RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType);
 
-    void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
+    void persistOtpMasterKeyForUsername(String username, String masterKey);
 
-    String getGoogleAuthMasterKeyByUsername(String username);
+    String getOtpMasterKeyByUsername(String username);
 
     String getUserSalt(String userName);
 

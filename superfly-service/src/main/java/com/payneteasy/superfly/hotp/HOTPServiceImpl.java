@@ -96,7 +96,7 @@ public class HOTPServiceImpl implements HOTPService {
             return false;
         }
         int verificationCode = Integer.parseInt(password);
-        String masterKeyEncrypt = userService.getGoogleAuthMasterKeyByUsername(username);
+        String masterKeyEncrypt = userService.getOtpMasterKeyByUsername(username);
         if (masterKeyEncrypt == null) {
             throw new SsoDecryptException("GA master key for " + username + " is null");
         }
@@ -155,7 +155,7 @@ public class HOTPServiceImpl implements HOTPService {
                 } catch (EncryptException e) {
                     throw new SsoDecryptException(e);
                 }
-                userService.persistGoogleAuthMasterKeyForUsername(username, encryptKey);
+                userService.persistOtpMasterKeyForUsername(username, encryptKey);
                 break;
             case NONE:
             default:

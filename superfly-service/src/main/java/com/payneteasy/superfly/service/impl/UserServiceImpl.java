@@ -444,12 +444,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void persistGoogleAuthMasterKeyForUsername(String username, String masterKey) {
+    public void persistOtpMasterKeyForUsername(String username, String masterKey) {
         userDao.persistGoogleAuthMasterKeyForUsername(username,masterKey);
     }
 
     @Override
-    public String getGoogleAuthMasterKeyByUsername(String username) {
+    public String getOtpMasterKeyByUsername(String username) {
         return userDao.getGoogleAuthMasterKeyByUsername(username);
     }
 

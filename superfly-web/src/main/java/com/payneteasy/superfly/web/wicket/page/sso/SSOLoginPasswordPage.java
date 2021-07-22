@@ -7,7 +7,6 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spring.Policy;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -95,7 +94,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 if (userDescription.isOtpOptional()) {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
-                } else if (StringUtils.isEmpty(userService.getGoogleAuthMasterKeyByUsername(loginBean.getUsername()))) {
+                } else if (StringUtils.isEmpty(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
                     getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 } else {
                     getRequestCycle().setResponsePage(new SSOLoginHOTPPage());

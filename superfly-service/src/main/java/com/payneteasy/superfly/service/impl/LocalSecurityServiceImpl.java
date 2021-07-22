@@ -104,8 +104,8 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         OtpUserDescription user = new OtpUserDescription();
         UserForDescription userForDescription = userService.getUserForDescription(username);
         if (userForDescription.getOtpType() == OTPType.GOOGLE_AUTH) {
-            user.setHasOtpMasterKey(userService.getGoogleAuthMasterKeyByUsername(username) != null
-                    && userService.getGoogleAuthMasterKeyByUsername(username).length() > 0);
+            user.setHasOtpMasterKey(userService.getOtpMasterKeyByUsername(username) != null
+                    && userService.getOtpMasterKeyByUsername(username).length() > 0);
         }
         return user.setUserForDescription(userForDescription);
     }
