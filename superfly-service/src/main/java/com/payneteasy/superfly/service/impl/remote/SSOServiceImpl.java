@@ -79,6 +79,11 @@ public class SSOServiceImpl implements SSOService {
         return internalSSOService.checkOtp(user, code);
     }
 
+    @Override
+    public boolean hasOtpMasterKey(String username) {
+        return internalSSOService.hasOtpMasterKey(username);
+    }
+
     /**
      * @see SSOService#pseudoAuthenticate(String, String)
      */
@@ -187,7 +192,7 @@ public class SSOServiceImpl implements SSOService {
      */
     @Override
     public void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException {
-        //do nothing, because depricated
+        //do nothing, because deprecated
     }
 
     /**
@@ -196,7 +201,7 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void resetAndSendOTPTable(String subsystemIdentifier,
                                      String username) throws UserNotFoundException, MessageSendException {
-        //do nothing, because depricated
+        //do nothing, because deprecated
     }
 
     @Override

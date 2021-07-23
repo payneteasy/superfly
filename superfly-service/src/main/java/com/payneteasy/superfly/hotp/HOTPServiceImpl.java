@@ -77,7 +77,7 @@ public class HOTPServiceImpl implements HOTPService {
     @Override
     public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
         String key = googleAuthenticator.get().createCredentials().getKey();
-        encryptAndPersistMasterKey(OTPType.GOOGLE_AUTH, username, key);
+        encryptAndPersistMasterKey(OTPType.GOOGLE_AUTH, key, username);
         return key;
     }
 

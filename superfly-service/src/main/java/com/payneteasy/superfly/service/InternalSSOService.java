@@ -192,4 +192,6 @@ public interface InternalSSOService {
      *                              are mentioned
      */
     void changeUserRole(String username, String newRole, String subsystemIdentifier);
+
+    boolean hasOtpMasterKey(String username);
 }

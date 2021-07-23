@@ -25,6 +25,8 @@ public interface SSOService {
 
     boolean checkOtp(SSOUser user, String code);
 
+    boolean hasOtpMasterKey(String username);
+
     /**
      * Returns the same data as if user was successfully authenticated,
      * but no actual authentication is made. This could be useful for

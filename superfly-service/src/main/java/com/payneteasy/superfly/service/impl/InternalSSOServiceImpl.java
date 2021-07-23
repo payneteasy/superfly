@@ -425,4 +425,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             throw new IllegalStateException(result.getErrorMessage());
         }
     }
+
+    @Override
+    public boolean hasOtpMasterKey(String username) {
+        return userService.getOtpMasterKeyByUsername(username) != null;
+    }
 }
