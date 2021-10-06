@@ -226,8 +226,8 @@
     <bean id="velocityEngine" class="com.payneteasy.superfly.spring.velocity.VelocityEngineFactoryBean">
         <property name="velocityPropertiesMap">
             <map>
-                <entry key="resource.loader" value="file"/>
-                <entry key="file.resource.loader.class" value="org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"/>
+                <entry key="resource.loaders" value="file"/>
+                <entry key="resource.loader.file.class" value="org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"/>
             </map>
         </property>
     </bean>

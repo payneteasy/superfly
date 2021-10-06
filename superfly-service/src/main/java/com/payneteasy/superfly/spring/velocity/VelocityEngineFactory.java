@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.CommonsLogLogChute;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -55,6 +54,7 @@ import org.springframework.util.StringUtils;
  * <p>If "overrideLogging" is true (the default), the VelocityEngine will be
  * configured to log via Commons Logging, that is, using
  * {@link CommonsLogLogChute} as log system.
+ * REMOVED
  *
  * <p>The simplest way to use this class is to specify a
  * {@link #setResourceLoaderPath(String) "resourceLoaderPath"}; the
@@ -86,7 +86,7 @@ public class VelocityEngineFactory {
 
 	private boolean preferFileSystemAccess = true;
 
-	private boolean overrideLogging = true;
+//	private boolean overrideLogging = true;
 
 
 	/**
@@ -198,13 +198,13 @@ public class VelocityEngineFactory {
 		return this.preferFileSystemAccess;
 	}
 
-	/**
-	 * Set whether Velocity should log via Commons Logging, i.e. whether Velocity's
-	 * log system should be set to {@link CommonsLogLogChute}. Default is "true".
-	 */
-	public void setOverrideLogging(boolean overrideLogging) {
-		this.overrideLogging = overrideLogging;
-	}
+//	/**
+//	 * Set whether Velocity should log via Commons Logging, i.e. whether Velocity's
+//	 * log system should be set to {@link CommonsLogLogChute}. Default is "true".
+//	 */
+//	public void setOverrideLogging(boolean overrideLogging) {
+//		this.overrideLogging = overrideLogging;
+//	}
 
 
 	/**
@@ -236,9 +236,9 @@ public class VelocityEngineFactory {
 		}
 
 		// Log via Commons Logging?
-		if (this.overrideLogging) {
-			velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new CommonsLogLogChute());
-		}
+//		if (this.overrideLogging) {
+//			velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new CommonsLogLogChute());
+//		}
 
 		// Apply properties to VelocityEngine.
 		for (Map.Entry<String, Object> entry : props.entrySet()) {
