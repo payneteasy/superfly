@@ -105,4 +105,28 @@
        <sha1>04ff14d809195b711fd6bcc87e6777f886730ca1</sha1>
        <cve>CVE-2016-1000031</cve>
     </suppress>
+
+    <!--CVE-2018-1258: The vulnerability is present only in Spring Framework 5.0.5.RELEASE.
+        If the application does not use Spring Framework 5.0.5.RELEASE then it is not impacted.-->
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-core-5.4.7.jar
+        ]]></notes>
+        <sha1>a3706c9bbd48d1933cb38bafcea07c2b6148e878</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-web-5.4.7.jar
+        ]]></notes>
+        <sha1>33c4ecc4d51632b4c52e59cc129779a0e5bfefac</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-config-5.4.7.jar
+        ]]></notes>
+        <sha1>a9384989345a88c3ad71b2d6fcfb43cfc966e87f</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
 </suppressions>
