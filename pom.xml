@@ -543,6 +543,16 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>3.2.5</version>
+                <exclusions>
+                    <exclusion>
+                        <!--
+                        https://github.com/cglib/cglib/issues/144
+                        https://github.com/cglib/cglib/pull/87
+                        -->
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
