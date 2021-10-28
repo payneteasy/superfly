@@ -875,7 +875,7 @@
         <spring.security.version>5.4.7</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
-        <wicket.version>7.6.0</wicket.version>
+        <wicket.version>7.18.0</wicket.version>
         <jetty.version>9.4.44.v20210927</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
