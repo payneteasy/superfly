@@ -491,12 +491,6 @@
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
                 <version>1.4.18</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>xpp3</groupId>
-                        <artifactId>xpp3_min</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
