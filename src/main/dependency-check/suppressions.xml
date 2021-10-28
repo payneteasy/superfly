@@ -130,6 +130,7 @@
         <cve>CVE-2018-1258</cve>
     </suppress>
 
+    <!-- These CVEs point to old versions of xstream, not io.github.x-stream:mxparser.-->
     <suppress>
         <notes><![CDATA[
         file name: mxparser-1.2.2.jar
