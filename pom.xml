@@ -639,7 +639,14 @@
             <dependency>
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
-                <version>0.9.12</version>
+                <version>0.9.11</version>
+            </dependency>
+
+            <dependency>
+                <!--Override org.reflections:reflections guava-->
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.0.1-jre</version>
             </dependency>
 
             <dependency>
