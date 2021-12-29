@@ -179,4 +179,46 @@
         <cve>CVE-2017-5929</cve>
         <cve>CVE-2021-42550</cve>
     </suppress>
+
+    <!-- JQuery 3.5.1 override is applied. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-core-7.18.0.jar: jquery-1.12.4.js
+        ]]></notes>
+        <sha1>433836da7e015f2eb3fc386817de88b78248f6ef</sha1>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-core-7.18.0.jar: jquery-1.12.4.min.js
+        ]]></notes>
+        <sha1>5a9dcfbef655a2668e78baebeaa8dc6f41d8dabb</sha1>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-core-7.18.0.jar: jquery-2.2.4.js
+        ]]></notes>
+        <sha1>26e6b63b81813d8ad942c90d369df2673602b812</sha1>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-core-7.18.0.jar: jquery-2.2.4.min.js
+        ]]></notes>
+        <sha1>69bb69e25ca7d5ef0935317584e6153f3fd9a88c</sha1>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+        <cve>CVE-2020-11022</cve>
+        <cve>CVE-2020-11023</cve>
+    </suppress>
 </suppressions>
