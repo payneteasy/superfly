@@ -221,4 +221,105 @@
         <cve>CVE-2020-11022</cve>
         <cve>CVE-2020-11023</cve>
     </suppress>
+
+    <!-- We don't use components which require YUI. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: calendar-min.js
+        ]]></notes>
+        <sha1>2c0ea6a839df080c4bb7925f7e46840ae284e5bc</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: calendar.js
+        ]]></notes>
+        <sha1>81fdbfa751ce9876375810febb66dd7ea5430405</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: dom-min.js
+        ]]></notes>
+        <sha1>bf1d45bf1645918f24cbfd35726a65632ead2f66</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: dom.js
+        ]]></notes>
+        <sha1>4891d997f6630d463539a5f9eb88d56b21e7eddb</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: event-min.js
+        ]]></notes>
+        <sha1>1c3f7df5fd8cf5937bb26f0ca76d09dc3e87eb5c</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: event.js
+        ]]></notes>
+        <sha1>f58c82c7e8388d7945996d97d327e51720b8db24</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: yahoo-dom-event.js
+        ]]></notes>
+        <sha1>63aa83b8b83f9569802c3b24819cc477f4b5fdf3</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: yahoo-min.js
+        ]]></notes>
+        <sha1>f63225ad08c2769101b7db1604bb84eef07d6747</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: yahoo.js
+        ]]></notes>
+        <sha1>117431b4de69f8927468fe55d068c495ebe77e27</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: yuiloader-min.js
+        ]]></notes>
+        <sha1>14ab8b78242e9c57899f4be78f393d7ccfaa0cc4</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: wicket-datetime-7.18.0.jar: yuiloader.js
+        ]]></notes>
+        <sha1>03fbda977f5ef8619db207e2f6f140a5ed01f4f9</sha1>
+        <cve>CVE-2012-5881</cve>
+        <cve>CVE-2012-5882</cve>
+        <cve>CVE-2012-5883</cve>
+    </suppress>
 </suppressions>
