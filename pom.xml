@@ -271,12 +271,12 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.2.3</version>
+                <version>1.2.10</version>
             </dependency>
             <dependency>
                 <groupId>org.logback-extensions</groupId>
                 <artifactId>logback-ext-spring</artifactId>
-                <version>0.1.2</version>
+                <version>0.1.5</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

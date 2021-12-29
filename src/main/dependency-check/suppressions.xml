@@ -169,4 +169,14 @@
         <cve>CVE-2021-39153</cve>
         <cve>CVE-2021-39154</cve>
     </suppress>
+
+    <!-- These CVEs point to old versions of logback, not org.logback-extensions:logback-ext-spring. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: logback-ext-spring-0.1.5.jar
+        ]]></notes>
+        <sha1>4b0d63c7e2f55e0621bb4796a5860e36ba73bd74</sha1>
+        <cve>CVE-2017-5929</cve>
+        <cve>CVE-2021-42550</cve>
+    </suppress>
 </suppressions>
