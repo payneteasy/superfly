@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/payneteasy/superfly.svg?branch=master)](https://travis-ci.org/payneteasy/superfly)
+[![build Status](https://github.com/payneteasy/superfly/actions/workflows/maven.yml/badge.svg)](https://github.com/payneteasy/superfly/actions/workflows/maven.yml)
 
 Each web-application usually has some security: users, roles, permissions. When your organization posesses several systems, a situation may arise when the same user has to present in several systems at once. It is a burden to maintain users/roles/permissions in different systems at the same time. Superfly intends to alleviate such a burden.
 
