@@ -1,39 +1,38 @@
 package com.payneteasy.superfly.password;
 
-import java.security.SecureRandom;
+import org.passay.CharacterData;
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Generates passwords using a {@link SecureRandom}.
- *
- * @author Roman Puchkovskiy
+ * Generates passwords
  */
 public class PasswordGeneratorImpl implements PasswordGenerator {
 
-    private SecureRandom random = new SecureRandom();
+    private static final String SPECIAL_CHARS = "~`!@#$%^&*+-=_|\\/()[]{}<>,.;:?\"'";
+    private static final List<CharacterRule> RULES = Arrays.asList(
+            new CharacterRule(EnglishCharacterData.LowerCase, 2),
+            new CharacterRule(EnglishCharacterData.UpperCase, 2),
+            new CharacterRule(EnglishCharacterData.Digit, 2),
+            new CharacterRule(
+                    new CharacterData() {
+                        public String getErrorCode() {
+                            return "SPECIAL_CHARS";
+                        }
 
-    private int passwordLength = 6;
+                        public String getCharacters() {
+                            return SPECIAL_CHARS;
+                        }
+                    }, 1
+            )
+    );
 
-    public void setPasswordLength(int length) {
-        passwordLength = length;
-    }
-
+    @Override
     public String generate() {
-        StringBuilder buf = new StringBuilder();
-        for (int i = 0; i < passwordLength; i++) {
-            char ch;
-            do {
-                int n = random.nextInt(62);
-                if (n < 10) {
-                    ch = (char) (n + '0');
-                } else if (n < 36) {
-                    ch = (char) (n - 10 + 'a');
-                } else {
-                    ch = (char) (n - 36 + 'A');
-                }
-            } while (ch == 'o' || ch == 'O' || ch == 'l' || ch == 'I');
-            buf.append(ch);
-        }
-        return buf.toString();
+        return new org.passay.PasswordGenerator().generatePassword(8, RULES);
     }
 
 }

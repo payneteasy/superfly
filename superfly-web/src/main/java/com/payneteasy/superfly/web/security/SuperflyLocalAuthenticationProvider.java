@@ -35,7 +35,7 @@ public class SuperflyLocalAuthenticationProvider extends
             UsernamePasswordAuthenticationToken authentication)
             throws AuthenticationException {
         String password = (String) authentication.getCredentials();
-        String actions[] = localSecurityService.authenticate(username, password);
+        String[] actions = localSecurityService.authenticate(username, password);
         if (actions == null) {
             throw new BadCredentialsException("Did not find a user with matching password");
         }
