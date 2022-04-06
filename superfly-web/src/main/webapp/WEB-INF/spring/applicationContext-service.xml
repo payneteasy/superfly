@@ -133,7 +133,6 @@
     </bean>
     
     <bean id="passwordGenerator" class="com.payneteasy.superfly.password.PasswordGeneratorImpl">
-        <property name="passwordLength" value="8"/>
     </bean>
 
 
