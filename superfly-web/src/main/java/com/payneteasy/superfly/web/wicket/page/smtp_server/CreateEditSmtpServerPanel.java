@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.wicket.page.smtp_server;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
+import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.markup.html.form.Form;
@@ -39,11 +40,11 @@ public abstract class CreateEditSmtpServerPanel extends Panel {
 
         form.add(new LabelTextFieldRow<String>(finalServer, "name", "smtpServer.name", true));
         form.add(new LabelTextFieldRow<String>(finalServer, "host", "smtpServer.host", true));
-        LabelTextFieldRow<Integer> portRow = new LabelTextFieldRow<Integer>(finalServer, "port", "smtpServer.port");
+        LabelTextFieldRow<Integer> portRow = new LabelTextFieldRow<>(finalServer, "port", "smtpServer.port");
         portRow.getTextField().setType(Integer.class);
         form.add(portRow);
         form.add(new LabelTextFieldRow<String>(finalServer, "username", "smtpServer.username"));
-        form.add(new LabelTextFieldRow<String>(finalServer, "password", "smtpServer.password"));
+        form.add(new LabelPasswordTextFieldRow(finalServer, "password", "smtpServer.password"));
         form.add(new LabelTextFieldRow<String>(finalServer, "from", "smtpServer.from", true));
         form.add(new LabelCheckBoxRow("ssl", finalServer, "smtpServer.ssl"));
 
