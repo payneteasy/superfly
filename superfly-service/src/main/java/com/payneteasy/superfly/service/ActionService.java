@@ -11,7 +11,7 @@ import java.util.List;
 public interface ActionService {
     List<UIActionForList> getActions(long startFrom, long recordsCount,
             int orderFieldNumber, boolean asc, String actionNamePrefix,
-            String description, List<Long> subsystemIds);
+            String description, List<Long> subsystemIds, boolean byGroup);
 
     void changeActionsLogLevel(List<Long> actnListLogOn,
             List<Long> actnListLogOff);

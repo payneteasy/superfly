@@ -38,7 +38,7 @@ public class ActionServiceImpl implements ActionService {
 
     public List<UIActionForList> getActions(long startFrom, long recordsCount,
                                             int orderFieldNumber, boolean asc, String actionNamePrefix,
-                                            String description, List<Long> subsystemIds) {
+                                            String description, List<Long> subsystemIds, boolean byGroup) {
         return actionDao.getActions(startFrom, recordsCount, orderFieldNumber,
                 asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
                         .collectionToCommaDelimitedString(subsystemIds));

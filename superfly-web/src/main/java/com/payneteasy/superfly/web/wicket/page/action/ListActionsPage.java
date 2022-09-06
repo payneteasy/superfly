@@ -1,9 +1,11 @@
 package com.payneteasy.superfly.web.wicket.page.action;
 
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.service.GroupService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.SubsystemChoiceRenderer;
@@ -15,16 +17,20 @@ import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
 import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
@@ -39,9 +45,13 @@ public class ListActionsPage extends BasePage {
     private ActionService actionService;
     @SpringBean
     private SubsystemService subsystemService;
+    @SpringBean
+    private GroupService groupService;
 
     public ListActionsPage() {
         super(ListActionsPage.class);
+
+        IModel<Boolean> byGroup = Model.of(false);
 
         final StickyFilters stickyFilters = getSession().getStickyFilters();
         Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
@@ -49,12 +59,25 @@ public class ListActionsPage extends BasePage {
 
         DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
                 "subsystem-filter"
-                , new PropertyModel<UISubsystemForFilter>(stickyFilters, "subsystem")
+                , new PropertyModel<>(stickyFilters, "subsystem")
                 , subsystemService.getSubsystemsForFilter()
                 , new SubsystemChoiceRenderer()
         );
         subsystemDropdown.setNullValid(true);
         filtersForm.add(subsystemDropdown);
+
+        filtersForm.add(new CheckBox("by-group", byGroup) {
+            @Override
+            protected boolean wantOnSelectionChangedNotifications() {
+                return true;
+            }
+
+            @Override
+            public void onSelectionChanged() {
+                super.onSelectionChanged();
+                System.out.println(byGroup.getObject());
+            }
+        });
       
         final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new PropertyModel<String>(stickyFilters, "actionNameSubstring")){
             @Override
@@ -107,15 +130,15 @@ public class ListActionsPage extends BasePage {
                     long count) {
                 UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
                 String actionForFilter = stickyFilters.getActionNameSubstring();
-                List<Long> subsystemId = new ArrayList<Long>();
                 if (subsystem == null) {
-                    List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null, subsystem == null ? null : null);
+                    List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter, null, null, byGroup.getObject());
                     actionsHolder.setObject(actions);
                     actionsCheckGroupModel.clearInitialized();
                     return actions.iterator();
                 } else {
+                    List<Long> subsystemId = new ArrayList<Long>();
                     subsystemId.add(subsystem.getId());
-                    List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter == null ? null : actionForFilter, null, subsystem == null ? null : subsystemId);
+                    List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(), actionForFilter, null, subsystemId, byGroup.getObject());
                     actionsHolder.setObject(actions);
                     actionsCheckGroupModel.clearInitialized();
                     return actions.iterator();
@@ -124,21 +147,29 @@ public class ListActionsPage extends BasePage {
 
             public long size() {
                 UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
-                List<Long> subsystemId = new ArrayList<Long>();
                 if(subsystem == null){
-                    return actionService.getActionCount(null, null, subsystem == null ? null : null);
+                    return actionService.getActionCount(null, null, null);
                 }else{
+                    List<Long> subsystemId = new ArrayList<Long>();
                     subsystemId.add(subsystem.getId());
-                    return actionService.getActionCount(null, null, subsystem == null ? null : subsystemId);
+                    return actionService.getActionCount(null, null, subsystemId);
                 }
             }
 
         };
         final Form<Void> form = new Form<Void>("form");
         add(form);
-        final CheckGroup<UIActionForList> group = new CheckGroup<UIActionForList>("group", actionsCheckGroupModel);
-        form.add(group);
-        group.add(new CheckGroupSelector("master-checkbox", group));
+        final CheckGroup<UIActionForList> checkGroup = new CheckGroup<UIActionForList>("group", actionsCheckGroupModel) {
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+
+                addOrReplace(new Label("group-name-header", Model.of("Group name")).setVisible(byGroup.getObject()));
+
+            }
+        };
+        form.add(checkGroup);
+        checkGroup.add(new CheckGroupSelector("master-checkbox", checkGroup));
 
         final DataView<UIActionForList> actionsDataView = new PagingDataView<UIActionForList>("actionList",actionDataProvider){
 
@@ -146,18 +177,41 @@ public class ListActionsPage extends BasePage {
             protected void populateItem(Item<UIActionForList> item) {
                 final UIActionForList action = item.getModelObject();
                 item.add(new Label("action-name",action.getName()));
-                item.add(new Label("action-description",action.getDescroption()));
+                item.add(new Label("action-description",action.getDescription()));
                 item.add(new Label("subsystem-name",action.getSubsystemName()));
-                item.add(new Check<UIActionForList>("selected", item.getModel(),group));
-                item.add(new BookmarkablePageLink<Page>("copy-action",
-                        CopyActionPropertiesPage.class, PageParametersBuilder.fromPair("id", action.getId())));
+                item.add(new Check<>("selected", item.getModel(), checkGroup));
+                item.add(new BookmarkablePageLink<Page>(
+                            "copy-action",
+                            CopyActionPropertiesPage.class,
+                            PageParametersBuilder.fromPair("id", action.getId())
+                        )
+                );
+                if (byGroup.getObject()) {
+                    item.add(new Label("group-name", action.getGroupName()));
+                    item.add(new Link<Void>("unmount-action-from-group") {
+                        @Override
+                        public void onClick() {
+                            List<Long> actionToUnlink = new ArrayList<>();
+                            actionToUnlink.add(action.getId());
+                            RoutineResult routineResult = groupService.changeGroupActions(action.getGroupId() + 13, null, actionToUnlink);
+                            if (routineResult.isOk()) {
+                                success("Action successfully unmount from group");
+                            } else {
+                                error(routineResult.getErrorMessage());
+                            }
+                        }
+                    });
+                } else {
+                    item.add(invisibleComponent("group-name"));
+                    item.add(invisibleComponent("unmount-action-from-group"));
+                }
 
                 WicketComponentHelper.tableRowInfoCondition(item, action.isLogAction());
 
             }
 
         };
-        group.add(actionsDataView);
+        checkGroup.add(actionsDataView);
         form.add(new Button("log-action"){
 
             @Override
@@ -179,12 +233,16 @@ public class ListActionsPage extends BasePage {
 
         });
                 
-        group.add(new OrderByLink("order-by-actionName", "actionName", actionDataProvider));
-        group.add(new OrderByLink("order-by-actionDescription", "actionDescription", actionDataProvider));
-        group.add(new OrderByLink("order-by-subsystemName", "subsystemName", actionDataProvider));
+        checkGroup.add(new OrderByLink<>("order-by-actionName", "actionName", actionDataProvider));
+        checkGroup.add(new OrderByLink<>("order-by-actionDescription", "actionDescription", actionDataProvider));
+        checkGroup.add(new OrderByLink<>("order-by-subsystemName", "subsystemName", actionDataProvider));
 
-        group.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
+        checkGroup.add(new SuperflyPagingNavigator("paging-navigator", actionsDataView));
 
+    }
+
+    private Component invisibleComponent(String markupId) {
+        return new WebMarkupContainer(markupId).setVisible(false);
     }
 
     @Override

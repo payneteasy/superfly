@@ -14,18 +14,21 @@ import org.apache.wicket.model.ResourceModel;
  */
 public class LabelCheckBoxRow extends Panel {
     
-    private CheckBox checkBox;
-    
+    private final CheckBox checkBox;
+
     public LabelCheckBoxRow(String id, Object object, String labelResourceKey) {
-        super(id);
+        this(id, new PropertyModel<Boolean>(object, id), new ResourceModel(labelResourceKey));
+    }
+    public LabelCheckBoxRow(String id, IModel<Boolean> model, IModel<String> labelModel) {
+        super(id, model);
 
         // label
-        Label label = new Label("label-id", new ResourceModel(labelResourceKey));
+        Label label = new Label("label-id", labelModel);
         label.add(new AttributeModifier("for", new Model<String>(id)));
         add(label);
 
         // field
-        checkBox = new LabeledCheckBox("field-id", new PropertyModel<Boolean>(object, id), id);
+        checkBox = new LabeledCheckBox("field-id", model, id);
         add(checkBox);
     }
     
