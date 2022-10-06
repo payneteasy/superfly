@@ -11,9 +11,11 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.UrlPathPageParametersEncoder;
+import org.apache.wicket.request.resource.UrlResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.file.Path;
 import org.slf4j.Logger;
@@ -25,8 +27,8 @@ public abstract class BaseApplication extends WebApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseApplication.class);
 
-    private IPageParametersEncoder pathParametersEncoder = new UrlPathPageParametersEncoder();
-    private IPageParametersEncoder parametersEncoder = new PageParametersEncoder();
+    private final IPageParametersEncoder pathParametersEncoder = new UrlPathPageParametersEncoder();
+    private final IPageParametersEncoder parametersEncoder = new PageParametersEncoder();
 
     protected final void mountBookmarkablePageWithPath(String path, Class<? extends WebPage> pageClass) {
         mount(wrapWithInterceptingMapper(new MountedMapper(path, pageClass, pathParametersEncoder)));
@@ -48,6 +50,10 @@ public abstract class BaseApplication extends WebApplication {
                 logger.warn("No src/main/java folder found, dynamic resource reloading is not available");
             }
         }
+
+        getJavaScriptLibrarySettings().setJQueryReference(
+                new UrlResourceReference(Url.parse("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"))
+        );
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
         getRequestCycleListeners().add(new CsrfPreventionRequestCycleListener());
