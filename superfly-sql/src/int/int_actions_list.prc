@@ -28,7 +28,7 @@ create procedure int_actions_list(i_action_name varchar(128),
             concat(v_search_conditions,
                    " and instr(concat(',', '",
                    i_ssys_list,
-                   "', ','), concat(',', ssys_ssys_id, ',')) > 0 "
+                   "', ','), concat(',', a.ssys_ssys_id, ',')) > 0 "
             );
     end if;
 
