@@ -112,8 +112,7 @@ public class CopyActionPropertiesPage extends BasePage {
                         isAscending(),
                         actionForFilter,
                         null,
-                        subsystemId,
-                        false
+                        subsystemId
                 );
                 return actions.iterator();
             }

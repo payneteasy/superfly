@@ -27,11 +27,6 @@
             </ul>
         </div>
 
-        <div class="form-check s-filter-items">
-            <input wicket:id="by-group" class="form-check-input" type="checkbox"/>
-            <label class="form-check-label">Show group</label>
-        </div>
-
     </form>
 
     <!--TABLE    -->
@@ -59,9 +54,7 @@
                         <td><span wicket:id="action-name">bond</span></td>
                         <td><span wicket:id="action-description">bond</span></td>
                         <td><span wicket:id="subsystem-name">bond</span></td>
-                        <wicket:enclosure child="group-name">
-                        <td><span class="badge badge-dark" wicket:id="group-name">bond</span></td>
-                        </wicket:enclosure>
+                        <td><a wicket:id="group-page-link"><wicket:container wicket:id="group-name"/></a></td>
                         <td>
                             <a href="#" wicket:id="copy-action" class="btn btn-sm btn-success">Copy</a>
                             <a href="#" wicket:id="unmount-action-from-group" class="btn btn-sm btn-danger">Unmount from group</a>

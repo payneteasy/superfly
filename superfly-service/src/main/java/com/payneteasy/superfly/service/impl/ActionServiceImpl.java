@@ -7,6 +7,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -38,8 +39,17 @@ public class ActionServiceImpl implements ActionService {
 
     public List<UIActionForList> getActions(long startFrom, long recordsCount,
                                             int orderFieldNumber, boolean asc, String actionNamePrefix,
-                                            String description, List<Long> subsystemIds, boolean byGroup) {
+                                            String description, List<Long> subsystemIds) {
         return actionDao.getActions(startFrom, recordsCount, orderFieldNumber,
+                asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
+                        .collectionToCommaDelimitedString(subsystemIds));
+    }
+
+    @Override
+    public List<UIActionWithGroupForList> getActionsWithGroup(long startFrom, long recordsCount,
+                                                              int orderFieldNumber, boolean asc, String actionNamePrefix,
+                                                              String description, List<Long> subsystemIds) {
+        return actionDao.getActionsWithGroup(startFrom, recordsCount, orderFieldNumber,
                 asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
                         .collectionToCommaDelimitedString(subsystemIds));
     }

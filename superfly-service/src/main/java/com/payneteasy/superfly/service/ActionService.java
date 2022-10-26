@@ -5,13 +5,18 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 
 import java.util.List;
 
 public interface ActionService {
     List<UIActionForList> getActions(long startFrom, long recordsCount,
             int orderFieldNumber, boolean asc, String actionNamePrefix,
-            String description, List<Long> subsystemIds, boolean byGroup);
+            String description, List<Long> subsystemIds);
+
+    List<UIActionWithGroupForList> getActionsWithGroup(long startFrom, long recordsCount,
+                                                       int orderFieldNumber, boolean asc, String actionNamePrefix,
+                                                       String description, List<Long> subsystemIds);
 
     void changeActionsLogLevel(List<Long> actnListLogOn,
             List<Long> actnListLogOff);

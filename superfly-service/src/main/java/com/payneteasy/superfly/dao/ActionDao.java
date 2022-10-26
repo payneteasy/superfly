@@ -8,6 +8,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.action.UIAction;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 
 /**
  * DAO to work with actions through jdbc-proc.
@@ -34,6 +35,11 @@ public interface ActionDao {
     List<UIActionForList> getActions(long startFrom, long recordsCount,
             int orderFieldNumber, String orderType, String actionNamePrefix,
             String description, String subsystemIds);
+
+    @AStoredProcedure(name = "ui_get_actions_list_with_group")
+    List<UIActionWithGroupForList> getActionsWithGroup(long startFrom, long recordsCount,
+                                                       int orderFieldNumber, String orderType, String actionNamePrefix,
+                                                       String description, String subsystemIds);
 
     @AStoredProcedure(name = "ui_change_actions_log_level")
     void changeActionsLogLevel(String actnListLogOn, String actnListLogOff);
