@@ -1,18 +1,17 @@
 package com.payneteasy.superfly.model.ui.action;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 
-import javax.persistence.Column;
-
-public class UIActionForList implements Serializable {
+public class UIActionInGroupForList implements Serializable {
     private long id;
     private String name;
     private String description;
     private boolean logAction;
     private String subsystemName;
     private boolean selected;
-    private long groupId;
     private String groupName;
+    private long groupId;
 
     @Column(name = "actn_id")
     public long getId() {
@@ -37,8 +36,8 @@ public class UIActionForList implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(String descroption) {
+        this.description = descroption;
     }
 
     @Column(name = "log_action")
@@ -67,19 +66,19 @@ public class UIActionForList implements Serializable {
         this.selected = selected;
     }
 
-    public long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
-    }
-
     public String getGroupName() {
         return groupName;
     }
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(long groupId) {
+        this.groupId = groupId;
     }
 }

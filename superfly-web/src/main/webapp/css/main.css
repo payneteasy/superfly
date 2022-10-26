@@ -350,3 +350,23 @@ tr.tabelRowPointer {
 .token-controls .wicket-ajax-indicator {
     margin: 7px 0 0;
 }
+.wicket-aa ul {
+    list-style: none;
+    padding: 0;
+    margin:0;
+}
+.wicket-aa > ul >li {
+    padding: 7px 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.wicket-aa > ul >li:hover {
+    background: #eee
+}
+.wicket-aa > ul >li + li {
+    border-top: 1px solid #d7d7d7;
+}
+.wicket-aa-container {
+    background: #fff;
+    box-shadow: 0px 7px 10px #c3c3c3;
+}

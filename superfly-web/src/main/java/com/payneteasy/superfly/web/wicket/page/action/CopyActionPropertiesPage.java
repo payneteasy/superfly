@@ -105,8 +105,15 @@ public class CopyActionPropertiesPage extends BasePage {
                 String actionForFilter = autoTextNameAction.getModelObject();
                 List<Long> subsystemId = new ArrayList<Long>();
                 subsystemId.add(subId);
-                List<UIActionForList> actions = actionService.getActions(first, count, getSortFieldIndex(), isAscending(),
-                        actionForFilter == null ? null : actionForFilter, null, subsystemId);
+                List<UIActionForList> actions = actionService.getActions(
+                        first,
+                        count,
+                        getSortFieldIndex(),
+                        isAscending(),
+                        actionForFilter,
+                        null,
+                        subsystemId
+                );
                 return actions.iterator();
             }
 
@@ -134,7 +141,7 @@ public class CopyActionPropertiesPage extends BasePage {
                 };
                 selectActionForCopy.add(new Label("action-name", action.getName()));
                 item.add(selectActionForCopy);
-                item.add(new Label("action-description", action.getDescroption()));
+                item.add(new Label("action-description", action.getDescription()));
             }
 
         };
