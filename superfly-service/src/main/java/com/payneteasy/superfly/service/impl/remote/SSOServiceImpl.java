@@ -182,6 +182,7 @@ public class SSOServiceImpl implements SSOService {
             result.setPublicKey(user.getPublicKey());
             result.setOtpOptional(user.isOtpOptional());
             result.setOtpType(user.getOtpType());
+            result.setOrganization(user.getOrganization());
         }
 
         return result;
