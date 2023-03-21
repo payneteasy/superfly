@@ -53,7 +53,7 @@ public class UserServiceImplTest {
         EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
-                assertEquals(DigestUtils.sha1Hex("secret{c3pio}"), user.getPassword());
+                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
                 assertNotNull(user.getHotpSalt());
                 user.setId(1L);
                 return RoutineResult.okResult();

@@ -2,17 +2,16 @@ package com.payneteasy.superfly.client;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
-import org.apache.commons.digester.Digester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
-import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,35 +33,18 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
     }
 
     public List<ActionDescription> collect() throws CollectionException {
-        List<ActionDescriptionBean> list = new ArrayList<ActionDescriptionBean>();
-        Digester digester = new Digester();
-        digester.push(list);
-        digester.setNamespaceAware(false);
-        digester.setValidating(false);
-
-        digester.addObjectCreate("actions/action", ActionDescriptionBean.class);
-        digester.addSetProperties("actions/action");
-        digester.addSetNext("actions/action", "add", ActionDescriptionBean.class.getName());
-
-        InputStream is = null;
+        List<ActionDescriptionBean> list;
         try {
-            is = resource.getInputStream();
-            digester.parse(is);
-        } catch (IOException e) {
-            throw new CollectionException(e);
-        } catch (SAXException e) {
-            throw new CollectionException(e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            JAXBContext jaxbContext = JAXBContext.newInstance(ActionDescriptionRoot.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+            ActionDescriptionRoot news = (ActionDescriptionRoot) jaxbUnmarshaller.unmarshal(resource.getFile());
+            list = new ArrayList<>(news.getActions());
+        } catch (JAXBException | IOException e) {
+            throw new RuntimeException(e);
         }
 
-        List<ActionDescription> actions = new ArrayList<ActionDescription>(list.size());
+        List<ActionDescription> actions = new ArrayList<>(list.size());
         for (ActionDescriptionBean bean : list) {
             ActionDescription action = new ActionDescription();
             BeanUtils.copyProperties(bean, action);

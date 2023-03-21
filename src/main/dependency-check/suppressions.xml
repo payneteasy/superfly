@@ -129,6 +129,22 @@
         <sha1>a9384989345a88c3ad71b2d6fcfb43cfc966e87f</sha1>
         <cve>CVE-2018-1258</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-core-5.5.8.jar
+        ]]></notes>
+        <sha1>7a93b88235e4a8ac4f46116e867cecbc3f524b48</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-web-5.5.8.jar
+        ]]></notes>
+        <sha1>3a3f6d8e593bce5624bfe0aa4a898bc1826d621a</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
+
+
 
     <!-- These CVEs point to old versions of xstream, not io.github.x-stream:mxparser.-->
     <suppress>
@@ -168,6 +184,7 @@
         <cve>CVE-2021-39152</cve>
         <cve>CVE-2021-39153</cve>
         <cve>CVE-2021-39154</cve>
+        <cve>CVE-2022-41966</cve>
     </suppress>
 
     <!-- These CVEs point to old versions of logback, not org.logback-extensions:logback-ext-spring. -->

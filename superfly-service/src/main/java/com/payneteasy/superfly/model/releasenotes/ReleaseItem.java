@@ -1,12 +1,16 @@
 package com.payneteasy.superfly.model.releasenotes;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Contains info about a release item.
  */
+@XmlRootElement
 public class ReleaseItem implements Serializable {
     private String type;
+
     private String name;
     private String description;
 
@@ -18,6 +22,7 @@ public class ReleaseItem implements Serializable {
         this.name = name;
     }
 
+    @XmlAttribute
     public String getType() {
         return type;
     }

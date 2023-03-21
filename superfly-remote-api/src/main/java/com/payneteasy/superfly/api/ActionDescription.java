@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.api;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**
@@ -29,6 +30,7 @@ public class ActionDescription implements Serializable {
         this.description = description;
     }
 
+    @XmlAttribute
     public String getName() {
         return name;
     }
@@ -37,6 +39,7 @@ public class ActionDescription implements Serializable {
         this.name = name;
     }
 
+    @XmlAttribute
     public String getDescription() {
         return description;
     }

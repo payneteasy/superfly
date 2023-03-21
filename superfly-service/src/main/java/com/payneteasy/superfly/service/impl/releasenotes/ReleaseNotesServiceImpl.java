@@ -1,20 +1,19 @@
 package com.payneteasy.superfly.service.impl.releasenotes;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.digester.Digester;
+import com.payneteasy.superfly.model.releasenotes.News;
+import com.payneteasy.superfly.model.releasenotes.Release;
+import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.xml.sax.SAXException;
 
-import com.payneteasy.superfly.model.releasenotes.Release;
-import com.payneteasy.superfly.model.releasenotes.ReleaseItem;
-import com.payneteasy.superfly.service.releasenotes.ReleaseNotesService;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 public class ReleaseNotesServiceImpl implements ReleaseNotesService {
 
@@ -24,35 +23,19 @@ public class ReleaseNotesServiceImpl implements ReleaseNotesService {
 
     private List<Release> listReleaseNotes;
 
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
     public synchronized List<Release> getReleaseNotes() {
-        if (listReleaseNotes == null) {
-            listReleaseNotes = new ArrayList<Release>();
-            Digester digester = new Digester();
-            digester.push(listReleaseNotes);
-            digester.addObjectCreate("news/release", Release.class);
-            digester.addSetProperties("news/release", "number", "number");
-            digester.addSetProperties("news/release", "date", "date");
-            digester.addObjectCreate("news/release/item", ReleaseItem.class);
-            digester.addSetProperties("news/release/item", "type", "type");
-            digester.addBeanPropertySetter("news/release/item/name", "name");
-            digester.addBeanPropertySetter("news/release/item/description", "description");
-            digester.addSetNext("news/release/item/name", "addItem");
-            digester.addSetNext("news/release", "add", Release.class.getName());
+        if (listReleaseNotes != null) {
+            return listReleaseNotes;
+        }
 
-            try {
-                digester.parse(resource.getInputStream());
-            } catch (IOException e) {
-                logger.error("Could not parse release-notes.xml", e);
-
-            } catch (SAXException e) {
-                logger.error("Could not parse release-notes.xml", e);
-            }
-
-            listReleaseNotes = Collections.unmodifiableList(listReleaseNotes);
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(News.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            News news = (News) jaxbUnmarshaller.unmarshal(resource.getFile());
+            listReleaseNotes = Collections.unmodifiableList(news.getReleases());
+        } catch (JAXBException | IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
 
         return listReleaseNotes;

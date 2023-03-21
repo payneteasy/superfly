@@ -1,17 +1,23 @@
 package com.payneteasy.superfly.model.releasenotes;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Contains info about a release.
  */
+@XmlRootElement
 public class Release implements Serializable {
-    private List<ReleaseItem> items = new ArrayList<ReleaseItem>();
+    private List<ReleaseItem> items = new ArrayList<>();
     private String number;
     private String date;
 
+    @XmlElement(name = "item")
     public List<ReleaseItem> getItems() {
         return items;
     }
@@ -24,6 +30,7 @@ public class Release implements Serializable {
         items.add(itemBean);
     }
 
+    @XmlAttribute
     public String getDate() {
         return date;
     }
@@ -32,6 +39,7 @@ public class Release implements Serializable {
         this.date = date;
     }
 
+    @XmlAttribute
     public String getNumber() {
         return number;
     }
