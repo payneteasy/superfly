@@ -339,4 +339,13 @@
         <cve>CVE-2012-5882</cve>
         <cve>CVE-2012-5883</cve>
     </suppress>
+
+    <!-- Suppressing as bcpg is not openpgp -->
+    <suppress>
+        <notes><![CDATA[
+        file name: bcpg-jdk15on-1.70.jar
+        ]]></notes>
+        <sha1>062f72ec06f31a6c31a3f3355fce0384b21126d7</sha1>
+        <cpe>cpe:/a:openpgp:openpgp:1.70</cpe>
+    </suppress>
 </suppressions>
