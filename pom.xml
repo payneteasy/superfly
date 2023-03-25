@@ -879,6 +879,6 @@
         <java.version>1.8</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>
         <fail.on.dup.dependency>true</fail.on.dup.dependency>
-        <owasp.dependencyCheck.version>5.0.0-M3</owasp.dependencyCheck.version>
+        <owasp.dependencyCheck.version>8.2.1</owasp.dependencyCheck.version>
     </properties>
 </project>
