@@ -11,7 +11,13 @@
     <sec:http security="none" pattern="/sso/**"/>
     <sec:http security="none" pattern="/management/version.txt"/>
 
-    <sec:http auto-config="false" entry-point-ref="authenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
+    <sec:http
+        auto-config="false"
+        entry-point-ref="authenticationEntryPoint"
+        access-decision-manager-ref="accessDecisionManager"
+    >
+
+        <sec:custom-filter ref="x509AuthenticationFilter" position="X509_FILTER"/>
         <sec:custom-filter ref="passwordAuthenticationProcessingFilter" before="CAS_FILTER"/>
         <sec:custom-filter ref="initOtpAuthenticationProcessingFilter" after="BASIC_AUTH_FILTER"/>
         <sec:custom-filter ref="otpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
@@ -34,17 +40,17 @@
         
         <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
         <sec:anonymous/>
-        <sec:x509 user-service-ref="subsystemUserDetailsService"/>
 
         <!-- CSRF protection is disabled because for forms we use Wicket
              which has a protection of its own -->
         <sec:csrf disabled="true"/>
 
     </sec:http>
-    
+
     <sec:authentication-manager alias="authenticationManager">
         <sec:authentication-provider ref="passwordAuthenticationProvider"/>
         <sec:authentication-provider ref="otpAuthenticationProvider"/>
+        <sec:authentication-provider ref="x509PreAuthenticatedAuthenticationProvider"/>
     </sec:authentication-manager>
     
     <bean id="authenticationEntryPoint" class="com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint">
@@ -89,12 +95,24 @@
         </property>
     </bean>
 
+    <bean id="x509AuthenticationFilter" class="org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="continueFilterChainOnUnsuccessfulAuthentication" value="false"/>
+        <property name="authenticationFailureHandler">
+            <bean class="com.payneteasy.superfly.security.x509.X509EFailureHandler"/>
+        </property>
+    </bean>
+
     <bean id="checkRequiredInitOtpPostProcessor" class="com.payneteasy.superfly.web.security.CheckRequiredInitOtpAuthenticationPostProcessor">
         <property name="localSecurityService" ref="localSecurityService"/>
         <property name="forceMultiFactorAuthMethod" ref="forceMfaMethod"/>
         <property name="enableMultiFactorAuth" ref="mfaEnabled"/>
     </bean>
-    
+
+    <bean id="x509PreAuthenticatedAuthenticationProvider" class="com.payneteasy.superfly.security.x509.X509PreAuthenticatedAuthenticationProvider">
+        <constructor-arg ref="subsystemUserDetailsService"/>
+    </bean>
+
     <bean id="passwordAuthenticationProvider" class="com.payneteasy.superfly.security.CompoundAuthenticationProvider">
         <property name="delegateProvider">
             <bean class="com.payneteasy.superfly.web.security.SuperflyLocalAuthenticationProvider">
@@ -138,6 +156,7 @@
     
     <bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
         <property name="subsystemService" ref="subsystemService"/>
+        <property name="loggerSink" ref="loggerSink" />
     </bean>
 
     <bean id="customHttpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">

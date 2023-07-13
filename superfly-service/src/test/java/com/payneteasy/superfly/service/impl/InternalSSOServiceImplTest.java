@@ -26,7 +26,6 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.easymock.IAnswer;
@@ -45,14 +44,12 @@ public class InternalSSOServiceImplTest {
     private UserService userService;
     private SessionService sessionService;
     private InternalSSOServiceImpl internalSSOService;
-    private HOTPProvider hotpProvider;
     private HOTPService hotpService;
 
     @Before
     public void setUp() {
         userService = createStrictMock(UserService.class);
         sessionService = createStrictMock(SessionService.class);
-        hotpProvider = createMock(HOTPProvider.class);
         hotpService = createMock(HOTPService.class);
         InternalSSOServiceImpl service = new InternalSSOServiceImpl();
         service.setUserService(userService);
@@ -117,7 +114,7 @@ public class InternalSSOServiceImplTest {
     }
 
     @Test
-    public void testAuthenticateHOTP() {
+    public void testAuthenticateOTP() {
 //        expect(hotpProvider.authenticate(null, "pete", "123456")).andReturn(true);
 //        replay(hotpProvider);
 //        assertTrue(internalSSOService.authenticateHOTP(null, "pete", "123456"));
