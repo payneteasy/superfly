@@ -1,7 +1,6 @@
 package com.payneteasy.superfly.security.x509;
 
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ public class X509EFailureHandler implements AuthenticationFailureHandler {
       HttpServletResponse response,
       AuthenticationException exception
   ) throws IOException {
-    request.setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, exception);
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     writeTextMessage(response, exception);
 
