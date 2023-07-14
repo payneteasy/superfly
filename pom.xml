@@ -868,7 +868,7 @@
     <properties>
         <jdbcproc.version>1.1-4</jdbcproc.version>
         <slf4j.version>1.7.12</slf4j.version>
-        <spring.version>5.3.27</spring.version>
+        <spring.version>5.3.29</spring.version>
         <spring.security.version>5.5.8</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
