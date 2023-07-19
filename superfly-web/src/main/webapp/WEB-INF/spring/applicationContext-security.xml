@@ -23,7 +23,7 @@
         <sec:custom-filter ref="otpAuthenticationProcessingFilter" before="FORM_LOGIN_FILTER"/>
 
         <sec:custom-filter ref="insufficientAuthenticationHandlingFilter" before="FILTER_SECURITY_INTERCEPTOR"/>
-    
+
         <!--
             If you're not planning to use client SSL auth to protect your subsystem
             calls, change 'access' property to isAnonymous().
@@ -37,8 +37,8 @@
         <sec:intercept-url pattern="/remoting/basic.hessian.service" access="isAnonymous()"/>
 
         <sec:intercept-url pattern="/**" access="hasAnyAuthority('ROLE_ADMIN','ROLE_ACTION_TEMP_PASSWORD')"/>
-        
-        <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
+
+        <sec:logout logout-url="/j_spring_security_logout"  success-handler-ref="logoutSuccessHandler"  />
         <sec:anonymous/>
 
         <!-- CSRF protection is disabled because for forms we use Wicket
@@ -52,7 +52,12 @@
         <sec:authentication-provider ref="otpAuthenticationProvider"/>
         <sec:authentication-provider ref="x509PreAuthenticatedAuthenticationProvider"/>
     </sec:authentication-manager>
-    
+
+    <bean id="logoutSuccessHandler" class="com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler">
+        <constructor-arg value="/"/>
+        <property name="loggerSink" ref="loggerSink" />
+    </bean>
+
     <bean id="authenticationEntryPoint" class="com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint">
         <constructor-arg name="loginFormUrl" value="/login"/>
         <property name="insufficientAuthenticationMapping">
@@ -62,7 +67,7 @@
             </map>
         </property>
     </bean>
-    
+
     <bean id="abstractAuthenticationProcessingFilter" abstract="true">
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="authenticationFailureHandler">
@@ -71,12 +76,12 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean id="passwordAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
         <property name="csrfValidator" ref="csrfValidator"/>
     </bean>
-    
+
     <bean id="otpAuthenticationProcessingFilter" class="com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter"
             parent="abstractAuthenticationProcessingFilter">
         <property name="csrfValidator" ref="csrfValidator"/>
@@ -153,7 +158,7 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean id="subsystemUserDetailsService" class="com.payneteasy.superfly.web.security.SubsystemUserDetailsService">
         <property name="subsystemService" ref="subsystemService"/>
         <property name="loggerSink" ref="loggerSink" />
@@ -191,7 +196,7 @@
             </property>
         </bean>
      -->
- 
+
     <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <constructor-arg name="decisionVoters">
             <list>
