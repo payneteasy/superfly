@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration scan="true" scanPeriod="2 seconds">
+<configuration>
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-    <target>System.out</target>
     <encoder>
-      <pattern>%d %t %p [%c] - %m%n</pattern>
+      <pattern>%-5p %-26.26c{1} - %m%n</pattern>
     </encoder>
   </appender>
-
+  <logger name="com.payneteasy" level="INFO"/>
   <root level="INFO">
     <appender-ref ref="console"/>
   </root>

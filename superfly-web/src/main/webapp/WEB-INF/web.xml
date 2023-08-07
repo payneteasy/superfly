@@ -115,6 +115,11 @@
         <param-value>GOOGLE_AUTH_OTP_SALT</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>logbackConfigLocation</param-name>
+        <param-value>file:src/test/resources/logback-test.xml</param-value>
+    </context-param>
+
     <listener>
         <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
     </listener>

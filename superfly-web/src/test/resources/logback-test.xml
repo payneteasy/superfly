@@ -1,14 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
 <configuration scan="true" scanPeriod="2 seconds">
+
+  <appender name="syslog" class="ch.qos.logback.classic.net.SyslogAppender">
+    <SyslogHost>localhost</SyslogHost>
+    <SuffixPattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [SUPERFLY-UI] - %m%n</SuffixPattern>
+    <!--Facility property is mandatory.-->
+    <!--Assuming default facility of USER.-->
+    <Facility>USER</Facility>
+  </appender>
+
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <target>System.out</target>
     <encoder>
-      <pattern>%d %t %p [%c] - %m%n</pattern>
+      <pattern>ui %d{HH:mm:ss} %-15t %-5p %-26.26c{1} - %m%n</pattern>
     </encoder>
   </appender>
 
+  <appender name="file" class="ch.qos.logback.core.FileAppender">
+    <file>target/output.log</file>
+    <encoder>
+      <pattern>ui %d{HH:mm:ss} %-15t %-5p %-26.26c{1} - %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="com.payneteasy" level="INFO"/>
+
+  <!--
+    <logger name="com.googlecode.jdbcproc.daofactory.impl">
+        <level value="INFO"/>
+    </logger>
+  -->
+
   <root level="INFO">
     <appender-ref ref="console"/>
+    <appender-ref ref="file"/>
   </root>
 </configuration>
