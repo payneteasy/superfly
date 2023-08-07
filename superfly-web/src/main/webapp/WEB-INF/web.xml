@@ -28,10 +28,6 @@
         </param-value>
     </context-param>
     <context-param>
-        <param-name>logbackConfigLocation</param-name>
-        <param-value>/WEB-INF/logback.xml</param-value>
-    </context-param>
-    <context-param>
         <param-name>configuration</param-name>
         <param-value>deployment</param-value>
     </context-param>
@@ -113,11 +109,6 @@
     <context-param>
         <param-name>superfly-cryptoSalt</param-name>
         <param-value>GOOGLE_AUTH_OTP_SALT</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>logbackConfigLocation</param-name>
-        <param-value>file:src/test/resources/logback-test.xml</param-value>
     </context-param>
 
     <listener>
