@@ -143,6 +143,13 @@
         <sha1>3a3f6d8e593bce5624bfe0aa4a898bc1826d621a</sha1>
         <cve>CVE-2018-1258</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        file name: spring-security-config-5.5.8.jar
+        ]]></notes>
+        <sha1>0d718f457cba424663223fbd27e7704ceb9cfee4</sha1>
+        <cve>CVE-2018-1258</cve>
+    </suppress>
 
 
 
