@@ -52,7 +52,7 @@ public abstract class BaseApplication extends WebApplication {
         }
 
         getJavaScriptLibrarySettings().setJQueryReference(
-                new UrlResourceReference(Url.parse("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"))
+                new UrlResourceReference(Url.parse("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"))
         );
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
