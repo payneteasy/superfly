@@ -112,7 +112,7 @@
     </context-param>
 
     <listener>
-        <listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
+        <listener-class>ch.qos.logback.classic.servlet.LogbackServletContextListener</listener-class>
     </listener>
     <listener>
         <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
