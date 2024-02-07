@@ -9,4 +9,10 @@
     <artifactId>superfly-remote-api</artifactId>
     <name>Superfly Remote API</name>
     <description>API classes for Superfly server which can be used by clients</description>
+    <dependencies>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
+    </dependencies>
 </project>
