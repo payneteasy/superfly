@@ -19,8 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.Cookie;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author rpuch
@@ -42,11 +42,7 @@ public class SSOUtils {
     }
 
     private static String encodeForUrl(String subsystemToken) {
-        try {
-            return URLEncoder.encode(subsystemToken, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return URLEncoder.encode(subsystemToken, StandardCharsets.UTF_8);
     }
 
     public static void redirectToCantLoginErrorPage(Component component, SSOLoginData loginData, String aReason) {

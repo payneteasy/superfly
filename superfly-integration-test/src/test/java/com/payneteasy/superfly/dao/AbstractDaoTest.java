@@ -7,6 +7,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 @ContextConfiguration({"/spring/test-datasource.xml", "/spring/test-dao.xml"})
@@ -50,7 +51,7 @@ public abstract class AbstractDaoTest extends AbstractJUnit4SpringContextTests {
         private final LoggerSink loggerSink;
 
         public LoggerThread(InputStream is, LoggerSink loggerSink) {
-            this.scanner = new Scanner(is, "utf-8");
+            this.scanner = new Scanner(is, StandardCharsets.UTF_8);
             this.loggerSink = loggerSink;
         }
 
