@@ -10,10 +10,12 @@
     <description>Contains crypto services like OpenPGP-compatible encryption</description>
     <dependencies>
         <dependency>
+            <!--Justification: Bouncy Castle API for cryptography functions -->
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpg-jdk18on</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

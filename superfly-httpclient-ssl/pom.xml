@@ -10,10 +10,12 @@
     <description>Extensions to HttpClient which allow to use client SSL authentication as well as server trust check</description>
     <dependencies>
         <dependency>
+            <!--Justification: HTTP requests handling library. -->
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>

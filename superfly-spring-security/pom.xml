@@ -11,38 +11,46 @@
 
     <dependencies>
         <dependency>
+            <!--Justification: Remote API for interacting with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Common utilities and shared functionality for SuperFly components -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-common</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Client library for interaction with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Core functionality of the Spring framework -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <optional>true</optional>
             <version>${spring.security.version}</version>
         </dependency>
         <dependency>
+            <!--Justification: Provides web security functionality and access control for web applications -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
