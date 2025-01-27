@@ -124,56 +124,67 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <!--Justification: Remote API for interacting with SuperFly services -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-remote-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Core service implementation for SuperFly authentication/authorization -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: SSL-enabled HTTP client for secure communication with SuperFly services -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-httpclient-ssl</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Common utilities and shared functionality for SuperFly components -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Client library for interaction with SuperFly services -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Client library with optional features for SuperFly interaction -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-client-opt</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-spring-security</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Service Provider Interface (SPI) for SuperFly, allowing extensibility -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: SPI support for integrating SuperFly with other services/components -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-spi-support</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Cryptography support for SuperFly, handling secure data operations -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-crypto</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Wicket integration for SuperFly for building web applications -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-wicket</artifactId>
                 <version>${project.version}</version>
@@ -186,6 +197,7 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Core functionality of the Spring framework -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring.version}</version>
@@ -196,42 +208,58 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
+                <!--Justification: Provides support for Spring's bean factory and dependency injection -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Aspect-oriented programming support in Spring -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Central interface to the Spring IoC container -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Additional support for application context features -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context-support</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: JDBC support for database operations -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Transaction management support in Spring -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Web-related functionality in Spring -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
             <dependency>
+                <!--Justification: MVC framework for building web applications -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
@@ -258,7 +286,9 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
+                <!--Justification: Factory for creating DAO objects with JDBC -->
                 <artifactId>jdbc-proc-daofactory</artifactId>
                 <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
                 <version>${jdbcproc.version}</version>
@@ -269,34 +299,41 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
+                <!--Justification: Logging API for the application -->
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>1.3.12</version>
             </dependency>
             <dependency>
+                <!--Justification: Core library for Logback, necessary for logging configurations and functionality -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>1.3.12</version>
             </dependency>
             <dependency>
+                <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>3.1.0</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
@@ -340,6 +377,7 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification: Provides web security functionality and access control for web applications -->
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-web</artifactId>
                 <version>${spring.security.version}</version>
@@ -363,6 +401,7 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification: Provides configuration support for Spring Security, enabling security annotations and configuration methods -->
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-config</artifactId>
                 <version>${spring.security.version}</version>
@@ -415,16 +454,19 @@
                         </dependency>
              -->
             <dependency>
+                <!--Justification: Provides Aspect-Oriented Programming features for Java, allowing for modularization of cross-cutting concerns -->
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>2.3.2</version>
             </dependency>
             <dependency>
+                <!--Justification: HTTP requests handling library. -->
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
@@ -435,12 +477,14 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!--Justification: Utilities for file and stream operations. -->
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.15.1</version>
+                <version>2.17.0</version>
             </dependency>
             <dependency>
+                <!--Justification: Google 2FA library. -->
                 <groupId>com.warrenstrange</groupId>
                 <artifactId>googleauth</artifactId>
                 <version>1.5.0</version>
@@ -456,12 +500,14 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification: Encoders and decoders library. -->
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.16.0</version>
+                <version>1.17.1</version>
             </dependency>
             <dependency>
                 <!--override googleauth's httpclient version-->
+                <!--Justification: Application configuration via environment variables-->
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>4.5.13</version>
@@ -474,34 +520,37 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Required for XRemoting functionality-->
                 <groupId>com.googlecode.xremoting</groupId>
                 <artifactId>xremoting-core</artifactId>
                 <version>1.0-10</version>
             </dependency>
             <dependency>
+                <!--Justification: Provides XML serialization capabilities-->
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
-                <version>1.4.20</version>
+                <version>1.4.21</version>
             </dependency>
-
             <dependency>
+                <!--Justification: Used for Hessian serialization-->
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
                 <version>4.0.66</version>
             </dependency>
-
             <dependency>
+                <!--Justification: Mustache template rendering functionality-->
                 <groupId>com.github.spullara.mustache.java</groupId>
                 <artifactId>compiler</artifactId>
                 <version>0.9.6</version>
             </dependency>
-
             <dependency>
+                <!--Justification: Velocity template engine support-->
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
                 <version>2.3</version>
             </dependency>
             <dependency>
+                <!--Justification: For sending emails-->
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
                 <version>1.4</version>
@@ -509,34 +558,39 @@
 
             <!-- WICKET DEPENDENCIES -->
             <dependency>
+                <!--Justification: Render html UI-->
                 <groupId>org.apache.wicket</groupId>
                 <artifactId>wicket</artifactId>
                 <version>${wicket.version}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
+                <!--Justification: Integration between wicket and spring IOC-->
                 <groupId>org.apache.wicket</groupId>
                 <artifactId>wicket-spring</artifactId>
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Additional UI components for wicket framework-->
                 <groupId>org.apache.wicket</groupId>
                 <artifactId>wicket-extensions</artifactId>
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Date/Time components and utilities for Wicket-->
                 <groupId>org.apache.wicket</groupId>
                 <artifactId>wicket-datetime</artifactId>
                 <version>${wicket.version}</version>
             </dependency>
-
             <dependency>
+                <!--Justification: Support for multipart file upload functionality to servlets and web applications-->
                 <groupId>commons-fileupload</groupId>
                 <artifactId>commons-fileupload</artifactId>
                 <version>1.5</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Byte Code Generation Library -->
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>3.2.5</version>
@@ -552,35 +606,42 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification Justification: Java bytecode manipulation framework -->
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>5.2</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Commons Database Connection Pooling -->
                 <groupId>commons-dbcp</groupId>
                 <artifactId>commons-dbcp</artifactId>
                 <version>1.2.2</version>
             </dependency>
             <dependency>
+                <!--Justification:  Commons Object Pooling Library-->
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>1.5.3</version>
             </dependency>
             <dependency>
+                <!--Justification: MySQL database connectivity -->
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>8.0.28</version>
             </dependency>
+
             <dependency>
+                <!--Justification: Spring framework support for testing -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-test</artifactId>
                 <version>${spring.version}</version>
                 <scope>test</scope>
             </dependency>
 
-            <!--  JETTY DEPENDENCIES FOR TESTING  -->
+            <!-- JETTY DEPENDENCIES FOR TESTING -->
             <dependency>
+                <!--Justification: Jetty server for testing purposes -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
                 <version>${jetty.version}</version>
@@ -593,12 +654,14 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification: Provides utility classes for Jetty server, enhancing operational capabilities -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
                 <version>${jetty.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-plus</artifactId>
                 <version>${jetty.version}</version>
@@ -606,12 +669,14 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
                 <version>1.75</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Provides SSL/TLS support with fixes for specific vulnerabilities -->
                 <groupId>ca.juliusdavies</groupId>
                 <artifactId>not-yet-commons-ssl</artifactId>
                 <!-- This version contains a fix that implements the same thing
@@ -628,25 +693,29 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Reflection library to obtain metadata about classes -->
                 <groupId>org.reflections</groupId>
                 <artifactId>reflections</artifactId>
                 <version>0.9.11</version>
             </dependency>
 
             <dependency>
-                <!--Override org.reflections:reflections guava-->
+                <!-- Override org.reflections:reflections guava -->
+                <!--Justification: Update Guava to the latest version for performance improvements and bug fixes -->
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>32.0.0-jre</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Provides standard annotations used in Java applications -->
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>1.3.2</version>
             </dependency>
 
             <dependency>
+                <!--Justification: Mocking framework for unit testing in Java -->
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>5.2.0</version>
@@ -660,6 +729,7 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Library for validating passwords and implementing password policies -->
                 <groupId>org.passay</groupId>
                 <artifactId>passay</artifactId>
                 <version>1.6.1</version>
@@ -669,17 +739,20 @@
 
     <dependencies>
         <dependency>
+            <!--Justification: JUnit is a widely used testing framework for Java applications -->
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: Easymock is a framework for creating mock objects in unit tests -->
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: CGLIB is used for creating proxies and mock objects in unit tests -->
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <scope>test</scope>

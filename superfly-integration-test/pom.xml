@@ -24,26 +24,31 @@
 
     <dependencies>
         <dependency>
+            <!--Justification: Core service implementation for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-service</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <!--Justification: Spring framework support for testing -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: Commons Database Connection Pooling -->
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification:  Commons Object Pooling Library-->
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: MySQL database connectivity -->
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>test</scope>

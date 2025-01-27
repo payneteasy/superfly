@@ -12,12 +12,14 @@
 
         <!-- Superfly API -->
         <dependency>
+            <!--Justification: Remote API for interacting with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
 
         <!-- Access via Hessian protocol -->
         <dependency>
+            <!--Justification: Used for Hessian serialization-->
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
             <optional>true</optional>
@@ -25,13 +27,16 @@
 
         <!-- Mustache template engine -->
         <dependency>
+            <!--Justification: Mustache template rendering functionality-->
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
             <optional>true</optional>
         </dependency>
 
         <!-- Spring Core -->
+
         <dependency>
+            <!--Justification: Core functionality of the Spring framework -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>
@@ -45,12 +50,14 @@
 
         <!-- for Spring AOP -->
         <dependency>
+            <!--Justification: Aspect-oriented programming support in Spring -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <optional>true</optional>
         </dependency>
 
         <dependency>
+            <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
@@ -62,18 +69,21 @@
         <!--</dependency>-->
 
         <dependency>
+            <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <optional>true</optional>
         </dependency>
 
         <dependency>
+            <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
+            <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>

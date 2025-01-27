@@ -11,131 +11,159 @@
     <description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
     <dependencies>
         <dependency>
+            <!--Justification: Core service implementation for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-service</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Client library with optional features for SuperFly interaction -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client-opt</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-spring-security</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Cryptography support for SuperFly, handling secure data operations -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-crypto</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Wicket integration for SuperFly for building web applications -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-wicket</artifactId>
         </dependency>
 
 
         <dependency>
+            <!--Justification: Web-related functionality in Spring -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: MVC framework for building web applications -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides configuration support for Spring Security, enabling security annotations and configuration methods -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides web security functionality and access control for web applications -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
 
         <dependency>
+            <!--Justification: Required for XRemoting functionality-->
             <groupId>com.googlecode.xremoting</groupId>
             <artifactId>xremoting-core</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides XML serialization capabilities-->
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
         </dependency>
 
         <dependency>
+            <!--Justification: Used for Hessian serialization-->
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
         </dependency>
 
         <!-- WICKET DEPENDENCIES -->
         <dependency>
+            <!--Justification: Render html UI-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
             <type>pom</type>
         </dependency>
         <dependency>
+            <!--Justification: Integration between wicket and spring IOC-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Additional UI components for wicket framework-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Date/Time components and utilities for Wicket-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-datetime</artifactId>
         </dependency>
 
         <!--  JETTY DEPENDENCIES FOR TESTING  -->
         <dependency>
+            <!--Justification: Jetty server for testing purposes -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--Justification: Provides utility classes for Jetty server, enhancing operational capabilities -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--Justification: MySQL database connectivity -->
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
+            <!--Justification: Commons Database Connection Pooling -->
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification:  Commons Object Pooling Library-->
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
+            <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Core library for Logback, necessary for logging configurations and functionality -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Byte Code Generation Library -->
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <scope>compile</scope>

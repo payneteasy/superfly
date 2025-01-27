@@ -11,19 +11,23 @@
     <description>Service layer classes, including DAO layer too</description>
     <dependencies>
         <dependency>
+            <!--Justification: Common utilities and shared functionality for SuperFly components -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-common</artifactId>
         </dependency>
 
         <dependency>
+            <!--Justification: Remote API for interacting with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Service Provider Interface (SPI) for SuperFly, allowing extensibility -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-spi</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Cryptography support for SuperFly, handling secure data operations -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-crypto</artifactId>
         </dependency>
@@ -34,70 +38,87 @@
         </dependency>
 
         <dependency>
+            <!--Justification: Core functionality of the Spring framework -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides support for Spring's bean factory and dependency injection -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Additional support for application context features -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: JDBC support for database operations -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Transaction management support in Spring -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Factory for creating DAO objects with JDBC -->
             <artifactId>jdbc-proc-daofactory</artifactId>
             <groupId>com.googlecode.jdbc-proc.jdbc-proc</groupId>
         </dependency>
         <dependency>
+            <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides Aspect-Oriented Programming features for Java, allowing for modularization of cross-cutting concerns -->
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: HTTP requests handling library. -->
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Velocity template engine support-->
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: For sending emails-->
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Google 2FA library. -->
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Encoders and decoders library. -->
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Library for validating passwords and implementing password policies -->
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
         </dependency>

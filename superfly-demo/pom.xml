@@ -95,6 +95,7 @@
             <version>1.1.2</version>
         </dependency>
         <dependency>
+            <!--Justification: Client library for interaction with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client</artifactId>
             <version>${superfly.version}</version>

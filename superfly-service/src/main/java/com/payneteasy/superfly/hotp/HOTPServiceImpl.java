@@ -39,6 +39,10 @@ public class HOTPServiceImpl implements HOTPService {
     private UserService userService;
     private CryptoService cryptoService;
 
+    public ThreadLocal<GoogleAuthenticator> getGoogleAuthenticator() {
+        return googleAuthenticator;
+    }
+
     @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;

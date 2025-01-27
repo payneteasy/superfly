@@ -14,62 +14,75 @@
             <artifactId>jaxb-impl</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: HTTP requests handling library. -->
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Core functionality of the Spring framework -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!--Justification: Provides support for Spring's bean factory and dependency injection -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!--Justification: Central interface to the Spring IoC container for test purpose-->
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <scope>test</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: Remote API for interacting with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Client library for interaction with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: SSL-enabled HTTP client for secure communication with SuperFly services -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-httpclient-ssl</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Provides SSL/TLS support with fixes for specific vulnerabilities -->
             <groupId>ca.juliusdavies</groupId>
             <artifactId>not-yet-commons-ssl</artifactId>
         </dependency>
 
         <dependency>
+            <!--Justification: Reflection library to obtain metadata about classes -->
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
         </dependency>
 
         <dependency>
+            <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
+            <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>

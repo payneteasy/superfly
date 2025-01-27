@@ -11,11 +11,13 @@
 
     <dependencies>
         <dependency>
+            <!--Justification: Render html UI-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
             <type>pom</type>
         </dependency>
         <dependency>
+            <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
