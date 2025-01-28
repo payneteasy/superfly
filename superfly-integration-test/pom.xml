@@ -8,6 +8,7 @@
     <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-integration-test</artifactId>
     <name>Superfly Integration Tests</name>
+    <description>Superfly Integration Tests with creating database</description>
 
     <profiles>
         <profile>
