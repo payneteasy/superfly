@@ -28,7 +28,7 @@ public abstract class AbstractDaoTest extends AbstractJUnit4SpringContextTests {
     }
 
     private static void createDb() throws IOException, InterruptedException {
-        Process proc = Runtime.getRuntime().exec("src/test/sh/create_test_database.sh");
+        Process proc = Runtime.getRuntime().exec(new String[]{"src/test/sh/create_test_database.sh"}, new String[]{});
         Thread stdout = new LoggerThread(proc.getInputStream(), new PrintingLoggerSink("STD: "));
         Thread stderr = new LoggerThread(proc.getErrorStream(), new PrintingLoggerSink("ERR: "));
         stdout.start();

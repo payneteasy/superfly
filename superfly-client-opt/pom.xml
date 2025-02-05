@@ -76,6 +76,12 @@
         </dependency>
 
         <dependency>
+            <!--Justification: Bouncy Castle API for cryptography functions -->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+        </dependency>
+
+        <dependency>
             <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
