@@ -901,9 +901,9 @@
                         <artifactId>dependency-check-maven</artifactId>
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
-                            <!--format>xml</format>   
+                            <!--format>xml</format>
                             <prettyPrint>true</prettyPrint>
-                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled-->  
+                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled-->
                             <!--skipDependencyManagement>false</skipDependencyManagement-->
                         </configuration>
                         <executions>
@@ -947,7 +947,7 @@
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>7.18.0</wicket.version>
-        <jetty.version>9.4.53.v20231009</jetty.version>
+        <jetty.version>9.4.57.v20241219</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
