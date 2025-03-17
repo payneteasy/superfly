@@ -5,42 +5,27 @@ import com.payneteasy.superfly.notification.LogoutNotification;
 import com.payneteasy.superfly.notification.NotificationException;
 import com.payneteasy.superfly.notification.UsersChangedNotification;
 import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
-import com.payneteasy.superfly.utils.SchedulerUtils;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-
+@Setter
+@Slf4j
 public class SendNotificationOnceJob extends BaseJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(SendNotificationOnceJob.class);
-
-    private String beanName;
+    private String               beanName;
     private AbstractNotification notification;
-    private int retriesLeft;
-
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
-    public void setNotification(AbstractNotification notification) {
-        this.notification = notification;
-    }
-
-    public void setRetriesLeft(int retriesLeft) {
-        this.retriesLeft = retriesLeft;
-    }
+    private int                  retriesLeft;
 
     @SuppressWarnings("unchecked")
     @Override
     protected void doExecute(JobExecutionContext context) throws SchedulerException {
         NotificationSendStrategy sendStrategy = getNotificationSendStrategy(context, beanName);
 
-        if(sendStrategy==null) {
-            logger.info("Notification strategy is null");
-            return ;
+        if (sendStrategy == null) {
+            log.info("Notification strategy is null");
+            return;
         }
 
         try {
@@ -52,7 +37,10 @@ public class SendNotificationOnceJob extends BaseJob {
                 throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
             }
         } catch (NotificationException e) {
-            logger.error("Error while trying to send a notification, no more retries, dropping: " + notification.toString(), e);
+            log.error("Error while trying to send a notification, no more retries, dropping: {}",
+                      notification.toString(),
+                      e
+            );
         }
     }
 

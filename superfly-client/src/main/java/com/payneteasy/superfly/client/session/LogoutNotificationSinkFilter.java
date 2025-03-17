@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.client.session;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import com.payneteasy.superfly.api.Notifications;
 import com.payneteasy.superfly.common.utils.StringUtils;

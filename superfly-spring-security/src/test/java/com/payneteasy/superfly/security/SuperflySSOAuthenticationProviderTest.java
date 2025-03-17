@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOService;
+import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
@@ -38,7 +39,7 @@ public class SuperflySSOAuthenticationProviderTest extends
 
     @Test
     public void testSuccess() {
-        expect(ssoService.exchangeSubsystemToken("token"))
+        expect(ssoService.exchangeSubsystemToken(new ExchangeSubsystemTokenRequest("token")))
                 .andReturn(createSSOUserWithOneRole());
         replay(ssoService);
         Authentication auth = provider.authenticate(createSSOAuthenticationRequest());
@@ -51,7 +52,7 @@ public class SuperflySSOAuthenticationProviderTest extends
 
     @Test
     public void testBadCredentials() {
-        expect(ssoService.exchangeSubsystemToken("bad-token")).andReturn(null);
+        expect(ssoService.exchangeSubsystemToken(new ExchangeSubsystemTokenRequest("bad-token"))).andReturn(null);
         replay(ssoService);
         try {
             provider.authenticate(new SSOAuthenticationRequest("bad-token"));
@@ -78,7 +79,7 @@ public class SuperflySSOAuthenticationProviderTest extends
 
     @Test
     public void testNoRoles() {
-        expect(ssoService.exchangeSubsystemToken("token")).andReturn(createSSOUserWithNoRoles());
+        expect(ssoService.exchangeSubsystemToken(new ExchangeSubsystemTokenRequest("token"))).andReturn(createSSOUserWithNoRoles());
         replay(ssoService);
         try {
             provider.authenticate(createSSOAuthenticationRequest());

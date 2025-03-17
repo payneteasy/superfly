@@ -3,6 +3,7 @@ package com.payneteasy.superfly.model.ui.smtp_server;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Base for SMTP server representations.
@@ -90,5 +91,21 @@ public abstract class AbstractSmtpServer implements Serializable {
 
     public void setSsl(boolean ssl) {
         this.ssl = ssl;
+    }
+
+    public void validate() {
+        Objects.requireNonNull(username, "'username' cannot be empty");
+        Objects.requireNonNull(password, "'password' cannot be empty");
+        Objects.requireNonNull(host, "'host' is empty");
+
+        if (host.isBlank()) {
+            throw new IllegalArgumentException("'host' cannot be blank");
+        }
+        if (username.isBlank()) {
+            throw new IllegalArgumentException("'username' cannot be blank");
+        }
+        if (password.isBlank()) {
+            throw new IllegalArgumentException("'password' cannot be blank");
+        }
     }
 }

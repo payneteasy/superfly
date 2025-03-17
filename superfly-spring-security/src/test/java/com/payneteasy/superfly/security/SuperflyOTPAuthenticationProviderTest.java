@@ -3,6 +3,7 @@ package com.payneteasy.superfly.security;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import org.easymock.EasyMock;
@@ -17,11 +18,10 @@ public class SuperflyOTPAuthenticationProviderTest extends
         AbstractSuperflyAuthenticationProviderTest {
 
     private SuperflyOTPAuthenticationProvider provider;
-    private SSOService ssoService;
 
     @Before
     public void setUp() {
-        ssoService = EasyMock.createMock(SSOService.class);
+        SSOService ssoService = EasyMock.createMock(SSOService.class);
         provider = new SuperflyOTPAuthenticationProvider();
         provider.setSsoService(ssoService);
     }
@@ -67,14 +67,14 @@ public class SuperflyOTPAuthenticationProviderTest extends
     @Test
     public void testNullCredentials() {
         try {
-            provider.authenticate(createBeforeHotpAuth(1, null));
+            provider.authenticate(createBeforeHotpAuth());
             fail();
         } catch (BadOTPValueException e) {
             // expected
         }
     }
 
-    protected CheckOTPToken createBeforeHotpAuth(int roleCount, String hotp) {
-        return new CheckOTPToken(createSSOUser(roleCount), hotp);
+    protected CheckOTPToken createBeforeHotpAuth() {
+        return new CheckOTPToken(createSSOUser(1), null);
     }
 }

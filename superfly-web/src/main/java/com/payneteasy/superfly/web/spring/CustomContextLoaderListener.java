@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.spring;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.ContextLoaderListener;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  * Overrides context customization to change locations list depending on

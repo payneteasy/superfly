@@ -10,16 +10,18 @@ import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.utils.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 @Transactional
 public class ActionServiceImpl implements ActionService {
     private ActionDao actionDao;
 
-    @Required
+    @Autowired
     public void setActionDao(ActionDao actionDao) {
         this.actionDao = actionDao;
     }
@@ -58,9 +60,9 @@ public class ActionServiceImpl implements ActionService {
         return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
     }
 
-    public void copyActionProperties(long actionId, long actionIdCopy,
+    public RoutineResult copyActionProperties(long actionId, long templateActionId,
                                      boolean userPrivileges) {
-        actionDao.copyActionProperties(actionId, actionIdCopy, userPrivileges);
+        return actionDao.copyActionProperties(actionId, templateActionId, userPrivileges);
     }
 
     public UIAction getAction(long actionId) {

@@ -21,22 +21,22 @@ insert into users
       (
          comp_comp_id, user_name, user_password,salt, is_account_locked, logins_failed, last_login_date, email,name,surname,secret_question,secret_answer,hotp_salt,create_date
 
-      ) values 
+      ) values
     (null, 'admin', '0d7d1771e08bc48f6fe90b14a89c505d344a0f6f1a54de3b10a93466cb235f96','3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f', 'N', 0, null,'pci@example.org','name','surname','','','',now())
 
   on duplicate key update user_password='0d7d1771e08bc48f6fe90b14a89c505d344a0f6f1a54de3b10a93466cb235f96',
-                          salt='3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f',
-                          email='pci@example.org',name='name',surname='surname', 
+                              salt='3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f',
+                          email='pci@example.org',name='name',surname='surname',
                           secret_question='',secret_answer=''
 
 ;
 
-delete from user_roles 
+delete from user_roles
  where user_user_id in (select user_id from users where user_name = 'admin')
-       and 
+       and
        role_role_id in (select role_id from roles where role_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly'))
 ;
-       
+
 
 insert into user_roles
       (
@@ -45,12 +45,12 @@ insert into user_roles
     ((select user_id from users where user_name = 'admin'), (select role_id from roles where role_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly')))
 ;
 
-delete from user_role_actions 
+delete from user_role_actions
   where  user_user_id in (select user_id from users where user_name = 'admin')
          and
          ract_ract_id in (select ract_id from role_actions where role_role_id = (select role_id from roles where role_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly')) and actn_actn_id = (select actn_id from actions where action_name = 'admin' and ssys_ssys_id = (select ssys_id from subsystems where subsystem_name = 'superfly')))
 ;
- 
+
 
 insert into user_role_actions
       (

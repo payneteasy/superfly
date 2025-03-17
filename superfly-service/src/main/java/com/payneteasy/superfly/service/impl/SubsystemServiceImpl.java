@@ -9,7 +9,8 @@ import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
@@ -21,6 +22,7 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.SubsystemService;
 
+@Service
 @Transactional
 public class SubsystemServiceImpl implements SubsystemService {
 
@@ -31,22 +33,22 @@ public class SubsystemServiceImpl implements SubsystemService {
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
 
-    @Required
+    @Autowired
     public void setSubsystemDao(SubsystemDao subsystemDao) {
         this.subsystemDao = subsystemDao;
     }
 
-    @Required
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
         this.javaMailSenderPool = javaMailSenderPool;
     }

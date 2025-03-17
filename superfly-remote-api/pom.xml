@@ -14,5 +14,10 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
         </dependency>
+        <dependency>
+            <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
 </project>

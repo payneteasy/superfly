@@ -2,13 +2,12 @@ package com.payneteasy.superfly.web.security;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
-import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.service.LocalSecurityService;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.security.core.Authentication;
-
-import javax.annotation.PostConstruct;
 
 /**
  * Post processor for init user's OTP settings if need
@@ -16,23 +15,19 @@ import javax.annotation.PostConstruct;
  *
  * @author Igor Vasilev
  */
+@Accessors(chain = true)
 public class CheckRequiredInitOtpAuthenticationPostProcessor implements
         AuthenticationPostProcessor {
 
+    @Setter
     private LocalSecurityService localSecurityService;
-    private OTPType forceMultiFactorAuthMethod;
-    private boolean enableMultiFactorAuth;
+    private OTPType              forceMultiFactorAuthMethod;
+    @Setter
+    private boolean              enableMultiFactorAuth;
 
-    public void setLocalSecurityService(LocalSecurityService localSecurityService) {
-        this.localSecurityService = localSecurityService;
-    }
-
-    public void setForceMultiFactorAuthMethod(String forceMultiFactorAuthMethod) {
-        this.forceMultiFactorAuthMethod = OTPType.fromCode(forceMultiFactorAuthMethod);
-    }
-
-    public void setEnableMultiFactorAuth(boolean enableMultiFactorAuth) {
-        this.enableMultiFactorAuth = enableMultiFactorAuth;
+    public CheckRequiredInitOtpAuthenticationPostProcessor setForceMultiFactorAuthMethod(OTPType forceMultiFactorAuthMethod) {
+        this.forceMultiFactorAuthMethod = forceMultiFactorAuthMethod;
+        return this;
     }
 
     public Authentication postProcess(Authentication auth) {
@@ -41,11 +36,13 @@ public class CheckRequiredInitOtpAuthenticationPostProcessor implements
             if (!enableMultiFactorAuth) {
                 return compoundAuthentication.getLatestReadyAuthentication();
             }
-            Authentication lastAuth = compoundAuthentication.getLatestReadyAuthentication();
-            OtpUserDescription user = localSecurityService.getOtpUserForDescription(lastAuth.getName());
+            Authentication     lastAuth = compoundAuthentication.getLatestReadyAuthentication();
+            OtpUserDescription user     = localSecurityService.getOtpUserForDescription(lastAuth.getName());
 
             if (isUserOtpDifferentThanSystemOtp(user)) {
-                compoundAuthentication.addReadyAuthentication(new LocalNeedOTPToken(lastAuth.getName(), forceMultiFactorAuthMethod));
+                compoundAuthentication.addReadyAuthentication(new LocalNeedOTPToken(lastAuth.getName(),
+                                                                                    forceMultiFactorAuthMethod
+                ));
             } else if (isUserOtpRequiredButNotInit(user)) {
                 //For example, when reset otp user's master key
                 compoundAuthentication.addReadyAuthentication(

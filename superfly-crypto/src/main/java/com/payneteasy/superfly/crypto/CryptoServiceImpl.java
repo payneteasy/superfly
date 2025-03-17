@@ -16,14 +16,11 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 public class CryptoServiceImpl implements CryptoService {
-    private String cryptoSecret;
-    private String cryptoSalt;
+    private final String cryptoSecret;
+    private final String cryptoSalt;
 
-    public void setCryptoSecret(String cryptoSecret) {
+    public CryptoServiceImpl(String cryptoSecret, String cryptoSalt) {
         this.cryptoSecret = cryptoSecret;
-    }
-
-    public void setCryptoSalt(String cryptoSalt) {
         this.cryptoSalt = cryptoSalt;
     }
 

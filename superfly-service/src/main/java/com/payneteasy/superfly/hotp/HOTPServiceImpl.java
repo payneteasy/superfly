@@ -1,81 +1,43 @@
 package com.payneteasy.superfly.hotp;
 
-import com.payneteasy.superfly.api.MessageSendException;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.crypto.CryptoService;
-import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.crypto.exception.DecryptException;
 import com.payneteasy.superfly.crypto.exception.EncryptException;
-import com.payneteasy.superfly.email.EmailService;
-import com.payneteasy.superfly.email.RuntimeMessagingException;
-import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spi.ExportException;
-import com.payneteasy.superfly.spi.HOTPProvider;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+@Service
 @Transactional
 public class HOTPServiceImpl implements HOTPService {
 
     private static final Logger logger = LoggerFactory.getLogger(HOTPServiceImpl.class);
 
+    @Getter
     private final ThreadLocal<GoogleAuthenticator> googleAuthenticator = ThreadLocal.withInitial(GoogleAuthenticator::new);
 
-    private EmailService emailService;
-    private HOTPProvider hotpProvider;
-    private PublicKeyCrypto publicKeyCrypto;
     private UserService userService;
     private CryptoService cryptoService;
 
-    public ThreadLocal<GoogleAuthenticator> getGoogleAuthenticator() {
-        return googleAuthenticator;
-    }
-
-    @Required
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
-    @Required
-    public void setHotpProvider(HOTPProvider hotpProvider) {
-        this.hotpProvider = hotpProvider;
-    }
-
-    @Required
-    public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
-        this.publicKeyCrypto = publicKeyCrypto;
-    }
-
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Required
+    @Autowired
     public void setCryptoService(CryptoService cryptoService) {
         this.cryptoService = cryptoService;
-    }
-
-    public void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
-        obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, null);
-    }
-
-    public void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException, ExportException {
-        UIUser user = userService.getUser(userId);
-        hotpProvider.resetSequence(user.getUsername());
-        obtainUserIfNeededAndSendTableIfSupported(subsystemIdentifier, userId, user);
     }
 
     @Override
@@ -113,29 +75,6 @@ public class HOTPServiceImpl implements HOTPService {
         return googleAuthenticator.get().authorize(masterKey, verificationCode);
     }
 
-    private void obtainUserIfNeededAndSendTableIfSupported(String subsystemIdentifier, long userId, UIUser user) throws MessageSendException, ExportException {
-        if (hotpProvider.outputsSequenceForDownload()) {
-            if (user == null) {
-                user = userService.getUser(userId);
-            }
-            if (user.getPublicKey() != null && user.getPublicKey().trim().length() > 0) {
-                actuallySendTable(subsystemIdentifier, user);
-            } else {
-                sendNoPublicKey(subsystemIdentifier, user.getEmail());
-            }
-        }
-    }
-
-    protected void sendNoPublicKey(String subsystemIdentifier, String email) throws MessageSendException {
-        try {
-            emailService.sendNoPublicKeyMessage(subsystemIdentifier, email);
-        } catch (RuntimeMessagingException e) {
-            logger.error("Could not send a message to " + email, e);
-            throw new MessageSendException(e);
-        }
-    }
-
-
     @Override
     public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
         userService.updateUserOtpType(username, otpType.code());
@@ -164,29 +103,6 @@ public class HOTPServiceImpl implements HOTPService {
             case NONE:
             default:
                 break;
-        }
-    }
-
-    protected void actuallySendTable(String subsystemIdentifier, UIUser user) throws MessageSendException, ExportException {
-        String filename = hotpProvider.getSequenceForDownloadFileName(user.getUsername());
-        // TODO: use streams, not buffers
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            hotpProvider.outputSequenceForDownload(user.getUsername(), baos);
-            byte[] bytes = baos.toByteArray();
-
-            baos = new ByteArrayOutputStream();
-            publicKeyCrypto.encrypt(bytes, filename, user.getPublicKey(), baos);
-        } catch (IOException e) {
-            // should not get IOException as we're working in-memory
-            throw new IllegalStateException(e);
-        }
-
-        try {
-            emailService.sendHOTPTable(subsystemIdentifier, user.getEmail(), filename, baos.toByteArray());
-        } catch (RuntimeMessagingException e) {
-            logger.error("Could not send a message to " + user.getEmail(), e);
-            throw new MessageSendException(e);
         }
     }
 

@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.request.AuthenticateRequest;
+import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +29,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
     @Before
     public void setUp() {
         ssoService = EasyMock.createMock(SSOService.class);
-        provider = new SuperflyUsernamePasswordAuthenticationProvider();
-        provider.setSsoService(ssoService);
+        provider = new SuperflyUsernamePasswordAuthenticationProvider(ssoService);
     }
 
     @Test
@@ -40,9 +41,9 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
     @Test
     public void testSuccess() {
         SSOUser ssoUserWithOneRole = createSSOUserWithOneRole();
-        expect(ssoService.authenticate("pete", "secret", null))
+        expect(ssoService.authenticate(new AuthenticateRequest("pete", "secret", null)))
                 .andReturn(ssoUserWithOneRole);
-        expect(ssoService.checkOtp(ssoUserWithOneRole, null)).andReturn(true);
+        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, null))).andReturn(true);
         replay(ssoService);
         Authentication auth = provider.authenticate(createPasswordAuthentication());
         assertNotNull(auth);
@@ -52,9 +53,9 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
     public void testSuccessWithGoogleAuthOtp() {
         SSOUser ssoUserWithOneRole = createSSOUserWithOneRole();
         ssoUserWithOneRole.setOtpType(OTPType.GOOGLE_AUTH);
-        expect(ssoService.authenticate("pete", "secret", null))
+        expect(ssoService.authenticate(new AuthenticateRequest("pete", "secret", null)))
                 .andReturn(ssoUserWithOneRole);
-        expect(ssoService.checkOtp(ssoUserWithOneRole, "123456")).andReturn(true);
+        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, "123456"))).andReturn(true);
         replay(ssoService);
         Authentication auth = provider.authenticate(createPasswordAuthentication().withSecondFactory("123456"));
         assertNotNull(auth);
@@ -66,7 +67,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
 
     @Test
     public void testBadCredentials() {
-        expect(ssoService.authenticate("pete", "bad password", null)).andReturn(null);
+        expect(ssoService.authenticate(new AuthenticateRequest("pete", "bad password", null))).andReturn(null);
         replay(ssoService);
         try {
             provider.authenticate(new UsernamePasswordAuthRequestInfoAuthenticationToken("pete", "bad password", null));
@@ -93,7 +94,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
 
     @Test
     public void testNoRoles() {
-        expect(ssoService.authenticate("pete", "secret", null)).andReturn(createSSOUserWithNoRoles());
+        expect(ssoService.authenticate(new AuthenticateRequest("pete", "secret", null))).andReturn(createSSOUserWithNoRoles());
         replay(ssoService);
         try {
             provider.authenticate(createPasswordAuthentication());

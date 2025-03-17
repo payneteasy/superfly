@@ -15,11 +15,11 @@ import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
 /**
  * Base job class which gives access to the ApplicationContext and some its
  * beans.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public abstract class BaseJob extends QuartzJobBean {
-    private static Logger logger = LoggerFactory.getLogger(BaseJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseJob.class);
 
     private static final String APPLICATION_CONTEXT_KEY = "applicationContext";
 
@@ -28,7 +28,6 @@ public abstract class BaseJob extends QuartzJobBean {
      *
      * @param context    job execution context
      * @return application context
-     * @throws SchedulerException
      */
     protected ApplicationContext getApplicationContext(JobExecutionContext context)
             throws SchedulerException {

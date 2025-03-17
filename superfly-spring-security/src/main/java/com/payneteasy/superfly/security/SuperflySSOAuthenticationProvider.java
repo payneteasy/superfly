@@ -2,13 +2,16 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
-import org.springframework.beans.factory.annotation.Required;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link AuthenticationProvider} which uses Superfly Single Sign-on
@@ -16,23 +19,22 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author Roman Puchkovskiy
  */
+@Setter
 public class SuperflySSOAuthenticationProvider implements AuthenticationProvider {
 
     private SSOService ssoService;
 
-    @Required
-    public void setSsoService(SSOService ssoService) {
-        this.ssoService = ssoService;
-    }
-
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
-        if (authentication instanceof SSOAuthenticationRequest) {
-            SSOAuthenticationRequest authRequest = (SSOAuthenticationRequest) authentication;
+        if (authentication instanceof SSOAuthenticationRequest authRequest) {
             if (authRequest.getSubsystemToken() == null) {
                 throw new BadCredentialsException("Null subsystem token");
             }
-            SSOUser ssoUser = ssoService.exchangeSubsystemToken(authRequest.getSubsystemToken());
+            SSOUser ssoUser = ssoService.exchangeSubsystemToken(
+                    new ExchangeSubsystemTokenRequest(
+                            authRequest.getSubsystemToken()
+                    )
+            );
             if (ssoUser == null) {
                 throw new BadCredentialsException("Bad credentials");
             }

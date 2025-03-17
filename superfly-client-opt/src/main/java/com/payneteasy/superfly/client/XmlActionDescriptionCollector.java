@@ -5,11 +5,13 @@ import com.payneteasy.superfly.client.exception.CollectionException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,19 +20,15 @@ import java.util.List;
 /**
  * ActionDescriptionCollector implementation which returns a list of actions
  * defined in an XML file.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Setter
 public class XmlActionDescriptionCollector implements ActionDescriptionCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlActionDescriptionCollector.class);
 
     private Resource resource;
-
-    @Required
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
 
     public List<ActionDescription> collect() throws CollectionException {
         List<ActionDescriptionBean> list;

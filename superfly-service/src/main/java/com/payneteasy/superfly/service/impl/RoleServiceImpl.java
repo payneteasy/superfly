@@ -1,12 +1,5 @@
 package com.payneteasy.superfly.service.impl;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.RoleDao;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -20,27 +13,35 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Transactional
+@Service
 public class RoleServiceImpl implements RoleService {
 
     private static final Logger logger = LoggerFactory.getLogger(RoleServiceImpl.class);
 
-    private RoleDao roleDao;
+    private RoleDao             roleDao;
     private NotificationService notificationService;
-    private LoggerSink loggerSink;
+    private LoggerSink          loggerSink;
 
-    @Required
+    @Autowired
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
-    @Required
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
@@ -55,8 +56,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public List<UIRoleForList> getRoles(long startFrom, long recordsCount,
-            int orderFieldNumber, boolean asc, String rolesName,
-            List<Long> subsystems) {
+                                        int orderFieldNumber, boolean asc, String rolesName,
+                                        List<Long> subsystems) {
         return roleDao.getRoles(startFrom, recordsCount, orderFieldNumber,
                 asc ? DaoConstants.ASC : DaoConstants.DESC, rolesName,
                 StringUtils.collectionToCommaDelimitedString(subsystems));
@@ -96,7 +97,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public RoutineResult changeRoleGroups(long roleId,
-            List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
+                                          List<Long> groupToAddIds, List<Long> groupToRemoveIds) {
         RoutineResult result = roleDao.changeRoleGroups(roleId,
                 StringUtils.collectionToCommaDelimitedString(groupToAddIds),
                 StringUtils.collectionToCommaDelimitedString(groupToRemoveIds));
@@ -109,7 +110,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public RoutineResult changeRoleActions(long roleId,
-            List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
+                                           List<Long> actionToAddIds, List<Long> actionToRemoveIds) {
         RoutineResult result = roleDao.changeRoleActions(roleId,
                 StringUtils.collectionToCommaDelimitedString(actionToAddIds),
                 StringUtils.collectionToCommaDelimitedString(actionToRemoveIds));
@@ -121,8 +122,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public List<UIActionForCheckboxForRole> getAllRoleActions(long startFrom,
-            long recordsCount, int orderFieldNumber, boolean ascending,
-            long roleId, String actionName) {
+                                                              long recordsCount, int orderFieldNumber, boolean ascending,
+                                                              long roleId, String actionName) {
         return roleDao.getAllRoleActions(startFrom, recordsCount,
                 orderFieldNumber, ascending ? DaoConstants.ASC
                         : DaoConstants.DESC, roleId, actionName);
@@ -133,8 +134,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
-            long recordsCount, int orderFieldNumber, boolean ascending,
-            long roleId, String actionName) {
+                                                                 long recordsCount, int orderFieldNumber, boolean ascending,
+                                                                 long roleId, String actionName) {
         return roleDao.getMappedRoleActions(startFrom, recordsCount,
                 orderFieldNumber, ascending ? DaoConstants.ASC
                         : DaoConstants.DESC, roleId, actionName);
@@ -149,8 +150,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public List<UIGroupForCheckbox> getAllRoleGroups(long startFrom,
-            long recordsCount, int orderFieldNumber, String orderType,
-            long roleId) {
+                                                     long recordsCount, int orderFieldNumber, String orderType,
+                                                     long roleId) {
         return roleDao.getAllRoleGroups(startFrom, recordsCount,
                 orderFieldNumber, orderType, roleId);
     }
@@ -158,7 +159,7 @@ public class RoleServiceImpl implements RoleService {
     public List<UIRoleForFilter> getRolesForCreateUser(List<Long> subId) {
 
         return roleDao.getRolesForFilter(StringUtils
-                .collectionToCommaDelimitedString(subId), null, 0,
+                        .collectionToCommaDelimitedString(subId), null, 0,
                 Integer.MAX_VALUE);
     }
 
@@ -172,9 +173,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     public List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,
-            long recordsCount, int orderFieldNumber, boolean ascending,
-            long roleId) {
-        return roleDao.getMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC: DaoConstants.DESC, roleId);
+                                                        long recordsCount, int orderFieldNumber, boolean ascending,
+                                                        long roleId) {
+        return roleDao.getMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC : DaoConstants.DESC, roleId);
     }
 
     @Override
@@ -184,8 +185,8 @@ public class RoleServiceImpl implements RoleService {
 
 
     public List<UIGroupForCheckbox> getUnMappedRoleGroups(long startFrom,
-            long recordsCount, int orderFieldNumber, boolean ascending,
-            long roleId) {
+                                                          long recordsCount, int orderFieldNumber, boolean ascending,
+                                                          long roleId) {
         return roleDao.getUnMappedRoleGroups(startFrom, recordsCount, orderFieldNumber, ascending ? DaoConstants.ASC
                 : DaoConstants.DESC, roleId);
     }

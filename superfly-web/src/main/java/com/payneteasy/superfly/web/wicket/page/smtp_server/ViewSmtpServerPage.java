@@ -5,7 +5,7 @@ import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -27,8 +27,8 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
         long id = PageParametersBuilder.getId(params);
         UISmtpServer server = smtpServerService.getSmtpServer(id);
 
-        ModalWindow modalWindow = new ModalWindow("modal");
-        add(modalWindow);
+        ModalDialog modalDialog = new ModalDialog("modal");
+        add(modalDialog);
         add(new Label("name", server.getName()));
         add(new Label("host", server.getHost()));
         add(new Label("port", server.getPort() == null ? "-" : String.valueOf(server.getPort())));
@@ -36,10 +36,10 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
         add(new AjaxLink<Void>("password") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                modalWindow
-                        .setInitialHeight(40)
-                        .setContent(new Label(ModalWindow.CONTENT_ID, server.getPassword()))
-                        .show(target);
+                modalDialog
+                        //.setInitialHeight(40)
+                        .setContent(new Label(ModalDialog.CONTENT_ID, server.getPassword()));
+                modalDialog.open(target);
             }
         });
         add(new Label("ssl", new ResourceModel(server.isSsl() ? "yes" : "no")));

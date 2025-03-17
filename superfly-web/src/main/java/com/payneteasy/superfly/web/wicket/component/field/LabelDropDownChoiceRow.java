@@ -9,20 +9,16 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 
 public class LabelDropDownChoiceRow<T> extends Panel {
     private final SuperflyDropDrownChoice<T> dropDownChoice;
 
     public LabelDropDownChoiceRow(String id, Object object, final String labelResourceKey, final List<? extends T> choices,
             IChoiceRenderer<? super T> iChoiceRenderer) {
-        this(id, object, labelResourceKey, new AbstractReadOnlyModel<List<? extends T>>() {
+        this(id, object, labelResourceKey, new LoadableDetachableModel<>() {
             @Override
-            public List<? extends T> getObject() {
+            public List<? extends T> load() {
                 return choices;
             }
         }, iChoiceRenderer, false);
@@ -49,9 +45,9 @@ public class LabelDropDownChoiceRow<T> extends Panel {
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
-        container.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
+        container.add(new AttributeAppender("class", new LoadableDetachableModel<>() {
             @Override
-            public String getObject() {
+            public String load() {
                 return dropDownChoice.isRequired() ? "required" : "";
             }
         }, " "));

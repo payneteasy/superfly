@@ -169,34 +169,6 @@
     </bean>
     <sec:http-firewall ref="customHttpFirewall"/>
 
-
-    <!--
-        <bean id="preauthUserDetailsService" class="org.springframework.security.userdetails.memory.InMemoryDaoImpl">
-            <property name="userMap">
-                <bean class="org.springframework.security.userdetails.memory.UserMap">
-                    <property name="users">
-                        <map>
-                            <entry key="superfly-client">
-                                <bean class="org.springframework.security.userdetails.User">
-                                    <constructor-arg value="superfly-client"/>
-                                    <constructor-arg value="not-used"/>
-                                    <constructor-arg value="true"/>
-                                    <constructor-arg>
-                                        <list>
-                                            <bean class="org.springframework.security.GrantedAuthorityImpl">
-                                                <constructor-arg value="ROLE_SUBSYSTEM"/>
-                                            </bean>
-                                        </list>
-                                    </constructor-arg>
-                                </bean>
-                            </entry>
-                        </map>
-                    </property>
-                </bean>
-            </property>
-        </bean>
-     -->
-
     <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
         <constructor-arg name="decisionVoters">
             <list>

@@ -1,19 +1,17 @@
 package com.payneteasy.superfly.spring;
 
+import lombok.Setter;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
  * Base for factory beans which are aware of policies.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Setter
 public abstract class AbstractPolicyDependingFactoryBean<T> implements FactoryBean<T> {
 
     private String policyName;
-
-    public void setPolicyName(String policyName) {
-        this.policyName = policyName;
-    }
 
     protected Policy findPolicyByIdentifier() {
         Policy p = null;

@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.client.session;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 
 import com.payneteasy.superfly.common.session.SessionMapping;
 import com.payneteasy.superfly.common.session.SessionMappingLocator;

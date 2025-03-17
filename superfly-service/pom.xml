@@ -5,7 +5,6 @@
         <version>1.7-33-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-service</artifactId>
     <name>Superfly service layer</name>
     <description>Service layer classes, including DAO layer too</description>
@@ -104,8 +103,13 @@
         </dependency>
         <dependency>
             <!--Justification: For sending emails-->
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Jakarta Mail API-->
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-mail</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Google 2FA library. -->
@@ -121,6 +125,10 @@
             <!--Justification: Library for validating passwords and implementing password policies -->
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 </project>

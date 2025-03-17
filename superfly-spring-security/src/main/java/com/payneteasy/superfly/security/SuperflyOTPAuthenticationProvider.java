@@ -2,43 +2,43 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.security.access.intercept.RunAsUserToken;
+import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 /**
  * {@link AuthenticationProvider} which authenticates using the Superfly HOTP.
- * 
+ *
  * @author Igor Vasilyev
  */
 public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider {
 
+    @Setter
     private SSOService ssoService;
-    private Class<?> supportedAuthenticationClass = CheckOTPToken.class;
+    private Class<?>   supportedAuthenticationClass = CheckOTPToken.class;
 
-    @Required
-    public void setSsoService(SSOService ssoService) {
-        this.ssoService = ssoService;
-    }
-
-    public void setSupportedAuthenticationClass(Class<RunAsUserToken> clazz) {
+    public void setSupportedAuthenticationClass(Class<? extends Authentication> clazz) {
         this.supportedAuthenticationClass = clazz;
     }
 
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         Authentication result = null;
-        if (authentication instanceof CheckOTPToken) {
-            CheckOTPToken authRequest = (CheckOTPToken) authentication;
+        if (authentication instanceof CheckOTPToken authRequest) {
             if (authRequest.getCredentials() == null) {
                 throw new BadOTPValueException("Null OTP secret");
             }
-            boolean ok = ssoService.checkOtp(authRequest.getSsoUser(), authRequest.getCredentials().toString());
+            boolean ok = ssoService.checkOtp(
+                    new CheckOtpRequest(
+                            authRequest.getSsoUser(),
+                            authRequest.getCredentials().toString()
+                    )
+            );
             if (!ok) {
                 throw new BadOTPValueException("Invalid OTP secret");
             }

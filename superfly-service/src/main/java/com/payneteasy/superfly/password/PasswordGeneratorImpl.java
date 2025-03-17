@@ -3,6 +3,7 @@ package com.payneteasy.superfly.password;
 import org.passay.CharacterData;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 /**
  * Generates passwords
  */
+@Service
 public class PasswordGeneratorImpl implements PasswordGenerator {
 
     private static final String SPECIAL_CHARS = "~`!@#$%^&*+-=_|\\/()[]{}<>,.;:?\"'";

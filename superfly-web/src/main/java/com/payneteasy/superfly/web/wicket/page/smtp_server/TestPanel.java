@@ -1,9 +1,12 @@
 package com.payneteasy.superfly.web.wicket.page.smtp_server;
 
+import com.payneteasy.superfly.email.EmailService;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -11,28 +14,25 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.payneteasy.superfly.email.EmailService;
-
+@Slf4j
 public class TestPanel extends Panel {
-    private static final Logger logger = LoggerFactory.getLogger(TestPanel.class);
 
     @SpringBean
     private EmailService emailService;
 
+    @Getter
     private RequiredTextField<String> addressField;
 
-    public TestPanel(String id, final long serverId, final ModalWindow window,
-            final FeedbackPanel feedbackPanel) {
+    public TestPanel(String id, final long serverId, final ModalDialog window,
+                     final FeedbackPanel feedbackPanel) {
         super(id);
 
         Form<?> form = new Form<Void>("form");
         add(form);
 
         final IModel<String> addressModel = new Model<String>();
-        addressField = new RequiredTextField<String>("address", addressModel);
+        addressField = new RequiredTextField<>("address", addressModel);
         addressField.setOutputMarkupId(true);
         form.add(addressField);
 
@@ -44,14 +44,14 @@ public class TestPanel extends Panel {
         });
         form.add(new AjaxSubmitLink("submit-link") {
             @Override
-            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 try {
                     emailService.sendTestMessage(serverId, addressModel.getObject());
                     info("Test message sent");
                     target.add(feedbackPanel);
-                } catch (RuntimeException e) {
-                    logger.error(e.getMessage(), e);
-                    error(e.getMessage());
+                } catch (Exception e) {
+                    log.error("Can't sendTestMessage", e);
+                    error(e.getMessage() != null ? e.getMessage() : "Some problem, see log");
                     target.add(feedbackPanel);
                 }
                 window.close(target);
@@ -63,7 +63,4 @@ public class TestPanel extends Panel {
         });
     }
 
-    public RequiredTextField<String> getAddressField() {
-        return addressField;
-    }
 }

@@ -2,7 +2,10 @@ package com.payneteasy.superfly.password;
 
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
-import org.springframework.beans.factory.annotation.Required;
+import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Kuccyp
@@ -11,17 +14,19 @@ import org.springframework.beans.factory.annotation.Required;
  * (C) 2010
  * Skype: kuccyp
  */
-public class RandomStoredSaltSource implements SaltSource{
+@OnPolicyCondition(Policy.PCIDSS)
+@Component
+public class RandomStoredSaltSource implements SaltSource {
 
-    private UserService userService;
+    private UserService   userService;
     private SaltGenerator saltGenerator;
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Required
+    @Autowired
     public void setSaltGenerator(SaltGenerator saltGenerator) {
         this.saltGenerator = saltGenerator;
     }
@@ -47,7 +52,7 @@ public class RandomStoredSaltSource implements SaltSource{
         userService.updateUserSalt(username, salt);
         return salt;
     }
-    
+
     private String generateNewSaltAndSave(long userId) {
         String salt = generateSalt();
         userService.updateUserSaltByUserId(userId, salt);

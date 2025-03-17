@@ -9,7 +9,7 @@ import org.apache.wicket.util.file.Path;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Assert;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import java.util.List;
 
 /**

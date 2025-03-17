@@ -1,42 +1,26 @@
 package com.payneteasy.superfly.web.wicket.component.label;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
+import lombok.experimental.UtilityClass;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 
 /**
  * Factory for DateLabel instances.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@UtilityClass
 public class DateLabels {
 
     private static final String DATE_TIME_PATTERN = "yyyy.MM.dd HH:mm:ss";
-    private static final String DATE_PATTERN = "yyyy.MM.dd";
 
-    /**
-     * Creates a label which displays date only (year, month, day).
-     *
-     * @param id    component id
-     * @param date    date to display
-     * @return date label
-     */
-    public static DateLabel forDate(String id, Date date) {
-        return DateLabel.forDatePattern(id, new Model<Date>(date), DATE_PATTERN);
-    }
-
-    /**
-     * Creates a label which displays date only (year, month, day).
-     *
-     * @param id    component id
-     * @param model    model returning date to display
-     * @return date label
-     */
-    public static DateLabel forDate(String id, IModel<Date> model) {
-        return DateLabel.forDatePattern(id, model, DATE_PATTERN);
-    }
+    static final SimpleDateFormat DATE_TIME_PATTERN_FORMATTER =  new SimpleDateFormat(DATE_TIME_PATTERN);
 
     /**
      * Creates a label which displays date and time.
@@ -45,8 +29,13 @@ public class DateLabels {
      * @param date    date to display
      * @return date label
      */
-    public static DateLabel forDateTime(String id, Date date) {
-        return DateLabel.forDatePattern(id, new Model<Date>(date),
-                DATE_TIME_PATTERN);
+    public static Label forDateTime(String id, Date date) {
+        IModel<String> model = new LoadableDetachableModel<>() {
+            @Override
+            protected String load() {
+                return DATE_TIME_PATTERN_FORMATTER.format(date);
+            }
+        };
+        return new Label(id, model);
     }
 }

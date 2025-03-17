@@ -1,48 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:wicket>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Copy action</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Copy action</title>
 </head>
 <body>
 <wicket:extend>
-<form wicket:id="filters-form">
-
-
-     <strong>Action Name: </strong> <span class="badge badge-dark" wicket:id="name-action"></span>&nbsp;&nbsp;<a href="#" wicket:id="back">back to list actions</a>
-     <div class="my-3">
-         <strong>Description: </strong><span class="badge badge-dark" wicket:id="name-description"></span>&nbsp;&nbsp;
-         <strong>Subsystem Name: </strong><span class="badge badge-dark" wicket:id="subname-action"></span>
-     </div>
-
-
-    <div class="well s-filter">
-        <ul class="s-filter-items">
-            <li><input class="form-control" type="text" wicket:id="auto" size="33" placeholder="Action Name"/></li>
-            <li><input type="submit" value="Filter" class="btn btn-outline-primary"/></li>
-        </ul>
+    <div class="mb-4">
+        ⓘ <small class="text-muted">
+        This feature allows you to quickly configure an action by copying all its settings (group associations, role associations, and optionally user privileges) from an existing <strong>template action</strong>. <br>
+        It is especially useful for new actions, but it can also be used to reconfigure an existing action within the same subsystem.
+    </small>
     </div>
 
-    <table class="table table-sm table-bordered table-hover table-striped">
-        <thead>
+    <form wicket:id="filters-form">
+        <strong>Template Action Name: </strong> <span class="badge badge-dark" wicket:id="name-action"></span>&nbsp;&nbsp;<a
+            href="#" wicket:id="back">back to list actions</a>
+        <div class="my-3">
+            <strong>Description: </strong><span class="badge badge-dark" wicket:id="name-description"></span>&nbsp;&nbsp;
+            <strong>Subsystem Name: </strong><span class="badge badge-dark" wicket:id="subname-action"></span>
+        </div>
+
+
+        <div class="well s-filter">
+            <ul class="s-filter-items">
+                <li><input class="form-control" type="text" wicket:id="auto" size="33" placeholder="Action Name"/></li>
+                <li><input type="submit" value="Filter" class="btn btn-outline-primary"/></li>
+            </ul>
+        </div>
+
+        <table class="table table-sm table-bordered table-hover table-striped table-responsive-sm">
+            <thead>
             <tr>
                 <th><a wicket:id="order-by-actionName">Action Name</a></th>
                 <th><a wicket:id="order-by-actionDescription">Desciption</a></th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <tr wicket:id="actionList">
                 <td><a href="#" wicket:id="select-action"><span wicket:id="action-name">Yes</span></a></td>
                 <td><span wicket:id="action-description">bond</span></td>
             </tr>
             <tr>
-               <td wicket:id="paging-navigator" class="paging-navigator" colspan="2"></td>
+                <td wicket:id="paging-navigator" class="paging-navigator" colspan="2"></td>
             </tr>
-        </tbody>
-    </table>
-</form>
+            </tbody>
+        </table>
+    </form>
 
-<div wicket:id="modalWindow"></div>
+    <div wicket:id="modalWindow"></div>
 
 </wicket:extend>
 </body>

@@ -2,13 +2,15 @@ package com.payneteasy.superfly.client;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.client.exception.CollectionException;
+import lombok.Setter;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -28,8 +30,8 @@ import java.util.Set;
  *
  * @author Roman Puchkovskiy
  */
-public class ScanningActionDescriptionCollector implements
-        ActionDescriptionCollector {
+@Setter
+public class ScanningActionDescriptionCollector implements  ActionDescriptionCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(ScanningActionDescriptionCollector.class);
 
@@ -39,23 +41,6 @@ public class ScanningActionDescriptionCollector implements
     private Class<? extends Annotation> annotationClass;
     private ValuesExtractor valuesExtractor = new ValueAttributeValuesExtractor();
     private Set<String> notCollectedActions = Collections.singleton("action_temp_password");
-
-    @Required
-    public void setBasePackages(String[] basePackages) {
-        this.basePackages = basePackages;
-    }
-
-    public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
-        this.annotationClass = annotationClass;
-    }
-
-    public void setValuesExtractor(ValuesExtractor valuesExtractor) {
-        this.valuesExtractor = valuesExtractor;
-    }
-
-    public void setNotCollectedActions(Set<String> notCollectedActions) {
-        this.notCollectedActions = notCollectedActions;
-    }
 
     public List<ActionDescription> collect() throws CollectionException {
         Reflections reflections = new Reflections(new ConfigurationBuilder()

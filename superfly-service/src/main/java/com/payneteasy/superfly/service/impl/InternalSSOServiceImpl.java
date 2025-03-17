@@ -1,152 +1,114 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.SSOAction;
-import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.SsoDecryptException;
-import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
-import com.payneteasy.superfly.model.ActionToSave;
-import com.payneteasy.superfly.model.AuthAction;
-import com.payneteasy.superfly.model.AuthRole;
-import com.payneteasy.superfly.model.AuthSession;
-import com.payneteasy.superfly.model.LockoutType;
-import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
-import com.payneteasy.superfly.model.UserWithActions;
-import com.payneteasy.superfly.model.UserWithStatus;
+import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
-import com.payneteasy.superfly.service.ActionService;
-import com.payneteasy.superfly.service.InternalSSOService;
-import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SessionService;
-import com.payneteasy.superfly.service.UserService;
-import com.payneteasy.superfly.spi.HOTPProvider;
+import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
 import com.payneteasy.superfly.utils.PGPKeyValidator;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+@Service
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
 
-    private UserService userService;
-    private ActionService actionService;
-    private SessionService sessionService;
-    private NotificationService notificationService;
-    private LoggerSink loggerSink;
-    private PasswordEncoder passwordEncoder;
-    private SaltSource saltSource;
-    private SaltGenerator hotpSaltGenerator;
-    private HOTPProvider hotpProvider;
-    private LockoutStrategy lockoutStrategy;
-    private RegisterUserStrategy registerUserStrategy;
-    private PublicKeyCrypto publicKeyCrypto;
-    private HOTPService hotpService;
-    private Set<String> notSavedActions = Collections.singleton("action_temp_password");
+    private       UserService          userService;
+    private       ActionService        actionService;
+    private       SessionService       sessionService;
+    private       NotificationService  notificationService;
+    private       LoggerSink           loggerSink;
+    private       PasswordEncoder      passwordEncoder;
+    private       SaltSource           saltSource;
+    private       SaltGenerator        hotpSaltGenerator;
+    private       LockoutStrategy      lockoutStrategy;
+    private       RegisterUserStrategy registerUserStrategy;
+    private       PublicKeyCrypto      publicKeyCrypto;
+    private       HOTPService          hotpService;
+    private final Set<String>          notSavedActions = Collections.singleton("action_temp_password");
 
     private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
 
-    @Required
+    @Autowired
     public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
         this.policyValidation = policyValidation;
     }
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Required
+    @Autowired
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
     }
 
-    @Required
+    @Autowired
     public void setActionService(ActionService actionService) {
         this.actionService = actionService;
     }
 
-    @Required
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }
 
-    @Required
+    @Autowired
     public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
         this.hotpSaltGenerator = hotpSaltGenerator;
     }
 
-    @Required
-    public void setHotpProvider(HOTPProvider hotpProvider) {
-        this.hotpProvider = hotpProvider;
-    }
-
-    @Required
+    @Autowired
     public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
         this.lockoutStrategy = lockoutStrategy;
     }
 
-    @Required
+    @Autowired
     public void setRegisterUserStrategy(RegisterUserStrategy registerUserStrategy) {
         this.registerUserStrategy = registerUserStrategy;
     }
 
-    @Required
+    @Autowired
     public void setPublicKeyCrypto(PublicKeyCrypto publicKeyCrypto) {
         this.publicKeyCrypto = publicKeyCrypto;
     }
 
-    @Required
+    @Autowired
     public void setHotpService(HOTPService hotpService) {
         this.hotpService = hotpService;
-    }
-
-    public void setNotSavedActions(Set<String> notSavedActions) {
-        this.notSavedActions = notSavedActions;
     }
 
     @Override
@@ -155,7 +117,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         SSOUser ssoUser;
         String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
         AuthSession session = userService.authenticate(username, encPassword,
-                                                   subsystemIdentifier, userIpAddress, sessionInfo);
+                subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
         if (ok) {
@@ -193,7 +155,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     private SSOUser buildSSOUser(AuthSession session) {
         SSOUser        ssoUser;
         List<AuthRole> authRoles = session.getRoles();
-        if (authRoles.size() == 1 && authRoles.get(0).getRoleName() == null) {
+        if (authRoles.size() == 1 && authRoles.getFirst().getRoleName() == null) {
             // actually it's empty
             authRoles = Collections.emptyList();
         }
@@ -244,7 +206,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier) {
-        List<UserWithActions> users = userService.getUsersAndActions(subsystemIdentifier);
+        List<UserWithActions>    users  = userService.getUsersAndActions(subsystemIdentifier);
         List<SSOUserWithActions> result = new ArrayList<>(users.size());
         for (UserWithActions user : users) {
             result.add(convertToSSOUser(user));
@@ -253,8 +215,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public void registerUser(String username, String password, String email, String subsystemIdentifier,
-            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-            String secretAnswer, String publicKey,String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
+                             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+                             String secretAnswer, String publicKey, String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
@@ -291,11 +253,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                             + result.getErrorMessage());
                 }
             }
-
-            if (result.isOk()) {
-                hotpService.sendTableIfSupported(subsystemIdentifier, registerUser.getUserid());
-            }
-
             notificationService.notifyAboutUsersChanged();
             loggerSink.info(logger, "REGISTER_USER", true, username);
         } else if (result.isDuplicate()) {
@@ -310,18 +267,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     private void validatePublicKey(String publicKey) throws BadPublicKeyException {
         PGPKeyValidator.validatePublicKey(publicKey, publicKeyCrypto);
-    }
-
-    public boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp) {
-        boolean ok = hotpProvider.authenticate(subsystemIdentifier, username, hotp);
-        if (!ok) {
-            userService.incrementHOTPLoginsFailed(username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-        } else {
-            userService.clearHOTPLoginsFailed(username);
-        }
-        loggerSink.info(logger, "REMOTE_HOTP_CHECK", ok, username);
-        return ok;
     }
 
     @Override

@@ -6,40 +6,29 @@ import com.payneteasy.superfly.security.AbstractSingleStepAuthenticationProcessi
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.LocalSecurityService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Filter to init OTP setting for user
  *
  * @author Igor Vasilyev
  */
-public class SuperflyInitOTPAuthenticationProcessingFilter extends
-        AbstractSingleStepAuthenticationProcessingFilter {
+@Setter
+public class SuperflyInitOTPAuthenticationProcessingFilter extends AbstractSingleStepAuthenticationProcessingFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SuperflyInitOTPAuthenticationProcessingFilter.class);
 
     private LocalSecurityService localSecurityService;
-    private CsrfValidator csrfValidator;
-
-    private String otpKeyParameter = "j_key";
-
-    @Required
-    public void setLocalSecurityService(LocalSecurityService localSecurityService) {
-        this.localSecurityService = localSecurityService;
-    }
-
-    public void setCsrfValidator(CsrfValidator csrfValidator) {
-        this.csrfValidator = csrfValidator;
-    }
+    private CsrfValidator        csrfValidator;
+    private String               otpKeyParameter = "j_key";
 
     public SuperflyInitOTPAuthenticationProcessingFilter() {
         super("/j_superfly_otp_reset");
@@ -56,11 +45,11 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends
             throw new BadCredentialsException("Not authorized");
         }
 
-        CompoundAuthentication result = getCompoundAuthenticationOrNewOne(authentication);
-        LocalNeedOTPToken localNeedOTPToken = (LocalNeedOTPToken) extractLatestAuthOrSimpleAuth(authentication);
+        CompoundAuthentication result            = getCompoundAuthenticationOrNewOne(authentication);
+        LocalNeedOTPToken      localNeedOTPToken = (LocalNeedOTPToken) extractLatestAuthOrSimpleAuth(authentication);
 
         if (localNeedOTPToken != null) {
-            String otpKey = obtainOtpKey(request);
+            String otpKey   = obtainOtpKey(request);
             String username = localNeedOTPToken.getName();
             try {
                 localSecurityService.persistOtpKey(localNeedOTPToken.getOtpType(), username, otpKey);

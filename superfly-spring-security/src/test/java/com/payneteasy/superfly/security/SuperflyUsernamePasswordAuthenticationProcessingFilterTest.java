@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import static org.easymock.EasyMock.*;
@@ -51,8 +52,12 @@ public class SuperflyUsernamePasswordAuthenticationProcessingFilterTest extends
         csrfValidator.validateToken(anyObject());
         expectLastCall().once();
 
-        // expecting a redirect to a success
+        // Add expectation for setAttribute method
+        request.setAttribute(eq("org.springframework.security.web.context.RequestAttributeSecurityContextRepository.SPRING_SECURITY_CONTEXT"), isA(
+                SecurityContextImpl.class));
+        expectLastCall().anyTimes();
 
+        // expecting a redirect to a success
         expectRedirectTo("/");
         replay(request, response, chain, authenticationManager, csrfValidator);
 

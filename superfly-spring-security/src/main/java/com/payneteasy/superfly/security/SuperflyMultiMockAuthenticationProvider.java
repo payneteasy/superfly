@@ -1,31 +1,24 @@
 package com.payneteasy.superfly.security;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
+import com.payneteasy.superfly.api.SSOAction;
+import com.payneteasy.superfly.api.SSORole;
+import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.security.authentication.*;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
+import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.security.processor.IdAuthenticationPostProcessor;
-import org.springframework.beans.factory.annotation.Required;
+import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
-import com.payneteasy.superfly.api.SSOAction;
-import com.payneteasy.superfly.api.SSORole;
-import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.security.authentication.CheckOTPToken;
-import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
-import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
-import com.payneteasy.superfly.security.authentication.SSOUserAndSelectedRoleAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
-import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
-import com.payneteasy.superfly.security.exception.BadOTPValueException;
-import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * {@link AuthenticationProvider} which may be used for rapid development using
@@ -36,11 +29,15 @@ import com.payneteasy.superfly.security.mapbuilder.ActionsMapBuilder;
 public class SuperflyMultiMockAuthenticationProvider extends
         AbstractRoleTransformingAuthenticationProvider {
 
-    private final Map<String, String> usernamesToPasswords = new HashMap<>();
-    private String hotp;
-    private ActionsMapBuilder actionsMapBuilder;
-    private boolean enabled = true;
-    private AuthenticationPostProcessor authenticationPostProcessor = new IdAuthenticationPostProcessor();
+    private final Map<String, String>         usernamesToPasswords        = new HashMap<>();
+    @Setter
+    private       String                      hotp;
+    @Setter
+    private       ActionsMapBuilder           actionsMapBuilder;
+    @Setter
+    private       boolean                     enabled                     = true;
+    @Setter
+    private       AuthenticationPostProcessor authenticationPostProcessor = new IdAuthenticationPostProcessor();
 
     private Map<SSORole, SSOAction[]> cachedMap = null;
 
@@ -48,28 +45,10 @@ public class SuperflyMultiMockAuthenticationProvider extends
         usernamesToPasswords.put(username, password);
     }
 
-    public void setHotp(String hotp) {
-        this.hotp = hotp;
-    }
-
-    @Required
-    public void setActionsMapBuilder(ActionsMapBuilder actionsMapBuilder) {
-        this.actionsMapBuilder = actionsMapBuilder;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setAuthenticationPostProcessor(
-            AuthenticationPostProcessor authenticationPostProcessor) {
-        this.authenticationPostProcessor = authenticationPostProcessor;
-    }
-
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         if (enabled) {
-            Authentication auth;
+            Authentication         auth;
             CompoundAuthentication compound = null;
             if (authentication instanceof CompoundAuthentication) {
                 compound = (CompoundAuthentication) authentication;
@@ -79,8 +58,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
             }
             if (auth instanceof UsernamePasswordAuthRequestInfoAuthenticationToken) {
                 return processUsernamePasswordAuth(auth);
-            } else if (auth instanceof CheckOTPToken) {
-                CheckOTPToken token = (CheckOTPToken) auth;
+            } else if (auth instanceof CheckOTPToken token) {
                 if (hotp.equals(token.getCredentials())) {
                     if (token.getSsoUser().getActionsMap().size() == 1) {
                         return new SSOUserAuthenticationToken(token.getSsoUser(), token.getSsoUser().getActionsMap().keySet().iterator().next(),
@@ -95,8 +73,7 @@ public class SuperflyMultiMockAuthenticationProvider extends
                 } else {
                     throw new BadOTPValueException("Bad HOTP");
                 }
-            } else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken) {
-                SSOUserAndSelectedRoleAuthenticationToken token = (SSOUserAndSelectedRoleAuthenticationToken) auth;
+            } else if (auth instanceof SSOUserAndSelectedRoleAuthenticationToken token) {
                 final SSOUserAuthenticationToken ssoUserAuthenticationToken = new SSOUserAuthenticationToken(
                         token.getSsoUser(), token.getSsoRole(),
                         token.getCredentials(), token.getDetails(), roleNameTransformers, roleSource);
@@ -123,10 +100,10 @@ public class SuperflyMultiMockAuthenticationProvider extends
     }
 
     protected SSOUser createSSOUser(String username) {
-        return new SSOUser(username, getActionsMap(username), Collections.<String, String>emptyMap());
+        return new SSOUser(username, getActionsMap(), Collections.emptyMap());
     }
 
-    protected Map<SSORole, SSOAction[]> getActionsMap(String username) {
+    protected Map<SSORole, SSOAction[]> getActionsMap() {
         if (cachedMap == null) {
             try {
                 cachedMap = actionsMapBuilder.build();

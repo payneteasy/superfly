@@ -6,7 +6,6 @@ import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.core.util.crypt.KeyInSessionSunJceCryptFactory;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
@@ -16,6 +15,7 @@ import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.UrlPathPageParametersEncoder;
 import org.apache.wicket.request.resource.UrlResourceReference;
+import org.apache.wicket.settings.DebugSettings;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.file.Path;
 import org.slf4j.Logger;
@@ -41,11 +41,11 @@ public abstract class BaseApplication extends WebApplication {
     @Override
     protected final void init() {
         super.init();
-
+        getCspSettings().blocking().disabled();
         if (getConfigurationType() == RuntimeConfigurationType.DEVELOPMENT) {
             String path = "src/main/java";
             if (new File(path).exists()) {
-                getResourceSettings().getResourceFinders().add(0, new Path(path));
+                getResourceSettings().getResourceFinders().addFirst(new Path(path));
             } else {
                 logger.warn("No src/main/java folder found, dynamic resource reloading is not available");
             }
@@ -55,12 +55,11 @@ public abstract class BaseApplication extends WebApplication {
                 new UrlResourceReference(Url.parse("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"))
         );
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
-        getDebugSettings().setOutputMarkupContainerClassName(false);
-        getRequestCycleListeners().add(new CsrfPreventionRequestCycleListener());
+        getDebugSettings().setOutputMarkupContainerClassNameStrategy(DebugSettings.ClassOutputStrategy.NONE);
         getSecuritySettings().setCryptFactory(new KeyInSessionSunJceCryptFactory()); // diff key per user
         final IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
         setRootRequestMapper(cryptoMapper);
-        
+
         customInit();
     }
 

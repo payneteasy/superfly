@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import static org.easymock.EasyMock.*;
@@ -29,25 +30,35 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
         // expecting some request examination...
         initExpectationsForAuthentication();
         // expecting authentication attempt
-        expect(authenticationManager.authenticate(anyObject(CompoundAuthentication.class)))
-                .andReturn(createResultAuthentication());
+        expect(
+                authenticationManager.authenticate(anyObject(CompoundAuthentication.class))
+        ).andReturn(
+                createResultAuthentication()
+        );
         // expecting a redirect to a success
         expectRedirectTo("/");
         replay(request, response, session, chain, authenticationManager);
 
         filter.doFilter(request, response, chain);
         Assert.assertTrue("Got " + SecurityContextHolder.getContext().getAuthentication().getClass(),
-                SecurityContextHolder.getContext().getAuthentication() instanceof SSOUserAuthenticationToken);
+                          SecurityContextHolder.getContext().getAuthentication() instanceof SSOUserAuthenticationToken
+        );
 
         verify(request, response, session, chain, authenticationManager);
     }
 
     protected SSOUserAuthenticationToken createResultAuthentication() {
-        return new SSOUserAuthenticationToken(createSSOUserWithOneRole(), null, "", null, new StringTransformer[]{}, new RoleSource() {
-            public String[] getRoleNames(SSOUser ssoUser, SSORole ssoRole) {
-                return new String[]{};
-            }
-        });
+        return new SSOUserAuthenticationToken(createSSOUserWithOneRole(),
+                                              null,
+                                              "",
+                                              null,
+                                              new StringTransformer[]{},
+                                              new RoleSource() {
+                                                  public String[] getRoleNames(SSOUser ssoUser, SSORole ssoRole) {
+                                                      return new String[]{};
+                                                  }
+                                              }
+        );
     }
 
     private void initExpectationsForAuthentication() {
@@ -60,6 +71,9 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
         expect(session.getAttribute(anyObject(String.class))).andReturn(createSSOUserWithOneRole()).anyTimes();
         session.removeAttribute(anyObject(String.class));
+        expectLastCall().anyTimes();
+        // Add expectation for setAttribute method
+        request.setAttribute(eq("org.springframework.security.web.context.RequestAttributeSecurityContextRepository.SPRING_SECURITY_CONTEXT"), isA(SecurityContextImpl.class));
         expectLastCall().anyTimes();
     }
 }

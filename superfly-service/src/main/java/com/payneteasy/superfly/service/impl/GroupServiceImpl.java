@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.payneteasy.superfly.dao.DaoConstants;
@@ -20,26 +21,27 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
 import com.payneteasy.superfly.utils.StringUtils;
 
+@Service
 @Transactional
 public class GroupServiceImpl implements GroupService {
 
-    private Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     private GroupDao groupDao;
     private NotificationService notificationService;
     private LoggerSink loggerSink;
 
-    @Required
+    @Autowired
     public void setGroupDao(GroupDao groupDao) {
         this.groupDao = groupDao;
     }
 
-    @Required
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }

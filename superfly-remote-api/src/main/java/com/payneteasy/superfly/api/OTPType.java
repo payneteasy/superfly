@@ -28,13 +28,10 @@ public enum OTPType {
         if (type == null) {
             return null;
         }
-        switch (type.toLowerCase().trim()) {
-            case "google_auth":
-                return GOOGLE_AUTH;
-            case "none":
-                return NONE;
-            default:
-                throw new IllegalStateException("Unexpected value: " + type);
-        }
+        return switch (type.toLowerCase().trim()) {
+            case "google_auth" -> GOOGLE_AUTH;
+            case "none" -> NONE;
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        };
     }
 }

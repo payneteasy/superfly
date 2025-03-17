@@ -19,5 +19,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+            <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
 </project>

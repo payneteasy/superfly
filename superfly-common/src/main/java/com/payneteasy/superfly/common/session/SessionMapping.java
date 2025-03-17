@@ -2,7 +2,7 @@ package com.payneteasy.superfly.common.session;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Used to maintain a correlation between HttpSession's and Superfly session

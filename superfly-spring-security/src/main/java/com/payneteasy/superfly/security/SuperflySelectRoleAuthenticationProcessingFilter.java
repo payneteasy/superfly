@@ -2,10 +2,11 @@ package com.payneteasy.superfly.security;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.Setter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,9 +21,10 @@ import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthentic
 /**
  * Filter which is used to show a dropdown from which user selects a role with
  * which they want to log in to the system.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Setter
 public class SuperflySelectRoleAuthenticationProcessingFilter extends
         AbstractSingleStepAuthenticationProcessingFilter {
 
@@ -30,10 +32,6 @@ public class SuperflySelectRoleAuthenticationProcessingFilter extends
 
     protected SuperflySelectRoleAuthenticationProcessingFilter() {
         super("/j_superfly_select_role");
-    }
-
-    public void setRoleParameter(String roleParameter) {
-        this.roleParameter = roleParameter;
     }
 
     @Override

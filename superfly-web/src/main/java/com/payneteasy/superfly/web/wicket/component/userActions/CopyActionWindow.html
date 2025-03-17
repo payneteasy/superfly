@@ -1,0 +1,63 @@
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:panel>
+    <form wicket:id="form" class="form" style="min-width: 320px">
+        <h4 class="p-4 pb-0">Copy properties from template to target action</h4>
+        <div class="bg-light px-4 pt-4 pb-2">
+            <h5>Template action</h5>
+            <div class="control-group">
+                <small class="text-muted">Action Name:</small>
+                <div class="controls">
+                    <label wicket:id="action-name"></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <small class="text-muted">Description:</small>
+                <div class="controls">
+                    <label wicket:id="action-desc"></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <small class="text-muted">Subsystem Name:</small>
+                <div class="controls">
+                    <label wicket:id="action-subname"></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <small class="text-muted">Grant user privileges: </small>
+                <div class="controls">
+                    <input type="checkbox" wicket:id="selected"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 pb-4 pt-2">
+            <h5>Target action</h5>
+            <div class="control-group">
+                <small class="text-muted">Action Name:</small>
+                <div class="controls">
+                    <label wicket:id="action-name-for-copy"></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <small class="text-muted">Description:</small>
+                <div class="controls">
+                    <label wicket:id="action-desc-for-copy"></label>
+                </div>
+            </div>
+            <div class="control-group mb-5">
+                <small class="text-muted">Subsystem Name:</small>
+                <div class="controls">
+                    <label wicket:id="action-subname-for-copy"></label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button wicket:id="copy" class="btn btn-primary">Copy</button>
+                <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
+            </div>
+        </div>
+    </form>
+</wicket:panel>
+</body>
+</html>

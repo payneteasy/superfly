@@ -2,6 +2,8 @@ package com.payneteasy.superfly.security.filters;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
+import com.payneteasy.superfly.api.request.SendSystemDataRequest;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
@@ -12,14 +14,15 @@ import com.payneteasy.superfly.security.spring.internal.SecurityContextStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ExternalFormSecurityFilter implements Filter {
@@ -65,7 +68,7 @@ public class ExternalFormSecurityFilter implements Filter {
         try {
             ActionDescription[] actions = getActionDescriptions();
             LOG.info("Sending {} actions to sso ...", actions.length);
-            ssoService.sendSystemData(systemName, actions);
+            ssoService.sendSystemData(new SendSystemDataRequest(systemName, List.of(actions)));
         } catch (Exception e) {
             LOG.error("Unable to send action to sso service", e);
             throw new ServletException("Unable to send action to sso service", e);
@@ -137,7 +140,7 @@ public class ExternalFormSecurityFilter implements Filter {
             throw new IllegalStateException("No 'subsystemToken' in paraters");
         }
         LOG.info("Checking token {}", subsystemToken);
-        SSOUser ssoUser = ssoService.exchangeSubsystemToken(subsystemToken);
+        SSOUser ssoUser = ssoService.exchangeSubsystemToken(new ExchangeSubsystemTokenRequest(subsystemToken));
         if(ssoUser == null) {
             throw new IllegalStateException("Token is not valid");
         }

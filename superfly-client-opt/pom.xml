@@ -34,7 +34,6 @@
             <!--Justification: Central interface to the Spring IoC container for test purpose-->
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <scope>test</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -60,8 +59,8 @@
         </dependency>
         <dependency>
             <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Provides SSL/TLS support with fixes for specific vulnerabilities -->
@@ -92,6 +91,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

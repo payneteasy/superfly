@@ -2,6 +2,9 @@ package com.payneteasy.superfly.policy.password.pcidss;
 
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
+import org.springframework.stereotype.Component;
 
 /**
  * Kuccyp
@@ -11,7 +14,8 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
  * Skype: kuccyp
  */
 
-//TODO make get parameters from spring for example 
+@Component
+@OnPolicyCondition(Policy.PCIDSS)
 public class PCIDSSPasswordPolicyValidation extends AbstractPolicyValidation<PasswordCheckContext>{
     private final static int MIN_LEN=7;
     private final static int HISTORY_DEPTH=4;

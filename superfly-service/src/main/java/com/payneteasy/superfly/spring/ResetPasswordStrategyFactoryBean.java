@@ -6,7 +6,7 @@ import com.payneteasy.superfly.resetpassword.deflt.DefaultResetPasswordStrategy;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ResetPasswordStrategyFactoryBean implements FactoryBean<ResetPasswordStrategy> {
     private ResetPasswordStrategy resetPasswordStrategy;
@@ -14,17 +14,17 @@ public class ResetPasswordStrategyFactoryBean implements FactoryBean<ResetPasswo
     private UserPasswordEncoder userPasswordEncoder;
     private LoggerSink loggerSink;
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

@@ -94,7 +94,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 if (userDescription.isOtpOptional()) {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
-                } else if (StringUtils.isEmpty(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
+                } else if (!StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
                     getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 } else {
                     getRequestCycle().setResponsePage(new SSOLoginHOTPPage());

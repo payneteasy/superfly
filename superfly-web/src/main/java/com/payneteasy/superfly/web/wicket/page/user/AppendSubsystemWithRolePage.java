@@ -21,7 +21,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -76,25 +75,23 @@ public class AppendSubsystemWithRolePage extends BasePage {
             visible =false;
         }
         container.setVisible(visible);
-        
+
         for (UISubsystemForList sub : newSub) {
-            List<Long> listIdsub = new ArrayList<Long>();
+            List<Long> listIdsub = new ArrayList<>();
             listIdsub.add(sub.getId());
             List<UIRoleForList> listRole = roleService.getRoles(0, Integer.MAX_VALUE, 1, true, null, listIdsub);
             modelsMap.put(sub, listRole);
         }
 
         // models for DropDrownChoice
-        IModel<List<? extends UISubsystemForList>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForList>>() {
+        IModel<List<? extends UISubsystemForList>> subsystemsModel = new LoadableDetachableModel<>() {
             @Override
-            public List<UISubsystemForList> getObject() {
-                Set<UISubsystemForList> keys = modelsMap.keySet();
-                List<UISubsystemForList> list = new ArrayList<UISubsystemForList>(keys);
-                return list;
+            public List<UISubsystemForList> load() {
+                Set<UISubsystemForList>  keys = modelsMap.keySet();
+                return new ArrayList<>(keys);
             }
-
         };
-        final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
+        final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<>() {
             @Override
             public List<UIRoleForList> load() {
                 List<UIRoleForList> models = modelsMap.get(subsystem);

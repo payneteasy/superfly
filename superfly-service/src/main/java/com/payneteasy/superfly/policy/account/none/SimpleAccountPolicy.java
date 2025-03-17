@@ -2,18 +2,23 @@ package com.payneteasy.superfly.policy.account.none;
 
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.service.UserService;
-import org.springframework.beans.factory.annotation.Required;
+import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link AccountPolicy} which behaves as simple as it's possible.
  *
  * @author Roman Puchkovskiy
  */
+@Component
+@OnPolicyCondition(Policy.NONE)
 public class SimpleAccountPolicy implements AccountPolicy {
 
     private UserService userService;
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }

@@ -3,6 +3,8 @@ package com.payneteasy.superfly.security.validator;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -15,17 +17,14 @@ import com.payneteasy.superfly.security.exception.PreconditionsException;
  *
  * @author Roman Puchkovskiy
  */
+@Setter
+@Accessors(chain = true)
 public class CompoundAuthenticationValidator implements AuthenticationValidator {
 
     private Class<?>[] requiredClasses = new Class<?>[]{};
 
-    public void setRequiredClasses(Class<?>[] classes) {
-        this.requiredClasses = classes;
-    }
-
     public void validate(Authentication auth) throws AuthenticationException {
-        if (auth instanceof CompoundAuthentication) {
-            CompoundAuthentication compound = (CompoundAuthentication) auth;
+        if (auth instanceof CompoundAuthentication compound) {
             validateCompound(compound);
         } else {
             throw new IllegalArgumentException(auth.getClass().getName() + " is not instance of a CompoundAuthentication");

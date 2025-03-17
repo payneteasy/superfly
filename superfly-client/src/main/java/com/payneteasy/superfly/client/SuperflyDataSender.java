@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.PostConstruct;
-
+import com.payneteasy.superfly.api.request.SendSystemDataRequest;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import com.payneteasy.superfly.client.exception.CollectionException;
 /**
  * Class that, upon instantiation and initialization in a Spring Application
  * Context, automatically sends subsystem data to SSOService.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class SuperflyDataSender {
@@ -110,8 +110,10 @@ public class SuperflyDataSender {
             if (logger.isDebugEnabled()) {
                 logger.debug("Sending the following actions: {}", getActionsStringForLog(actionDescriptions));
             }
-            ssoService.sendSystemData(getSubsystemIdentifier(),
-                    actionDescriptions);
+            ssoService.sendSystemData(SendSystemDataRequest.builder()
+                                                           .actionDescriptions(List.of(actionDescriptions))
+                                                           .subsystemIdentifier(getSubsystemIdentifier())
+                                                           .build());
         } catch (CollectionException e) {
             logger.error("Cannot send subsystem data", e);
         }

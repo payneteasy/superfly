@@ -11,37 +11,34 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
+@Service
 @Transactional
 public class SessionServiceImpl implements SessionService {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionServiceImpl.class);
 
     private SessionDao sessionDao;
-    private Notifier notifier;
+    private Notifier   notifier;
     private LoggerSink loggerSink;
 
-    @Required
+    @Autowired
     public void setSessionDao(SessionDao sessionDao) {
         this.sessionDao = sessionDao;
     }
 
-    @Required
+    @Autowired
     public void setNotifier(Notifier notifier) {
         this.notifier = notifier;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
@@ -65,23 +62,11 @@ public class SessionServiceImpl implements SessionService {
     public List<UISession> deleteExpiredSessionsAndNotify(Date beforeWhat) {
         List<UISession> sessions = sessionDao.deleteExpiredSessions(beforeWhat);
         if (logger.isDebugEnabled()) {
-            logger.debug("Deleted " + sessions.size() + " sessions"
-                    + (sessions.size() > 0 ? ", going to notify subsystems" : ""));
+            logger.debug("Deleted {} sessions{}", sessions.size(), !sessions.isEmpty() ? ", going to notify subsystems" : "");
         }
         if (!sessions.isEmpty()) {
-            Map<String, List<String>> callbackUriToSessionIds = new HashMap<>();
-            for (UISession session : sessions) {
-                if (session.getCallbackInformation() != null && session.isSendCallbacks()) {
-                    String uri = session.getCallbackInformation();
-                    List<String> sessionIds = callbackUriToSessionIds.get(uri);
-                    if (sessionIds == null) {
-                        sessionIds = new ArrayList<>();
-                        callbackUriToSessionIds.put(uri, sessionIds);
-                    }
-                    sessionIds.add(String.valueOf(session.getId()));
-                }
-            }
-            List<LogoutNotification> notifications = new ArrayList<>(callbackUriToSessionIds.size());
+            Map<String, List<String>> callbackUriToSessionIds = getCallbackUriToSessionIds(sessions);
+            List<LogoutNotification>  notifications           = new ArrayList<>(callbackUriToSessionIds.size());
             for (Entry<String, List<String>> entry : callbackUriToSessionIds.entrySet()) {
                 LogoutNotification notification = new LogoutNotification();
                 notification.setCallbackUri(entry.getKey());
@@ -93,6 +78,19 @@ public class SessionServiceImpl implements SessionService {
             }
         }
         return sessions;
+    }
+
+    private static Map<String, List<String>> getCallbackUriToSessionIds(List<UISession> sessions) {
+        Map<String, List<String>> callbackUriToSessionIds = new HashMap<>();
+        for (UISession session : sessions) {
+            if (session.getCallbackInformation() != null && session.isSendCallbacks()) {
+                String       uri        = session.getCallbackInformation();
+                List<String> sessionIds = callbackUriToSessionIds.computeIfAbsent(uri, k -> new ArrayList<>());
+
+                sessionIds.add(String.valueOf(session.getId()));
+            }
+        }
+        return callbackUriToSessionIds;
     }
 
     public List<UISession> deleteExpiredAndOldSessionsAndNotify(int seconds) {

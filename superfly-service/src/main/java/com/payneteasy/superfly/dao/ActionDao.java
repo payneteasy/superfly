@@ -12,7 +12,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 
 /**
  * DAO to work with actions through jdbc-proc.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface ActionDao {
@@ -53,8 +53,7 @@ public interface ActionDao {
             String actionNamePrefix, int startFrom, int recordsCount);
 
     @AStoredProcedure(name = "ui_copy_action_properties")
-    RoutineResult copyActionProperties(long actionId, long actionIdCopy,
-            boolean userPrivileges);
+    RoutineResult copyActionProperties(long actionId, long templateActionId, boolean userPrivileges);
 
     @AStoredProcedure(name = "ui_get_action")
     UIAction getAction(long actionId);

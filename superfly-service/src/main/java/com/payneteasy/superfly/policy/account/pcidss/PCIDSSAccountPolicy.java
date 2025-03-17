@@ -2,9 +2,11 @@ package com.payneteasy.superfly.policy.account.pcidss;
 
 import java.util.List;
 
+import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.model.RoutineResult;
@@ -14,12 +16,15 @@ import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.UserService;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link AccountPolicy} which conforms to PCI-DSS requirements.
  *
  * @author Roman Puchkovskiy
  */
+@Component
+@OnPolicyCondition(Policy.PCIDSS)
 public class PCIDSSAccountPolicy implements AccountPolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(PCIDSSAccountPolicy.class);
@@ -29,22 +34,22 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
     private UserPasswordEncoder userPasswordEncoder;
     private ResetPasswordStrategy resetPasswordStrategy;
 
-    @Required
+    @Autowired
     public void setResetPasswordStrategy(ResetPasswordStrategy resetPasswordStrategy) {
         this.resetPasswordStrategy = resetPasswordStrategy;
     }
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @Required
+    @Autowired
     public void setPasswordGenerator(PasswordGenerator passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }
 
-    @Required
+    @Autowired
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }

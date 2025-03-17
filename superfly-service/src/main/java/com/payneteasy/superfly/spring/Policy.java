@@ -2,11 +2,11 @@ package com.payneteasy.superfly.spring;
 
 /**
  * Defines current security policies.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public enum Policy {
-    NONE("none"), PCIDSS("pcidss");
+        NONE("none"), PCIDSS("pcidss");
 
     private String identifier;
 

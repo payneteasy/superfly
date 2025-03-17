@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.UserDescription;
+import com.payneteasy.superfly.api.request.*;
 import com.payneteasy.superfly.service.InternalSSOService;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -17,14 +18,13 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertSame;
 
 public class SSOServiceImplTest {
-    private SSOServiceImpl ssoService;
+    private SSOServiceImpl     ssoService;
     private InternalSSOService internalSSOService;
 
     @Before
     public void setUp() {
         internalSSOService = EasyMock.createMock(InternalSSOService.class);
-        ssoService = new SSOServiceImpl();
-        ssoService.setInternalSSOService(internalSSOService);
+        ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null);
     }
 
     @Test
@@ -53,7 +53,12 @@ public class SSOServiceImplTest {
                 .andReturn(user);
         replay(internalSSOService);
 
-        ssoService.exchangeSubsystemToken("token");
+        ssoService.exchangeSubsystemToken(
+                ExchangeSubsystemTokenRequest
+                        .builder()
+                        .subsystemToken("token")
+                        .build()
+        );
 
         verify(internalSSOService);
     }
@@ -63,7 +68,12 @@ public class SSOServiceImplTest {
         internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
         expectLastCall();
         replay(internalSSOService);
-        ssoService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        ssoService.touchSessions(
+                TouchSessionsRequest
+                        .builder()
+                        .sessionIds(Arrays.asList(1L, 2L, 3L))
+                        .build()
+        );
         verify(internalSSOService);
     }
 
@@ -71,7 +81,12 @@ public class SSOServiceImplTest {
     public void testGetUserDescriptionNotExistingUser() {
         expect(internalSSOService.getUserDescription("no-such-user")).andReturn(null);
         replay(internalSSOService);
-        UserDescription user = ssoService.getUserDescription("no-such-user");
+        UserDescription user = ssoService.getUserDescription(
+                GetUserDescriptionRequest
+                        .builder()
+                        .username("no-such-user")
+                        .build()
+        );
         Assert.assertNull(user);
         verify(internalSSOService);
     }
@@ -81,17 +96,29 @@ public class SSOServiceImplTest {
         internalSSOService.completeUser("username");
         expectLastCall();
         replay(internalSSOService);
-        ssoService.completeUser("username");
+        ssoService.completeUser(
+                CompleteUserRequest
+                        .builder()
+                        .username("username")
+                        .build()
+        );
         verify(internalSSOService);
     }
 
     @Test
     public void testPseudoAuthenticate() {
         SSOUser user = new SSOUser("username", Collections.<SSORole, SSOAction[]>emptyMap(),
-                Collections.<String, String>emptyMap());
+                                   Collections.<String, String>emptyMap()
+        );
         expect(internalSSOService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(user);
         replay(internalSSOService);
-        SSOUser user2 = ssoService.pseudoAuthenticate("username", "subsystemIdentifier");
+        SSOUser user2 = ssoService.pseudoAuthenticate(
+                PseudoAuthenticateRequest
+                        .builder()
+                        .username("username")
+                        .subsystemIdentifier("subsystemIdentifier")
+                        .build()
+        );
         assertSame(user, user2);
         verify(internalSSOService);
     }
@@ -109,7 +136,13 @@ public class SSOServiceImplTest {
         expectLastCall();
         replay(internalSSOService);
 
-        ssoService.changeUserRole("username", "ROLE_TO");
+        ssoService.changeUserRole(
+                ChangeUserRoleRequest
+                        .builder()
+                        .username("username")
+                        .newRole("ROLE_TO")
+                        .build()
+        );
 
         verify(internalSSOService);
     }
@@ -120,7 +153,14 @@ public class SSOServiceImplTest {
         expectLastCall();
         replay(internalSSOService);
 
-        ssoService.changeUserRole("username", "ROLE_TO", "test");
+        ssoService.changeUserRole(
+                ChangeUserRoleRequest
+                        .builder()
+                        .username("username")
+                        .newRole("ROLE_TO")
+                        .subsystemHint("test")
+                        .build()
+        );
 
         verify(internalSSOService);
     }

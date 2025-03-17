@@ -11,23 +11,7 @@ public interface JavaMailSenderPool {
     ConfiguredSender get(String subsystemIdentifier);
 
     void flushAll();
-    
-    public static class ConfiguredSender {
-        private final JavaMailSender sender;
-        private final String from;
 
-        public ConfiguredSender(JavaMailSender sender, String from) {
-            super();
-            this.sender = sender;
-            this.from = from;
-        }
-
-        public JavaMailSender getSender() {
-            return sender;
-        }
-
-        public String getFrom() {
-            return from;
-        }
+    record ConfiguredSender(JavaMailSender sender, String from) {
     }
 }
