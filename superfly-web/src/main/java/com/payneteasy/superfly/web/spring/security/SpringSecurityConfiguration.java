@@ -75,12 +75,12 @@ public class SpringSecurityConfiguration {
                                                      antPathRequestMatcher("/management/version.txt")
                                     )
                                     .permitAll()
-                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.service"),
-                                                     antPathRequestMatcher("/remoting/sso.xremoting.service"),
+                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.xremoting.service"),
                                                      antPathRequestMatcher("/remoting/sso.hessian.service")
                                     )
                                     .hasAuthority("ROLE_SUBSYSTEM")
-                                    .requestMatchers(antPathRequestMatcher("/remoting/oauth2.hessian.service"),
+                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"),
+                                                     antPathRequestMatcher("/remoting/oauth2.hessian.service"),
                                                      antPathRequestMatcher("/remoting/basic.hessian.service")
                                     )
                                     .anonymous()

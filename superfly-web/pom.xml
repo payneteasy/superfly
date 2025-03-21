@@ -177,12 +177,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            &lt;!&ndash;Justification: Byte Code Generation Library &ndash;&gt;-->
-<!--            <groupId>cglib</groupId>-->
-<!--            <artifactId>cglib</artifactId>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
         <dependency>
             <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
             <groupId>org.projectlombok</groupId>
