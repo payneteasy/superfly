@@ -12,8 +12,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class GoogleAuthSetupPanel extends Panel {
     private static final String TOTP_URI_FORMAT =
@@ -44,12 +44,8 @@ public class GoogleAuthSetupPanel extends Panel {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        try {
-                            return String.format(TOTP_URI_FORMAT,
-                                    URLEncoder.encode(getOtpAuthTotpURL(subsystem, username, totpSecret.getObject()), "UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException("UTF-8 encoding is not supported by URLEncoder.", e);
-                        }
+                        return String.format(TOTP_URI_FORMAT,
+                                URLEncoder.encode(getOtpAuthTotpURL(subsystem, username, totpSecret.getObject()), StandardCharsets.UTF_8));
                     }
                 })
         );

@@ -7,7 +7,7 @@
         <Arg>java:/comp/env/jdbc/superfly</Arg>
         <Arg>
             <New class="org.apache.commons.dbcp.BasicDataSource">
-                <Set name="url">jdbc:mysql://localhost:3306/sso?autoReconnect=false&amp;characterEncoding=utf8&amp;serverTimezone=Europe/Moscow</Set>
+                <Set name="url">jdbc:mysql://localhost:3306/sso?characterEncoding=utf8&amp;useInformationSchema=true&amp;noAccessToProcedureBodies=false&amp;useLocalSessionState=true&amp;autoReconnect=false&amp;serverTimezone=Europe/Moscow</Set>
                 <Set name="driverClassName">com.mysql.cj.jdbc.Driver</Set>
                 <Set name="username">sso</Set>
                 <Set name="password">123sso123</Set>

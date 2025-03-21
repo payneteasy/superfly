@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -120,7 +121,7 @@ public class ExternalFormSecurityFilter implements Filter {
     public boolean processLogoutUrl(String path, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if(path.startsWith("/j_spring_security_logout")) {
             SecurityContextStore.clearFromSession(request);
-            response.sendRedirect(logoutUrl + URLEncoder.encode(request.getContextPath(), "utf-8"));
+            response.sendRedirect(logoutUrl + URLEncoder.encode(request.getContextPath(), StandardCharsets.UTF_8));
             return true;
         }
         return false;
@@ -156,7 +157,7 @@ public class ExternalFormSecurityFilter implements Filter {
     }
 
     private void redirectToLoginPage(String aUrl, HttpServletResponse aResponse) throws IOException {
-        String formUrl = loginFormUrl + URLEncoder.encode(aUrl, "utf-8");
+        String formUrl = loginFormUrl + URLEncoder.encode(aUrl, StandardCharsets.UTF_8);
         LOG.debug("Sending redirect to external form to {}", formUrl);
         aResponse.sendRedirect(formUrl);
     }

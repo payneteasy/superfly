@@ -10,6 +10,10 @@
     <description>Optional Superfly-related client features (like SSL support)</description>
     <dependencies>
         <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: HTTP requests handling library. -->
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
@@ -69,6 +73,12 @@
             <!--Justification: Reflection library to obtain metadata about classes -->
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Bouncy Castle API for cryptography functions -->
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
         </dependency>
 
         <dependency>

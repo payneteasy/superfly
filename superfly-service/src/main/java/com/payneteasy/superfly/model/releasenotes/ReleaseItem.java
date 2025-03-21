@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.model.releasenotes;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**

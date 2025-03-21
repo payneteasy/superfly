@@ -126,27 +126,12 @@
             <artifactId>jetty-util</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-management</artifactId>
-            <scope>provided</scope>
-        </dependency>
--->
         <dependency>
             <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-plus</artifactId>
             <scope>provided</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-naming</artifactId>
-            <scope>provided</scope>
-        </dependency>
--->
-
         <dependency>
             <!--Justification: MySQL database connectivity -->
             <groupId>mysql</groupId>
