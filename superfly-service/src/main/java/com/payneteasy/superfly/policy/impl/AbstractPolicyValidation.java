@@ -3,7 +3,7 @@ package com.payneteasy.superfly.policy.impl;
 import com.payneteasy.superfly.policy.IPolicy;
 import com.payneteasy.superfly.policy.IPolicyContext;
 import com.payneteasy.superfly.policy.IPolicyValidation;
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 
 import java.util.ArrayList;
 import java.util.List;

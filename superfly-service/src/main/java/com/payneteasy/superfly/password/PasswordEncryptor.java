@@ -11,7 +11,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.hotp.HOTPProviderContextImpl;
 import com.payneteasy.superfly.hotp.HOTPProviderUtils;
@@ -64,11 +64,11 @@ public class PasswordEncryptor {
                 hotpMasterKey, hotpCodeDigits, conn);
 
         hotpProvider.init(hotpProviderContext);
-        
+
         Statement st = conn.createStatement();
         PreparedStatement updatePasswordSt = conn.prepareStatement("update users set user_password = ?, salt = ? where user_id = ?");
         PreparedStatement insertHistorySt = conn.prepareStatement("insert into user_history (user_user_id, user_password, salt, number_history, start_date, end_date) values (?, ?, ?, (select coalesce(max(uh2.number_history), 0) + 1 from user_history uh2 where uh2.user_user_id = ?), now(), '2999-12-31')");
-        
+
         System.out.println("Starting password encryption");
         Set<String> processedNames = new HashSet<String>();
         ResultSet rs = st.executeQuery("select user_id, user_name, user_password from users where (user_password is null or user_password = '' or length(user_password) <> " + test.length() + ")");
@@ -95,19 +95,19 @@ public class PasswordEncryptor {
         }
         rs.close();
         st.close();
-        
+
         updatePasswordSt.executeBatch();
         insertHistorySt.executeBatch();
 
         conn.commit();
-        
+
         updatePasswordSt.close();
         insertHistorySt.close();
 
         System.out.println("Finished password encryption");
-        
+
         System.out.println("Computing HOTP values for admins");
-        
+
         st = conn.createStatement();
         rs = st.executeQuery("(select user_id, user_name, hotp_counter" +
                 " from users u" +
@@ -136,11 +136,11 @@ public class PasswordEncryptor {
                         hotpProvider.computeValue(username, counter + 2)));
             }
         }
-        
+
         System.out.println("Finished computing HOTP values for admins");
-        
+
         st.close();
-        
+
         conn.close();
     }
 

@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SubsystemService;

@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.exceptions.MessageSendException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.LockoutType;

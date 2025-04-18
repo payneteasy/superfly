@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.password;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.apache.commons.codec.binary.Hex;

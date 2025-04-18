@@ -6,11 +6,11 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <aop:aspectj-autoproxy/>
-    
+
     <bean id="exceptionConversionAspect" class="com.payneteasy.superfly.aop.ExceptionConversionAspect">
         <property name="nonConvertibleClasses">
             <list>
-                <value>com.payneteasy.superfly.api.SSOException</value>
+                <value>com.payneteasy.superfly.api.exceptions.SsoException</value>
             </list>
         </property>
     </bean>

@@ -186,7 +186,7 @@
         </init-param>
         <init-param>
             <param-name>ignorePaths</param-name>
-            <param-value>/remoting/,/sso/,/management/version.txt</param-value>
+            <param-value>/remoting/,/remoting/sso.service/,/sso/,/management/version.txt</param-value>
         </init-param>
     </filter>
 

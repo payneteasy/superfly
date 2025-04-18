@@ -1,12 +1,13 @@
 package com.payneteasy.superfly.api;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
 import java.io.Serializable;
 
 /**
  * Describes an action. Used to send info about an action from subsystem to
  * Superfly server.
- * 
+ *
  * @author Roman Puchkovskiy
  * @since 1.0
  */
@@ -30,7 +31,7 @@ public class ActionDescription implements Serializable {
         this.description = description;
     }
 
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     public String getName() {
         return name;
     }
@@ -39,7 +40,7 @@ public class ActionDescription implements Serializable {
         this.name = name;
     }
 
-    @XmlAttribute
+    @JacksonXmlProperty(isAttribute = true)
     public String getDescription() {
         return description;
     }

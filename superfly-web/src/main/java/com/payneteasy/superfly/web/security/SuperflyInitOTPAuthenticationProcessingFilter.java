@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.security.AbstractSingleStepAuthenticationProcessingFilter;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;

@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;

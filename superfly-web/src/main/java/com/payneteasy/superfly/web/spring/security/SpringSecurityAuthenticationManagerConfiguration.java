@@ -32,6 +32,7 @@ public class SpringSecurityAuthenticationManagerConfiguration {
         List<AuthenticationProvider> providers = List.of(
                 passwordAuthenticationProvider(),
                 otpAuthenticationProvider(),
+                susbsystemAuthenticationProvider(),
                 x509PreAuthenticatedAuthenticationProvider()
 
         );
@@ -63,6 +64,9 @@ public class SpringSecurityAuthenticationManagerConfiguration {
                 .setAuthenticationPostProcessor(new CompoundLatestAuthUnwrappingPostProcessor());
     }
 
+    private AuthenticationProvider susbsystemAuthenticationProvider() {
+        return new SubsystemAuthenticationProvider(userDetailsService);
+    }
 
     private AuthenticationProvider x509PreAuthenticatedAuthenticationProvider() {
         return new X509PreAuthenticatedAuthenticationProvider(userDetailsService);

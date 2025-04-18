@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.hotp;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.crypto.CryptoService;
 import com.payneteasy.superfly.crypto.exception.DecryptException;
@@ -70,7 +70,7 @@ public class HOTPServiceImpl implements HOTPService {
         try {
             masterKey = cryptoService.decrypt(masterKeyEncrypt);
         } catch (DecryptException e) {
-            throw new SsoDecryptException(e);
+            throw new SsoDecryptException("decrypt error", e);
         }
         return googleAuthenticator.get().authorize(masterKey, verificationCode);
     }
@@ -96,7 +96,7 @@ public class HOTPServiceImpl implements HOTPService {
                 try {
                     encryptKey = cryptoService.encrypt(key);
                 } catch (EncryptException e) {
-                    throw new SsoDecryptException(e);
+                    throw new SsoDecryptException("encrypt error", e);
                 }
                 userService.persistOtpMasterKeyForUsername(username, encryptKey);
                 break;

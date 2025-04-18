@@ -104,7 +104,7 @@
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="continueFilterChainOnUnsuccessfulAuthentication" value="false"/>
         <property name="authenticationFailureHandler">
-            <bean class="com.payneteasy.superfly.security.x509.X509EFailureHandler"/>
+            <bean class="com.payneteasy.superfly.security.handler.UnauthorizedFailureHandler"/>
         </property>
     </bean>
 

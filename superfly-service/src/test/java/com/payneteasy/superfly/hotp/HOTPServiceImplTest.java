@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.crypto.exception.EncryptException;
 import com.payneteasy.superfly.service.UserService;

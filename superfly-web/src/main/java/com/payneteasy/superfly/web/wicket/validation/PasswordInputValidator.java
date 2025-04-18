@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.wicket.validation;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.service.UserService;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -33,7 +33,7 @@ public class PasswordInputValidator extends AbstractFormValidator {
         theUserService = aUserService;
         theUserName = aUserName;
     }
-    
+
     public FormComponent<?>[] getDependentFormComponents() {
         if(theUserName==null){
             return new FormComponent[]{theFormComponentUserName,theFormComponentPassword};

@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.web.spring;
 
 import com.payneteasy.superfly.aop.ExceptionConversionAspect;
-import com.payneteasy.superfly.api.SSOException;
+import com.payneteasy.superfly.api.exceptions.SsoException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -13,7 +13,7 @@ public class AopConfig {
     @Bean
     public ExceptionConversionAspect exceptionConversionAspect() {
         ExceptionConversionAspect    aspect  = new ExceptionConversionAspect();
-        Class<? extends Exception>[] classes = new Class[]{SSOException.class};
+        Class<? extends Exception>[] classes = new Class[]{SsoException.class};
         aspect.setNonConvertibleClasses(classes);
         return aspect;
     }

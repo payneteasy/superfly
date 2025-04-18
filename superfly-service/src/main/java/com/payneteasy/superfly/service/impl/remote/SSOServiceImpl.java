@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.service.impl.remote;
 
 import com.payneteasy.superfly.api.*;
+import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.email.EmailService;

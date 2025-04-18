@@ -1,8 +1,8 @@
 package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;

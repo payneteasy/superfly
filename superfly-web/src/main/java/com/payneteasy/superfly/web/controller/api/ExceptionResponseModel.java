@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.web.conroller.api;
+package com.payneteasy.superfly.web.controller.api;
 
 import lombok.Getter;
 

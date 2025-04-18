@@ -10,11 +10,13 @@ import com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationPr
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
-import com.payneteasy.superfly.security.x509.X509EFailureHandler;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
+import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter;
+import com.payneteasy.superfly.web.security.handler.JsonAuthenticationFailureHandler;
 import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,24 +44,24 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
-@EnableWebMvc
 @Import({SpringSecurityAuthenticationManagerConfiguration.class})
 public class SpringSecurityConfiguration {
     private final SuperflyProperties    properties;
     private final LoggerSink            loggerSink;
     private final AuthenticationManager authenticationManager;
+    private final SubsystemService      subsystemService;
 
-    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager) {
+    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager, SubsystemService subsystemService) {
         this.properties = properties;
         this.loggerSink = loggerSink;
         this.authenticationManager = authenticationManager;
+        this.subsystemService = subsystemService;
     }
 
     @Bean
@@ -75,15 +77,13 @@ public class SpringSecurityConfiguration {
                                                      antPathRequestMatcher("/management/version.txt")
                                     )
                                     .permitAll()
-                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.xremoting.service"),
-                                                     antPathRequestMatcher("/remoting/sso.hessian.service")
-                                    )
+                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"))
                                     .hasAuthority("ROLE_SUBSYSTEM")
-                                    .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"),
-                                                     antPathRequestMatcher("/remoting/oauth2.hessian.service"),
-                                                     antPathRequestMatcher("/remoting/basic.hessian.service")
+                                    .requestMatchers(
+                                            antPathRequestMatcher("/remoting/oauth2.hessian.service/**"),
+                                            antPathRequestMatcher("/remoting/basic.hessian.service/**")
                                     )
-                                    .anonymous()
+                                    .permitAll()
                                     .anyRequest()
                                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_ACTION_TEMP_PASSWORD"))
             .exceptionHandling(httpSecurity ->
@@ -102,6 +102,7 @@ public class SpringSecurityConfiguration {
 
         // Добавляем кастомные фильтры
         http.addFilterAt(x509AuthenticationFilter(), X509AuthenticationFilter.class)
+            .addFilterBefore(subsystemAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAt(passwordAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(initOtpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(otpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -132,7 +133,19 @@ public class SpringSecurityConfiguration {
         X509AuthenticationFilter filter = new X509AuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager);
         filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
-        filter.setAuthenticationFailureHandler(new X509EFailureHandler());
+        filter.setAuthenticationFailureHandler(new JsonAuthenticationFailureHandler());
+        return filter;
+    }
+
+    @Bean
+    public SubsystemAuthenticationFilter subsystemAuthenticationFilter() {
+        SubsystemAuthenticationFilter filter = new SubsystemAuthenticationFilter(
+                antPathRequestMatcher("/remoting/sso.service/**"),
+                authenticationManager,
+                subsystemService
+        );
+        filter.setSuccessHandler((request, response, authentication) -> {});
+        filter.setFailureHandler(new JsonAuthenticationFailureHandler());
         return filter;
     }
 

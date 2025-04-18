@@ -1,35 +1,30 @@
-package com.payneteasy.superfly.web.conroller.api;
+package com.payneteasy.superfly.web.controller.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 import com.payneteasy.superfly.api.SSOService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.payneteasy.superfly.web.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.payneteasy.superfly.web.conroller.api.ExceptionResponseModel.createErrorModel;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 @Slf4j
-@Controller
+@RestController
+@RequestMapping("/sso.service")
 public class RemoteApiController {
-
-    private static final ModelAndView ALREADY_WRITTEN = null;
-
     private static final Gson GSON = new GsonBuilder()
             .serializeNulls()
+            .setStrictness(Strictness.STRICT)
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ") // Пример настройки
             .create()
             ;
@@ -40,63 +35,39 @@ public class RemoteApiController {
     public RemoteApiController(SSOService ssoService) {
         this.ssoService = ssoService;
         for (Method method : SSOService.class.getMethods()) {
-            log.info("Registering method SSOService.{}", method.getName());
+            log.info("Register method SSOService.{}", method.getName());
             requestMethods.put(method.getName(), method);
         }
     }
 
-    @RequestMapping({"/sso.service/{methodName}"})
-    public ModelAndView processRequest(
-            HttpServletRequest aRequest,
-            HttpServletResponse aResponse,
+    @RequestMapping({"/{methodName}"})
+    ResponseEntity<?> processRequest(
+            @RequestBody String body,
             @PathVariable(name = "methodName") String methodName
     ) {
-        try {
-            aResponse.setContentType("application/json; charset=UTF-8");
-
-            invokeServiceMethodJson(
-                    findGson(aRequest),
-                    methodName,
-                    aRequest.getInputStream(),
-                    aResponse.getWriter()
-            );
-        } catch (Exception e) {
-            createErrorModel("invoke.sso.service.error", e.getLocalizedMessage());
-            log.error("processRequest error", e);
+        if (log.isDebugEnabled()) {
+            log.debug("Request {} from {}", methodName, SecurityUtils.getUsername());
         }
 
-        return ALREADY_WRITTEN;
+        return ResponseEntity.ok(invokeServiceMethodJsonSingle(
+                methodName,
+                body
+        ));
     }
 
-    private Gson findGson(HttpServletRequest aRequest) {
-        return GSON;
-    }
-
-
-    void invokeServiceMethodJson(
-            Gson aGson,
+    private Object invokeServiceMethodJsonSingle(
             String aMethodName,
-            InputStream aInput,
-            Appendable writer
-    ) {
-        invokeServiceMethodJsonSingle(aGson, aMethodName, aInput, writer);
-    }
-
-    private void invokeServiceMethodJsonSingle(
-            Gson aGson,
-            String aMethodName,
-            InputStream aInput,
-            Appendable writer
+            String body
     ) {
         Type   argumentType = getMethodType(aMethodName);
-        Object argument     = argumentType == Void.TYPE ? null : aGson.fromJson(new InputStreamReader(aInput, UTF_8),
-                                                                                argumentType
-        );
-        if (!log.isDebugEnabled()) {
-            log.debug("invoke api: SSOService.{}() request is {}", aMethodName, aGson.toJson(argument));
+        Object argument     = argumentType == Void.TYPE ? null : RemoteApiController.GSON.fromJson(body, argumentType);
+        if (log.isDebugEnabled()) {
+            log.debug("Invoke api: SSOService.{}() request is {}",
+                      aMethodName,
+                      GSON.toJson(argument)
+            );
         }
-        Object result = invokeMethod(aMethodName, argument);
-        aGson.toJson(result, writer);
+        return invokeMethod(aMethodName, argument);
     }
 
     Object invokeMethod(String aMethodName, Object aArgument) {

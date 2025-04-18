@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.security.x509;
+package com.payneteasy.superfly.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class X509EFailureHandler implements AuthenticationFailureHandler {
+public class UnauthorizedFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(
             HttpServletRequest request,

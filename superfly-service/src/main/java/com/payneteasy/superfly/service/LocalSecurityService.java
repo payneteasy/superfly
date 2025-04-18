@@ -1,12 +1,12 @@
 package com.payneteasy.superfly.service;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 
 /**
  * Service used for local security-related purposes.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface LocalSecurityService {

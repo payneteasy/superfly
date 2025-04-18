@@ -1,9 +1,9 @@
 package com.payneteasy.superfly.service;
 
-import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.exceptions.MessageSendException;
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.PolicyValidationException;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.User;
@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * Service to work with users.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface UserService {

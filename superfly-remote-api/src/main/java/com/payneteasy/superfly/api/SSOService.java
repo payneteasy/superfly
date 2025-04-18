@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.api;
 
+import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
 
 import java.util.List;

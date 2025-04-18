@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.policy.password.pcidss;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.policy.IPolicy;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 

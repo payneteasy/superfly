@@ -1,18 +1,14 @@
 package com.payneteasy.superfly.client;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.client.exception.CollectionException;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,20 +26,20 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
 
     private Resource resource;
 
-    public List<ActionDescription> collect() throws CollectionException {
-        List<ActionDescriptionBean> list;
+    public List<ActionDescription> collect() {
+        List<ActionDescription> list;
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ActionDescriptionRoot.class);
-            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-            ActionDescriptionRoot news = (ActionDescriptionRoot) jaxbUnmarshaller.unmarshal(resource.getFile());
-            list = new ArrayList<>(news.getActions());
-        } catch (JAXBException | IOException e) {
+            // Создаем XmlMapper вместо JAXBContext
+            File                  xmlFile   = resource.getFile(); // Убедитесь, что resource доступен
+            XmlMapper             xmlMapper = new XmlMapper();
+            ActionDescriptionRoot root      = xmlMapper.readValue(xmlFile, ActionDescriptionRoot.class);
+            list = new ArrayList<>(root.getActions());
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         List<ActionDescription> actions = new ArrayList<>(list.size());
-        for (ActionDescriptionBean bean : list) {
+        for (ActionDescription bean : list) {
             ActionDescription action = new ActionDescription();
             BeanUtils.copyProperties(bean, action);
             actions.add(action);

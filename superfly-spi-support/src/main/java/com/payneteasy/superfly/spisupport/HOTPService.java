@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.spisupport;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 
 /**

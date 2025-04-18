@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.security;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SubsystemService;
-import com.payneteasy.superfly.web.security.exception.SubsystemNotFoundException;
+import com.payneteasy.superfly.web.security.exception.SubsystemNotAllowedHostException;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
         UISubsystem subsystem = subsystemService.getSubsystemByName(username);
         if (subsystem == null) {
             loggerSink.info(logger, "CHECK_SUBSYSTEM_EXIST", false, username);
-            throw new SubsystemNotFoundException(
+            throw new SubsystemNotAllowedHostException(
                     String.format("Subsystem %s (from CN=%s) not found in subsystems. Please check your Issue.CN field", username, username)
             );
         }
@@ -52,7 +52,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
             gas[i] = new SimpleGrantedAuthority(authorities[i]);
         }
         loggerSink.info(logger, "CHECK_SUBSYSTEM_EXIST", true, username);
-        return new User(username, "NOT-USED", true, true, true, true, Arrays.asList(gas));
+        return new User(username, subsystem.getSubsystemToken(), true, true, true, true, Arrays.asList(gas));
     }
 
 }

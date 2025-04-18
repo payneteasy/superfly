@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;

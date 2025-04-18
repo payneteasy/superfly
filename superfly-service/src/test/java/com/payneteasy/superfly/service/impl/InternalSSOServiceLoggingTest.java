@@ -2,7 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
-import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.exceptions.UserExistsException;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;

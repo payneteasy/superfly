@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.common.utils;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public class CryptoHelper {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes(Charset.defaultCharset())));
         } catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | NoSuchAlgorithmException e) {
-            throw new SsoDecryptException(e);
+            throw new SsoDecryptException("encrypt error", e);
         }
     }
 
@@ -94,7 +94,7 @@ public class CryptoHelper {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | NoSuchAlgorithmException e) {
-            throw new SsoDecryptException(e);
+            throw new SsoDecryptException("decrypt error", e);
         }
     }
 }
