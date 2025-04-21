@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         SpringUIDataSourcesConfiguration.class,
         SpringUIDaoConfiguration.class,
         SpringServiceConfiguration.class,
+        WebConfig.class,
         SpringSecurityConfiguration.class,
         AopConfig.class,
         QuartzConfig.class,
