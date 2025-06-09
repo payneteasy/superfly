@@ -1,4 +1,4 @@
-package com.payneteasy.superfly.api;
+package com.payneteasy.superfly.api.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +7,7 @@ import com.payneteasy.http.client.api.*;
 import com.payneteasy.http.client.api.exceptions.HttpConnectException;
 import com.payneteasy.http.client.api.exceptions.HttpReadException;
 import com.payneteasy.http.client.api.exceptions.HttpWriteException;
-import com.payneteasy.http.client.impl.HttpClientImpl;
+import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class SSOHttpServiceWrapper implements SSOService {
+public class SSOHttpServiceApiClient implements SSOService {
 
     private static final String CONTENT_TYPE_JSON      = "application/json";
     private static final String HEADER_SUBSYSTEM_NAME  = "X-Subsystem-Name";
@@ -32,9 +32,10 @@ public class SSOHttpServiceWrapper implements SSOService {
     private final Gson                  gson;
     private final String                baseUrl;
     private final String                subsystemName;
-    private final String                subsystemToken;;
+    private final String                subsystemToken;
+    ;
 
-    public SSOHttpServiceWrapper(
+    public SSOHttpServiceApiClient(
             IHttpClient httpClient,
             HttpTimeouts httpTimeouts,
             String baseUrl,
@@ -47,20 +48,6 @@ public class SSOHttpServiceWrapper implements SSOService {
         this.baseUrl = validateUrl(baseUrl);
         this.subsystemName = Objects.requireNonNull(subsystemName, "subsystemName must not be null");
         this.subsystemToken = Objects.requireNonNull(subsystemToken, "subsystemToken must not be null");
-    }
-
-    public static void main(String[] args) {
-        SSOHttpServiceWrapper test = new SSOHttpServiceWrapper(
-                new HttpClientImpl(),
-                HttpTimeouts.builder().build(),
-                "http://localhost:8085/superfly",
-                "paynet-local",
-                "88c37322-ad17-4180-9bc1-7ab9e96e49fd"
-        );
-
-        UserDescription su = test.getUserDescription(GetUserDescriptionRequest.builder().username("su").build());
-        SSOUser authenticate = test.authenticate(AuthenticateRequest.builder().username("su").build());
-        System.out.println("SU: " + su);
     }
 
     private HttpRequestParameters createRequestParameters(HttpTimeouts timeouts) {
