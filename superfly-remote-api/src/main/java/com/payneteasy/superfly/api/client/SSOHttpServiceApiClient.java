@@ -181,7 +181,7 @@ public class SSOHttpServiceApiClient implements SSOService {
     }
 
     @Override
-    public void resetPassword(PasswordReset reset) throws UserNotFoundException, PolicyValidationException {
+    public void resetPassword(PasswordResetRequest reset) throws UserNotFoundException, PolicyValidationException {
         try {
             post("/resetPassword", reset, VoidResponse.class);
         } catch (SsoNotFoundException e) {

@@ -128,7 +128,7 @@ public interface SSOService {
      * @throws PolicyValidationException if password is bad
      * @since 1.6-3
      */
-    void resetPassword(PasswordReset reset) throws UserNotFoundException, PolicyValidationException;
+    void resetPassword(PasswordResetRequest reset) throws UserNotFoundException, PolicyValidationException;
 
     /**
      * Finds users by list of their logins and returns their status information.

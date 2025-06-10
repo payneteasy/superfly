@@ -229,10 +229,10 @@ public class SSOServiceImpl implements SSOService {
     }
 
     /**
-     * @see SSOService#resetPassword(com.payneteasy.superfly.api.PasswordReset)
+     * @see SSOService#resetPassword(PasswordResetRequest)
      */
     @Override
-    public void resetPassword(PasswordReset reset)
+    public void resetPassword(PasswordResetRequest reset)
             throws UserNotFoundException, PolicyValidationException {
         doResetPassword(reset.getUsername(), reset.getPassword(), reset.isSendByEmail());
     }
