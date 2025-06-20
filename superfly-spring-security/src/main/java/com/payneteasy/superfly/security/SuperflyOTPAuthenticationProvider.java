@@ -26,6 +26,9 @@ public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider
         this.supportedAuthenticationClass = clazz;
     }
 
+    public SuperflyOTPAuthenticationProvider() {
+    }
+
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         Authentication result = null;

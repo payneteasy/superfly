@@ -24,6 +24,9 @@ public class SuperflySSOAuthenticationProvider implements AuthenticationProvider
 
     private SSOService ssoService;
 
+    public SuperflySSOAuthenticationProvider() {
+    }
+
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         if (authentication instanceof SSOAuthenticationRequest authRequest) {

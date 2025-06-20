@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 /**
  * SessionMapping implementation which uses a HashMap.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class HashMapBackedSessionMapping implements SessionMapping {
@@ -31,10 +31,10 @@ public class HashMapBackedSessionMapping implements SessionMapping {
         return mapping.remove(key);
     }
 
-    public synchronized HttpSession removeSessionById(String id) {
+    public synchronized void removeSessionById(String id) {
         String key = idToKey.remove(id);
         keyToId.remove(key);
-        return mapping.remove(key);
+        mapping.remove(key);
     }
 
     public synchronized Collection<HttpSession> clear() {

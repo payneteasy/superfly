@@ -29,7 +29,8 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
     @Before
     public void setUp() {
         ssoService = EasyMock.createMock(SSOService.class);
-        provider = new SuperflyUsernamePasswordAuthenticationProvider(ssoService);
+        provider = new SuperflyUsernamePasswordAuthenticationProvider();
+        provider.setSsoService(ssoService);
     }
 
     @Test

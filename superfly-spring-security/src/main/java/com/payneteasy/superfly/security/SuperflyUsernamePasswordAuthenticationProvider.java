@@ -10,6 +10,7 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -21,10 +22,13 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author Roman Puchkovskiy
  */
-@AllArgsConstructor
 public class SuperflyUsernamePasswordAuthenticationProvider implements AuthenticationProvider {
 
+    @Setter
     private SSOService ssoService;
+
+    public SuperflyUsernamePasswordAuthenticationProvider() {
+    }
 
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {

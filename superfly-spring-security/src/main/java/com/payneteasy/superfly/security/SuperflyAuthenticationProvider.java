@@ -18,6 +18,9 @@ public class SuperflyAuthenticationProvider extends AbstractSuperflyAuthenticati
 
     private SSOService ssoService;
 
+    public SuperflyAuthenticationProvider() {
+    }
+
     @Autowired
     public void setSsoService(SSOService ssoService) {
         this.ssoService = ssoService;

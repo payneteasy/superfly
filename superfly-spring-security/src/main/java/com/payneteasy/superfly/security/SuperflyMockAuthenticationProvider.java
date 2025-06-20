@@ -20,13 +20,18 @@ import java.util.Map;
  */
 public class SuperflyMockAuthenticationProvider extends AbstractSuperflyAuthenticationProvider {
 
-    private final String username;
-    private final String password;
-
+    @Setter
+    private String username;
+    @Setter
+    private String password;
     @Setter
     private ActionsMapBuilder actionsMapBuilder;
 
+    @Setter
     private Map<SSORole, SSOAction[]> cachedActionsMap;
+
+    public SuperflyMockAuthenticationProvider() {
+    }
 
     public SuperflyMockAuthenticationProvider(String username, String password, ActionsMapBuilder actionsMapBuilder) {
         this.username = username;

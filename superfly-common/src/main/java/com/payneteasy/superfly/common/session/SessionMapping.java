@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpSession;
 /**
  * Used to maintain a correlation between HttpSession's and Superfly session
  * keys (or identifiers).
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface SessionMapping {
@@ -28,10 +28,9 @@ public interface SessionMapping {
     /**
      * Removes a session by its ID (i.e. by value returned by session.getId()).
      *
-     * @param id    ID of the session to remove
-     * @return removed session (or null if no such session existed in the mapping)
+     * @param id ID of the session to remove
      */
-    HttpSession removeSessionById(String id);
+    void removeSessionById(String id);
     /**
      * Removes all sessions from the mapping.
      *

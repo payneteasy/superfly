@@ -30,7 +30,6 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
     private AuthenticationValidator     authenticationValidator                 = null;
     private AuthenticationPostProcessor authenticationPostProcessor             = null;
 
-    @Autowired
     public CompoundAuthenticationProvider setDelegateProvider(AuthenticationProvider authenticationProvider) {
         this.delegateProvider = authenticationProvider;
         return this;

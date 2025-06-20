@@ -100,10 +100,10 @@ public class SuperflyMultiMockAuthenticationProvider extends
     }
 
     protected SSOUser createSSOUser(String username) {
-        return new SSOUser(username, getActionsMap(), Collections.emptyMap());
+        return new SSOUser(username, getActionsMap(username), Collections.emptyMap());
     }
 
-    protected Map<SSORole, SSOAction[]> getActionsMap() {
+    protected Map<SSORole, SSOAction[]> getActionsMap(String username) {
         if (cachedMap == null) {
             try {
                 cachedMap = actionsMapBuilder.build();
