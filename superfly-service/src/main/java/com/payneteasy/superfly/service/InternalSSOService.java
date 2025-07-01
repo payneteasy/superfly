@@ -3,21 +3,20 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.MessageSendException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.SsoDecryptException;
-import com.payneteasy.superfly.api.UserExistsException;
+import com.payneteasy.superfly.api.exceptions.UserExistsException;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 
 /**
  * Internal service used to implement SSOService.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public interface InternalSSOService {
@@ -92,26 +91,11 @@ public interface InternalSSOService {
      *               user's public key
      * @param organization
      *               user's organization
-     * @throws UserExistsException
-     * @throws BadPublicKeyException
-     * @throws MessageSendException
      */
     void registerUser(String username, String password, String email, String subsystemIdentifier,
             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion, String secretAnswer,
             String publicKey,String organization, OTPType otpType)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException;
-
-    /**
-     * Authenticates using HOTP (HMAC-based One Time Password).
-     *
-     * Deprecated. Use the {@link #authenticateByOtpType(OTPType, String, String)} authenticateByOtpType} method.
-     *
-     * @param username    username
-     * @param hotp        HOTP
-     * @return authentication result
-     */
-    @Deprecated
-    boolean authenticateHOTP(String subsystemIdentifier, String username, String hotp);
 
     void updateUserOtpType(String username, String otpType);
 
@@ -127,7 +111,7 @@ public interface InternalSSOService {
     boolean authenticateByOtpType(OTPType otp, String username, String key);
 
     /**
-     * 
+     *
      * @param userName user name
      * @param password password
      */
@@ -135,7 +119,7 @@ public interface InternalSSOService {
 
     /**`
      * Returns a user description.
-     * 
+     *
      * @param username    username
      * @return description
      */
@@ -151,7 +135,7 @@ public interface InternalSSOService {
     /**
      * Finds users by comma-separated list of their logins and returns their status information.
      *
-     * @param userNames comma-separated list of user names (logins)
+     * @param userNames comma-separated list of usernames (logins)
      * @return user statuses
      */
     List<UserWithStatus> getUserStatuses(String userNames);

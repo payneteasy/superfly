@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
@@ -12,49 +12,46 @@ import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
+@Service
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
 
-    private UserService userService;
-    private String localSubsystemName = "superfly";
-    private String localRoleName = "admin";
-    private LoggerSink loggerSink;
+    private UserService         userService;
+    @Setter
+    private String              localSubsystemName = "superfly";
+    @Setter
+    private String              localRoleName      = "admin";
+    private LoggerSink          loggerSink;
     private UserPasswordEncoder userPasswordEncoder;
-    private LockoutStrategy lockoutStrategy;
+    private LockoutStrategy     lockoutStrategy;
 
-    @Required
+    @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    public void setLocalSubsystemName(String localSubsystemName) {
-        this.localSubsystemName = localSubsystemName;
-    }
-
-    public void setLocalRoleName(String localRoleName) {
-        this.localRoleName = localRoleName;
-    }
-
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setUserPasswordEncoder(UserPasswordEncoder userPasswordEncoder) {
         this.userPasswordEncoder = userPasswordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setLockoutStrategy(LockoutStrategy lockoutStrategy) {
         this.lockoutStrategy = lockoutStrategy;
     }
@@ -65,9 +62,9 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
                 localSubsystemName, null, null);
         AuthRole role = null;
         if (session != null) {
-            if (session.getRoles().size() == 1 && session.getRoles().get(0).getRoleName() == null) {
+            if (session.getRoles().size() == 1 && session.getRoles().getFirst().getRoleName() == null) {
                 // actually, it's empty
-                session.setRoles(Collections.<AuthRole>emptyList());
+                session.setRoles(Collections.emptyList());
             }
             for (AuthRole r : session.getRoles()) {
                 if (localRoleName.equals(r.getRoleName())) {
@@ -89,7 +86,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
             logger.warn("Login failed. No session for user <{}>", username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.SESSION);
         } else if (session.getRoles().isEmpty()) {
-            logger.warn("Login failed. There are no roles for user <{}>", username);
+            logger.warn("Login failed. There are no roles or actions for user <{}>", username);
             lockoutStrategy.checkLoginsFailed(username, LockoutType.ROLES);
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
@@ -101,11 +98,11 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     }
 
     public OtpUserDescription getOtpUserForDescription(String username) {
-        OtpUserDescription user = new OtpUserDescription();
+        OtpUserDescription user               = new OtpUserDescription();
         UserForDescription userForDescription = userService.getUserForDescription(username);
         if (userForDescription.getOtpType() == OTPType.GOOGLE_AUTH) {
             user.setHasOtpMasterKey(userService.getOtpMasterKeyByUsername(username) != null
-                    && userService.getOtpMasterKeyByUsername(username).length() > 0);
+                    && !userService.getOtpMasterKeyByUsername(username).isEmpty());
         }
         return user.setUserForDescription(userForDescription);
     }

@@ -1,8 +1,7 @@
 package com.payneteasy.superfly.spisupport;
 
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.MessageSendException;
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
 
 /**
@@ -11,25 +10,6 @@ import com.payneteasy.superfly.api.UserNotFoundException;
  * @author Roman Puchkovskiy
  */
 public interface HOTPService {
-    /**
-     * Sends a table to a user if provider supports this.
-     *
-     * @param userId    ID of a user
-     * @throws MessageSendException
-     */
-    @Deprecated
-    void sendTableIfSupported(String subsystemIdentifier, long userId) throws MessageSendException;
-
-    /**
-     * Resets a table and sends a new table to a user if provider supports
-     * sending.
-     *
-     * @param userId    ID of a user
-     * @throws MessageSendException
-     */
-    @Deprecated
-    void resetTableAndSendIfSupported(String subsystemIdentifier, long userId) throws MessageSendException;
-
     /**
      * Reset Master Key
      *

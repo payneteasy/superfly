@@ -26,10 +26,11 @@ create procedure ui_get_actions_list_with_group(i_start_from int(10),
                  '       ss.subsystem_name, ',
                  '       g.grop_id, ',
                  '       g.group_name ',
-                 '  from actions a, subsystems ss, group_actions ga, groups g ',
-                 ' where a.ssys_ssys_id = ss.ssys_id ',
-                 '   and a.actn_id = ga.actn_actn_id ',
-                 '   and g.grop_id = ga.grop_grop_id ',
+                 '  from actions a ',
+                 '  inner join subsystems ss on a.ssys_ssys_id = ss.ssys_id ',
+                 '  left join group_actions ga on a.actn_id = ga.actn_actn_id ',
+                 '  left join groups g on g.grop_id = ga.grop_grop_id ',
+                 ' where 1=1 ',
                  coalesce(v_search_conditions, '')
           );
 

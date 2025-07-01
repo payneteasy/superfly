@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.crypto.exception.EncryptException;
 import com.payneteasy.superfly.service.UserService;
@@ -20,9 +20,10 @@ public class HOTPServiceImplTest {
         service = new HOTPServiceImpl();
         credentials = service.getGoogleAuthenticator().get().createCredentials();
 
-        CryptoServiceImpl cryptoService = new CryptoServiceImpl();
-        cryptoService.setCryptoSalt("GOOGLE_AUTH_OTP_SALT");
-        cryptoService.setCryptoSecret("GOOGLE_AUTH_OTP_SECRET");
+        CryptoServiceImpl cryptoService = new CryptoServiceImpl(
+                "GOOGLE_AUTH_OTP_SALT",
+                "GOOGLE_AUTH_OTP_SECRET"
+        );
 
         UserService userService = new UserServiceImpl() {
             @Override

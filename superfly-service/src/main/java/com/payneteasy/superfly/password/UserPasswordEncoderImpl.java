@@ -1,17 +1,19 @@
 package com.payneteasy.superfly.password;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserPasswordEncoderImpl implements UserPasswordEncoder {
     private PasswordEncoder passwordEncoder;
     private SaltSource saltSource;
 
-    @Required
+    @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Required
+    @Autowired
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }

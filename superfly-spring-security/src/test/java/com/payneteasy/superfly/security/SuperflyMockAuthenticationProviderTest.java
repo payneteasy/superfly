@@ -22,15 +22,12 @@ public class SuperflyMockAuthenticationProviderTest extends AbstractSuperflyAuth
 
     @Before
     public void setUp() {
-        provider = new SuperflyMockAuthenticationProvider();
+        provider = new SuperflyMockAuthenticationProvider(
+                "pete",
+                "secret",
+                () -> Collections.singletonMap(createSSORole(), new SSOAction[]{})
+        );
         provider.setEnabled(true);
-        provider.setUsername("pete");
-        provider.setPassword("secret");
-        provider.setActionsMapBuilder(new ActionsMapBuilder() {
-            public Map<SSORole, SSOAction[]> build() throws Exception {
-                return Collections.singletonMap(createSSORole(), new SSOAction[]{});
-            }
-        });
     }
 
     @Test

@@ -2,10 +2,6 @@ package com.payneteasy.superfly.web.wicket;
 
 import com.payneteasy.superfly.web.wicket.page.sso.*;
 import org.apache.wicket.Page;
-import org.apache.wicket.core.request.mapper.CryptoMapper;
-import org.apache.wicket.core.util.crypt.KeyInSessionSunJceCryptFactory;
-import org.apache.wicket.protocol.http.CsrfPreventionRequestCycleListener;
-import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.settings.RequestCycleSettings;
 
 public class SSOApplication extends BaseApplication {

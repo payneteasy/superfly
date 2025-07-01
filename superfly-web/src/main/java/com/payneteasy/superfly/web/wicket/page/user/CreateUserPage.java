@@ -18,6 +18,8 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -27,7 +29,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -63,16 +64,15 @@ public class CreateUserPage extends BasePage {
         }
 
         // models for DropDrownChoice
-        IModel<List<? extends UISubsystemForFilter>> subsystemsModel = new AbstractReadOnlyModel<List<? extends UISubsystemForFilter>>() {
+        IModel<List<? extends UISubsystemForFilter>> subsystemsModel = new LoadableDetachableModel<>() {
             @Override
-            public List<UISubsystemForFilter> getObject() {
-                Set<UISubsystemForFilter> keys = subsystemsToRoles.keySet();
-                List<UISubsystemForFilter> list = new ArrayList<UISubsystemForFilter>(keys);
-                return list;
+            public List<UISubsystemForFilter> load() {
+                Set<UISubsystemForFilter>  keys = subsystemsToRoles.keySet();
+                return new ArrayList<>(keys);
             }
 
         };
-        final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<List<? extends UIRoleForList>>() {
+        final IModel<List<? extends UIRoleForList>> rolesModel = new LoadableDetachableModel<>() {
             @Override
             public List<UIRoleForList> load() {
                 List<UIRoleForList> models = subsystemsToRoles.get(subsystem);
@@ -84,7 +84,7 @@ public class CreateUserPage extends BasePage {
 
         };
 
-        final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>("form", new Model<UIUserCheckPassword>(user));
+        final Form<UIUserCheckPassword> form = new Form<UIUserCheckPassword>("form", new Model<>(user));
         add(form);
 
         LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
@@ -186,23 +186,13 @@ public class CreateUserPage extends BasePage {
 
     // DropDrownChoice
     private final Map<UISubsystemForFilter, List<UIRoleForList>> subsystemsToRoles = new HashMap<UISubsystemForFilter, List<UIRoleForList>>(); // map:company->model
-    private UIRoleForList role;
+
+    @Setter
+    @Getter
+    private UIRoleForList        role;
+
+    @Setter
+    @Getter
     private UISubsystemForFilter subsystem;
-
-    public UIRoleForList getRole() {
-        return role;
-    }
-
-    public void setRole(UIRoleForList role) {
-        this.role = role;
-    }
-
-    public UISubsystemForFilter getSubsystem() {
-        return subsystem;
-    }
-
-    public void setSubsystem(UISubsystemForFilter subsystem) {
-        this.subsystem = subsystem;
-    }
 
 }

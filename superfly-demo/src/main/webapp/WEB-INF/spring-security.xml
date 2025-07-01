@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:sec="http://www.springframework.org/schema/security"
-    xmlns="http://www.springframework.org/schema/beans"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
@@ -13,16 +13,18 @@
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
         <sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
-    
+        <sec:custom-filter ref="superflyLogoutFilter" after="LAST"/>
+
         <sec:intercept-url pattern="/login*" access="isAnonymous()"/>
-        
+
         <sec:intercept-url pattern="/adminpage1.html" access="hasAuthority('ROLE_ADMINPAGE1')"/>
         <sec:intercept-url pattern="/adminpage2.html" access="hasAuthority('ROLE_ADMINPAGE2')"/>
         <sec:intercept-url pattern="/userpage1.html" access="hasAuthority('ROLE_USERPAGE1')"/>
         <sec:intercept-url pattern="/userpage2.html" access="hasAuthority('ROLE_USERPAGE2')"/>
-        <sec:intercept-url pattern="/**" access="hasAnyAuthority('ROLE_ADMINPAGE1','ROLE_ADMINPAGE2','ROLE_USERPAGE1','ROLE_USERPAGE2')"/>
-        
-        <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
+        <sec:intercept-url pattern="/**"
+                           access="hasAnyAuthority('ROLE_ADMINPAGE1','ROLE_ADMINPAGE2','ROLE_USERPAGE1','ROLE_USERPAGE2')"/>
+
+        <sec:logout logout-url="/j_spring_security_logout" logout-success-url="/"/>
         <sec:anonymous/>
         <!-- We don't need CSRF protection complexities here as we demonstrate
              another aspects. But please note that in a real application
@@ -30,20 +32,19 @@
         <sec:csrf disabled="true"/>
 
     </sec:http>
-    
+
     <sec:authentication-manager alias="authenticationManager">
-<!-- 
-        <sec:authentication-provider ref="superflyMockAuthenticationProvider"/>
- -->
-    <sec:authentication-provider ref="superflyAuthenticationProvider"/>
+        <sec:authentication-provider ref="superflyAuthenticationProvider"/>
     </sec:authentication-manager>
 
-    <bean id="twoStepAuthenticationProcessingFilterEntryPoint" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
+    <bean id="twoStepAuthenticationProcessingFilterEntryPoint"
+          class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilterEntryPoint">
         <constructor-arg name="loginFormUrl" value="/login.jsp"/>
         <constructor-arg name="loginFormStepTwoUrl" value="/login-step2.jsp"/>
     </bean>
-    
-    <bean id="twoStepAuthenticationProcessingFilter" class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
+
+    <bean id="twoStepAuthenticationProcessingFilter"
+          class="com.payneteasy.superfly.security.TwoStepAuthenticationProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="authenticationFailureHandler">
             <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
@@ -60,45 +61,23 @@
         <property name="subsystemIdentifier" value="superfly-demo"/>
          -->
     </bean>
-    
+
     <util:list id="actionNameToRoleNameTransformers">
         <bean class="com.payneteasy.superfly.security.UppercaseTransformer"/>
         <bean class="com.payneteasy.superfly.security.PrependingTransformer">
             <property name="prefix" value="ROLE_"/>
         </bean>
     </util:list>
-    
-<!-- 
-    <bean id="superflyMockAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyMockAuthenticationProvider">
-        <sec:custom-authentication-provider/>
-        <property name="enabled" value="true"/>
-        <property name="username" value="su"/>
-        <property name="password" value="password"/>
-        <property name="transformers" ref="actionNameToRoleNameTransformers"/>
-        <property name="actionsMapBuilder">
-            <bean class="com.payneteasy.superfly.security.mapbuilder.AllForAllActionsMapBuilder">
-                <property name="roleNames">
-                    <list>
-                        <value>role1</value>
-                        <value>role2</value>
-                    </list>
-                </property>
-                <property name="actionsSource">
-                    <bean class="com.payneteasy.superfly.security.mapbuilder.CollectingActionsSource">
-                        <property name="actionDescriptionCollector" ref="mergingActionDescriptionCollector"/>
-                    </bean>
-                </property>
-            </bean>
-        </property>
-    </bean>
- -->
-    
+
     <bean id="superflyAuthenticationProvider" class="com.payneteasy.superfly.security.SuperflyAuthenticationProvider">
         <property name="ssoService" ref="ssoService"/>
         <property name="transformers" ref="actionNameToRoleNameTransformers"/>
     </bean>
-    
+
     <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">
     </bean>
-    
+
+    <bean id="superflyLogoutFilter" class="com.payneteasy.superfly.client.session.SuperflyLogoutFilter">
+    </bean>
+
 </beans>

@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.api;
 
+import com.payneteasy.superfly.api.exceptions.*;
+import com.payneteasy.superfly.api.request.*;
+
 import java.util.List;
 
 /**
@@ -14,81 +17,47 @@ public interface SSOService {
      * username and password. If successful, returns user object, else returns
      * null.
      *
-     * @param username        username to use when authenticating
-     * @param password        password to use when authenticating
-     * @param authRequestInfo additional info about authentication request
+     * @param authenticate authenticate request containing username and password
      * @return user object on success or null when authentication failed (for
      * instance, no such user, or password mismatched, or user is
      * blocked...)
      */
-    SSOUser authenticate(String username, String password, AuthenticationRequestInfo authRequestInfo);
+    SSOUser authenticate(AuthenticateRequest authenticate);
 
-    boolean checkOtp(SSOUser user, String code);
+    boolean checkOtp(CheckOtpRequest request);
 
-    boolean hasOtpMasterKey(String username);
+    boolean hasOtpMasterKey(HasOtpMasterKeyRequest request);
 
     /**
      * Returns the same data as if user was successfully authenticated,
      * but no actual authentication is made. This could be useful for
      * impersonation feature.
      *
-     * @param username            username to get user
-     * @param subsystemIdentifier identifier of a subsystem
+     * @param request pseudo authenticate request containing username and subsystem identifier
      * @return user object on success or null when retrieval fails (for
      * instance, no such user)
      * @since 1.5
      */
-    SSOUser pseudoAuthenticate(String username, String subsystemIdentifier);
+    SSOUser pseudoAuthenticate(PseudoAuthenticateRequest request);
 
     /**
      * Sends data about this system to SSO server.
      *
-     * @param subsystemIdentifier identifier of this system (it's just a hint for SSO server)
-     * @param actionDescriptions  descriptions of actions of this system
+     * @param request send system data request containing subsystem identifier and action descriptions
      */
-    void sendSystemData(String subsystemIdentifier, ActionDescription[] actionDescriptions);
+    void sendSystemData(SendSystemDataRequest request);
 
     /**
      * Returns a list of users with their actions granted through role with the
      * given principal.
      *
-     * @param subsystemIdentifier identifier of the subsystem from which users will be obtained
+     * @param request get users with actions request containing subsystem identifier
      * @return users with actions
      * @since 1.1
      */
-    List<SSOUserWithActions> getUsersWithActions(String subsystemIdentifier);
+    List<SSOUserWithActions> getUsersWithActions(GetUsersWithActionsRequest request);
 
-    void updateUserOtpType(String username, String otpType);
-
-    /**
-     * Registers user and gives him requested principal.
-     * User is created in incomplete state. In that state, if
-     * a registration with the same username is made, existing user
-     * is destroyed. To complete a user, call #completeUser() method.
-     * Also, user is completed when he logs in.
-     *
-     * @param username      name of the user
-     * @param password      password of the user
-     * @param email         email of the user
-     * @param subsystemHint hint to the identifier of a subsystem from which roles will be
-     *                      taken
-     * @param roleGrants    which roles to grant
-     * @throws UserExistsException       if user with such a name already exists
-     * @throws PolicyValidationException
-     * @throws BadPublicKeyException
-     * @throws MessageSendException
-     * @see RoleGrantSpecification
-     * @see #completeUser(String)
-     * @deprecated in favor of {@link #registerUser(UserRegisterRequest)}
-     * @since 1.1
-     */
-    @Deprecated
-    void registerUser(String username, String password, String email, String subsystemHint,
-            RoleGrantSpecification[] roleGrants,
-            String name, String surname, String secretQuestion, String secretAnswer,
-            String publicKey, String organization, OTPType otpType)
-            throws UserExistsException, PolicyValidationException,
-            BadPublicKeyException, MessageSendException;
+    void updateUserOtpType(UpdateUserOtpTypeRequest request);
 
     /**
      * Registers user and gives him requested principal.
@@ -97,174 +66,114 @@ public interface SSOService {
      * is destroyed. To complete a user, call #completeUser() method.
      * Also, user is completed when he logs in.
      *
-     * @param registerRequest register request containing all the
+     * @param request register user request containing all the
      *                        data needed to register a user
      * @throws UserExistsException       if user with such a name already exists
-     * @throws PolicyValidationException
-     * @throws BadPublicKeyException
-     * @throws MessageSendException
      * @see RoleGrantSpecification
-     * @see #completeUser(String)
-     * @since 1.6-3
+     * @see #completeUser(CompleteUserRequest)
      */
-    void registerUser(UserRegisterRequest registerRequest)
+    void registerUser(UserRegisterRequest request)
             throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException;
 
     /**
-     * @param userName user name
-     * @param password password
+     * @param request change temp password request containing username and new password
      * @since 1.2
      */
-    void changeTempPassword(String userName, String password) throws PolicyValidationException;
+    void changeTempPassword(ChangeTempPasswordRequest request) throws PolicyValidationException;
 
     /**
      * Returns a description of the given user.
      *
-     * @param username username
+     * @param request get user description request containing username
      * @return description or null if user is not found
      * @since 1.2-4
      */
-    UserDescription getUserDescription(String username);
-
-    /**
-     * Resets an OTP table and sends it to the user via email in encrypted form
-     * (if HOTPProvider supports exporting in binary form).
-     * Subsystem to use when sending is determined automatically (for instance,
-     * by certificate of a calling subsystem).
-     *
-     * @param username name of the user
-     * @throws UserNotFoundException if no such user
-     * @throws MessageSendException  if error while sending message occurs
-     * @since 1.2-4
-     */
-    @Deprecated
-    void resetAndSendOTPTable(String username) throws UserNotFoundException, MessageSendException;
-
-    /**
-     * Resets an OTP table and sends it to the user via email in encrypted form
-     * (if HOTPProvider supports exporting in binary form).
-     *
-     * @param subsystemIdentifier identifier of subsystem
-     *                            which smtp server to user when sending message
-     * @param username            name of the user
-     * @throws UserNotFoundException if no such user
-     * @throws MessageSendException  if error while sending message occurs
-     * @since 1.3-1
-     */
-    @Deprecated
-    void resetAndSendOTPTable(String subsystemIdentifier,
-            String username) throws UserNotFoundException, MessageSendException;
+    UserDescription getUserDescription(GetUserDescriptionRequest request);
 
     /**
      * Reset Master Key
-     * @param username            name of the user
+     * @param request reset Google Auth master key request containing username
      * @throws UserNotFoundException if no such user
      * @return New master key
      * @since 1.7
      */
-    String resetGoogleAuthMasterKey(String username) throws UserNotFoundException, SsoDecryptException;
+    String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request) throws UserNotFoundException, SsoDecryptException;
 
     /**
      * Get google auth QR code
      *
-     * @param secretKey   Google Auth secret key
-     * @param issuer      The issuer name. This parameter cannot contain the colon
-     *                    (:) character. This parameter can be null.
-     * @param accountName The account name. This parameter shall not be null.
+     * @param request get Google Auth QR code request containing secret key, issuer, and account name
      * @return an otpauth scheme URI for loading into a client application.
      */
-    String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName);
+    String getUrlToGoogleAuthQrCode(GetGoogleAuthQrCodeRequest request);
 
-    void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional);
+    void updateUserIsOtpOptionalValue(UpdateUserIsOtpOptionalValueRequest request);
 
     /**
      * Updates user's fields.
      *
-     * @param user user fields
+     * @param request update user description request containing user description
      * @throws UserNotFoundException if user with such a name is not found
      * @throws BadPublicKeyException if public key is not valid
      * @since 1.2-4
      */
-    void updateUserDescription(UserDescription user) throws UserNotFoundException, BadPublicKeyException;
+    void updateUserDescription(UpdateUserDescriptionRequest request) throws UserNotFoundException, BadPublicKeyException;
 
     /**
      * Resets user's password if policy requires this.
      *
-     * @param username    name of the user
-     * @param newPassword new password
-     * @throws UserNotFoundException     if not such user exists
-     * @throws PolicyValidationException if password is bad
-     * @since 1.2-4
-     */
-    void resetPassword(String username, String newPassword) throws UserNotFoundException, PolicyValidationException;
-
-    /**
-     * Resets user's password if policy requires this.
-     *
-     * @param reset describes password reset
+     * @param reset password reset request containing reset description
      * @throws UserNotFoundException     if not such user exists
      * @throws PolicyValidationException if password is bad
      * @since 1.6-3
      */
-    void resetPassword(PasswordReset reset) throws UserNotFoundException, PolicyValidationException;
+    void resetPassword(PasswordResetRequest reset) throws UserNotFoundException, PolicyValidationException;
 
     /**
      * Finds users by list of their logins and returns their status information.
      *
-     * @param userNames list of user names (logins)
+     * @param request get user statuses request containing list of user names (logins)
      * @return user statuses
      * @since 1.3-5
      */
-    List<UserStatus> getUserStatuses(List<String> userNames);
+    List<UserStatus> getUserStatuses(GetUserStatusesRequest request);
 
     /**
      * Exchanges subsystem token to SSOUser. After this operation
      * returns, subsystem token is not valid anymore and cannot
      * be used for exchanging.
      *
-     * @param subsystemToken subsystem token
+     * @param request exchange subsystem token request containing subsystem token
      * @return SSOUser or null if token does not exist, expired or
      * already used
      * @since 1.4
      */
-    SSOUser exchangeSubsystemToken(String subsystemToken);
+    SSOUser exchangeSubsystemToken(ExchangeSubsystemTokenRequest request);
 
     /**
      * Touches sessions: that is, updates their access time to avoid
      * removal. If a session was issued by an SSO session, the latter
      * is touched too.
      *
-     * @param sessionIds IDs of sessions to touch
+     * @param request touch sessions request containing IDs of sessions to touch
      */
-    void touchSessions(List<Long> sessionIds);
+    void touchSessions(TouchSessionsRequest request);
 
     /**
      * Makes a user complete. This protects a registered user
      * from being overwritten.
      *
-     * @param username name of the user to complete
-     * @see #registerUser(UserRegisterRequest)
+     * @param request complete user request containing username
+     * @see # registerUser(UserRegisterRequest)
      * @since 1.5
      */
-    void completeUser(String username);
+    void completeUser(CompleteUserRequest request);
 
     /**
      * Revokes from a user all his roles and replaces them with a given role.
      *
-     * @param username name of the user to work with
-     * @param newRole  role to grant
-     * @deprecated in favor of {@link #changeUserRole(String, String, String)}
+     * @param request change user role request containing username, new role, and subsystem hint
      */
-    @Deprecated
-    void changeUserRole(String username, String newRole);
-
-    /**
-     * Revokes from a user all his roles and replaces them with a given role.
-     *
-     * @param username      name of the user to work with
-     * @param newRole       role to grant
-     * @param subsystemHint hint to determine the affected subsystem
-     */
-    void changeUserRole(String username, String newRole, String subsystemHint);
+    void changeUserRole(ChangeUserRoleRequest request);
 }

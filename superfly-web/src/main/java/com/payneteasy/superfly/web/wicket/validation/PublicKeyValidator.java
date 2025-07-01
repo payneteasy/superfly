@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.wicket.validation;
 
-import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.utils.PGPKeyValidator;
 import org.apache.wicket.validation.IValidatable;

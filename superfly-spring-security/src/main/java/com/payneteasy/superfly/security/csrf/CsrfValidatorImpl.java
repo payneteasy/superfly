@@ -4,8 +4,8 @@ import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.UUID;
 
 /**
@@ -17,9 +17,9 @@ public class CsrfValidatorImpl implements CsrfValidator {
     private static final Logger logger = LoggerFactory.getLogger(CsrfValidatorImpl.class);
     private static final String ATTRIBUTE_NAME = CsrfValidatorImpl.class.getName().concat(".CSRF_TOKEN");
 
-    private boolean enable;
+    private final boolean enable;
 
-    public void setEnable(boolean enable) {
+    public CsrfValidatorImpl(boolean enable) {
         this.enable = enable;
     }
 

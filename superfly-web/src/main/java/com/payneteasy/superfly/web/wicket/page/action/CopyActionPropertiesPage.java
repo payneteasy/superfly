@@ -6,13 +6,17 @@ import com.payneteasy.superfly.model.ui.action.UIActionForList;
 import com.payneteasy.superfly.service.ActionService;
 import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
+import com.payneteasy.superfly.web.wicket.component.userActions.CopyActionWindow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
+import org.apache.wicket.extensions.ajax.markup.html.modal.theme.DefaultTheme;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -41,42 +45,24 @@ public class CopyActionPropertiesPage extends BasePage {
         super(ListActionsPage.class, parameters);
         final long actionId = parameters.get("id").toLong(-1);
 
-        // modalWindow
-        final ModalWindow modalWindow;
-        add(modalWindow = new ModalWindow("modalWindow"));
-//        modalWindow.setPageMapName("modal-name");
-        modalWindow.setCookieName("modal-cookie");
-        modalWindow.setPageCreator(new ModalWindow.PageCreator() {
-            public Page createPage() {
-                return new CopyActionWindow(CopyActionPropertiesPage.this, modalWindow, parameters);
-            }
-        });
-        modalWindow.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
-            public void onClose(AjaxRequestTarget target) {
-                if (!parameters.get("copy").isNull()) {
-                    setResponsePage(ListActionsPage.class);
-                }
+        // modal
+        final ModalDialog modal;
+        add(modal = new ModalDialog("modalWindow"));
+        modal.closeOnEscape().add(new DefaultTheme());
 
-            }
-        });
-        modalWindow.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
-            public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-                return true;
-            }
-        });
-
-        final ActionFilter actionFilter = new ActionFilter();
         Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
         add(filtersForm);
-        final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model<>("")) {
+        final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",
+                                                                                                   new Model<>("")
+        ) {
 
             @Override
             protected Iterator<String> getChoices(String input) {
                 if (Strings.isEmpty(input)) {
-                    return Collections.<String>emptyList().iterator();
+                    return Collections.emptyIterator();
                 }
-                List<String> choices = new ArrayList<String>(20);
-                List<UIActionForFilter> action = actionService.getActionForFilter();
+                List<String>            choices = new ArrayList<>(20);
+                List<UIActionForFilter> action  = actionService.getActionForFilter();
                 for (UIActionForFilter uia : action) {
                     final String name = uia.getActionName();
                     if (name.toUpperCase().startsWith(input.toUpperCase())) {
@@ -92,18 +78,52 @@ public class CopyActionPropertiesPage extends BasePage {
         };
         filtersForm.add(autoTextNameAction);
 
-        UIAction action = actionService.getAction(actionId);
-        final long subId = action.getSubsystemId();
-        filtersForm.add(new Label("name-action", action == null ? null : action.getActionName()));
-        filtersForm.add(new Label("name-description", action == null ? null : action.getActionDescription()));
-        filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));
+        UIAction   action = actionService.getAction(actionId);
+        final long subId  = action.getSubsystemId();
+        filtersForm.add(new Label("name-action", action.getActionName()));
+        filtersForm.add(new Label("name-description", action.getActionDescription()));
+        filtersForm.add(new Label("subname-action", action.getSubsystemName()));
 
-        String[] fieldName = { "actionId", "actionName", "actionDescription" };
-        SortableDataProvider<UIActionForList, String> actionDataProvider = new IndexedSortableDataProvider<UIActionForList>(fieldName) {
+        SortableDataProvider<UIActionForList, String> actionDataProvider = getUiActionForListStringSortableDataProvider(
+                autoTextNameAction,
+                subId
+        );
+        final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList",
+                                                                                             actionDataProvider
+        ) {
 
+            @Override
+            protected void populateItem(Item<UIActionForList> item) {
+                final UIActionForList actionItem = item.getModelObject();
+                AjaxLink<String> selectActionForCopy = new AjaxLink<>("select-action") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        long actionIdForCopy = actionItem.getId();
+                        modal.setContent(new CopyActionWindow(modal, actionId, actionIdForCopy, getFeedbackPanel()));
+                        modal.open(target);
+
+                    }
+                };
+                selectActionForCopy.add(new Label("action-name", actionItem.getName()));
+                item.add(selectActionForCopy);
+                item.add(new Label("action-description", actionItem.getDescription()));
+            }
+
+        };
+        filtersForm.add(actionDataView);
+        filtersForm.add(new OrderByLink<>("order-by-actionName", "actionName", actionDataProvider));
+        filtersForm.add(new OrderByLink<>("order-by-actionDescription", "actionDescription", actionDataProvider));
+        filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
+        filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
+
+    }
+
+    private SortableDataProvider<UIActionForList, String> getUiActionForListStringSortableDataProvider(AutoCompleteTextField<String> autoTextNameAction, long subId) {
+        String[] fieldName = {"actionId", "actionName", "actionDescription"};
+        return new IndexedSortableDataProvider<>(fieldName) {
             public Iterator<? extends UIActionForList> iterator(long first, long count) {
-                String actionForFilter = autoTextNameAction.getModelObject();
-                List<Long> subsystemId = new ArrayList<Long>();
+                String     actionForFilter = autoTextNameAction.getModelObject();
+                List<Long> subsystemId     = new ArrayList<Long>();
                 subsystemId.add(subId);
                 List<UIActionForList> actions = actionService.getActions(
                         first,
@@ -125,54 +145,14 @@ public class CopyActionPropertiesPage extends BasePage {
             }
 
         };
-        final DataView<UIActionForList> actionDataView = new PagingDataView<UIActionForList>("actionList", actionDataProvider) {
-
-            @Override
-            protected void populateItem(Item<UIActionForList> item) {
-                final UIActionForList action = item.getModelObject();
-                AjaxLink selectActionForCopy = new AjaxLink("select-action") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        parameters.set("copyId", action.getId());
-                        modalWindow.show(target);
-                    }
-
-                };
-                selectActionForCopy.add(new Label("action-name", action.getName()));
-                item.add(selectActionForCopy);
-                item.add(new Label("action-description", action.getDescription()));
-            }
-
-        };
-        filtersForm.add(actionDataView);
-        filtersForm.add(new OrderByLink<>("order-by-actionName", "actionName", actionDataProvider));
-        filtersForm.add(new OrderByLink<>("order-by-actionDescription", "actionDescription", actionDataProvider));
-        filtersForm.add(new SuperflyPagingNavigator("paging-navigator", actionDataView));
-        filtersForm.add(new BookmarkablePageLink<Page>("back", ListActionsPage.class));
-
     }
 
+    @Setter
+    @Getter
     @SuppressWarnings("unused")
-    private class ActionFilter implements Serializable {
+    private static class ActionFilter implements Serializable {
         private UIActionForFilter actionForFilter;
-        private long actionId;
-
-        public long getActionId() {
-            return actionId;
-        }
-
-        public void setActionId(long actionId) {
-            this.actionId = actionId;
-        }
-
-        public UIActionForFilter getActionForFilter() {
-            return actionForFilter;
-        }
-
-        public void setActionForFilter(UIActionForFilter actionForFilter) {
-            this.actionForFilter = actionForFilter;
-        }
+        private long              actionId;
     }
 
     @Override

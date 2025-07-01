@@ -1,62 +1,65 @@
 package com.payneteasy.superfly.notification;
 
+import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
+import com.payneteasy.superfly.service.job.SendNotificationOnceJob;
+import com.payneteasy.superfly.utils.SchedulerUtils;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.payneteasy.superfly.service.job.SendNotificationOnceJob;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
-
-import com.payneteasy.superfly.service.job.TryToSendNotificationJob;
-import com.payneteasy.superfly.utils.SchedulerUtils;
+import java.util.Objects;
 
 /**
  * Default Notifier implementation which delegates some actions to strategies.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Slf4j
+@Component
 public class DefaultNotifier implements Notifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
-
     private Scheduler scheduler;
-    private String sendStrategyBeanName;
-    private int maxRetries = 3;
+    private String    sendStrategyBeanName;
+    @Setter
+    private int       maxRetries = 3;
 
-    @Required
+    @Autowired
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 
-    @Required
-    public void setSendStrategyBeanName(String sendStrategyBeanName) {
-        this.sendStrategyBeanName = sendStrategyBeanName;
-    }
+    @Autowired
+    public void setSendStrategyBeanName(ApplicationContext context, NotificationSendStrategy sendStrategyBeanName) {
+        Objects.requireNonNull(context, "context");
+        String[] beanNamesForType = context.getBeanNamesForType(sendStrategyBeanName.getClass());
+        Objects.checkIndex(0, beanNamesForType.length);
 
-    public void setMaxRetries(int maxRetries) {
-        this.maxRetries = maxRetries;
+        this.sendStrategyBeanName = beanNamesForType[0];
     }
 
     public void notifyAboutLogout(List<LogoutNotification> notifications) {
-        logger.info("Notifying about logout: " + notifications);
+        log.info("Notifying about logout: {}", notifications);
         for (LogoutNotification notification : notifications) {
             createJob(notification);
         }
     }
 
     public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
-        logger.info("Notifying about users changed: " + notifications);
+        log.info("Notifying about users changed: {}", notifications);
         for (UsersChangedNotification notification : notifications) {
             createJob(notification);
         }
     }
 
     private void createJob(AbstractNotification notification) {
-        Map<String, Object> dataMap = new HashMap<String, Object>();
+        Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("beanName", sendStrategyBeanName);
         dataMap.put("notification", notification);
 
@@ -65,7 +68,7 @@ public class DefaultNotifier implements Notifier {
         try {
             SchedulerUtils.scheduleJob(scheduler, SendNotificationOnceJob.class, dataMap);
         } catch (SchedulerException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 }

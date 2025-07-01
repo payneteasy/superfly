@@ -3,7 +3,7 @@
     <parent>
         <artifactId>superfly-parent</artifactId>
         <groupId>com.payneteasy.superfly</groupId>
-        <version>1.7-34-SNAPSHOT</version>
+        <version>2.0-1-SNAPSHOT</version>
     </parent>
     <artifactId>superfly-wicket</artifactId>
     <name>Superfly wicket extensions</name>
@@ -18,8 +18,8 @@
         </dependency>
         <dependency>
             <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
     </dependencies>
 </project>

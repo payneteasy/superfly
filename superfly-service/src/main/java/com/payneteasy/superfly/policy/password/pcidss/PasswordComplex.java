@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.policy.password.pcidss;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.policy.IPolicy;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 
@@ -50,7 +50,7 @@ public class PasswordComplex implements IPolicy<PasswordCheckContext> {
                    has_signs = false;
                    throw new PolicyValidationException(PolicyValidationException.SIMPLE_PASSWORD);
                }
-        
+
 
 //Сбрасываем
         has_only_numeric = 0;

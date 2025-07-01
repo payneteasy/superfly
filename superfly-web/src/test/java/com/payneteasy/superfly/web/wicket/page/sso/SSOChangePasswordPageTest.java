@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
@@ -10,8 +10,11 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
+import jakarta.servlet.http.Cookie;
 import org.apache.wicket.util.tester.FormTester;
+import org.apache.wicket.util.tester.WicketTester;
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -82,12 +85,23 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
-        FormTester form = tester.newFormTester("change-password-panel:form");
+        WicketTester tester = this.tester;
+        FormTester   form   = tester.newFormTester("change-password-panel:form");
         form.setValue("password", "password");
         form.setValue("password2", "password");
         form.submit();
         tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
-        tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
+
+        // Fixed cookie assertion
+        Cookie cookie = tester.getResponse()
+                              .getCookies()
+                              .stream()
+                              .filter(s->s.getName().equals(SSOUtils.SSO_SESSION_ID_COOKIE_NAME))
+                              .findAny()
+                              .orElse(null);
+
+        Assert.assertNotNull("Cookie should exist", cookie);
+        Assert.assertEquals("super-session-id", cookie.getValue());
 
         verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
     }

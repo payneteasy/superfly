@@ -2,7 +2,7 @@
     <parent>
         <artifactId>superfly-parent</artifactId>
         <groupId>com.payneteasy.superfly</groupId>
-        <version>1.7-34-SNAPSHOT</version>
+        <version>2.0-1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>superfly-web</artifactId>
@@ -48,9 +48,14 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Central interface to the Spring IoC container -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
@@ -108,11 +113,10 @@
             <artifactId>wicket-extensions</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Date/Time components and utilities for Wicket-->
+            <!--Justification: Core Wicket testers for Unit Tests. -->
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-datetime</artifactId>
+            <artifactId>wicket-tester</artifactId>
         </dependency>
-
         <!--  JETTY DEPENDENCIES FOR TESTING  -->
         <dependency>
             <!--Justification: Jetty server for testing purposes -->
@@ -128,8 +132,19 @@
         </dependency>
         <dependency>
             <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-plus</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-plus</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Jetty web application support. -->
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-jndi</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -141,8 +156,8 @@
 
         <dependency>
             <!--Justification: Commons Database Connection Pooling -->
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -163,12 +178,18 @@
             <artifactId>logback-core</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Byte Code Generation Library -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <scope>compile</scope>
+            <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>

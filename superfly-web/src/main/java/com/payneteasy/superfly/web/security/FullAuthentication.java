@@ -12,8 +12,8 @@ import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
  * @author Roman Puchkovskiy
  */
 public class FullAuthentication extends EmptyAuthenticationToken {
-    private String username;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final String                                 username;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public FullAuthentication(String username,
             Collection<? extends GrantedAuthority> authorities) {

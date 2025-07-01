@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.notification.strategy;
 
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.payneteasy.superfly.api.Notifications;
@@ -10,9 +11,10 @@ import com.payneteasy.superfly.notification.UsersChangedNotification;
 
 /**
  * Simple HTTP send strategy which just makes a single request.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Component
 public class SimpleSendStrategy extends AbstractHttpNotificationSendStrategy {
 
     public void send(final LogoutNotification notification)

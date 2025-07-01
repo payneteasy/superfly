@@ -12,11 +12,11 @@ import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
@@ -90,13 +90,7 @@ public abstract class BasePage extends SessionAccessorPage {
         listItemContainer.add(link);
         if (pageClass != null) {
             if (pageClass.equals(aPageClass)) {
-                listItemContainer.add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
-                    @Override
-                    public String getObject() {
-                        return "active";
-                    }
-
-                }));
+                listItemContainer.add(new AttributeModifier("class", Model.of("active")));
             }
         }
     }

@@ -1,17 +1,20 @@
 package com.payneteasy.superfly.client.session;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import com.payneteasy.superfly.common.session.HttpSessionWrapper;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.payneteasy.superfly.api.Notifications;
 import com.payneteasy.superfly.common.utils.StringUtils;
 
 /**
  * Filter that accepts notifications from the Superfly server.
- * 
+ *
  * @author Roman Puchkovskiy
+ *
+ * deprecated see SuperflyLogoutFilter
  */
+@Deprecated
 public class LogoutNotificationSinkFilter extends AbstractSessionStoreAwareNotificationSinkFilter {
 
     @Override
@@ -27,7 +30,7 @@ public class LogoutNotificationSinkFilter extends AbstractSessionStoreAwareNotif
             // interrupt filter chain
             String[] sessionIds = StringUtils.commaDelimitedListToStringArray(logoutSessionIds);
             for (String key : sessionIds) {
-                HttpSession session = getSessionMapping().removeSessionByKey(key);
+                HttpSessionWrapper session = getSessionMapping().removeSessionByKey(key);
                 invalidateSessionQuietly(session);
             }
             return true;

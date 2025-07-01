@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.utils;
 
-import com.payneteasy.superfly.api.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 
 /**

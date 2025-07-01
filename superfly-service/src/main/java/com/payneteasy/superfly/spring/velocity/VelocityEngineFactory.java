@@ -64,10 +64,8 @@ import org.springframework.util.StringUtils;
  * @see #setConfigLocation
  * @see #setVelocityProperties
  * @see #setResourceLoaderPath
- * @see #setOverrideLogging
  * @see #createVelocityEngine
  * @see VelocityEngineFactoryBean
- * @see org.springframework.web.servlet.view.velocity.VelocityConfigurer
  * @see org.apache.velocity.app.VelocityEngine
  *
  * NB: this is taken from Spring 4.3.18 as it is removed in Spring 5.0.
@@ -215,7 +213,7 @@ public class VelocityEngineFactory {
 	 */
 	public VelocityEngine createVelocityEngine() throws IOException, VelocityException {
 		VelocityEngine velocityEngine = newVelocityEngine();
-		Map<String, Object> props = new HashMap<String, Object>();
+		Map<String, Object> props = new HashMap<>();
 
 		// Load config file if set.
 		if (this.configLocation != null) {

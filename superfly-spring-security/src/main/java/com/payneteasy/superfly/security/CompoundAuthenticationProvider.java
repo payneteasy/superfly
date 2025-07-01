@@ -1,50 +1,38 @@
 package com.payneteasy.superfly.security;
 
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.processor.AuthenticationPostProcessor;
 import com.payneteasy.superfly.security.validator.AuthenticationValidator;
+import lombok.AccessLevel;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
 
 /**
  * {@link AuthenticationProvider} which allows to work with compound
- * (multi-step) authentication process. It delegates actual step authentication
+ * (multistep) authentication process. It delegates actual step authentication
  * to a delegate {@link AuthenticationProvider}.
  *
  * @author Roman Puchkovskiy
  */
+@Component
+@Setter
+@Accessors(chain = true)
 public class CompoundAuthenticationProvider extends AbstractDisableableAuthenticationProvider {
 
-    private AuthenticationProvider delegateProvider;
-    private Class<?>[] supportedSimpleAuthenticationClasses = new Class<?>[]{};
-    private Class<?>[] notSupportedSimpleAuthenticationClasses = new Class<?>[]{};
-    private AuthenticationValidator authenticationValidator = null;
-    private AuthenticationPostProcessor authenticationPostProcessor = null;
+    private AuthenticationProvider      delegateProvider;
+    private Class<?>[]                  supportedSimpleAuthenticationClasses    = new Class<?>[]{};
+    private Class<?>[]                  notSupportedSimpleAuthenticationClasses = new Class<?>[]{};
+    private AuthenticationValidator     authenticationValidator                 = null;
+    private AuthenticationPostProcessor authenticationPostProcessor             = null;
 
-    @Required
-    public void setDelegateProvider(AuthenticationProvider authenticationProvider) {
+    public CompoundAuthenticationProvider setDelegateProvider(AuthenticationProvider authenticationProvider) {
         this.delegateProvider = authenticationProvider;
-    }
-
-    public void setSupportedSimpleAuthenticationClasses(Class<?>[] classes) {
-        this.supportedSimpleAuthenticationClasses = classes;
-    }
-
-    public void setNotSupportedSimpleAuthenticationClasses(Class<?>[] classes) {
-        this.notSupportedSimpleAuthenticationClasses = classes;
-    }
-
-    public void setAuthenticationValidator(
-            AuthenticationValidator authenticationValidator) {
-        this.authenticationValidator = authenticationValidator;
-    }
-
-    public void setAuthenticationPostProcessor(
-            AuthenticationPostProcessor authenticationPostProcessor) {
-        this.authenticationPostProcessor = authenticationPostProcessor;
+        return this;
     }
 
     @Override
@@ -54,7 +42,7 @@ public class CompoundAuthenticationProvider extends AbstractDisableableAuthentic
             authenticationValidator.validate(authentication);
         }
         CompoundAuthentication compoundAuthentication = null;
-        Authentication request;
+        Authentication         request;
         if (authentication instanceof CompoundAuthentication) {
             compoundAuthentication = (CompoundAuthentication) authentication;
             request = compoundAuthentication.getCurrentAuthenticationRequest();

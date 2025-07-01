@@ -11,10 +11,13 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
  * {@link AuthenticationProvider} which does not authenticate anything but
  * just creates {@link SSOUserAuthenticationToken} based on a role selected by
  * the user.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class SuperflySelectRoleAuthenticationProvider extends AbstractRoleTransformingAuthenticationProvider {
+
+    public SuperflySelectRoleAuthenticationProvider() {
+    }
 
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {

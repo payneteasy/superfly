@@ -8,9 +8,11 @@ import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForList;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SmtpServerService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.List;
 /**
  * @author rpuch
  */
+@Slf4j
+@Service
 @Transactional
 public class SmtpServerServiceImpl implements SmtpServerService {
     private static final Logger logger = LoggerFactory.getLogger(SmtpServerServiceImpl.class);
@@ -26,17 +30,17 @@ public class SmtpServerServiceImpl implements SmtpServerService {
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
 
-    @Required
+    @Autowired
     public void setSmtpServerDao(SmtpServerDao smtpServerDao) {
         this.smtpServerDao = smtpServerDao;
     }
 
-    @Required
+    @Autowired
     public void setLoggerSink(LoggerSink loggerSink) {
         this.loggerSink = loggerSink;
     }
 
-    @Required
+    @Autowired
     public void setJavaMailSenderPool(JavaMailSenderPool javaMailSenderPool) {
         this.javaMailSenderPool = javaMailSenderPool;
     }
@@ -46,7 +50,9 @@ public class SmtpServerServiceImpl implements SmtpServerService {
     }
 
     public UISmtpServer getSmtpServer(long id) {
-        return smtpServerDao.getSmtpServer(id);
+        UISmtpServer smtpServer = smtpServerDao.getSmtpServer(id);
+        log.info("Get smtpServer from DAO {}", smtpServer);
+        return smtpServer;
     }
 
     public UISmtpServer getSmtpServerBySubsystemIdentifier(String subsystemIdentifier) {

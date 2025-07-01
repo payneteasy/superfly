@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.security.authentication;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,10 +13,11 @@ import org.springframework.security.core.Authentication;
  * @author Roman Puchkovskiy
  */
 public class CompoundAuthentication extends EmptyAuthenticationToken {
+    @Serial
     private static final long serialVersionUID = 8781927069834292831L;
 
-    private List<Authentication> readyAuthentications = new ArrayList<Authentication>();
-    private Authentication currentAuthenticationRequest;
+    private       List<Authentication> readyAuthentications = new ArrayList<Authentication>();
+    private final Authentication       currentAuthenticationRequest;
 
     public CompoundAuthentication() {
         this(null);
@@ -28,7 +30,7 @@ public class CompoundAuthentication extends EmptyAuthenticationToken {
     public CompoundAuthentication(Authentication[] readyAuthentications,
             Authentication currentAuthenticationRequest) {
         super();
-        this.readyAuthentications = new ArrayList<Authentication>(Arrays.asList(readyAuthentications));
+        this.readyAuthentications = new ArrayList<>(Arrays.asList(readyAuthentications));
         this.currentAuthenticationRequest = currentAuthenticationRequest;
     }
 

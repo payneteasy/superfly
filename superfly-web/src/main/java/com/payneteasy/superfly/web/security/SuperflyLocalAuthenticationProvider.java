@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.security;
 
-import org.springframework.beans.factory.annotation.Required;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -12,22 +13,18 @@ import com.payneteasy.superfly.service.LocalSecurityService;
 /**
  * Authentication provider which is used to authenticate a local user against
  * standard Superfly DB.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Setter
 public class SuperflyLocalAuthenticationProvider extends
         AbstractUserDetailsAuthenticationProvider {
 
-    private LocalSecurityService localSecurityService;
+    private final LocalSecurityService localSecurityService;
     private String rolePrefix = "ROLE_";
 
-    @Required
-    public void setLocalSecurityService(LocalSecurityService localSecurityService) {
+    public SuperflyLocalAuthenticationProvider(LocalSecurityService localSecurityService) {
         this.localSecurityService = localSecurityService;
-    }
-
-    public void setRolePrefix(String rolePrefix) {
-        this.rolePrefix = rolePrefix;
     }
 
     @Override

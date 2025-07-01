@@ -2,14 +2,15 @@ package com.payneteasy.superfly.client.session;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import com.payneteasy.superfly.common.session.HttpSessionWrapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +21,12 @@ import com.payneteasy.superfly.common.utils.StringUtils;
 
 /**
  * Filter that accepts notifications from the Superfly server.
- * 
+ *
  * @author Roman Puchkovskiy
+ *
+ * deprecated see SuperflyLogoutFilter
  */
+@Deprecated
 public class SuperflyNotificationSinkFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(SuperflyNotificationSinkFilter.class);
@@ -40,7 +44,7 @@ public class SuperflyNotificationSinkFilter implements Filter {
                 // interrupt filter chain
                 String[] sessionIds = StringUtils.commaDelimitedListToStringArray(logoutSessionIds);
                 for (String key : sessionIds) {
-                    HttpSession session = getSessionMapping().removeSessionByKey(key);
+                    HttpSessionWrapper session = getSessionMapping().removeSessionByKey(key);
                     if (session != null) {
                         try {
                             session.invalidate();
@@ -55,7 +59,7 @@ public class SuperflyNotificationSinkFilter implements Filter {
         chain.doFilter(req, resp);
     }
 
-    protected SessionMapping getSessionMapping() {
+    protected SessionMapping<HttpSessionWrapper> getSessionMapping() {
         return SessionMappingLocator.getSessionMapping();
     }
 

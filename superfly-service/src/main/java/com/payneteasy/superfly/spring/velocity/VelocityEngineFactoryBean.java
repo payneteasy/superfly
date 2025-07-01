@@ -17,6 +17,7 @@
 package com.payneteasy.superfly.spring.velocity;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
@@ -24,6 +25,7 @@ import org.apache.velocity.exception.VelocityException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.stereotype.Service;
 
 /**
  * Factory bean that configures a VelocityEngine and provides it as bean
@@ -45,15 +47,22 @@ import org.springframework.context.ResourceLoaderAware;
  * @see #setConfigLocation
  * @see #setVelocityProperties
  * @see #setResourceLoaderPath
- * @see org.springframework.web.servlet.view.velocity.VelocityConfigurer
  *
  * NB: this is taken from Spring 4.3.18 as it is removed in Spring 5.0.
  */
+@Service
 public class VelocityEngineFactoryBean extends VelocityEngineFactory
 		implements FactoryBean<VelocityEngine>, InitializingBean, ResourceLoaderAware {
 
 	private VelocityEngine velocityEngine;
 
+	public VelocityEngineFactoryBean() {
+		Map<String, Object> properties = Map.of(
+				"resource.loaders", "file",
+				"resource.loader.file.class" ,"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader"
+		);
+		super.setVelocityPropertiesMap(properties);
+	}
 
 	@Override
 	public void afterPropertiesSet() throws IOException, VelocityException {

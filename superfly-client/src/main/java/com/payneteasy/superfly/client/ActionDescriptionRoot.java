@@ -1,12 +1,14 @@
 package com.payneteasy.superfly.client;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name = "actions")
+@JacksonXmlRootElement(localName = "actions")
 public class ActionDescriptionRoot implements Serializable {
     private List<ActionDescriptionBean> actions = new ArrayList<>();
 
@@ -17,7 +19,8 @@ public class ActionDescriptionRoot implements Serializable {
         this.actions = actions;
     }
 
-    @XmlElement(name = "action")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(localName = "action")
     public List<ActionDescriptionBean> getActions() {
         return actions;
     }

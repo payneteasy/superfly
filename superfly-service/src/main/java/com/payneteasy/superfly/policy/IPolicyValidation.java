@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.policy;
 
-import com.payneteasy.superfly.api.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 
 /**
  * Kuccyp

@@ -2,22 +2,50 @@
     <parent>
         <artifactId>superfly-parent</artifactId>
         <groupId>com.payneteasy.superfly</groupId>
-        <version>1.7-34-SNAPSHOT</version>
+        <version>2.0-1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-remote-api</artifactId>
     <name>Superfly Remote API</name>
     <description>API classes for Superfly server which can be used by clients</description>
-
-    <properties>
-        <java.version>8</java.version>
-    </properties>
-    
     <dependencies>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <!-- Justification: Data format extension for Jackson to offer alternative support for serializing POJOs as XML and deserializing XML as pojos.-->
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Paynet http client API.-->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Paynet http client API.-->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-impl</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Logging API for the application -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
         </dependency>
     </dependencies>
 </project>

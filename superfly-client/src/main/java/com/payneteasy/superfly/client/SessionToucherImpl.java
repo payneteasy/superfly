@@ -1,9 +1,10 @@
 package com.payneteasy.superfly.client;
 
 import com.payneteasy.superfly.api.SSOService;
+import com.payneteasy.superfly.api.request.TouchSessionsRequest;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,8 +16,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class SessionToucherImpl implements SessionToucher {
     private boolean enabled = true;
-    private SSOService ssoService;
-    private int flushPeriodInSeconds;
+    private       SSOService ssoService;
+    private final int        flushPeriodInSeconds;
 
     private final Queue<Long> queue = new ConcurrentLinkedQueue<Long>();
     private Timer timer;
@@ -44,13 +45,16 @@ public class SessionToucherImpl implements SessionToucher {
         }
         if (enabled) {
             timer = new Timer("session-toucher-timer");
-            timer.scheduleAtFixedRate(new ToucherTask(),
-                    getFlushPeriodInMillis(), getFlushPeriodInMillis());
+            timer.scheduleAtFixedRate(
+                    new ToucherTask(),
+                    getFlushPeriodInMillis(),
+                    getFlushPeriodInMillis()
+            );
         }
     }
 
     private long getFlushPeriodInMillis() {
-        return flushPeriodInSeconds * 1000;
+        return flushPeriodInSeconds * 1000L;
     }
 
     @PreDestroy
@@ -70,7 +74,7 @@ public class SessionToucherImpl implements SessionToucher {
     private class ToucherTask extends TimerTask {
         @Override
         public void run() {
-            Set<Long> sessionIds = new HashSet<Long>();
+            Set<Long> sessionIds = new HashSet<>();
             Long sessionId;
             do {
                 sessionId = queue.poll();
@@ -79,7 +83,7 @@ public class SessionToucherImpl implements SessionToucher {
                 }
             } while (sessionId != null);
             if (!sessionIds.isEmpty()) {
-                ssoService.touchSessions(new ArrayList<Long>(sessionIds));
+                ssoService.touchSessions(TouchSessionsRequest.builder().sessionIds(new ArrayList<>(sessionIds)).build());
             }
         }
     }

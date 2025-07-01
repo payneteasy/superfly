@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
-import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.exceptions.MessageSendException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.LockoutType;
@@ -53,7 +53,7 @@ public class UserServiceImplTest {
         EasyMock.expect(userDao.createUser(anyObject(UIUserForCreate.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
-                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                assertEquals(DigestUtils.sha1Hex("secret{c3pio}"), user.getPassword());
                 assertNotNull(user.getHotpSalt());
                 user.setId(1L);
                 return RoutineResult.okResult();
@@ -74,7 +74,7 @@ public class UserServiceImplTest {
         EasyMock.expect(userDao.updateUser(anyObject(UIUser.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UIUser user = (UIUser) EasyMock.getCurrentArguments()[0];
-                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                assertEquals(DigestUtils.sha1Hex("secret{c3pio}"), user.getPassword());
                 return RoutineResult.okResult();
             }
         });
@@ -93,7 +93,7 @@ public class UserServiceImplTest {
         EasyMock.expect(userDao.cloneUser(anyObject(UICloneUserRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UICloneUserRequest user = (UICloneUserRequest) EasyMock.getCurrentArguments()[0];
-                assertEquals(DigestUtils.shaHex("secret{c3pio}"), user.getPassword());
+                assertEquals(DigestUtils.sha1Hex("secret{c3pio}"), user.getPassword());
                 user.setId(1L);
                 return RoutineResult.okResult();
             }

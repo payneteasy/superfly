@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.password;
 
-import com.payneteasy.superfly.api.SsoDecryptException;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.common.utils.CryptoHelper;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.apache.commons.codec.binary.Hex;
@@ -29,7 +29,7 @@ public class MessageDigestPasswordEncoderTest {
         MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
         encoder.setAlgorithm("SHA1");
         String encoded = encoder.encode("password", "salt");
-        String expected = DigestUtils.shaHex("password{salt}");
+        String expected = DigestUtils.sha1Hex("password{salt}");
         assertEquals(expected, encoded);
     }
 
@@ -48,13 +48,15 @@ public class MessageDigestPasswordEncoderTest {
     public void testNewPassword() {
         RandomGUID guid=new RandomGUID(true);
         String salt= CryptoHelper.SHA256(guid.toString());
+        System.out.println("salt");
         System.out.println(salt);
         MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
         encoder.setAlgorithm("SHA-256");
-        String password = encoder.encode("123admin123", salt);
+        String password = encoder.encode("_123Admin123", salt);
+        System.out.println("password");
         System.out.println(password);
-        
-        System.out.println(encoder.encode("123admin123", "3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f"));
+
+        System.out.println(encoder.encode("_123Admin123", "3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f"));
     }
 
     @Test

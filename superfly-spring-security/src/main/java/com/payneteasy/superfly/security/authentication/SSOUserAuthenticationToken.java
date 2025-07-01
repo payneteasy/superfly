@@ -5,9 +5,11 @@ import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.security.RoleSource;
 import com.payneteasy.superfly.security.StringTransformer;
 import com.payneteasy.superfly.security.SuperflyAuthenticationProvider;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,20 +18,23 @@ import java.util.Set;
 /**
  * Authentication implementation which represents authentication result
  * produced by SuperflyAuthenticationProvider on its last stage.
- * 
+ *
  * @author Roman Puchkovskiy
  * @see SuperflyAuthenticationProvider
  */
 public class SSOUserAuthenticationToken implements FastAuthentication {
+    @Serial
     private static final long serialVersionUID = -8426277290421059196L;
 
-    private SSOUser user;
-    private SSORole role;
-    private Object credentials;
-    private Object details;
-    private GrantedAuthority[] authorities;
-    private boolean authenticated;
-    private Set<String> authorityNames;
+    @Getter
+    private final SSOUser user;
+    @Getter
+    private final SSORole role;
+    private final Object  credentials;
+    private final Object  details;
+    private final GrantedAuthority[] authorities;
+    private       boolean            authenticated;
+    private final Set<String> authorityNames;
 
     public SSOUserAuthenticationToken(SSOUser user, SSORole role,
             Object credentials, Object details,
@@ -88,14 +93,6 @@ public class SSOUserAuthenticationToken implements FastAuthentication {
     @Override
     public String getName() {
         return user.getName();
-    }
-
-    public SSOUser getUser() {
-        return user;
-    }
-
-    public SSORole getRole() {
-        return role;
     }
 
     @Override

@@ -3,16 +3,16 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <bean id="urlRemoteMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <props>
-                <prop key="/sso.service">ssoServiceExporter</prop>
-                <prop key="/sso.xremoting.service">ssoServiceXRemotingExporter</prop>
-                <prop key="/sso.hessian.service">ssoServiceHessianExporter</prop>
-                <prop key="/oauth2.hessian.service">oauth2ServiceHessianExporter</prop>
-                <prop key="/basic.hessian.service">basicServiceHessianExporter</prop>
-            </props>
-        </property>
-    </bean>
-    
+<!--    <bean id="urlRemoteMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+<!--        <property name="mappings">-->
+<!--            <props>-->
+<!--                <prop key="/sso.service">ssoServiceExporter</prop>-->
+<!--                <prop key="/sso.xremoting.service">ssoServiceXRemotingExporter</prop>-->
+<!--                <prop key="/sso.hessian.service">ssoServiceHessianExporter</prop>-->
+<!--                <prop key="/oauth2.hessian.service">oauth2ServiceHessianExporter</prop>-->
+<!--                <prop key="/basic.hessian.service">basicServiceHessianExporter</prop>-->
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+
 </beans>

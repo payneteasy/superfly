@@ -9,7 +9,7 @@
     <artifactId>superfly-parent</artifactId>
     <packaging>pom</packaging>
     <name>Superfly parent project</name>
-    <version>1.7-34-SNAPSHOT</version>
+    <version>2.0-1-SNAPSHOT</version>
     <description>Parent POM of the Superfly project</description>
     <modules>
         <module>superfly-remote-api</module>
@@ -111,6 +111,12 @@
             <id>atlassian-m2-repository</id>
             <url>https://maven.atlassian.com/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>pne</id>
+            <name>payneteasy repo</name>
+            <url>https://maven.pne.io</url>
+        </repository>
+
         <!-- ibiblio mirror for some artifacts -->
 <!--
         <repository>
@@ -123,6 +129,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.payneteasy</groupId>
+                <artifactId>startup-parameters</artifactId>
+                <version>1.0-10</version>
+            </dependency>
             <dependency>
                 <!--Justification: Remote API for interacting with SuperFly services -->
                 <groupId>com.payneteasy.superfly</groupId>
@@ -191,9 +202,10 @@
             </dependency>
 
             <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>4.0.4</version>
+                <!-- Justification: Data format extension for Jackson to offer alternative support for serializing POJOs as XML and deserializing XML as pojos.-->
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>2.18.3</version>
             </dependency>
 
             <dependency>
@@ -301,6 +313,19 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Paynet http client API.-->
+                <groupId>com.payneteasy.http-client</groupId>
+                <artifactId>http-client-api</artifactId>
+                <version>1.0-8</version>
+            </dependency>
+            <dependency>
+                <!--Justification: Paynet http client API.-->
+                <groupId>com.payneteasy.http-client</groupId>
+                <artifactId>http-client-impl</artifactId>
+                <version>1.0-8</version>
+            </dependency>
+
+            <dependency>
                 <!--Justification: Logging API for the application -->
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -311,13 +336,13 @@
                 <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.3.12</version>
+                <version>1.5.17</version>
             </dependency>
             <dependency>
                 <!--Justification: Core library for Logback, necessary for logging configurations and functionality -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.3.12</version>
+                <version>1.5.17</version>
             </dependency>
             <dependency>
                 <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
@@ -326,10 +351,9 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
-                <!--Justification: Provides the Servlet API, necessary for web applications; marked as provided since it's provided by the servlet container -->
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.1.0</version> <!-- или более новая версия -->
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -547,15 +571,20 @@
                 <!--Justification: Velocity template engine support-->
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity-engine-core</artifactId>
-                <version>2.3</version>
+                <version>2.4.1</version>
             </dependency>
             <dependency>
                 <!--Justification: For sending emails-->
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>1.4</version>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
+                <version>2.1.3</version>
             </dependency>
-
+            <dependency>
+                <!--Justification: Jakarta Mail API-->
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-mail</artifactId>
+                <version>2.0.3</version>
+            </dependency>
             <!-- WICKET DEPENDENCIES -->
             <dependency>
                 <!--Justification: Render html UI-->
@@ -577,9 +606,9 @@
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
-                <!--Justification: Date/Time components and utilities for Wicket-->
+                <!--Justification: Core Wicket testers for Unit Tests. -->
                 <groupId>org.apache.wicket</groupId>
-                <artifactId>wicket-datetime</artifactId>
+                <artifactId>wicket-tester</artifactId>
                 <version>${wicket.version}</version>
             </dependency>
             <dependency>
@@ -589,22 +618,22 @@
                 <version>1.5</version>
             </dependency>
 
-            <dependency>
-                <!--Justification: Byte Code Generation Library -->
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>3.2.5</version>
-                <exclusions>
-                    <exclusion>
-                        <!--
-                        https://github.com/cglib/cglib/issues/144
-                        https://github.com/cglib/cglib/pull/87
-                        -->
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+<!--            <dependency>-->
+<!--                &lt;!&ndash;Justification: Byte Code Generation Library &ndash;&gt;-->
+<!--                <groupId>cglib</groupId>-->
+<!--                <artifactId>cglib</artifactId>-->
+<!--                <version>3.2.5</version>-->
+<!--                <exclusions>-->
+<!--                    <exclusion>-->
+<!--                        &lt;!&ndash;-->
+<!--                        https://github.com/cglib/cglib/issues/144-->
+<!--                        https://github.com/cglib/cglib/pull/87-->
+<!--                        &ndash;&gt;-->
+<!--                        <groupId>org.apache.ant</groupId>-->
+<!--                        <artifactId>ant</artifactId>-->
+<!--                    </exclusion>-->
+<!--                </exclusions>-->
+<!--            </dependency>-->
             <dependency>
                 <!--Justification Justification: Java bytecode manipulation framework -->
                 <groupId>org.ow2.asm</groupId>
@@ -613,10 +642,15 @@
             </dependency>
 
             <dependency>
-                <!--Justification: Commons Database Connection Pooling -->
-                <groupId>commons-dbcp</groupId>
-                <artifactId>commons-dbcp</artifactId>
-                <version>1.2.2</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>2.13.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <!--Justification:  Commons Object Pooling Library-->
@@ -649,7 +683,7 @@
                 <exclusions>
                     <exclusion>
                         <groupId>org.eclipse.jetty.orbit</groupId>
-                        <artifactId>javax.servlet</artifactId>
+                        <artifactId>jakarta.servlet</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -662,8 +696,21 @@
             </dependency>
             <dependency>
                 <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-plus</artifactId>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-plus</artifactId>
+                <version>${jetty.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <!--Justification: Jetty web application support. -->
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-webapp</artifactId>
+                <version>${jetty.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.ee10</groupId>
+                <artifactId>jetty-ee10-jndi</artifactId>
                 <version>${jetty.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -713,19 +760,18 @@
                 <artifactId>guava</artifactId>
                 <version>32.0.0-jre</version>
             </dependency>
-
             <dependency>
                 <!--Justification: Provides standard annotations used in Java applications -->
-                <groupId>javax.annotation</groupId>
-                <artifactId>javax.annotation-api</artifactId>
-                <version>1.3.2</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>3.0.0</version>
             </dependency>
 
             <dependency>
                 <!--Justification: Mocking framework for unit testing in Java -->
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
-                <version>5.2.0</version>
+                <version>5.5.0</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -734,12 +780,24 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+            <dependency>
+                <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.12.1</version>
+            </dependency>
             <dependency>
                 <!--Justification: Library for validating passwords and implementing password policies -->
                 <groupId>org.passay</groupId>
                 <artifactId>passay</artifactId>
                 <version>1.6.1</version>
+            </dependency>
+            <dependency>
+                <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.36</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -758,12 +816,12 @@
             <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <!--Justification: CGLIB is used for creating proxies and mock objects in unit tests -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            &lt;!&ndash;Justification: CGLIB is used for creating proxies and mock objects in unit tests &ndash;&gt;-->
+<!--            <groupId>cglib</groupId>-->
+<!--            <artifactId>cglib</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -785,19 +843,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
                     <version>3.4.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                        <encoding>utf-8</encoding>
-                        <showDeprecation>true</showDeprecation>
-                        <showWarnings>true</showWarnings>
-                        <optimize>false</optimize>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -965,17 +1010,16 @@
 
     <properties>
         <jdbcproc.version>1.1-25</jdbcproc.version>
-        <slf4j.version>2.0.9</slf4j.version>
-        <spring.version>5.3.29</spring.version>
-        <spring.security.version>5.5.8</spring.security.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <spring.version>6.2.2</spring.version>
+        <spring.security.version>6.4.3</spring.security.version>
         <aspectj.version>1.6.5</aspectj.version>
 
-        <wicket.version>7.18.0</wicket.version>
-        <jetty.version>9.4.57.v20241219</jetty.version>
+        <wicket.version>10.4.0</wicket.version>
+        <jetty.version>12.0.16</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>

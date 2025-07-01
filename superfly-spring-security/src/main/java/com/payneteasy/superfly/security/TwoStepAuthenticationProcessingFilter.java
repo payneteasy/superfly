@@ -1,8 +1,9 @@
 package com.payneteasy.superfly.security;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.Setter;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -22,26 +23,19 @@ import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthReque
  * on success roles are obtained for the user. If there're more than 1 roles,
  * user is forwarded to step 2, on which he selects a role.
  * If there's only one role, it's selected and step 2 is ignored.
- * 
+ *
  * @author Roman Puchkovskiy
  */
+@Setter
 public class TwoStepAuthenticationProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
     public static final String SPRING_SECURITY_FORM_ROLE_KEY = "j_role";
 
     private String roleParameter = SPRING_SECURITY_FORM_ROLE_KEY;
     private String subsystemIdentifier = null;
-    
+
     public TwoStepAuthenticationProcessingFilter() {
         setFilterProcessesUrl("/j_superfly_security_check");
-    }
-
-    public void setRoleParameter(String roleParameter) {
-        this.roleParameter = roleParameter;
-    }
-
-    public void setSubsystemIdentifier(String subsystemIdentifier) {
-        this.subsystemIdentifier = subsystemIdentifier;
     }
 
     @Override

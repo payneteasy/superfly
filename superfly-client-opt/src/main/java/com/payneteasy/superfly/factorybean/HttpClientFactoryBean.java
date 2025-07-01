@@ -1,6 +1,10 @@
 package com.payneteasy.superfly.factorybean;
 
 import com.payneteasy.httpclient.contrib.ssl.AuthSSLProtocolSocketFactory;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -19,85 +23,28 @@ import java.util.List;
 
 /**
  * Factory bean for HttpClient.
- * 
+ *
  * @author Roman Puchkovskiy
  */
-public class HttpClientFactoryBean implements FactoryBean {
+@Accessors(fluent = true, chain = true)
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class HttpClientFactoryBean implements FactoryBean<HttpClient> {
 
-    private boolean authenticationPreemptive = false;
-    private String username;
-    private String password;
-    private String authHost;
-    private StoresAndSSLConfig hostConfig = null;
-    private long connectionManagerTimeout = 10000; // 10 seconds by default
-    private int soTimeout = 10000; // 10 seconds by default
-    private int connectionTimeout = -1; // negative values mean "leave existing value"
-    private HttpConnectionManager httpConnectionManager = null;
-    private String[] sslEnabledProtocols = null;
+    boolean authenticationPreemptive = false;
+    String username;
+    String password;
+    String authHost;
+    StoresAndSSLConfig hostConfig = null;
+    long connectionManagerTimeout = 10000; // 10 seconds by default
+    int soTimeout = 10000; // 10 seconds by default
+    int connectionTimeout = -1; // negative values mean "leave existing value"
+    HttpConnectionManager httpConnectionManager = null;
+    String[] sslEnabledProtocols = null;
 
     private HttpClient httpClient = null;
 
-    public boolean isAuthenticationPreemptive() {
-        return authenticationPreemptive;
-    }
-
-    public void setAuthenticationPreemptive(boolean authenticationPreemptive) {
-        this.authenticationPreemptive = authenticationPreemptive;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getAuthHost() {
-        return authHost;
-    }
-
-    public void setAuthHost(String authHost) {
-        this.authHost = authHost;
-    }
-
-    public void setHostConfig(StoresAndSSLConfig hostConfig) {
-        this.hostConfig = hostConfig;
-    }
-
-    public void setConnectionManagerTimeout(long connectionManagerTimeout) {
-        this.connectionManagerTimeout = connectionManagerTimeout;
-    }
-
-    public void setSoTimeout(int soTimeout) {
-        this.soTimeout = soTimeout;
-    }
-
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-
-    public HttpConnectionManager getHttpConnectionManager() {
-        return httpConnectionManager;
-    }
-
-    public void setHttpConnectionManager(HttpConnectionManager httpConnectionManager) {
-        this.httpConnectionManager = httpConnectionManager;
-    }
-
-    public void setSslEnabledProtocols(String[] sslEnabledProtocols) {
-        this.sslEnabledProtocols = sslEnabledProtocols;
-    }
-
-    public synchronized Object getObject() throws Exception {
+    public synchronized HttpClient getObject() throws Exception {
         if (httpClient == null) {
             createAndConfigureHttpClient();
         }
@@ -110,7 +57,7 @@ public class HttpClientFactoryBean implements FactoryBean {
     }
 
     protected void configureHttpClient() throws IOException, GeneralSecurityException {
-        httpClient.getParams().setAuthenticationPreemptive(isAuthenticationPreemptive());
+        httpClient.getParams().setAuthenticationPreemptive(authenticationPreemptive);
         initCredentials();
         initSocketFactory();
         initProtocolIfNeeded();
@@ -161,9 +108,9 @@ public class HttpClientFactoryBean implements FactoryBean {
     protected void initCredentials() {
         if (username != null && password != null) {
             AuthScope authscope = new AuthScope(
-                    getAuthHost() == null ? AuthScope.ANY_HOST : getAuthHost(),
+                    authHost == null ? AuthScope.ANY_HOST : authHost,
                     AuthScope.ANY_PORT);
-            Credentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());
+            Credentials credentials = new UsernamePasswordCredentials(username, password);
             httpClient.getState().setCredentials(authscope, credentials);
         }
     }

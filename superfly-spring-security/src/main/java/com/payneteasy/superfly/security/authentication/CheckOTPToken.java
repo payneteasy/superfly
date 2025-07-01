@@ -4,12 +4,15 @@ import org.springframework.security.core.Authentication;
 
 import com.payneteasy.superfly.api.SSOUser;
 
+import java.io.Serial;
+
 /**
  * {@link Authentication} which is a request to check an HOTP.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class CheckOTPToken extends SSOUserTransportAuthenticationToken {
+    @Serial
     private static final long serialVersionUID = 2290145086843797962L;
 
     private String otp;
