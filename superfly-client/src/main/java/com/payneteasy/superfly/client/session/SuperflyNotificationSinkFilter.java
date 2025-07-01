@@ -2,6 +2,7 @@ package com.payneteasy.superfly.client.session;
 
 import java.io.IOException;
 
+import com.payneteasy.superfly.common.session.HttpSessionWrapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -20,9 +21,12 @@ import com.payneteasy.superfly.common.utils.StringUtils;
 
 /**
  * Filter that accepts notifications from the Superfly server.
- * 
+ *
  * @author Roman Puchkovskiy
+ *
+ * deprecated see SuperflyLogoutFilter
  */
+@Deprecated
 public class SuperflyNotificationSinkFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(SuperflyNotificationSinkFilter.class);
@@ -40,7 +44,7 @@ public class SuperflyNotificationSinkFilter implements Filter {
                 // interrupt filter chain
                 String[] sessionIds = StringUtils.commaDelimitedListToStringArray(logoutSessionIds);
                 for (String key : sessionIds) {
-                    HttpSession session = getSessionMapping().removeSessionByKey(key);
+                    HttpSessionWrapper session = getSessionMapping().removeSessionByKey(key);
                     if (session != null) {
                         try {
                             session.invalidate();
@@ -55,7 +59,7 @@ public class SuperflyNotificationSinkFilter implements Filter {
         chain.doFilter(req, resp);
     }
 
-    protected SessionMapping getSessionMapping() {
+    protected SessionMapping<HttpSessionWrapper> getSessionMapping() {
         return SessionMappingLocator.getSessionMapping();
     }
 

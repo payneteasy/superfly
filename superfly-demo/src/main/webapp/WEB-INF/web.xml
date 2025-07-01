@@ -57,7 +57,7 @@
 
     <filter>
         <filter-name>logoutNotificationSinkFilter</filter-name>
-        <filter-class>com.payneteasy.superfly.client.session.LogoutNotificationSinkFilter</filter-class>
+        <filter-class>com.payneteasy.superfly.client.session.SuperflyLogoutFilter</filter-class>
     </filter>
 
     <filter-mapping>

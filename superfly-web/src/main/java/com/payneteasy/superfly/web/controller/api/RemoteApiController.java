@@ -1,16 +1,13 @@
 package com.payneteasy.superfly.web.controller.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.Strictness;
 import com.payneteasy.superfly.api.SSOService;
+import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
+import com.payneteasy.superfly.api.serialization.ExceptionWrapper;
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,18 +19,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/sso.service")
 public class RemoteApiController {
-    private static final Gson GSON = new GsonBuilder()
-            .serializeNulls()
-            .setStrictness(Strictness.STRICT)
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ") // Пример настройки
-            .create()
-            ;
+    private final Map<String, Method>     requestMethods = new HashMap<>();
+    private final SSOService              ssoService;
+    private final ApiSerializationManager serializationManager;
 
-    private final Map<String, Method> requestMethods = new HashMap<>();
-    private final SSOService          ssoService;
-
-    public RemoteApiController(SSOService ssoService) {
+    public RemoteApiController(SSOService ssoService, ApiSerializationManager serializationManager) {
         this.ssoService = ssoService;
+        this.serializationManager = serializationManager;
         for (Method method : SSOService.class.getMethods()) {
             log.info("Register method SSOService.{}", method.getName());
             requestMethods.put(method.getName(), method);
@@ -43,51 +35,56 @@ public class RemoteApiController {
     @RequestMapping({"/{methodName}"})
     ResponseEntity<?> processRequest(
             @RequestBody String body,
-            @PathVariable(name = "methodName") String methodName
+            @PathVariable(name = "methodName") String methodName,
+            @RequestHeader(name = "Content-Type", defaultValue = MediaType.APPLICATION_JSON_VALUE) String contentType,
+            @RequestHeader(name = "Accept", defaultValue = MediaType.APPLICATION_JSON_VALUE) String acceptType
     ) {
         if (log.isDebugEnabled()) {
             log.debug("Request {} from {}", methodName, SecurityUtils.getUsername());
         }
 
-        return ResponseEntity.ok(invokeServiceMethodJsonSingle(
-                methodName,
-                body
-        ));
+        Object result           = null;
+        ResponseEntity.BodyBuilder bodyBuilder = null;
+        try {
+            result = invokeServiceMethod(methodName, body, contentType);
+            bodyBuilder = ResponseEntity.ok();
+        } catch (InvocationTargetException e) {
+            bodyBuilder = ResponseEntity.accepted();
+            result= ExceptionWrapper.from(e.getTargetException());
+        } catch (Exception e) {
+            bodyBuilder = ResponseEntity.internalServerError();
+            result = ExceptionWrapper.from(e);
+        }
+
+        String serializedResult = serializationManager.serialize(result, acceptType);
+
+        return bodyBuilder
+                .contentType(MediaType.parseMediaType(acceptType))
+                .body(serializedResult);
     }
 
-    private Object invokeServiceMethodJsonSingle(
+    private Object invokeServiceMethod(
             String aMethodName,
-            String body
-    ) {
+            String body,
+            String contentType
+    ) throws InvocationTargetException, IllegalAccessException {
         Type   argumentType = getMethodType(aMethodName);
-        Object argument     = argumentType == Void.TYPE ? null : RemoteApiController.GSON.fromJson(body, argumentType);
+        Object argument     = serializationManager.deserialize(body, argumentType, contentType);
         if (log.isDebugEnabled()) {
             log.debug("Invoke api: SSOService.{}() request is {}",
                       aMethodName,
-                      GSON.toJson(argument)
+                      serializationManager.serialize(argument)
             );
         }
         return invokeMethod(aMethodName, argument);
     }
 
-    Object invokeMethod(String aMethodName, Object aArgument) {
+    Object invokeMethod(String aMethodName, Object aArgument) throws InvocationTargetException, IllegalAccessException {
         Method method = requestMethods.get(aMethodName);
-        try {
-            return (aArgument == null && method.getParameterCount() == 0) ? method.invoke(ssoService) : method.invoke(
-                    ssoService,
-                    aArgument
-            );
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(
-                    "Cannot invoke " + method + " with arguments " + GSON.toJson(aArgument),
-                    e.getTargetException()
-            );
-        } catch (Exception e) {
-            throw new IllegalStateException(
-                    "Cannot invoke " + method + " with arguments " + GSON.toJson(aArgument),
-                    e
-            );
-        }
+        return (aArgument == null && method.getParameterCount() == 0)
+                    ? method.invoke(ssoService)
+                    : method.invoke(ssoService, aArgument);
+
     }
 
     private Type getMethodType(String aMethodName) {

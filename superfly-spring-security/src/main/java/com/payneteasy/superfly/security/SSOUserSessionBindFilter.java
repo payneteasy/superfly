@@ -2,6 +2,8 @@ package com.payneteasy.superfly.security;
 
 import java.io.IOException;
 
+import com.payneteasy.superfly.common.session.HttpSessionWrapper;
+import com.payneteasy.superfly.common.session.JakartaHttpSessionWrapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -21,7 +23,7 @@ import com.payneteasy.superfly.security.authentication.SSOUserAuthenticationToke
 /**
  * Filter which creates a correlation between a Superfly session key and an
  * HttpSession.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class SSOUserSessionBindFilter extends GenericFilterBean {
@@ -33,15 +35,14 @@ public class SSOUserSessionBindFilter extends GenericFilterBean {
         HttpSession session = request.getSession(false);
         if (session != null) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication instanceof SSOUserAuthenticationToken) {
-                SSOUserAuthenticationToken token = (SSOUserAuthenticationToken) authentication;
-                getSessionMapping().addSession(token.getUser().getSessionId(), session);
+            if (authentication instanceof SSOUserAuthenticationToken token) {
+                getSessionMapping().addSession(token.getUser().getSessionId(), new JakartaHttpSessionWrapper(session));
             }
         }
         chain.doFilter(request, response);
     }
 
-    protected SessionMapping getSessionMapping() {
+    protected SessionMapping<HttpSessionWrapper> getSessionMapping() {
         return SessionMappingLocator.getSessionMapping();
     }
 

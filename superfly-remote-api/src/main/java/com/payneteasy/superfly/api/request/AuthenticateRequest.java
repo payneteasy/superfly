@@ -14,4 +14,9 @@ public class AuthenticateRequest {
     private String                    username;
     private String                    password;
     private AuthenticationRequestInfo authRequestInfo;
+
+    public AuthenticateRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

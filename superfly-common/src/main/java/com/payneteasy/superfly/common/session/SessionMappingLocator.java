@@ -4,22 +4,24 @@ import com.payneteasy.superfly.common.singleton.SingletonHolder;
 
 /**
  * Used to locate a SessionMapping.
- * 
+ *
  * @author Roman Puchkovskiy
  */
 public class SessionMappingLocator {
-    private static final SingletonHolder<SessionMapping> sessionMappingSingletonHolder = new SingletonHolder<SessionMapping>() {
-        @Override
-        protected SessionMapping createInstance() {
-            return createSessionMapping();
-        }
-    };
 
-    public static SessionMapping getSessionMapping() {
+    private static final SingletonHolder<SessionMapping<HttpSessionWrapper>> sessionMappingSingletonHolder =
+            new SingletonHolder<>() {
+                @Override
+                protected SessionMapping<HttpSessionWrapper> createInstance() {
+                    return createSessionMapping();
+                }
+            };
+
+    public static SessionMapping<HttpSessionWrapper> getSessionMapping() {
         return sessionMappingSingletonHolder.getInstance();
     }
 
-    protected static SessionMapping createSessionMapping() {
-        return new HashMapBackedSessionMapping();
+    protected static SessionMapping<HttpSessionWrapper> createSessionMapping() {
+        return new HashMapBackedSessionMapping<>(HttpSessionWrapper::getId);
     }
 }

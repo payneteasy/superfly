@@ -177,6 +177,12 @@ public class ListActionsPage extends BasePage {
                 item.add(groupViewPage);
                 item.add(new Link<Void>("unmount-action-from-group") {
                     @Override
+                    protected void onConfigure() {
+                        super.onConfigure();
+                        setVisible(action.getGroupId() != 0);
+                    }
+
+                    @Override
                     public void onClick() {
                         List<Long> actionToUnlink = new ArrayList<>();
                         actionToUnlink.add(action.getId());

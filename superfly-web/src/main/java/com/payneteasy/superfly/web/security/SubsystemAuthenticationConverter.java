@@ -25,20 +25,23 @@ public class SubsystemAuthenticationConverter implements AuthenticationConverter
         String subsystemToken = request.getHeader("X-Subsystem-Token");
 
         if (subsystemName == null || subsystemToken == null) {
-            throw new InsufficientAuthenticationException("Missing subsystem credentials");
+            return null;
         }
 
-        checkRequestHost(request, subsystemName);
+        UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemName);
+        if (subsystem == null) {
+            throw new SubsystemNotFoundException("Subsystem '" + subsystemName + "' not found");
+        }
+
+        if (!subsystem.getSubsystemToken().equals(subsystemToken)) {
+            throw new SubsystemNotAllowedHostException("Not allowed for your subsystem");
+        }
+        // checkRequestHost(request, subsystemName);
 
         return new SubsystemAuthenticationToken(subsystemName, subsystemToken);
     }
 
-    private void checkRequestHost(HttpServletRequest request, String subsystemName) {
-        UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemName);
-
-        if (subsystem == null) {
-            throw new SubsystemNotFoundException("Subsystem '" + subsystemName + "' not found");
-        }
+    private void checkRequestHost(HttpServletRequest request, UISubsystem subsystem) {
 
         String landingUrl = subsystem.getLandingUrl();
         String host       = getClientHost(request);

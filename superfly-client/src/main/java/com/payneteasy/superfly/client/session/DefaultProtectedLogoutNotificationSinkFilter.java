@@ -9,9 +9,12 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * {@link LogoutNotificationSinkFilter} which is protected by a white list of
  * allowed caller IPs.
- * 
+ *
  * @author Roman Puchkovskiy
+ *
+ * deprecated see SuperflyLogoutFilter
  */
+@Deprecated
 public class DefaultProtectedLogoutNotificationSinkFilter extends
         LogoutNotificationSinkFilter {
     private Set<String> allowedIps = null;

@@ -1,60 +1,66 @@
 package com.payneteasy.superfly.api.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.payneteasy.http.client.api.*;
 import com.payneteasy.http.client.api.exceptions.HttpConnectException;
 import com.payneteasy.http.client.api.exceptions.HttpReadException;
 import com.payneteasy.http.client.api.exceptions.HttpWriteException;
+import com.payneteasy.http.client.impl.HttpClientImpl;
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
-import lombok.Getter;
+import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
+import com.payneteasy.superfly.api.serialization.ExceptionSerializationHelper;
+import com.payneteasy.superfly.api.serialization.ExceptionWrapper;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.payneteasy.superfly.api.serialization.ApiSerializer.CONTENT_TYPE_JSON;
 
 @Slf4j
 public class SSOHttpServiceApiClient implements SSOService {
 
-    private static final String CONTENT_TYPE_JSON      = "application/json";
     private static final String HEADER_SUBSYSTEM_NAME  = "X-Subsystem-Name";
     private static final String HEADER_SUBSYSTEM_TOKEN = "X-Subsystem-Token";
-    private static final String HEADER_HOST            = "Host";
     private static final String HEADER_CONTENT_TYPE    = "Content-Type";
+    private static final String HEADER_ACCEPT          = "Accept";
 
-    private final IHttpClient           httpClient;
-    private final HttpRequestParameters parameters;
-    private final Gson                  gson;
-    private final String                baseUrl;
-    private final String                subsystemName;
-    private final String                subsystemToken;
-    ;
+    private final IHttpClient             httpClient;
+    private final HttpRequestParameters   parameters;
+    private final String                  baseUrl;
+    private final String                  subsystemName;
+    private final String                  subsystemToken;
+    private final ApiSerializationManager serializationManager;
 
+    /**
+     * @param subsystemToken can be null if use x509 authentication
+     * @param baseUrl        for example https://superfly.payneteasy.com/superfly/remoting/sso.service
+     */
     public SSOHttpServiceApiClient(
-            IHttpClient httpClient,
-            HttpTimeouts httpTimeouts,
+            HttpRequestParameters httpRequestParameters,
             String baseUrl,
             String subsystemName,
-            String subsystemToken
+            @Nullable String subsystemToken,
+            ApiSerializationManager serializationManager
     ) {
-        this.httpClient = Objects.requireNonNull(httpClient, "httpClient must not be null");
-        this.parameters = createRequestParameters(httpTimeouts);
-        this.gson = new GsonBuilder().create();
+        this.httpClient = getHttpClient();
+
+        this.parameters = Objects.requireNonNull(httpRequestParameters, "httpRequestParameters must not be null");
         this.baseUrl = validateUrl(baseUrl);
         this.subsystemName = Objects.requireNonNull(subsystemName, "subsystemName must not be null");
-        this.subsystemToken = Objects.requireNonNull(subsystemToken, "subsystemToken must not be null");
+        this.subsystemToken = subsystemToken;
+        this.serializationManager = serializationManager;
     }
 
-    private HttpRequestParameters createRequestParameters(HttpTimeouts timeouts) {
-        HttpTimeouts safeTimeouts = timeouts != null ? timeouts : new HttpTimeouts(30_000, 30_000);
-        return HttpRequestParameters.builder()
-                                    .timeouts(safeTimeouts)
-                                    .build();
+    protected IHttpClient getHttpClient() {
+        return new HttpClientImpl();
     }
 
     private String validateUrl(String url) {
@@ -64,7 +70,7 @@ public class SSOHttpServiceApiClient implements SSOService {
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
-    // Реализации методов интерфейса
+    // Interface method implementations
 
     @Override
     public SSOUser authenticate(AuthenticateRequest request) throws SsoAuthException {
@@ -73,12 +79,12 @@ public class SSOHttpServiceApiClient implements SSOService {
 
     @Override
     public boolean checkOtp(CheckOtpRequest request) throws SsoAuthException {
-        return post("/checkOtp", request, BooleanResponse.class).isResult();
+        return post("/checkOtp", request, Boolean.class);
     }
 
     @Override
     public boolean hasOtpMasterKey(HasOtpMasterKeyRequest request) throws SsoAuthException {
-        return post("/hasOtpMasterKey", request, BooleanResponse.class).isResult();
+        return post("/hasOtpMasterKey", request, Boolean.class);
     }
 
     @Override
@@ -88,7 +94,7 @@ public class SSOHttpServiceApiClient implements SSOService {
 
     @Override
     public void sendSystemData(SendSystemDataRequest request) throws SsoSystemException {
-        post("/sendSystemData", request, VoidResponse.class);
+        post("/sendSystemData", request, Void.class);
     }
 
     @Override
@@ -96,151 +102,89 @@ public class SSOHttpServiceApiClient implements SSOService {
         return post(
                 "/getUsersWithActions",
                 request,
-                new TypeToken<ListResponse<SSOUserWithActions>>() {
+                new TypeToken<>() {
                 }
-        ).getData();
+        );
     }
 
     @Override
     public void updateUserOtpType(UpdateUserOtpTypeRequest request) throws SsoUserException {
-        post("/updateUserOtpType", request, VoidResponse.class);
+        post("/updateUserOtpType", request, Void.class);
     }
 
     @Override
     public void registerUser(UserRegisterRequest request) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
-        try {
-            post("/registerUser", request, VoidResponse.class);
-        } catch (SsoClientException e) {
-            handleSpecificExceptions(e, request);
-        }
+        // Simply pass the request, exceptions will be handled automatically
+        // through the ExceptionWrapper mechanism
+        post("/registerUser", request, Void.class);
     }
 
     @Override
     public void changeTempPassword(ChangeTempPasswordRequest request) throws PolicyValidationException {
-        try {
-            post("/changeTempPassword", request, VoidResponse.class);
-        } catch (SsoBadRequestException e) {
-            throw new PolicyValidationException(e.getMessage());
-        } catch (SsoClientException e) {
-            throw new RuntimeException("Unexpected error", e);
-        }
+        post("/changeTempPassword", request, Void.class);
     }
 
     @Override
     public UserDescription getUserDescription(GetUserDescriptionRequest request) throws SsoUserException {
-        try {
-            return post("/getUserDescription", request, UserDescription.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        }
+        return post("/getUserDescription", request, UserDescription.class);
     }
 
     @Override
     public String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request)
             throws UserNotFoundException, SsoDecryptException {
-        try {
-            StringResponse response = post("/resetGoogleAuthMasterKey", request, StringResponse.class);
-            return response.getValue();
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        } catch (SsoServerException e) {
-            throw new SsoDecryptException(e.getMessage());
-        }
+        return post("/resetGoogleAuthMasterKey", request, String.class);
     }
 
     @Override
     public String getUrlToGoogleAuthQrCode(GetGoogleAuthQrCodeRequest request) {
-        try {
-            StringResponse response = post("/getUrlToGoogleAuthQrCode", request, StringResponse.class);
-            return response.getValue();
-        } catch (SsoClientException e) {
-            throw new RuntimeException("Failed to get QR code URL", e);
-        }
+        return post("/getUrlToGoogleAuthQrCode", request, String.class);
     }
 
     @Override
     public void updateUserIsOtpOptionalValue(UpdateUserIsOtpOptionalValueRequest request) throws SsoUserException {
-        try {
-            post("/updateUserIsOtpOptionalValue", request, VoidResponse.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        }
+        post("/updateUserIsOtpOptionalValue", request, Void.class);
     }
 
     @Override
     public void updateUserDescription(UpdateUserDescriptionRequest request)
             throws UserNotFoundException, BadPublicKeyException {
-        try {
-            post("/updateUserDescription", request, VoidResponse.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        } catch (SsoBadRequestException e) {
-            throw new BadPublicKeyException(e.getMessage());
-        }
+        post("/updateUserDescription", request, Void.class);
     }
 
     @Override
     public void resetPassword(PasswordResetRequest reset) throws UserNotFoundException, PolicyValidationException {
-        try {
-            post("/resetPassword", reset, VoidResponse.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        } catch (SsoBadRequestException e) {
-            throw new PolicyValidationException(e.getMessage());
-        }
+        post("/resetPassword", reset, Void.class);
     }
 
     @Override
     public List<UserStatus> getUserStatuses(GetUserStatusesRequest request) throws SsoDataException {
-        try {
-            return post(
-                    "/getUserStatuses",
-                    request,
-                    new TypeToken<ListResponse<UserStatus>>() {
-                    }
-            ).getData();
-        } catch (SsoClientException e) {
-            throw new SsoDataException("Failed to get user statuses", e);
-        }
+        return post(
+                "/getUserStatuses",
+                request,
+                new TypeToken<>() {
+                }
+        );
     }
 
     @Override
     public SSOUser exchangeSubsystemToken(ExchangeSubsystemTokenRequest request) throws SsoAuthException {
-        try {
-            return post("/exchangeSubsystemToken", request, SSOUser.class);
-        } catch (SsoUnauthorizedException e) {
-            throw new SsoAuthException("Invalid subsystem token", e);
-        }
+        return post("/exchangeSubsystemToken", request, SSOUser.class);
     }
 
     @Override
     public void touchSessions(TouchSessionsRequest request) throws SsoSystemException {
-        try {
-            post("/touchSessions", request, VoidResponse.class);
-        } catch (SsoClientException e) {
-            throw new SsoSystemException("Session touch failed", e);
-        }
+        post("/touchSessions", request, Void.class);
     }
 
     @Override
     public void completeUser(CompleteUserRequest request) throws SsoUserException {
-        try {
-            post("/completeUser", request, VoidResponse.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        }
+        post("/completeUser", request, Void.class);
     }
 
     @Override
     public void changeUserRole(ChangeUserRoleRequest request) throws SsoUserException {
-        try {
-            post("/changeUserRole", request, VoidResponse.class);
-        } catch (SsoNotFoundException e) {
-            throw new UserNotFoundException(e.getMessage());
-        } catch (SsoForbiddenException e) {
-            throw new SsoUserException("Permission denied", e);
-        }
+        post("/changeUserRole", request, Void.class);
     }
 
     private <T> T post(String endpoint, Object request, Class<T> responseClass) throws SsoClientException {
@@ -248,17 +192,17 @@ public class SSOHttpServiceApiClient implements SSOService {
     }
 
     private <T> T post(String endpoint, Object request, TypeToken<T> typeToken) throws SsoClientException {
-        String url         = baseUrl + "/remoting/sso.service" + endpoint;
-        String jsonRequest = gson.toJson(request);
+        String url         = baseUrl + endpoint;
+        String requestBody = serializationManager.serialize(request);
 
         if (log.isDebugEnabled()) {
-            log.debug("Sending request to {}: {}", url, jsonRequest);
+            log.debug("Sending request to {}: {}", url, requestBody);
         }
 
         HttpResponse response;
         try {
             response = httpClient.send(
-                    buildRequest(url, jsonRequest),
+                    buildRequest(url, requestBody),
                     parameters
             );
             if (log.isDebugEnabled()) {
@@ -272,22 +216,27 @@ public class SSOHttpServiceApiClient implements SSOService {
         return parseResponse(response, typeToken.getType());
     }
 
-    private HttpRequest buildRequest(String url, String jsonBody) {
+    private HttpRequest buildRequest(String url, String body) {
         return HttpRequest.builder()
                           .url(url)
                           .method(HttpMethod.POST)
                           .headers(createHeaders())
-                          .body(jsonBody.getBytes(StandardCharsets.UTF_8))
+                          .body(body.getBytes(StandardCharsets.UTF_8))
                           .build();
     }
 
     private HttpHeaders createHeaders() {
-        return new HttpHeaders(List.of(
+        List<HttpHeader> headers = new ArrayList<>(List.of(
                 new HttpHeader(HEADER_SUBSYSTEM_NAME, subsystemName),
-                new HttpHeader(HEADER_SUBSYSTEM_TOKEN, subsystemToken),
-                new HttpHeader(HEADER_HOST, subsystemToken),
-                new HttpHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON)
+                new HttpHeader(HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON),
+                new HttpHeader(HEADER_ACCEPT, CONTENT_TYPE_JSON)
         ));
+
+        if (subsystemToken != null) {
+            headers.add(new HttpHeader(HEADER_SUBSYSTEM_TOKEN, subsystemToken));
+        }
+
+        return new HttpHeaders(headers);
     }
 
     private void validateResponse(HttpResponse response, String url) throws SsoClientException {
@@ -320,43 +269,49 @@ public class SSOHttpServiceApiClient implements SSOService {
     }
 
     private <T> T parseResponse(HttpResponse response, Type type) throws SsoParseException {
+        String responseText = new String(response.getBody(), StandardCharsets.UTF_8);
+        String contentType = response
+                .getHeaders()
+                .stream()
+                .filter(s -> s.getName().equalsIgnoreCase(HEADER_CONTENT_TYPE))
+                .findFirst()
+                .orElseGet(() -> new HttpHeader(HEADER_CONTENT_TYPE, serializationManager.getDefaultContentType()))
+                .getValue()
+                ;
+
+
+        if (response.getStatusCode() != 200) {
+            ExceptionWrapper exceptionWrapper;
+            try {
+                exceptionWrapper = (ExceptionWrapper) serializationManager.deserialize(
+                        responseText, ExceptionWrapper.class, contentType);
+            } catch (JsonSyntaxException e) {
+                throw new SsoParseException("Failed to parse response: " + e.getMessage(), e);
+            }
+
+            if (exceptionWrapper != null && exceptionWrapper.getExceptionClass() != null) {
+                // Recreate the exception on the client side
+                Throwable exception = ExceptionSerializationHelper.createException(exceptionWrapper);
+                if (exception instanceof RuntimeException) {
+                    throw (RuntimeException) exception;
+                } else {
+                    throw new SsoParseException("Received exception: " + exception.getMessage(), exception);
+                }
+            }
+        }
         try {
-            String json = new String(response.getBody(), StandardCharsets.UTF_8);
-            return gson.fromJson(json, type);
+            // Check if the response contains exception information
+            @SuppressWarnings("unchecked")
+            T result = (T) serializationManager.deserialize(responseText, type, contentType);
+            return result;
+        } catch (SsoException e) {
+            // Propagate SsoException exceptions further
+            throw e;
         } catch (Exception e) {
             throw new SsoParseException("Failed to parse response: " + e.getMessage(), e);
         }
     }
 
-    private void handleSpecificExceptions(SsoClientException e, Object request)
-            throws UserExistsException, PolicyValidationException,
-            BadPublicKeyException, MessageSendException {
-
-        if (e instanceof SsoConflictException) {
-            throw new UserExistsException(e.getMessage());
-        }
-
-        throw e;
-    }
-
-    // Вспомогательные классы для ответов
-
-    @Getter
-    private static class BooleanResponse {
-        private boolean result;
-    }
-
-    @Getter
-    private static class ListResponse<T> {
-        private List<T> data;
-    }
-
-    private static class VoidResponse {
-    }
-
-    @Getter
-    private static class StringResponse {
-        private String value;
-    }
+    // handleSpecificExceptions removed, as the ExceptionWrapper mechanism is now used
 
 }

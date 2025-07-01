@@ -2,31 +2,30 @@ package com.payneteasy.superfly.common.session;
 
 import java.util.Collection;
 
-import jakarta.servlet.http.HttpSession;
-
 /**
- * Used to maintain a correlation between HttpSession's and Superfly session
+ * Used to maintain a correlation between sessions and Superfly session
  * keys (or identifiers).
  *
  * @author Roman Puchkovskiy
+ * @param <S> the session type
  */
-public interface SessionMapping {
+public interface SessionMapping<S> {
     /**
      * Adds a session to the mapping.
      *
      * @param key        session key
      * @param session    session to add
      */
-    void addSession(String key, HttpSession session);
+    void addSession(String key, S session);
     /**
      * Removes a session by its key.
      *
      * @param key    key by which to remove a session
      * @return removed session (or null if no such session existed in the mapping)
      */
-    HttpSession removeSessionByKey(String key);
+    S removeSessionByKey(String key);
     /**
-     * Removes a session by its ID (i.e. by value returned by session.getId()).
+     * Removes a session by its ID.
      *
      * @param id ID of the session to remove
      */
@@ -36,5 +35,5 @@ public interface SessionMapping {
      *
      * @return removed sessions
      */
-    Collection<HttpSession> clear();
+    Collection<S> clear();
 }

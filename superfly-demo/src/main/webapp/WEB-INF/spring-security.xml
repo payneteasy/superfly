@@ -13,6 +13,7 @@
     <sec:http auto-config="false" entry-point-ref="twoStepAuthenticationProcessingFilterEntryPoint">
         <sec:custom-filter ref="twoStepAuthenticationProcessingFilter" position="FORM_LOGIN_FILTER"/>
         <sec:custom-filter ref="ssoUserSessionBindFilter" after="FORM_LOGIN_FILTER"/>
+        <sec:custom-filter ref="superflyLogoutFilter" after="LAST"/>
 
         <sec:intercept-url pattern="/login*" access="isAnonymous()"/>
 
@@ -74,6 +75,9 @@
     </bean>
 
     <bean id="ssoUserSessionBindFilter" class="com.payneteasy.superfly.security.SSOUserSessionBindFilter">
+    </bean>
+
+    <bean id="superflyLogoutFilter" class="com.payneteasy.superfly.client.session.SuperflyLogoutFilter">
     </bean>
 
 </beans>
