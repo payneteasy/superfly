@@ -18,4 +18,18 @@ public class SuperflyProperties {
     Boolean csrfLoginValidatorEnable;
     Boolean enableMultiFactorAuth;
     OTPType forceMultiFactorAuthMethod;
+
+    @Override
+    public String toString() {
+        return "SuperflyProperties{" +
+                "superflyVersion='" + superflyVersion + '\'' +
+                ", policyName='" + policyName + '\'' +
+                ", cryptoSecret='" + "***" + '\'' +
+                ", cryptoSalt='" + "***" + '\'' +
+                ", maxLoginsFailed=" + maxLoginsFailed +
+                ", csrfLoginValidatorEnable=" + csrfLoginValidatorEnable +
+                ", enableMultiFactorAuth=" + enableMultiFactorAuth +
+                ", forceMultiFactorAuthMethod=" + forceMultiFactorAuthMethod +
+                '}';
+    }
 }

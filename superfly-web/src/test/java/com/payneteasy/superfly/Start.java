@@ -28,7 +28,7 @@ public class Start {
 
         HttpConfiguration httpConfig = new HttpConfiguration();
         httpConfig.setSecureScheme("https");
-        httpConfig.setSecurePort(8443);
+        httpConfig.setSecurePort(8446);
         httpConfig.setOutputBufferSize(32768);
         httpConfig.setRequestHeaderSize(8192);
         httpConfig.setResponseHeaderSize(8192);
@@ -41,18 +41,11 @@ public class Start {
         connector.setPort(Integer.parseInt(System.getProperty("jetty.port", "8085")));
 
         HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-        httpsConfig.addCustomizer(new SecureRequestCustomizer());
+        SecureRequestCustomizer secureCustomizer = new SecureRequestCustomizer();
+        secureCustomizer.setSniHostCheck(false);
+        httpsConfig.addCustomizer(secureCustomizer);
 
-        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-        sslContextFactory.setKeyStorePath("src/test/resources/superfly-server.jks");
-        sslContextFactory.setKeyStorePassword("changeit");
-        sslContextFactory.setTrustStorePath("src/test/resources/cacert.jks");
-        sslContextFactory.setTrustStorePassword("changeit");
-        sslContextFactory.setNeedClientAuth(true);
-
-        ServerConnector secureConnector = new ServerConnector(server,
-                                                              new SslConnectionFactory(sslContextFactory, "http/1.1"),
-                                                              new HttpConnectionFactory(httpsConfig));
+        ServerConnector secureConnector = getServerConnector(server, httpsConfig);
         secureConnector.setIdleTimeout(1000 * 60 * 60);
         secureConnector.setPort(Integer.parseInt(System.getProperty("jetty.port.https", "8446")));
 
@@ -94,5 +87,20 @@ public class Start {
             log.error("JETTY SERVER ERROR", e);
             System.exit(100);
         }
+    }
+
+    private static ServerConnector getServerConnector(Server server, HttpConfiguration httpsConfig) {
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+        sslContextFactory.setKeyStorePath("src/test/resources/superfly-server.jks");
+        sslContextFactory.setKeyStorePassword("changeit");
+        sslContextFactory.setTrustStorePath("src/test/resources/cacert.jks");
+        sslContextFactory.setTrustStorePassword("changeit");
+        sslContextFactory.setNeedClientAuth(true);
+        sslContextFactory.setSniRequired(false);
+        sslContextFactory.setSNISelector(new CustomSniSelector());
+
+        return new ServerConnector(server,
+                                   new SslConnectionFactory(sslContextFactory, "http/1.1"),
+                                   new HttpConnectionFactory(httpsConfig));
     }
 }

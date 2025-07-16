@@ -131,11 +131,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         return ssoUser;
     }
 
-    public boolean checkOtp(SSOUser user, String code) {
-        if (user.isOtpOptional() && (code == null || code.trim().isEmpty())) {
+    @Override
+    public boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
+        if (isOtpOptional && (code == null || code.trim().isEmpty())) {
             return true;
         }
-        return authenticateByOtpType(user.getOtpType(), user.getName(), code);
+        return authenticateByOtpType(otpType, username, code);
     }
 
     @Override
@@ -282,20 +283,13 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public boolean authenticateByOtpType(OTPType otp, String username, String code) {
-        boolean ok = false;
-        switch (otp) {
-            case GOOGLE_AUTH:
-                try {
-                    ok = hotpService.validateGoogleTimePassword(username, code);
-                } catch (SsoDecryptException e) {
-                    logger.warn("Can't decrypt secret key for {}", username);
-                }
-                break;
-            case NONE:
-            default:
-                ok = true;
+        logger.debug("Authenticating by OTP type {} for {}", otp, username);
+        boolean ok;
+        if (Objects.requireNonNull(otp) == OTPType.GOOGLE_AUTH) {
+            ok = hotpService.validateGoogleTimePassword(username, code);
+        } else {
+            ok = true;
         }
-
         if (!ok) {
             logger.warn("OTP check failed {}", username);
             userService.incrementHOTPLoginsFailed(username);

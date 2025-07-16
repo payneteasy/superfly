@@ -16,7 +16,7 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelValueRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -118,11 +118,9 @@ public class AppendSubsystemWithRolePage extends BasePage {
 
         form.add(subsystemsRow);
         form.add(rolesRow);
-        subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
-
+        subsystemsRow.getDropDownChoice().add(new OnChangeAjaxBehavior(){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                rolesModel.detach();
                 target.add(rolesRow);
             }
 

@@ -64,6 +64,7 @@ public class HOTPServiceImpl implements HOTPService {
         int verificationCode = Integer.parseInt(password);
         String masterKeyEncrypt = userService.getOtpMasterKeyByUsername(username);
         if (masterKeyEncrypt == null) {
+            logger.error("GA master key for " + username + " is null");
             throw new SsoDecryptException("GA master key for " + username + " is null");
         }
         String masterKey;

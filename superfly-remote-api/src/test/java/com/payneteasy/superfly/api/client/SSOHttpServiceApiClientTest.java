@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.api.client;
 
-import com.google.gson.JsonSyntaxException;
 import com.payneteasy.http.client.api.*;
 import com.payneteasy.http.client.api.exceptions.HttpConnectException;
 import com.payneteasy.http.client.api.exceptions.HttpReadException;

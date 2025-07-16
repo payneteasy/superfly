@@ -53,8 +53,8 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
-    public boolean checkOtp(CheckOtpRequest request) {
-        return internalSSOService.checkOtp(request.getUser(), request.getCode());
+    public boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException {
+        return internalSSOService.checkOtp(request.getOtpType(), request.isOtpOptional(), request.getUserName(),  request.getCode());
     }
 
     @Override

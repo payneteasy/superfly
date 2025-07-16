@@ -3,14 +3,11 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
-import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.OTPType;
-import com.payneteasy.superfly.api.exceptions.MessageSendException;
-import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.exceptions.UserExistsException;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 
@@ -38,7 +35,7 @@ public interface InternalSSOService {
     SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
             String sessionInfo);
 
-    boolean checkOtp(SSOUser user, String code);
+    boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) throws SsoDecryptException;
 
     /**
         * Returns the same data as if user was successfully authenticated,
@@ -108,7 +105,7 @@ public interface InternalSSOService {
      * @param key         key
      * @return authentication result
      */
-    boolean authenticateByOtpType(OTPType otp, String username, String key);
+    boolean authenticateByOtpType(OTPType otp, String username, String key) throws SsoDecryptException;
 
     /**
      *

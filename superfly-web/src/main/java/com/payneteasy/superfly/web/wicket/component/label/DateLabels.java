@@ -33,7 +33,7 @@ public class DateLabels {
         IModel<String> model = new LoadableDetachableModel<>() {
             @Override
             protected String load() {
-                return DATE_TIME_PATTERN_FORMATTER.format(date);
+                return date != null ? DATE_TIME_PATTERN_FORMATTER.format(date) : "N/A";
             }
         };
         return new Label(id, model);

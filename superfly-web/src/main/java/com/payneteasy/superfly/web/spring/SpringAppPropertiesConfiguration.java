@@ -26,9 +26,11 @@ public class SpringAppPropertiesConfiguration {
 
     @Bean
     public SuperflyProperties superflyProperties() {
+        String policyName = policyName();
+        log.info("POLICY NAME: {}", policyName);
         return new SuperflyProperties()
                 .superflyVersion(superflyVersion())
-                .policyName(policyName())
+                .policyName(policyName)
                 .cryptoSecret(cryptoSecret())
                 .cryptoSalt(cryptoSalt())
                 .maxLoginsFailed(maxLoginsFailed())

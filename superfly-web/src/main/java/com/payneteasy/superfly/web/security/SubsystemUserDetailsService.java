@@ -47,6 +47,12 @@ public class SubsystemUserDetailsService implements UserDetailsService {
                     String.format("Subsystem %s (from CN=%s) not found in subsystems. Please check your Issue.CN field", username, username)
             );
         }
+        if (subsystem.getSubsystemToken() == null) {
+            loggerSink.info(logger, "CHECK_SUBSYSTEM_EXIST", false, username);
+            throw new SubsystemNotAllowedHostException(
+                    String.format("Subsystem %s (from CN=%s) was found in subsystems. But subsystem token is null. Please check this", username, username)
+            );
+        }
         GrantedAuthority[] gas = new GrantedAuthority[authorities.length];
         for (int i = 0; i < authorities.length; i++) {
             gas[i] = new SimpleGrantedAuthority(authorities[i]);

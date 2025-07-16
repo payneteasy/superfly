@@ -2,6 +2,7 @@ package com.payneteasy.superfly.security;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.OTPCheckedToken;
@@ -36,12 +37,17 @@ public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider
             if (authRequest.getCredentials() == null) {
                 throw new BadOTPValueException("Null OTP secret");
             }
-            boolean ok = ssoService.checkOtp(
-                    new CheckOtpRequest(
-                            authRequest.getSsoUser(),
-                            authRequest.getCredentials().toString()
-                    )
-            );
+            boolean ok;
+            try {
+                ok = ssoService.checkOtp(
+                        new CheckOtpRequest(
+                                authRequest.getSsoUser(),
+                                authRequest.getCredentials().toString()
+                        )
+                );
+            } catch (SsoDecryptException e) {
+                throw new BadOTPValueException(e.getMessage());
+            }
             if (!ok) {
                 throw new BadOTPValueException("Invalid OTP secret");
             }

@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * User from SSO with roles, actions and preferences. User may have several
  * roles, each role has its own action set.
- * 
+ *
  * @author Roman Puchkovskiy
  * @since 1.0
  */
@@ -106,6 +106,17 @@ public class SSOUser implements Serializable {
      */
     public Map<SSORole, SSOAction[]> getActionsMap() {
         return actionsMap;
+    }
+
+    public int getActionCount() {
+        int count = 0;
+        if (actionsMap == null) {
+            return count;
+        }
+        for (SSORole role : actionsMap.keySet()) {
+            count += actionsMap.get(role).length;
+        }
+        return count;
     }
 
     /**

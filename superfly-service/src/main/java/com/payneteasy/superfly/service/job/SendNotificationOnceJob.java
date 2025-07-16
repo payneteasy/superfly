@@ -2,7 +2,6 @@ package com.payneteasy.superfly.service.job;
 
 import com.payneteasy.superfly.notification.AbstractNotification;
 import com.payneteasy.superfly.notification.LogoutNotification;
-import com.payneteasy.superfly.notification.NotificationException;
 import com.payneteasy.superfly.notification.UsersChangedNotification;
 import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
 import lombok.Setter;
@@ -36,7 +35,7 @@ public class SendNotificationOnceJob extends BaseJob {
             } else {
                 throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
             }
-        } catch (NotificationException e) {
+        } catch (Exception e) {
             log.error("Error while trying to send a notification, no more retries, dropping: {}",
                       notification.toString(),
                       e

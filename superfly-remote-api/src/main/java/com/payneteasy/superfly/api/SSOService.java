@@ -24,7 +24,7 @@ public interface SSOService {
      */
     SSOUser authenticate(AuthenticateRequest authenticate);
 
-    boolean checkOtp(CheckOtpRequest request);
+    boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException;
 
     boolean hasOtpMasterKey(HasOtpMasterKeyRequest request);
 

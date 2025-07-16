@@ -206,7 +206,7 @@ public class SSOHttpServiceApiClient implements SSOService {
                     parameters
             );
             if (log.isDebugEnabled()) {
-                log.debug("Get response status: {}, body: {}", response.getStatusCode(), response.getBody());
+                log.debug("Get response status: {}, body: {}", response.getStatusCode(), new String(response.getBody(), StandardCharsets.UTF_8));
             }
         } catch (HttpConnectException | HttpWriteException | HttpReadException e) {
             throw new SsoConnectionException("Connection error: " + e.getMessage(), e);

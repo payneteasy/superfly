@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
@@ -113,20 +113,23 @@ public class CreateUserPage extends BasePage {
                 subsystemsModel, new SubsystemChoiceRenderer());
         subsystemsRow.getDropDownChoice().setRequired(true);
 
-        final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<UIRoleForList>("role", new Model<UIRoleForList>(), "user.create.choice-roles", rolesModel, new RoleInCreateUserChoiceRender());
+        final LabelDropDownChoiceRow<UIRoleForList> rolesRow = new LabelDropDownChoiceRow<>(
+                "role",
+                new Model<>(),
+                "user.create.choice-roles",
+                rolesModel,
+                new RoleInCreateUserChoiceRender()
+        );
         rolesRow.getDropDownChoice().setRequired(true);
         rolesRow.setOutputMarkupId(true);
 
         form.add(subsystemsRow);
         form.add(rolesRow);
-        subsystemsRow.getDropDownChoice().add(new AjaxFormComponentUpdatingBehavior("onchange"){
-
+        subsystemsRow.getDropDownChoice().add(new OnChangeAjaxBehavior(){
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                rolesModel.detach();
                 target.add(rolesRow);
             }
-
         });
 
         form.add(new LabelTextFieldRow<String>(user,"name","user.create.name", true));

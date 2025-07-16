@@ -1,10 +1,7 @@
 package com.payneteasy.superfly.web.spring;
 
-import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
-import com.payneteasy.superfly.notification.strategy.SimpleSendStrategy;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.UserService;
-import org.apache.commons.httpclient.HttpClient;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -15,9 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
 
 @Configuration
 //@EnableScheduling // Если планируется использовать и @Scheduled
