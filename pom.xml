@@ -9,7 +9,7 @@
     <artifactId>superfly-parent</artifactId>
     <packaging>pom</packaging>
     <name>Superfly parent project</name>
-    <version>2.0-2</version>
+    <version>2.0-3-SNAPSHOT</version>
     <description>Parent POM of the Superfly project</description>
     <modules>
         <module>superfly-remote-api</module>
@@ -34,7 +34,7 @@
         <connection>scm:git:git@github.com:payneteasy/superfly.git</connection>
         <developerConnection>scm:git:git@github.com:payneteasy/superfly.git</developerConnection>
         <url>https://github.com/paynetesy/superfly</url>
-      <tag>superfly-parent-2.0-2</tag>
+      <tag>superfly-parent-1.7-12</tag>
   </scm>
 
     <licenses>
