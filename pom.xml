@@ -719,14 +719,14 @@
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.78</version>
+                <version>1.81</version>
             </dependency>
 
             <dependency>
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
-                <version>1.75</version>
+                <version>1.81</version>
             </dependency>
 
             <dependency>
