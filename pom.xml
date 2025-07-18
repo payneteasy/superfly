@@ -1009,11 +1009,11 @@
                             <!--skipDependencyManagement>false</skipDependencyManagement-->
                         </configuration>
                         <executions>
-                         <execution>
-                             <goals>
-                                 <goal>aggregate</goal>
-                             </goals>
-                         </execution>
+                            <execution>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
