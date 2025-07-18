@@ -73,23 +73,6 @@
         </developer>
     </developers>
 
-    <!--
-    -      Distributions
-    -->
-    <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>sonatype oss RELEASE repository</name>
-            <url>https://central.sonatype.com/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>sonatype oss SNAPSHOT repository</name>
-            <url>https://central.sonatype.com/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
-
     <repositories>
         <!-- Atlassian repositories -->
         <repository>
@@ -940,6 +923,16 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.8.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <autoPublish>true</autoPublish>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -964,6 +957,13 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
