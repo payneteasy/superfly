@@ -29,8 +29,8 @@
         <connection>scm:git:git@github.com:payneteasy/superfly.git</connection>
         <developerConnection>scm:git:git@github.com:payneteasy/superfly.git</developerConnection>
         <url>https://github.com/paynetesy/superfly</url>
-      <tag>superfly-parent-1.7-12</tag>
-  </scm>
+        <tag>superfly-parent-1.7-12</tag>
+    </scm>
 
     <licenses>
         <license>
@@ -96,13 +96,13 @@
         </repository>
 
         <!-- ibiblio mirror for some artifacts -->
-<!--
-        <repository>
-            <id>ibiblio-mirrors</id>
-            <name>ibiblio mirrors</name>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </repository>
--->
+        <!--
+                <repository>
+                    <id>ibiblio-mirrors</id>
+                    <name>ibiblio mirrors</name>
+                    <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
+                </repository>
+        -->
     </repositories>
 
     <dependencyManagement>
@@ -596,22 +596,22 @@
                 <version>1.6.0</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                &lt;!&ndash;Justification: Byte Code Generation Library &ndash;&gt;-->
-<!--                <groupId>cglib</groupId>-->
-<!--                <artifactId>cglib</artifactId>-->
-<!--                <version>3.2.5</version>-->
-<!--                <exclusions>-->
-<!--                    <exclusion>-->
-<!--                        &lt;!&ndash;-->
-<!--                        https://github.com/cglib/cglib/issues/144-->
-<!--                        https://github.com/cglib/cglib/pull/87-->
-<!--                        &ndash;&gt;-->
-<!--                        <groupId>org.apache.ant</groupId>-->
-<!--                        <artifactId>ant</artifactId>-->
-<!--                    </exclusion>-->
-<!--                </exclusions>-->
-<!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                &lt;!&ndash;Justification: Byte Code Generation Library &ndash;&gt;-->
+            <!--                <groupId>cglib</groupId>-->
+            <!--                <artifactId>cglib</artifactId>-->
+            <!--                <version>3.2.5</version>-->
+            <!--                <exclusions>-->
+            <!--                    <exclusion>-->
+            <!--                        &lt;!&ndash;-->
+            <!--                        https://github.com/cglib/cglib/issues/144-->
+            <!--                        https://github.com/cglib/cglib/pull/87-->
+            <!--                        &ndash;&gt;-->
+            <!--                        <groupId>org.apache.ant</groupId>-->
+            <!--                        <artifactId>ant</artifactId>-->
+            <!--                    </exclusion>-->
+            <!--                </exclusions>-->
+            <!--            </dependency>-->
             <dependency>
                 <!--Justification Justification: Java bytecode manipulation framework -->
                 <groupId>org.ow2.asm</groupId>
@@ -794,12 +794,12 @@
             <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            &lt;!&ndash;Justification: CGLIB is used for creating proxies and mock objects in unit tests &ndash;&gt;-->
-<!--            <groupId>cglib</groupId>-->
-<!--            <artifactId>cglib</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            &lt;!&ndash;Justification: CGLIB is used for creating proxies and mock objects in unit tests &ndash;&gt;-->
+        <!--            <groupId>cglib</groupId>-->
+        <!--            <artifactId>cglib</artifactId>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -824,29 +824,71 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>3.2.7</version>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.11.2</version>
                 </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
+            <!-- Плагин для создания JAR с исходным кодом -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <excludeResources>true</excludeResources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
+            <!-- Плагин для создания JAR с Javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.1</version>
                 <configuration>
                     <source>${java.version}</source>
-                    <!-- this is to disable JDK-supplied doclint which is too strict
-                     causes the build to fail -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <doclint>none</doclint>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <configuration>
+                    <executable>gpg</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -941,23 +983,6 @@
             <id>deploy</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
-                        <configuration>
-                            <gpgExecutable>gpg</gpgExecutable>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
