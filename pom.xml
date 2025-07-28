@@ -332,7 +332,6 @@
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>6.1.0</version> <!-- или более новая версия -->
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
@@ -651,13 +650,12 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- JETTY DEPENDENCIES FOR TESTING -->
+            <!-- JETTY DEPENDENCIES -->
             <dependency>
-                <!--Justification: Jetty server for testing purposes -->
+                <!--Justification: Jetty server for embedding -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>org.eclipse.jetty.orbit</groupId>
@@ -666,31 +664,34 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <!--Justification: Jetty module with wide features for Jakarta EE integration purposes -->
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-plus</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
                 <!--Justification: Provides utility classes for Jetty server, enhancing operational capabilities -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-plus</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!--Justification: Jetty web application support. -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-webapp</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
+                <!--Justification: Jetty module for JNDI functionality -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-jndi</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -831,6 +832,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.11.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.5.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>

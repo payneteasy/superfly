@@ -6,7 +6,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>superfly-web</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Superfly server web-application</name>
     <description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
     <dependencies>
@@ -117,48 +117,50 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-tester</artifactId>
         </dependency>
-        <!--  JETTY DEPENDENCIES FOR TESTING  -->
+        <!-- DEPENDENCIES FOR JETTY EMBEDDING -->
         <dependency>
-            <!--Justification: Jetty server for testing purposes -->
+            <!--Justification: Jetty server for embedding -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Jetty module with wide features for Jakarta EE integration purposes -->
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-plus</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Provides utility classes for Jetty server, enhancing operational capabilities -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-plus</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Jetty web application support. -->
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-webapp</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-jndi</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy</groupId>
+            <artifactId>startup-parameters</artifactId>
         </dependency>
         <dependency>
             <!--Justification: MySQL database connectivity -->
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <!--Justification: Commons Database Connection Pooling -->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <!--Justification:  Commons Object Pooling Library-->
@@ -191,6 +193,7 @@
     </dependencies>
 
     <build>
+
         <resources>
             <resource>
                 <filtering>false</filtering>
@@ -207,6 +210,7 @@
                 </excludes>
             </resource>
         </resources>
+
         <testResources>
             <testResource>
                 <filtering>false</filtering>
@@ -223,7 +227,77 @@
                 </excludes>
             </testResource>
         </testResources>
+
         <finalName>superfly</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-webapp-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/classes/webapp</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.payneteasy.superfly.web.StartSuperfly</mainClass>
+                                </transformer>
+                                <!-- Объединяем содержимое файлов META-INF/services/* -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <!-- Объединяем spring.handlers -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <!-- Объединяем spring.schemas -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
     </build>
 
 </project>
