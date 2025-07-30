@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://www.eclipse.org/jetty/configure_12_0.dtd">
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <!-- Конфигурация HTTP -->
+    <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+        <Set name="secureScheme">https</Set>
+        <Set name="securePort">8446</Set>
+        <Set name="outputBufferSize">32768</Set>
+        <Set name="requestHeaderSize">8192</Set>
+        <Set name="responseHeaderSize">8192</Set>
+        <Set name="sendServerVersion">false</Set>
+        <Set name="sendDateHeader">false</Set>
+    </New>
+
+    <!-- HTTP Connector -->
+    <Call name="addConnector">
+        <Arg>
+            <New id="httpConnector" class="org.eclipse.jetty.server.ServerConnector">
+                <Arg name="server"><Ref refid="Server"/></Arg>
+                <Arg name="factories">
+                    <Array type="org.eclipse.jetty.server.ConnectionFactory">
+                        <Item>
+                            <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                                <Arg><Ref refid="httpConfig"/></Arg>
+                            </New>
+                        </Item>
+                    </Array>
+                </Arg>
+                <Set name="port">8085</Set>
+                <Set name="idleTimeout">30000</Set>
+            </New>
+        </Arg>
+    </Call>
+
+    <!-- HTTPS конфигурация -->
+    <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+        <Arg><Ref refid="httpConfig"/></Arg>
+        <Call name="addCustomizer">
+            <Arg>
+                <New class="org.eclipse.jetty.server.SecureRequestCustomizer">
+                    <Arg type="boolean">false</Arg>
+                </New>
+            </Arg>
+        </Call>
+    </New>
+
+    <!-- SSL Connector -->
+    <Call name="addConnector">
+        <Arg>
+            <New id="sslConnector" class="org.eclipse.jetty.server.ServerConnector">
+                <Arg name="server"><Ref refid="Server"/></Arg>
+                <Arg name="factories">
+                    <Array type="org.eclipse.jetty.server.ConnectionFactory">
+                        <Item>
+                            <New class="org.eclipse.jetty.server.SslConnectionFactory">
+                                <Arg name="next">http/1.1</Arg>
+                                <Arg>
+                                    <New class="org.eclipse.jetty.util.ssl.SslContextFactory$Server">
+                                        <Set name="keyStorePath">/home/ak/proj/superfly/superfly-web/src/test/resources/superfly-server.jks</Set>
+                                        <Set name="keyStorePassword">changeit</Set>
+                                        <Set name="keyManagerPassword">changeit</Set>
+                                        <Set name="trustStorePath">/home/ak/proj/superfly/superfly-web/src/test/resources/cacert.jks</Set>
+                                        <Set name="trustStorePassword">changeit</Set>
+                                    </New>
+                                </Arg>
+                            </New>
+                        </Item>
+                        <Item>
+                            <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                                <Arg><Ref refid="sslHttpConfig"/></Arg>
+                            </New>
+                        </Item>
+                    </Array>
+                </Arg>
+                <Set name="port">8446</Set>
+            </New>
+        </Arg>
+    </Call>
+
+    <!-- Конфигурация DataSource -->
+    <New id="txDatasource" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>java:comp/env/jdbc/superfly</Arg>
+        <Arg>
+            <New class="org.apache.commons.dbcp2.BasicDataSource">
+                <Set name="driverClassName">com.mysql.cj.jdbc.Driver</Set>
+                <Set name="url">jdbc:mysql://localhost:3306/sso?characterEncoding=utf8&amp;useInformationSchema=true&amp;noAccessToProcedureBodies=false&amp;useLocalSessionState=true&amp;autoReconnect=false&amp;serverTimezone=Europe/Moscow</Set>
+                <Set name="username">sso</Set>
+                <Set name="password">123sso123</Set>
+                <Set name="maxTotal">10</Set>
+                <Set name="maxIdle">5</Set>
+                <Set name="minIdle">2</Set>
+                <Set name="maxWaitMillis">10000</Set>
+                <Set name="testOnBorrow">true</Set>
+                <Set name="validationQuery">{call create_collections()}</Set>
+            </New>
+        </Arg>
+    </New>
+
+
+    <!-- Настройки сервера -->
+    <Set name="stopAtShutdown">true</Set>
+    <Set name="stopTimeout">5000</Set>
+    <Set name="dumpAfterStart">false</Set>
+    <Set name="dumpBeforeStop">false</Set>
+</Configure>

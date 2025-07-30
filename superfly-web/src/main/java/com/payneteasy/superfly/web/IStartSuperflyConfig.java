@@ -92,10 +92,10 @@ public interface IStartSuperflyConfig {
     String getSecureScheme();
 
     @AStartupParameter(
-            name = "JETTY_OVERRIDE_WEB_DESCRIPTORS",
-            value = ""
+            name = "JETTY_XML_CONFIG_FILE_PATH",
+            value = "/path/to/jetty-test-config.xml"
     )
-    String getOverrideWebDescriptors();
+    String getJettyXmlConfigFilePath();
 
     @AStartupParameter(
             name = "JETTY_SSL_CLIENT_AUTH_REQUIRED",
