@@ -11,6 +11,11 @@
     <description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
     <dependencies>
         <dependency>
+            <!--Justification: Outputs log events to json format -->
+            <groupId>com.payneteasy.strilog-encoder</groupId>
+            <artifactId>strilog-json-encoder-shaded</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: Core service implementation for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-service</artifactId>

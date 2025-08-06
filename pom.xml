@@ -108,6 +108,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <!--Justification: Outputs log events to json format -->
+                <groupId>com.payneteasy.strilog-encoder</groupId>
+                <artifactId>strilog-json-encoder-shaded</artifactId>
+                <version>1.0-6</version>
+            </dependency>
+            <dependency>
                 <groupId>com.payneteasy</groupId>
                 <artifactId>startup-parameters</artifactId>
                 <version>1.0-10</version>
