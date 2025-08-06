@@ -108,11 +108,6 @@
             <artifactId>jakarta.mail-api</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Jakarta Mail API-->
-            <groupId>org.eclipse.angus</groupId>
-            <artifactId>angus-mail</artifactId>
-        </dependency>
-        <dependency>
             <!--Justification: Google 2FA library. -->
             <groupId>com.warrenstrange</groupId>
             <artifactId>googleauth</artifactId>

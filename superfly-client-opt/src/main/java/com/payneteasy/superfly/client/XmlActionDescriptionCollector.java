@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.Resource;
 
+import javax.xml.XMLConstants;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +31,12 @@ public class XmlActionDescriptionCollector implements ActionDescriptionCollector
         List<ActionDescription> list;
         try {
             // Создаем XmlMapper вместо JAXBContext
-            File                  xmlFile   = resource.getFile(); // Убедитесь, что resource доступен
+            File                  xmlFile   = resource.getFile();
             XmlMapper             xmlMapper = new XmlMapper();
+
+            // fix for vulnerability CVE-2022-40152
+            xmlMapper.getFactory().getXMLInputFactory().setProperty(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
             ActionDescriptionRoot root      = xmlMapper.readValue(xmlFile, ActionDescriptionRoot.class);
             list = new ArrayList<>(root.getActions());
         } catch (IOException e) {

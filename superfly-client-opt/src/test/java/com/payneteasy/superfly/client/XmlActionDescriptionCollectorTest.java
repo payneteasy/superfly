@@ -7,6 +7,7 @@ import com.payneteasy.superfly.client.exception.CollectionException;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import javax.xml.XMLConstants;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
