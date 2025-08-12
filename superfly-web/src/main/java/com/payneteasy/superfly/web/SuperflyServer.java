@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.web;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.joran.spi.JoranException;
 import com.payneteasy.startup.parameters.StartupParametersFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.ee10.webapp.FragmentConfiguration;
@@ -18,7 +21,9 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.xml.XmlConfiguration;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,8 +40,11 @@ public class SuperflyServer {
 
     public static final String SERVER_CONFIG_ID = "Server";
     public static final String WAC_CONFIG_ID = "wac";
+    public static final String LOGBACK_CONF_FILE_PROPERTY = "logback.configurationFile";
 
     public void startServer() throws Exception {
+
+        defineLogbackConfig();
 
         IStartSuperflyConfig config = StartupParametersFactory.getStartupParameters(IStartSuperflyConfig.class);
 
@@ -46,7 +54,6 @@ public class SuperflyServer {
         try {
             server.start();
             server.join();
-            log.info("Superfly server has been started on port {} and SSL port {}", config.getJettyPort(), config.getJettyPortSsl());
         } catch (Exception e) {
             log.error("Error during server startup", e);
             System.exit(1);
@@ -163,5 +170,16 @@ public class SuperflyServer {
                         e -> e.getKey().toString(),
                         e -> e.getValue().toString()
                 )));
+    }
+
+    private void defineLogbackConfig() throws JoranException {
+        String externalLogbackConfig = System.getProperty(LOGBACK_CONF_FILE_PROPERTY);
+        if (externalLogbackConfig != null) {
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            JoranConfigurator configurator = new JoranConfigurator();
+            configurator.setContext(loggerContext);
+            loggerContext.reset();
+            configurator.doConfigure(new File(externalLogbackConfig));
+        }
     }
 }

@@ -79,7 +79,7 @@
 
     <!-- Конфигурация DataSource -->
     <New id="txDatasource" class="org.eclipse.jetty.plus.jndi.Resource">
-        <Arg>java:comp/env/jdbc/superfly</Arg>
+        <Arg>jdbc/superfly</Arg>
         <Arg>
             <New class="org.apache.commons.dbcp2.BasicDataSource">
                 <Set name="driverClassName">com.mysql.cj.jdbc.Driver</Set>

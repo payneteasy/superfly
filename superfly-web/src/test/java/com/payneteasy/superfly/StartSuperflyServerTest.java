@@ -18,7 +18,7 @@ public class StartSuperflyServerTest {
         System.setProperty("JETTY_SSL_KEYSTORE_PASSWORD", "changeit");
         System.setProperty("JETTY_MAX_THREADS", "500");
         System.setProperty("JETTY_MIN_THREADS", "16");
-        System.setProperty("JETTY_CONTEXT", "/superfly");
+        System.setProperty("JETTY_CONTEXT", "/sso");
         System.setProperty("JETTY_OUTPUT_BUFFER_SIZE", "32768");
         System.setProperty("JETTY_HEADER_SIZE", "8192");
         System.setProperty("JETTY_SEND_SERVER_VERSION", "true");

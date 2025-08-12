@@ -24,23 +24,8 @@
     </encoder>
   </appender>
 
-  <!--<appender name="file" class="ch.qos.logback.core.FileAppender">
-    <file>target/output.log</file>
-    <encoder>
-      <pattern>ui %d{HH:mm:ss} %-15t %-5p %-26.26c{1} - %m%n</pattern>
-    </encoder>
-  </appender>-->
-
-  <logger name="com.payneteasy" level="INFO"/>
-
-  <!--
-    <logger name="com.googlecode.jdbcproc.daofactory.impl">
-        <level value="INFO"/>
-    </logger>
-  -->
-
   <root level="INFO">
     <appender-ref ref="console"/>
-    <appender-ref ref="file"/>
   </root>
+
 </configuration>

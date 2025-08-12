@@ -57,7 +57,7 @@ public interface IStartSuperflyConfig {
 
     @AStartupParameter(
             name = "JETTY_CONTEXT",
-            value = "/superfly"
+            value = "/"
     )
     String getJettyContext();
 
