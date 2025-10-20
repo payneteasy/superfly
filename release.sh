@@ -19,9 +19,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Выполнение релиза
+# Выполнение релиза с подписью GPG
 echo "Выполнение релиза..."
-mvn release:perform -Darguments="-Dgpg.passphrase=${GPG_PASSPHRASE}"
+mvn release:perform -P gpg-sign -Dgpg.passphrase="${GPG_PASSPHRASE}"
 
 if [ $? -ne 0 ]; then
     echo "Ошибка при выполнении релиза!"

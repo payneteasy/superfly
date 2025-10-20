@@ -47,9 +47,9 @@ chmod +x release.sh
    mvn --batch-mode release:prepare
    ```
 
-2. Выполнение релиза:
+2. Выполнение релиза с подписью GPG:
    ```bash
-   mvn release:perform -Darguments=-Dgpg.passphrase=ваш_пароль_gpg
+   mvn release:perform -P gpg-sign -Dgpg.passphrase=ваш_пароль_gpg
    ```
 
 ## Проверка результатов
