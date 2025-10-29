@@ -114,6 +114,7 @@
                 <version>1.0-6</version>
             </dependency>
             <dependency>
+                <!--Justification: Read system parameters and environment variable-->
                 <groupId>com.payneteasy</groupId>
                 <artifactId>startup-parameters</artifactId>
                 <version>1.0-10</version>
@@ -335,6 +336,7 @@
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Provides the Jakarta Servlet API required for building web applications -->
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>6.1.0</version> <!-- или более новая версия -->
@@ -614,6 +616,8 @@
             </dependency>
 
             <dependency>
+                <!-- Justification: Provides a robust and performant connection pooling implementation (Apache Commons DBCP2)
+                for managing database connections. -->
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
                 <version>2.13.0</version>
@@ -681,6 +685,7 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <!-- Justification: Provides JNDI support for Jetty in Jakarta EE 10 environments -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-jndi</artifactId>
                 <version>${jetty.version}</version>
