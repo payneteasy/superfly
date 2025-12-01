@@ -122,5 +122,10 @@
             <groupId>org.passay</groupId>
             <artifactId>passay</artifactId>
         </dependency>
+        <dependency>
+            <!--Justification: A high performance caching library for Java -->
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
     </dependencies>
 </project>

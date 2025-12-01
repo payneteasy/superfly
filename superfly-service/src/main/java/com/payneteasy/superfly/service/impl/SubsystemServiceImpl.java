@@ -53,6 +53,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     public RoutineResult createSubsystem(UISubsystem subsystem) {
         subsystem.setSubsystemToken(generateMainSubsystemToken());
+        subsystem.setPrivateKey(generateSubsystemPrivateKey());
         RoutineResult result = subsystemDao.createSubsystem(subsystem);
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
@@ -107,6 +108,11 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     @Override
     public String generateMainSubsystemToken() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public String generateSubsystemPrivateKey() {
         return UUID.randomUUID().toString();
     }
 }

@@ -10,7 +10,8 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
                                               i_subsystem_token varchar(64),
                                               i_subsystem_url varchar(255),
                                               i_landing_url varchar(255),
-                                              i_login_form_css_url varchar(255)
+                                              i_login_form_css_url varchar(255),
+                                              i_private_key text
 )
  main_sql:
   begin
@@ -24,7 +25,8 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
            subsystem_token = i_subsystem_token,
            subsystem_url = i_subsystem_url,
            landing_url = i_landing_url,
-           login_form_css_url = i_login_form_css_url
+           login_form_css_url = i_login_form_css_url,
+           private_key = i_private_key
      where ssys_id = i_ssys_id;
 
     select 'OK' status, null error_message;

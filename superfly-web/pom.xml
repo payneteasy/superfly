@@ -168,6 +168,11 @@
             <artifactId>cglib</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <!--Justification: Jackson JSON processor -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <resources>

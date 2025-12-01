@@ -4,7 +4,7 @@
 	      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	      version="3.0">
-    
+
     <session-config>
         <session-timeout>15</session-timeout>
         <cookie-config>
@@ -12,7 +12,7 @@
             <secure>true</secure>
         </cookie-config>
     </session-config>
-    
+
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -117,7 +117,7 @@
     <listener>
         <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
     </listener>
-    
+
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -131,7 +131,7 @@
         <filter-name>cookieEnforcer</filter-name>
         <filter-class>com.payneteasy.superfly.web.servlet.CookieEnforcer</filter-class>
     </filter>
-    
+
     <filter>
       <filter-name>springSecurityFilterChain</filter-name>
       <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -153,6 +153,21 @@
     </filter-mapping>
 
     <servlet>
+        <servlet-name>rest-api</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring/dispatcher-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rest-api</servlet-name>
+        <url-pattern>/sso/check/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>remoting</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -171,7 +186,7 @@
         <servlet-name>version</servlet-name>
         <url-pattern>/management/version.txt</url-pattern>
     </servlet-mapping>
-    
+
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
@@ -187,7 +202,7 @@
         </init-param>
         <init-param>
             <param-name>ignorePaths</param-name>
-            <param-value>/remoting/,/sso/,/management/version.txt</param-value>
+            <param-value>/remoting/,/sso/,/management/version.txt,/sso/check/</param-value>
         </init-param>
     </filter>
 
