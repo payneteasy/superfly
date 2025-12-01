@@ -85,4 +85,10 @@ public interface SubsystemService {
      * @return main token for subsystem
      */
     String generateMainSubsystemToken();
+
+    /**
+     *
+     * @return private key for subsystem
+     */
+    String generateSubsystemPrivateKey();
 }

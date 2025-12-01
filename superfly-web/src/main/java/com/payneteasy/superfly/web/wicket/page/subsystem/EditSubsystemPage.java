@@ -83,6 +83,26 @@ public class EditSubsystemPage extends BasePage {
             }
         });
 
+        // Private key fields
+        final Label labelPrivateKey = new Label("privateKey", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return subsystem.getPrivateKey();
+            }
+        });
+        labelPrivateKey.setOutputMarkupId(true);
+
+        form.add(new Label("privateKeyLabel", new ResourceModel("subsystem.edit.privateKey")));
+        form.add(labelPrivateKey);
+        form.add(new IndicatingAjaxLink<String>("generateNewPrivateKey") {
+            private static final long serialVersionUID = 1L;
+
+            public void onClick(AjaxRequestTarget aTarget) {
+                subsystem.setPrivateKey(generateNewPrivateKey());
+                aTarget.add(labelPrivateKey);
+            }
+        });
+
         LabelTextFieldRow<String> subsystemUrlRow = new LabelTextFieldRow<>(subsystem, "subsystemUrl",
                 "subsystem.edit.subsystemUrl", true);
         subsystemUrlRow.getTextField().add(urlValidator);
@@ -128,5 +148,9 @@ public class EditSubsystemPage extends BasePage {
 
     private String generateNewToken() {
         return subsystemService.generateMainSubsystemToken();
+    }
+
+    private String generateNewPrivateKey() {
+        return subsystemService.generateSubsystemPrivateKey();
     }
 }

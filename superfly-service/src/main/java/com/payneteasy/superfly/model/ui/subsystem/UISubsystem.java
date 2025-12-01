@@ -19,6 +19,7 @@ public class UISubsystem implements Serializable {
     private String subsystemUrl;
     private String landingUrl;
     private String loginFormCssUrl;
+    private String privateKey;
 
     @Column(name = "ssys_id")
     public Long getId() {
@@ -118,5 +119,14 @@ public class UISubsystem implements Serializable {
 
     public void setLoginFormCssUrl(String loginFormCssUrl) {
         this.loginFormCssUrl = loginFormCssUrl;
+    }
+
+    @Column(name = "private_key")
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
     }
 }
