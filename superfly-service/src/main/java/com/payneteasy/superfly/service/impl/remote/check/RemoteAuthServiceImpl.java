@@ -45,7 +45,11 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         // 2. Decrypt Password
         String password;
         try {
-             password = remoteAuthCryptoService.decryptPassword(passwordEncrypted, subsystem.getPrivateKey());
+             password = remoteAuthCryptoService.decryptPassword(
+                     passwordEncrypted,
+                     subsystem.getPrivateKey(),
+                     RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
+             );
         } catch (Exception e) {
             logger.error("Failed to decrypt password", e);
             throw new RemoteAuthException("Decryption failed", "INTERNAL_ERROR", e);
@@ -88,7 +92,11 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         // 3. Decrypt OTP
         String otp;
         try {
-            otp = remoteAuthCryptoService.decryptOtp(otpEncrypted, subsystem.getPrivateKey());
+            otp = remoteAuthCryptoService.decryptOtp(
+                    otpEncrypted,
+                    subsystem.getPrivateKey(),
+                    RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
+            );
         } catch (Exception e) {
              logger.error("Failed to decrypt OTP", e);
              throw new RemoteAuthException("Decryption failed", "INTERNAL_ERROR", e);

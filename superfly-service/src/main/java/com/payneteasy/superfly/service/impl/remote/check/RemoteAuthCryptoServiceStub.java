@@ -16,14 +16,19 @@ public class RemoteAuthCryptoServiceStub implements RemoteAuthCryptoService {
     public RemoteAuthCryptoServiceStub() {
     }
 
-    public String decryptPassword(String encryptedPassword, String privateKey) {
+    @Override
+    public KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
+        return null;
+    }
+
+    public String decryptPassword(String encryptedPassword, String privateKey, RemoteAuthEncryptionAlgorithm encryptionAlgorithm) {
         logger.warn("decryptPassword is a STUB. Returning encryptedPassword as is.");
         // In a real implementation, this would decrypt the password.
         // For now, we assume the input is already the plain password or we just return it to test flow.
         return encryptedPassword;
     }
 
-    public String decryptOtp(String encryptedOtp, String privateKey) {
+    public String decryptOtp(String encryptedOtp, String privateKey, RemoteAuthEncryptionAlgorithm encryptionAlgorithm) {
         logger.warn("decryptOtp is a STUB. Returning encryptedOtp as is.");
         return encryptedOtp;
     }

@@ -4,6 +4,8 @@ import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
@@ -26,7 +28,6 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
-import java.util.UUID;
 
 @Secured("ROLE_ADMIN")
 public class EditSubsystemPage extends BasePage {
@@ -83,23 +84,25 @@ public class EditSubsystemPage extends BasePage {
             }
         });
 
-        // Private key fields
-        final Label labelPrivateKey = new Label("privateKey", new LoadableDetachableModel<String>() {
+        // Public key fields
+        final Label labelPublicKey = new Label("publicKey", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return subsystem.getPrivateKey();
+                return subsystem.getPublicKey();
             }
         });
-        labelPrivateKey.setOutputMarkupId(true);
+        labelPublicKey.setOutputMarkupId(true);
 
-        form.add(new Label("privateKeyLabel", new ResourceModel("subsystem.edit.privateKey")));
-        form.add(labelPrivateKey);
-        form.add(new IndicatingAjaxLink<String>("generateNewPrivateKey") {
+        form.add(new Label("publicKeyLabel", new ResourceModel("subsystem.edit.publicKey")));
+        form.add(labelPublicKey);
+        form.add(new IndicatingAjaxLink<String>("generateNewKeyPair") {
             private static final long serialVersionUID = 1L;
 
             public void onClick(AjaxRequestTarget aTarget) {
-                subsystem.setPrivateKey(generateNewPrivateKey());
-                aTarget.add(labelPrivateKey);
+                var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA);
+                subsystem.setPrivateKey(keyPairData.privateKey());
+                subsystem.setPublicKey(keyPairData.publicKey());
+                aTarget.add(labelPublicKey);
             }
         });
 
@@ -150,7 +153,7 @@ public class EditSubsystemPage extends BasePage {
         return subsystemService.generateMainSubsystemToken();
     }
 
-    private String generateNewPrivateKey() {
-        return subsystemService.generateSubsystemPrivateKey();
+    private KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
+        return subsystemService.generateKeyPair(algorithm);
     }
 }

@@ -16,6 +16,13 @@
         <wicket:container wicket:id="loginFormCssUrl"></wicket:container>
         <wicket:container wicket:id="allowListUsers"></wicket:container>
         <wicket:container wicket:id="smtpServer"></wicket:container>
+        <div class="form-group">
+            <label  wicket:id="publicKeyLabel">Public key: </label>
+            <div wicket:id="publicKey" class="shadow p-3 bg-light">key</div>
+            <small id="publicKeyHelp" class="form-text mt-2">
+                <a href="" wicket:id="generateNewKeyPair" class="gen-token-link btn btn-sm btn-outline-primary"> Generate new RSA key pair</a>
+            </small>
+        </div>
         <div class="form-actions">
             <button wicket:id="submit-link" class="btn btn-primary shadow">Add Subsystem</button>
             <button wicket:id="cancel" class="btn btn-light ml-2">Cancel</button>
