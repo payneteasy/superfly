@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
-import com.payneteasy.superfly.service.JavaMailSenderPool;
+import com.payneteasy.superfly.service.*;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +19,6 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
-import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SubsystemService;
 
 @Transactional
 public class SubsystemServiceImpl implements SubsystemService {
@@ -30,6 +29,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     private NotificationService notificationService;
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
+    private RemoteAuthCryptoService remoteAuthCryptoService;
 
     @Required
     public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -39,6 +39,11 @@ public class SubsystemServiceImpl implements SubsystemService {
     @Required
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @Required
+    public void setRemoteAuthCryptoService(RemoteAuthCryptoService remoteAuthCryptoService) {
+        this.remoteAuthCryptoService = remoteAuthCryptoService;
     }
 
     @Required
@@ -53,7 +58,6 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     public RoutineResult createSubsystem(UISubsystem subsystem) {
         subsystem.setSubsystemToken(generateMainSubsystemToken());
-        subsystem.setPrivateKey(generateSubsystemPrivateKey());
         RoutineResult result = subsystemDao.createSubsystem(subsystem);
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
@@ -112,7 +116,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     @Override
-    public String generateSubsystemPrivateKey() {
-        return UUID.randomUUID().toString();
+    public KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
+        return remoteAuthCryptoService.generateKeyPair(algorithm);
     }
 }
