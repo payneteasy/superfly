@@ -45,6 +45,7 @@
         <property name="notificationService" ref="notificationService" />
         <property name="loggerSink" ref="loggerSink" />
         <property name="javaMailSenderPool" ref="javaMailSenderPool"/>
+        <property name="remoteAuthCryptoService" ref="remoteAuthCryptoService" />
     </bean>
 
     <bean id="groupService" class="com.payneteasy.superfly.service.impl.GroupServiceImpl">
@@ -122,6 +123,10 @@
         class="com.payneteasy.superfly.service.impl.NotificationServiceImpl">
         <property name="notifier" ref="notifier" />
         <property name="subsystemDao" ref="subsystemDao" />
+    </bean>
+
+    <bean id="remoteAuthCryptoService"
+          class="com.payneteasy.superfly.service.impl.remote.check.RemoteAuthCryptoServiceImpl">
     </bean>
 
     <bean id="passwordEncoder"
