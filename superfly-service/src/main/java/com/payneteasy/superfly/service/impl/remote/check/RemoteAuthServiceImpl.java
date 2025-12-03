@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.InternalSSOService;
@@ -38,7 +39,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     }
 
     @Override
-    public String checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException {
+    public RemoteAuthSession checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException {
         // 1. Validate Subsystem and Token
         UISubsystem subsystem = validateSubsystem(subsystemName, bearerToken);
 
@@ -70,9 +71,11 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
 
         // 4. Generate Session Token and Cache
         String sessionToken = UUID.randomUUID().toString();
-        sessionCache.put(sessionToken, new RemoteSession(username));
+        sessionCache.put(sessionToken, new RemoteSession(username, ssoUser.getOtpType()));
 
-        return sessionToken;
+        boolean otpRequired = ssoUser.getOtpType() != OTPType.NONE && !ssoUser.isOtpOptional();
+
+        return new RemoteAuthSession(sessionToken, otpRequired);
     }
 
     @Override
@@ -103,15 +106,10 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         }
 
         // 4. Verify OTP
-        boolean otpValid = internalSSOService.authenticateHOTP(subsystemName, username, otp);
+        boolean otpValid = internalSSOService.authenticateByOtpType(session.otpType, username, otp);
         if (!otpValid) {
              return "BAD_USER_OR_PASSWORD_OR_OTP";
         }
-
-        // TODO: Check for other statuses like USER_SHOULD_CHANGE_PASSWORD or USER_BLOCKED
-        // internalSSOService.authenticateHOTP only returns boolean.
-        // We might need to check user status explicitly if needed.
-
         return "SUCCESS";
     }
 
@@ -129,10 +127,12 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     }
 
     private static class RemoteSession {
-        final String username;
+        final String  username;
+        final OTPType otpType;
 
-        RemoteSession(String username) {
+        RemoteSession(String username, OTPType otpType) {
             this.username = username;
+            this.otpType = otpType;
         }
     }
 }
