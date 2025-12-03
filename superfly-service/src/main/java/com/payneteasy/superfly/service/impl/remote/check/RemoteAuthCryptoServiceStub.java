@@ -3,12 +3,10 @@ package com.payneteasy.superfly.service.impl.remote.check;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
  * Stub implementation of RemoteAuthCryptoService.
  */
-@Service
 public class RemoteAuthCryptoServiceStub implements RemoteAuthCryptoService {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteAuthCryptoServiceStub.class);

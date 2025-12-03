@@ -24,12 +24,17 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class AddSubsystemPage extends BasePage {
+
+    private static final Logger logger = LoggerFactory.getLogger(AddSubsystemPage.class);
+
     @SpringBean
     private SubsystemService subsystemService;
     @SpringBean
@@ -107,10 +112,17 @@ public class AddSubsystemPage extends BasePage {
             private static final long serialVersionUID = 1L;
 
             public void onClick(AjaxRequestTarget aTarget) {
-                var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA);
-                subsystem.setPrivateKey(keyPairData.privateKey());
-                subsystem.setPublicKey(keyPairData.publicKey());
-                aTarget.add(labelPublicKey);
+                try {
+                    var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA);
+                    subsystem.setPrivateKey(keyPairData.privateKey());
+                    subsystem.setPublicKey(keyPairData.publicKey());
+                    subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
+                    aTarget.add(labelPublicKey);
+                } catch (Exception e) {
+                    logger.error("Error while generating key pair for subsystem {}", subsystem.getName(), e);
+                    error("Error while generating key pair: " + e.getMessage());
+                }
+
             }
         });
 
