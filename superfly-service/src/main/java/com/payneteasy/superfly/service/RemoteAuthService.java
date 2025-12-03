@@ -14,10 +14,10 @@ public interface RemoteAuthService {
      * @param bearerToken       Bearer token provided in the request.
      * @param ipAddress         IP address of the client.
      * @param userAgent         User agent of the client.
-     * @return Session token if authentication is successful.
+     * @return Session information including token and OTP requirement status if authentication is successful.
      * @throws RemoteAuthException If authentication fails or other errors occur.
      */
-    String checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException;
+    RemoteAuthSession checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException;
 
     /**
      * Checks the OTP for a user in a subsystem.
@@ -31,6 +31,27 @@ public interface RemoteAuthService {
      * @throws RemoteAuthException If validation fails.
      */
     String checkOtp(String subsystemName, String username, String otpEncrypted, String sessionToken, String bearerToken) throws RemoteAuthException;
+
+    /**
+     * Session data returned after successful password check.
+     */
+    class RemoteAuthSession {
+        private final String sessionToken;
+        private final boolean otpRequired;
+
+        public RemoteAuthSession(String sessionToken, boolean otpRequired) {
+            this.sessionToken = sessionToken;
+            this.otpRequired = otpRequired;
+        }
+
+        public String getSessionToken() {
+            return sessionToken;
+        }
+
+        public boolean isOtpRequired() {
+            return otpRequired;
+        }
+    }
 
     /**
      * Exception class for remote auth errors.

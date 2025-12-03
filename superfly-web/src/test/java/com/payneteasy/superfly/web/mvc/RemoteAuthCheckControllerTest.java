@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class RemoteAuthCheckControllerTest {
 
@@ -54,10 +55,10 @@ public class RemoteAuthCheckControllerTest {
         // Ожидаем вызовы к request (получение IP и User-Agent)
         expect(request.getRemoteAddr()).andReturn(ipAddress);
         expect(request.getHeader("User-Agent")).andReturn(userAgent);
-        
+
         // Ожидаем вызов бизнес-логики сервиса
         expect(remoteAuthService.checkPassword(subsystemName, username, passwordEncrypted, bearerToken, ipAddress, userAgent))
-                .andReturn(sessionToken);
+                .andReturn(new RemoteAuthService.RemoteAuthSession(sessionToken, false));
 
         // 3. Перевод моков в режим воспроизведения (Replay phase)
         replay(remoteAuthService, request);
@@ -71,6 +72,7 @@ public class RemoteAuthCheckControllerTest {
         // 6. Проверка результата (Assertions)
         assertEquals("Username should match", username, response.getUsername());
         assertEquals("Session token should match", sessionToken, response.getSessionToken());
+        assertFalse("Otp required should be false", response.isOtpRequired());
     }
 
     @Test
@@ -150,17 +152,17 @@ public class RemoteAuthCheckControllerTest {
     public void testHandleRemoteAuthException() {
         RemoteAuthException ex = new RemoteAuthException("Error message", "INTERNAL_ERROR");
         ResponseEntity<ErrorResponse> response = controller.handleRemoteAuthException(ex);
-        
+
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("INTERNAL_ERROR", response.getBody().getType());
         assertEquals("Error message", response.getBody().getTitle());
     }
-    
+
     @Test
     public void testHandleRemoteAuthExceptionBadRequest() {
         RemoteAuthException ex = new RemoteAuthException("Bad credentials", "BAD_CREDENTIALS");
         ResponseEntity<ErrorResponse> response = controller.handleRemoteAuthException(ex);
-        
+
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("BAD_CREDENTIALS", response.getBody().getType());
     }

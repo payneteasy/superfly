@@ -44,8 +44,8 @@ public class RemoteAuthCheckController {
             throw new BadRequestException("Username in path and body must match");
         }
 
-        String sessionToken = remoteAuthService.checkPassword(subsystemName, username, requestBody.getPasswordEncrypted(), bearerToken, request.getRemoteAddr(), request.getHeader("User-Agent"));
-        return new CheckPasswordResponse(username, sessionToken);
+        RemoteAuthService.RemoteAuthSession session = remoteAuthService.checkPassword(subsystemName, username, requestBody.getPasswordEncrypted(), bearerToken, request.getRemoteAddr(), request.getHeader("User-Agent"));
+        return new CheckPasswordResponse(username, session.getSessionToken(), session.isOtpRequired());
     }
 
     @RequestMapping(value = "/check-otp/{subsystemName}/{username}", method = RequestMethod.POST, produces = "application/json")
