@@ -88,6 +88,10 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
         loginData.setUsername(loginBean.getUsername());
         UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
+        
+        loginData.setOtpTypeCode(userDescription.getOtpTypeCode());
+        loginData.setOtpOptional(userDescription.isOtpOptional());
+        
         OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
             case GOOGLE_AUTH:

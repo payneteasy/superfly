@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 
 public class GoogleAuthSetupPanel extends Panel {
     private static final String TOTP_URI_FORMAT =
-            "https://chart.googleapis.com/chart?chs=150x150&chld=M%%7C0&cht=qr&chl=%s";
+            "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%s";
 
     private final String username;
     private final IModel<String> totpSecret;
