@@ -118,6 +118,28 @@ public class SSOUser implements Serializable {
     }
 
     /**
+     * Checks if the user has the specified action.
+     *
+     * @param actionName action name to check
+     * @return true if the user has the action
+     */
+    public boolean hasAction(String actionName) {
+        if (actionsMap == null) {
+            return false;
+        }
+        for (SSOAction[] actions : actionsMap.values()) {
+            if (actions != null) {
+                for (SSOAction action : actions) {
+                    if (action != null && actionName.equals(action.getName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns preferences.
      *
      * @return preferences

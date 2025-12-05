@@ -24,7 +24,7 @@
 
         <div class="form-group">
             <label  wicket:id="publicKeyLabel">Public key: </label>
-            <div wicket:id="publicKey" class="shadow p-3 bg-light">key</div>
+            <textarea wicket:id="publicKey" readonly class="form-control shadow p-3 bg-light" rows="5" style="font-family: monospace; font-size: small; resize: vertical;"></textarea>
             <small id="publicKeyHelp" class="form-text mt-2">
                 <a href="" wicket:id="generateNewKeyPair" class="gen-token-link btn btn-sm btn-outline-primary"> Generate new RSA key pair</a>
             </small>

@@ -116,7 +116,12 @@ public class SSOUtils {
                 ssoSession.getId(), loginData.getSubsystemIdentifier());
         if (token != null) {
             // can login: redirecting a user to a subsystem
-            SSOUtils.redirectToSubsystem(page, loginData, token);
+            if ("no-target".equals(loginData.getTargetUrl()) || "/no-target".equals(loginData.getTargetUrl())) {
+                SSOUtils.anonymizeLoginData(page);
+                SSOUtils.redirect(page, token.getLandingUrl());
+            } else {
+                SSOUtils.redirectToSubsystem(page, loginData, token);
+            }
         } else {
             // can't login: just display an error
             // actually, this should not happen as we've already
