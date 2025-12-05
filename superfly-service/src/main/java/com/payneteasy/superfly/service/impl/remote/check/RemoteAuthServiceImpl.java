@@ -35,7 +35,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
                                  RemoteAuthCryptoService remoteAuthCryptoService) {
         this.subsystemService = subsystemService;
         this.internalSSOService = internalSSOService;
-        this.remoteAuthCryptoService = new RemoteAuthCryptoServiceStub();
+        this.remoteAuthCryptoService = remoteAuthCryptoService;
     }
 
     @Override
