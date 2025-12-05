@@ -35,7 +35,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
                                  RemoteAuthCryptoService remoteAuthCryptoService) {
         this.subsystemService = subsystemService;
         this.internalSSOService = internalSSOService;
-        this.remoteAuthCryptoService = remoteAuthCryptoService;
+        this.remoteAuthCryptoService = new RemoteAuthCryptoServiceStub();
     }
 
     @Override
@@ -67,6 +67,10 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
             // Could be bad password, user blocked, etc.
             // For security, we might return generic bad credentials.
             throw new RemoteAuthException("Authentication failed", "BAD_USER_OR_PASSWORD_OR_OTP");
+        }
+
+        if (ssoUser.hasAction("action_temp_password")) {
+            throw new RemoteAuthException("User should change password", "USER_SHOULD_CHANGE_PASSWORD");
         }
 
         // 4. Generate Session Token and Cache

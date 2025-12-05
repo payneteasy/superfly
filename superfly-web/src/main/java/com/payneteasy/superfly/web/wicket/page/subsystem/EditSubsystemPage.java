@@ -16,6 +16,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -90,16 +91,17 @@ public class EditSubsystemPage extends BasePage {
         });
 
         // Public key fields
-        final Label labelPublicKey = new Label("publicKey", new LoadableDetachableModel<String>() {
+        final TextArea<String> textAreaPublicKey = new TextArea<>("publicKey", new LoadableDetachableModel<>() {
             @Override
             protected String load() {
                 return subsystem.getPublicKey();
             }
         });
-        labelPublicKey.setOutputMarkupId(true);
+        textAreaPublicKey.setOutputMarkupId(true);
+        textAreaPublicKey.setEnabled(false);
 
         form.add(new Label("publicKeyLabel", new ResourceModel("subsystem.edit.publicKey")));
-        form.add(labelPublicKey);
+        form.add(textAreaPublicKey);
         form.add(new IndicatingAjaxLink<String>("generateNewKeyPair") {
             private static final long serialVersionUID = 1L;
 
@@ -109,7 +111,7 @@ public class EditSubsystemPage extends BasePage {
                     subsystem.setPrivateKey(keyPairData.privateKey());
                     subsystem.setPublicKey(keyPairData.publicKey());
                     subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
-                    aTarget.add(labelPublicKey);
+                    aTarget.add(textAreaPublicKey);
                 } catch (Exception e) {
                     logger.error("Error while generating key pair for subsystem {}", subsystem.getName(), e);
                     error("Error while generating key pair: " + e.getMessage());
