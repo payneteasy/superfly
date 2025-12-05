@@ -12,6 +12,9 @@ public class SSOLoginData implements Serializable {
     private String subsystemUrl;
     private String username;
 
+    private String otpTypeCode;
+    private boolean isOtpOptional;
+
     public SSOLoginData() {
     }
 
@@ -58,6 +61,22 @@ public class SSOLoginData implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getOtpTypeCode() {
+        return otpTypeCode;
+    }
+
+    public void setOtpTypeCode(String otpTypeCode) {
+        this.otpTypeCode = otpTypeCode;
+    }
+
+    public boolean isOtpOptional() {
+        return isOtpOptional;
+    }
+
+    public void setOtpOptional(boolean otpOptional) {
+        isOtpOptional = otpOptional;
     }
 
     @Override
