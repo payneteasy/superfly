@@ -872,6 +872,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
                 <configuration>
                     <source>${java.version}</source>
                     <doclint>none</doclint>
@@ -974,6 +975,36 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>gpg-sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.8</version>
+                        <configuration>
+                            <executable>gpg</executable>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                            <gpgArguments>
+                                <argument>--pinentry-mode</argument>
+                                <argument>loopback</argument>
+                            </gpgArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>deploy</id>
             <build>
