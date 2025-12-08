@@ -1,8 +1,10 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
@@ -68,11 +70,16 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testSuccess() throws PolicyValidationException {
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         userService.validatePassword("user", "password");
         expectLastCall();
         userService.changeTempPassword("user", "password");
         expectLastCall();
-        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        UserForDescription user = new UserForDescription();
+        user.setUsername("user");
+        user.setOtpTypeCode(OTPType.NONE.code());
+        user.setOtpOptional(false);
+        expect(userService.getUserForDescription("user")).andReturn(user);
         expect(sessionService.createSSOSession("user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
@@ -94,8 +101,8 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
 
     @Test
     public void testMismatchingPassword() throws PolicyValidationException {
-        userService.validatePassword("user", "password");
         expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        userService.validatePassword("user", "password");
         replay(userService, settingsService, csrfValidator);
 
 
@@ -119,9 +126,9 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
     @Test
     public void testInvalidPassword() throws PolicyValidationException {
         // password validation logic
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         userService.validatePassword("user", "invalid-password");
         expectLastCall().andThrow(new PolicyValidationException("P003"));
-        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         replay(userService, settingsService, csrfValidator);
 
 
