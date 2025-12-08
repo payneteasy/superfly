@@ -42,7 +42,6 @@ import com.payneteasy.superfly.web.wicket.page.user.UserDetailsPage;
 import com.payneteasy.superfly.wicket.InterceptionDecisions;
 import com.payneteasy.superfly.wicket.PageInterceptingRequestMapper;
 import org.apache.wicket.Page;
-import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.settings.RequestCycleSettings;
@@ -52,8 +51,8 @@ public class SuperflyApplication extends BaseApplication {
     @Override
     protected void customInit() {
         getSecuritySettings().setAuthorizationStrategy(new SpringSecurityAuthorizationStrategy());
-        CryptoMapper requestMapper = new CryptoMapper(getRootRequestMapper(), this);
-        setRootRequestMapper(wrapWithInterceptingMapper(requestMapper));
+        // BaseApplication.init() уже создал CryptoMapper, просто оборачиваем его в PageInterceptingRequestMapper
+        setRootRequestMapper(wrapWithInterceptingMapper(getRootRequestMapper()));
 
         mountBookmarkablePageWithPath("/loginbase", LoginPageWithoutHOTP.class);
         mountBookmarkablePageWithPath("/login", LoginPasswordStepPage.class);

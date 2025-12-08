@@ -76,6 +76,9 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 onPasswordChecked(loginBean, loginData);
                 break;
             case FAILED:
+                // Clear SSO session and cookie after failed authentication
+                // to prevent reuse of old sessions
+                SSOUtils.clearSSOSession(this, sessionService);
                 errorMessageModel.setObject("The username or password you entered is incorrect or user is locked.");
                 errorMessageLabel.setVisible(true);
                 break;
