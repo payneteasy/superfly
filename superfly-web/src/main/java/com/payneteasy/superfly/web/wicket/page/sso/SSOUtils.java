@@ -17,6 +17,7 @@ import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import java.net.URLEncoder;
@@ -128,6 +129,32 @@ public class SSOUtils {
             // checked user access, but just in case...
             SSOUtils.redirectToCantLoginErrorPage(page, loginData, "Please check if user can login to subsystems. Please note: assign actions to your role only via groups. Do not assign actions directly to role.");
         }
+    }
+
+    /**
+     * Clears SSO session and cookie after failed authentication.
+     * This prevents reuse of old sessions after authentication failure.
+     *
+     * @param page the page to get request/response from
+     * @param sessionService service to delete SSO session
+     */
+    public static void clearSSOSession(SessionAccessorPage page, SessionService sessionService) {
+        WebRequest request = (WebRequest) page.getRequest();
+        String ssoSessionId = getSsoSessionIdFromCookie(request);
+        
+        if (StringUtils.hasText(ssoSessionId)) {
+            logger.debug("Clearing SSO session after failed authentication: {}", ssoSessionId);
+            sessionService.deleteSSOSession(ssoSessionId);
+        }
+        
+        // Clear cookie by setting maxAge to 0
+        Cookie cookie = new Cookie(SSO_SESSION_ID_COOKIE_NAME, "");
+        cookie.setMaxAge(0);
+        cookie.setPath(getApplicationRootPath(page));
+        ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
+        
+        // Clear username from login data
+        anonymizeLoginData(page);
     }
 
     private static String getApplicationRootPath(SessionAccessorPage page) {

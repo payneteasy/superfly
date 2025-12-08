@@ -41,7 +41,7 @@ div, input, form, label, ul, li {
 .border { border: 1px solid #dee2e6; }
 .rounded { border-radius: 0.25rem; }
 .shadow { box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15); }
-
+.text-center {text-align: center;}
 .form-group {
     margin-bottom: 1rem;
 }
