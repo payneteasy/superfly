@@ -71,7 +71,7 @@ public class ListUsersPage extends BasePage {
         final UserFilters userFilters = new UserFilters();
         Form<UserFilters> filtersForm = new Form<UserFilters>("filters-form");
         add(filtersForm);
-        filtersForm.add(new TextField<String>("username-filter", new PropertyModel<String>(userFilters, "usernamePrefix")));
+        filtersForm.add(new TextField<String>("user-filter", new PropertyModel<>(userFilters, "usernamePrefix")));
 
         DropDownChoice<UIRoleForFilter> roleDropdown = new DropDownChoice<UIRoleForFilter>(
                 "role-filter"
