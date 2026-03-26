@@ -30,6 +30,7 @@
         <property name="hotpProvider" ref="hotpProvider" />
         <property name="publicKeyCrypto" ref="publicKeyCrypto" />
         <property name="hotpService" ref="hotpService" />
+        <property name="eventService" ref="eventService" />
     </bean>
 
     <bean id="localSecurityService"
@@ -252,5 +253,9 @@
         <property name="publicKeyCrypto" ref="publicKeyCrypto"/>
         <property name="userService" ref="userService"/>
         <property name="cryptoService" ref="cryptoService"/>
+    </bean>
+    
+    <bean id="eventService" class="com.payneteasy.superfly.service.impl.EventServiceImpl">
+        <property name="eventDao" ref="eventDao"/>
     </bean>
 </beans>

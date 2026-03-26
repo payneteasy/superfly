@@ -82,6 +82,8 @@ create table mysql_routines_return_arguments (
 
 \. int/int_unlink_user_role_actions.prc
 
+\. int/int_create_event.prc
+
 \. ui_copy/ui_copy_action_properties.prc
 
 \. ui_filter/ui_filter_subsystems.prc
@@ -217,6 +219,8 @@ create table mysql_routines_return_arguments (
 \. ui_get/ui_get_invalid_sessions.prc
 
 \. ui_get/ui_get_expired_sessions.prc
+
+\. ui_get/ui_get_events.prc
 
 \. ui_update/ui_lock_user.prc
 

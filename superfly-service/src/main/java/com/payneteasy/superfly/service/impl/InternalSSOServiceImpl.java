@@ -7,6 +7,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
+import com.payneteasy.superfly.api.SSOEvent;
 import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
@@ -18,6 +19,7 @@ import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.AuthAction;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
+import com.payneteasy.superfly.model.Event;
 import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.UserRegisterRequest;
@@ -30,6 +32,7 @@ import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.ActionService;
+import com.payneteasy.superfly.service.EventService;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
@@ -48,10 +51,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -72,8 +77,13 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     private PublicKeyCrypto publicKeyCrypto;
     private HOTPService hotpService;
     private Set<String> notSavedActions = Collections.singleton("action_temp_password");
-
     private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
+    private EventService eventService;
+
+    @Required
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
 
     @Required
     public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
@@ -153,9 +163,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
-        String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        String encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
         AuthSession session = userService.authenticate(username, encPassword,
-                                                   subsystemIdentifier, userIpAddress, sessionInfo);
+                subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
         if (ok) {
@@ -177,9 +187,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
-        SSOUser     ssoUser;
+        SSOUser ssoUser;
         AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
-        boolean     ok      = session != null && session.getSessionId() != null;
+        boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
         if (ok) {
             ssoUser = buildSSOUser(session);
@@ -191,7 +201,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     private SSOUser buildSSOUser(AuthSession session) {
-        SSOUser        ssoUser;
+        SSOUser ssoUser;
         List<AuthRole> authRoles = session.getRoles();
         if (authRoles.size() == 1 && authRoles.get(0).getRoleName() == null) {
             // actually it's empty
@@ -200,7 +210,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
         Map<SSORole, SSOAction[]> actionsMap = new HashMap<>(authRoles.size());
         for (AuthRole authRole : authRoles) {
-            SSORole     ssoRole = new SSORole(authRole.getRoleName());
+            SSORole ssoRole = new SSORole(authRole.getRoleName());
             SSOAction[] actions = convertToSSOActions(authRole.getActions());
             actionsMap.put(ssoRole, actions);
         }
@@ -215,7 +225,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         SSOAction[] actions = new SSOAction[authActions.size()];
         for (int i = 0; i < authActions.size(); i++) {
             AuthAction authAction = authActions.get(i);
-            SSOAction  ssoAction  = new SSOAction(authAction.getActionName(), authAction.isLogAction());
+            SSOAction ssoAction = new SSOAction(authAction.getActionName(), authAction.isLogAction());
             actions[i] = ssoAction;
         }
         return actions;
@@ -253,8 +263,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public void registerUser(String username, String password, String email, String subsystemIdentifier,
-            RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
-            String secretAnswer, String publicKey,String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
+                             RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
+                             String secretAnswer, String publicKey, String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
@@ -388,9 +398,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public SSOUser exchangeSubsystemToken(String subsystemToken) {
-        SSOUser     ssoUser;
+        SSOUser ssoUser;
         AuthSession session = userService.exchangeSubsystemToken(subsystemToken);
-        boolean     ok      = session != null && session.getSessionId() != null;
+        boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
         if (ok) {
             ssoUser = buildSSOUser(session);
@@ -429,5 +439,19 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public boolean hasOtpMasterKey(String username) {
         return userService.getOtpMasterKeyByUsername(username) != null;
+    }
+
+    @Override
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
+        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs);
+
+        if (events!=null && !events.isEmpty()) {
+            logger.info("getEvents call info={}",events);
+            return events.stream().map(event ->
+                    new SSOEvent(event.getEventId(), event.getEventTime(), event.getEventTypeCode(), event.getEventData())
+                    ).collect(Collectors.toList());
+        }
+
+        return List.of();
     }
 }

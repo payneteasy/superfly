@@ -32,10 +32,18 @@
             <artifactId>superfly-crypto</artifactId>
         </dependency>
 
+        <!--Justification jaxb api -->
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
         </dependency>
+
+        <!--Justification Runtime-реализация от GlassFish/EclipseLink -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+
 
         <dependency>
             <!--Justification: Core functionality of the Spring framework -->
@@ -104,8 +112,8 @@
         </dependency>
         <dependency>
             <!--Justification: For sending emails-->
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Google 2FA library. -->
