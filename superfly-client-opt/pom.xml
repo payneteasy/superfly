@@ -14,14 +14,6 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
         </dependency>
-
-        <!--Justification Runtime-реализация от GlassFish/EclipseLink -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-
-
         <dependency>
             <!--Justification: HTTP requests handling library. -->
             <groupId>commons-httpclient</groupId>
