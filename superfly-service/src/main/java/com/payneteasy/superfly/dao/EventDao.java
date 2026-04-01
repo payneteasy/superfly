@@ -12,6 +12,6 @@ import java.util.List;
 public interface EventDao {
 
     @AStoredProcedure(name = "ui_get_events")
-    List<Event> getEvents(Date lastEventTime);
+    List<Event> getEvents(Date lastEventTime, int limit);
     
 }

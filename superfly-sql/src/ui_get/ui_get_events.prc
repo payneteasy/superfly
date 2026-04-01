@@ -1,6 +1,6 @@
 drop procedure if exists ui_get_events;
 delimiter $$
-create procedure ui_get_events(i_last_event_time datetime)
+create procedure ui_get_events(i_last_event_time datetime, i_limit int)
  main_sql:
   begin
     select e.event_id
@@ -9,7 +9,10 @@ create procedure ui_get_events(i_last_event_time datetime)
            ,et.event_code as event_type_code
       from events e
           inner join event_types et on et.event_type_id=e.event_type_id
-     where event_time > i_last_event_time;
+     where event_time > i_last_event_time
+       order by event_time
+     limit i_limit
+     ;
   end
 $$
 delimiter ;

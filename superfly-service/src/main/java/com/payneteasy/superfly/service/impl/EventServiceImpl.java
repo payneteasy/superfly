@@ -22,6 +22,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
 
     private EventDao eventDao;
     private static final int DELAY_TIME_MS = 500;
+    private static final int EVENTS_LIMIT = 200;
     private final AtomicBoolean isShutdown = new AtomicBoolean(false);
 
     @Override
@@ -36,7 +37,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
 
     @Override
     public List<Event> getEvents(Date lastEventTime, long waitTimeMs) {
-        List<Event> events = eventDao.getEvents(lastEventTime);
+        List<Event> events = eventDao.getEvents(lastEventTime, EVENTS_LIMIT);
         List<Event> result = (events !=null ? new ArrayList<>(events) : new ArrayList<>());
         if (result.isEmpty()) {
             long now = System.currentTimeMillis();
@@ -47,7 +48,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
                 } catch (InterruptedException e) {
                     logger.error(e.getMessage(), e);
                 }
-                final List<Event> newEvents = eventDao.getEvents(lastEventTime);
+                final List<Event> newEvents = eventDao.getEvents(lastEventTime , EVENTS_LIMIT);
 
                 if (newEvents!=null && !newEvents.isEmpty()) {
                     result.addAll(newEvents);

@@ -14,6 +14,7 @@ create table events (
   event_time           datetime not null,
   event_type_id        int,
   event_data           varchar(128) not null,
+  index idx_events_event_time (event_time),
   primary key pk_events(event_id),
   constraint fk_event_types foreign key (event_type_id) references event_types (event_type_id)
 ) engine = innodb;
