@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.api;
 
-import jakarta.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**

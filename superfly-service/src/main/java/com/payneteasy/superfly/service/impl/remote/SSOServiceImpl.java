@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -337,5 +338,11 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void changeUserRole(String username, String newRole, String subsystemHint) {
         internalSSOService.changeUserRole(username, newRole, obtainSubsystemIdentifier(subsystemHint));
+    }
+
+
+    @Override
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
+        return internalSSOService.getEvents(lastEventTime, waitTimeMs);
     }
 }

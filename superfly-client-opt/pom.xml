@@ -9,9 +9,10 @@
     <name>Superfly Client optional support</name>
     <description>Optional Superfly-related client features (like SSL support)</description>
     <dependencies>
+        <!--Justification jaxb api -->
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
         </dependency>
         <dependency>
             <!--Justification: HTTP requests handling library. -->

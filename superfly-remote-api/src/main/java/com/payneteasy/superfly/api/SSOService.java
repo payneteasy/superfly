@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.api;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -267,4 +268,11 @@ public interface SSOService {
      * @param subsystemHint hint to determine the affected subsystem
      */
     void changeUserRole(String username, String newRole, String subsystemHint);
+
+    /**
+     * Get events from lastEventTime.
+     *
+     * @param lastEventTime lastEventTime
+     */
+    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs);
 }

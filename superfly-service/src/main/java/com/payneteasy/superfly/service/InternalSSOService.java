@@ -1,19 +1,20 @@
 package com.payneteasy.superfly.service;
 
-import java.util.List;
-
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.BadPublicKeyException;
-import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.MessageSendException;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.PolicyValidationException;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOEvent;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
-import com.payneteasy.superfly.api.SsoDecryptException;
 import com.payneteasy.superfly.api.UserExistsException;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Internal service used to implement SSOService.
@@ -194,4 +195,6 @@ public interface InternalSSOService {
     void changeUserRole(String username, String newRole, String subsystemIdentifier);
 
     boolean hasOtpMasterKey(String username);
+
+    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs);
 }
