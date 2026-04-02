@@ -205,6 +205,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.sun.istack</groupId>
+                <artifactId>istack-commons-runtime</artifactId>
+                <version>3.0.12</version>
+            </dependency>
+
+            <dependency>
                 <!--Justification: Core functionality of the Spring framework -->
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
