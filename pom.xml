@@ -696,7 +696,7 @@
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk18on</artifactId>
-                <version>1.81</version>
+                <version>1.84</version>
             </dependency>
 
             <dependency>
