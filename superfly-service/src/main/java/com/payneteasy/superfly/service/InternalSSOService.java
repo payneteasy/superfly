@@ -1,11 +1,13 @@
 package com.payneteasy.superfly.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
+import com.payneteasy.superfly.api.SSOEvent;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.SSOUserWithActions;
 import com.payneteasy.superfly.model.UserWithStatus;
@@ -175,4 +177,6 @@ public interface InternalSSOService {
     void changeUserRole(String username, String newRole, String subsystemIdentifier);
 
     boolean hasOtpMasterKey(String username);
+
+    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs);
 }

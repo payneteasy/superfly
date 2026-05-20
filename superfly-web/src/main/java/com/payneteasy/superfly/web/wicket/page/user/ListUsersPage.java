@@ -18,7 +18,8 @@ import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
+import org.apache.wicket.extensions.ajax.markup.html.modal.theme.DefaultTheme;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -39,7 +40,7 @@ import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.time.Time;
+import java.time.Instant;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.*;
@@ -64,7 +65,8 @@ public class ListUsersPage extends BasePage {
     public ListUsersPage() {
         super(ListUsersPage.class);
 
-        final ModalWindow resetHotpWindow = new ModalWindow("reset-hotp-window");
+        final ModalDialog resetHotpWindow = new ModalDialog("reset-hotp-window");
+        resetHotpWindow.add(new DefaultTheme());
         add(resetHotpWindow);
 
         // filters
@@ -173,13 +175,13 @@ public class ListUsersPage extends BasePage {
         }
     }
 
-    private void resetHoptTable(Item<UIUserForList> item, final UIUserForList user, final ModalWindow resetHotpWindow) {
+    private void resetHoptTable(Item<UIUserForList> item, final UIUserForList user, final ModalDialog resetHotpWindow) {
         AjaxLink<Void> resetTableLink = new AjaxLink<Void>("reset-table-link") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                resetHotpWindow.setContent(new ResetOtpTablePanel(resetHotpWindow.getContentId(),
+                resetHotpWindow.setContent(new ResetOtpTablePanel(ModalDialog.CONTENT_ID,
                         user.getId(), resetHotpWindow, getFeedbackPanel()));
-                resetHotpWindow.show(target);
+                resetHotpWindow.open(target);
             }
         };
         resetTableLink.setVisible(hotpProvider.outputsSequenceForDownload());
@@ -199,8 +201,8 @@ public class ListUsersPage extends BasePage {
                 final byte[] bytes = os.toByteArray();
                 IResourceStream resourceStream = new AbstractResourceStream() {
                     @Override
-                    public Time lastModifiedTime() {
-                        return Time.now();
+                    public Instant lastModifiedTime() {
+                        return Instant.now();
                     }
 
                     @Override

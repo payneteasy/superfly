@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -313,5 +314,10 @@ public class SSOHttpServiceApiClient implements SSOService {
     }
 
     // handleSpecificExceptions removed, as the ExceptionWrapper mechanism is now used
+
+    @Override
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
+        throw new UnsupportedOperationException("getEvents is not yet implemented in HTTP client");
+    }
 
 }

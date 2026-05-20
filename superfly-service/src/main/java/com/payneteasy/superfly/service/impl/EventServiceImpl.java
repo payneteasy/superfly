@@ -6,7 +6,8 @@ import com.payneteasy.superfly.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@Service
 @Transactional
 public class EventServiceImpl implements EventService, DisposableBean {
 
@@ -30,7 +32,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
         isShutdown.set(true);
     }
 
-    @Required
+    @Autowired
     public void setEventDao(EventDao eventDao) {
         this.eventDao = eventDao;
     }
