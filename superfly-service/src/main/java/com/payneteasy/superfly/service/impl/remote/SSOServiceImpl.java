@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -290,5 +291,11 @@ public class SSOServiceImpl implements SSOService {
 
     protected String obtainSubsystemIdentifier(String systemIdentifier) {
         return subsystemIdentifierObtainer.obtainSubsystemIdentifier(systemIdentifier);
+    }
+
+
+    @Override
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
+        return internalSSOService.getEvents(lastEventTime, waitTimeMs);
     }
 }

@@ -3,6 +3,7 @@ package com.payneteasy.superfly.api;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -176,4 +177,11 @@ public interface SSOService {
      * @param request change user role request containing username, new role, and subsystem hint
      */
     void changeUserRole(ChangeUserRoleRequest request);
+
+    /**
+     * Get events from lastEventTime.
+     *
+     * @param lastEventTime lastEventTime
+     */
+    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs);
 }
