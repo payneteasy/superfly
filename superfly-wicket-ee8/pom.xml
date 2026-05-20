@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.payneteasy.superfly</groupId>
+        <artifactId>superfly-parent</artifactId>
+        <version>2.0-3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>superfly-wicket-ee8</artifactId>
+    <name>Superfly Wicket extensions (EE8)</name>
+    <description>Wicket 8 + Java EE 8 integration helpers for external applications</description>
+
+    <dependencies>
+        <dependency>
+            <!--Justification: Render html UI with Wicket 8 (EE8 / javax.servlet) -->
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+            <version>8.16.0</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <!--Justification: Java EE 8 Servlet API for EE8 Wicket integration -->
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+

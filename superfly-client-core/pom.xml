@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
+        <version>2.0-3-SNAPSHOT</version>
+    </parent>
+    <artifactId>superfly-client-core</artifactId>
+    <name>Superfly Client Core</name>
+    <description>Core client logic and session abstraction for Superfly; no Servlet/JAX-RS dependencies (EE8/EE10 agnostic)</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-remote-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+        </dependency>
+    </dependencies>
+</project>

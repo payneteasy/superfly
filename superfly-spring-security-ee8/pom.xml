@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.payneteasy.superfly</groupId>
+        <artifactId>superfly-parent</artifactId>
+        <version>2.0-3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>superfly-spring-security-ee8</artifactId>
+    <name>Superfly Spring Security EE8</name>
+    <description>Java EE 8 (javax.servlet) adapter for Superfly Spring Security core</description>
+
+    <dependencies>
+        <dependency>
+            <!--Justification: Core Superfly Spring Security model shared between EE8/EE10 -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-spring-security-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Maps Superfly session IDs to javax HttpSession implementations -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-client-ee8</artifactId>
+        </dependency>
+
+        <!-- EE8-compatible Spring stack (to be refined when web adapters are implemented) -->
+        <dependency>
+            <!--Justification: Core functionality for Spring Security in EE8 environments (javax.servlet-based API) -->
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <!-- EE8 adapter targets Spring Security 5.x (javax.*); version is fixed here to avoid jakarta-only API from 6.x -->
+            <version>5.8.13</version>
+        </dependency>
+        <dependency>
+            <!--Justification: Web security filters and entry points for EE8 (javax.servlet) -->
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>5.8.13</version>
+        </dependency>
+        <dependency>
+            <!--Justification: Spring Security configuration support -->
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>5.8.13</version>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Spring Web (5.x, javax.servlet-based) for GenericFilterBean and related web support in EE8 adapter -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.39</version>
+        </dependency>
+
+        <dependency>
+            <!--Justification: Java EE 8 Servlet API for EE8 web filters -->
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
+
