@@ -8,3 +8,11 @@ target
 
 # Docker secrets — never commit
 .env
+
+# AI Factory / Claude Code — local tooling, not for repo
+.ai-factory.json
+.ai-factory/
+.claude/
+skills-lock.json
+PLAN.md
+FIX_PLAN.md
