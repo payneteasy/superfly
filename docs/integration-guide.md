@@ -1,4 +1,4 @@
-[← Конфигурация](configuration.md) · [Back to README](../README.md) · [Миграция EE8 / EE10 →](migration-client-ee8-ee10.md)
+[← API Reference](api.md) · [Back to README](../README.md) · [Миграция EE8 / EE10 →](migration-client-ee8-ee10.md)
 
 # Руководство по интеграции
 

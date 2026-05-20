@@ -1,4 +1,4 @@
-[← Установка и запуск](getting-started.md) · [Back to README](../README.md) · [Руководство по интеграции →](integration-guide.md)
+[← Установка и запуск](getting-started.md) · [Back to README](../README.md) · [Доменная модель →](domain-model.md)
 
 # Конфигурация
 

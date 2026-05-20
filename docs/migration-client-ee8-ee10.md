@@ -1,5 +1,6 @@
 [← Руководство по интеграции](integration-guide.md) · [Back to README](../README.md) · [Выпуск релиза →](releasing.md)
 
+
 # Миграция на модули Superfly Client EE8 / EE10
 
 ## Обзор

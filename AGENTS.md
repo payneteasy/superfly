@@ -93,6 +93,8 @@ superfly/
 | README | README.md | Landing page проекта |
 | Установка и запуск | docs/getting-started.md | Требования, сборка, первый запуск |
 | Конфигурация | docs/configuration.md | БД, Jetty, Spring конфиги |
+| Доменная модель | docs/domain-model.md | Сущности, связи, перечисления |
+| API Reference | docs/api.md | RPC и REST endpoints |
 | Руководство по интеграции | docs/integration-guide.md | Подключение клиентских приложений |
 | Миграция EE8 / EE10 | docs/migration-client-ee8-ee10.md | Переход на раздельные модули |
 | Выпуск релиза | docs/releasing.md | Публикация в Maven Central |
