@@ -1,45 +1,69 @@
-[![build Status](https://github.com/payneteasy/superfly/actions/workflows/maven.yml/badge.svg)](https://github.com/payneteasy/superfly/actions/workflows/maven.yml)
+[![Build Status](https://github.com/payneteasy/superfly/actions/workflows/maven.yml/badge.svg)](https://github.com/payneteasy/superfly/actions/workflows/maven.yml)
 
-Each web-application usually has some security: users, roles, permissions. When your organization posesses several systems, a situation may arise when the same user has to present in several systems at once. It is a burden to maintain users/roles/permissions in different systems at the same time. Superfly intends to alleviate such a burden.
+# Superfly
 
-  * It allows you to register users on a central server and give them permissions there.
-  * It integrates seamlessly with spring-securiry.
-  * It exposes its APIs so you're not tied to spring-security integration.
-  * [Redirect-based mode](../wiki/SingleSignOn.md) is supported which enables user to enter password once and then be  authenticated to all the systems.
-  * No-redirect mode is supported, in which user does not even know that some central server authenticates them.
-  * Jira integration is provided (so you can control Jira's users permissions in the same way, from the central server).
+> Централизованный SSO-сервер для управления пользователями, ролями и правами доступа.
 
-## Project news ##
+Superfly позволяет зарегистрировать пользователей один раз и управлять их правами доступа
+из единой точки для всех подключённых систем. Поддерживает Spring Security, Apache Wicket
+и оба поколения Servlet API (Java EE 8 / Jakarta EE 10).
 
-## August 19, 2018: Superfly supports Java 9 and 10 ##
+## Быстрый старт
 
-Starting with release 1.7-11, the project successfully builds and runs on Java 9+ (Java 9 and 10 were checked).
-Please note that Tomcat 7 will not work in Java 9+, so you'll have to upgrade Tomcat as well is you are planning to run Superfly on these recent Java versions.
-Minimal Java version is raised to 8.
-Spring version is upgraded to 5.
+```bash
+# Клонировать и собрать
+git clone https://github.com/payneteasy/superfly.git
+cd superfly
+./mvnw -DskipTests package
 
-## February 8, 2013: version 1.4-1 released ##
+# Настроить БД (MySQL)
+# Отредактировать superfly-web/src/main/webapp/WEB-INF/jetty-web.xml
+# Запустить сервер (Jetty)
+./mvnw -pl superfly-web jetty:run
+```
 
-[Single Sign-on](../wiki/SingleSignOn.md) (SSO) based on redirects is implemented. Full spring-security integration is included.
+После запуска веб-интерфейс доступен по адресу `http://localhost:8080`.
 
-## November 13, 2012: version 1.3-8 released ##
+## Ключевые возможности
 
-All HttpClient timeouts are made configurable; default timeouts are configured which eliminates a freeze possibility.
+- **Единый вход (SSO)** — пользователь вводит пароль один раз для всех систем
+- **Centralized RBAC** — пользователи, роли и права в одном месте
+- **Spring Security** — готовая интеграция для Java EE 8 и Jakarta EE 10
+- **Wicket UI** — веб-интерфейс администратора
+- **HOTP / OTP** — двухфакторная аутентификация
+- **No-redirect режим** — прозрачная аутентификация без редиректов
+- **REST API** — не привязан к Spring Security
 
-## September 10, 2012: version 1.3-7 released ##
+## Подключение к клиентскому приложению
 
-All dynamically-generated URLs are made compatible with nginx mod\_security module.
+```xml
+<!-- Jakarta EE 10 (Spring 6) -->
+<dependency>
+    <groupId>com.payneteasy.superfly</groupId>
+    <artifactId>superfly-spring-security</artifactId>
+    <version>2.0-3-SNAPSHOT</version>
+</dependency>
 
-[More news...](../wiki/ProjectNews.md)
+<!-- Java EE 8 (javax.servlet) -->
+<dependency>
+    <groupId>com.payneteasy.superfly</groupId>
+    <artifactId>superfly-spring-security-ee8</artifactId>
+    <version>2.0-3-SNAPSHOT</version>
+</dependency>
+```
 
-## Starting points ##
+---
 
-  * [Get started!](../wiki/GettingStarted.md)
-  * [SecurityModel](../wiki/SecurityModel.md)
-  * [Domain entities and how they interrelate](../wiki/DomainModel.md)
-  * [Installing on Tomcat](../wiki/IntallOnTomcat.md)
-  * [FAQ](../wiki/FAQ.md)
+## Документация
 
-# Gratitudes #
+| Руководство | Описание |
+|-------------|----------|
+| [Установка и запуск](docs/getting-started.md) | Требования, сборка, первый запуск |
+| [Конфигурация](docs/configuration.md) | База данных, Jetty, параметры запуска |
+| [Руководство по интеграции](docs/integration-guide.md) | Подключение к клиентскому приложению |
+| [Миграция EE8 / EE10](docs/migration-client-ee8-ee10.md) | Переход на раздельные модули |
+| [Выпуск релиза](docs/releasing.md) | Публикация в Maven Central |
 
-Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for their wonderful [Java profiler](http://www.ej-technologies.com/products/jprofiler/overview.html).
+## Лицензия
+
+[Apache License 2.0](LICENSE)

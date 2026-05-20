@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN"
+          "http://www.eclipse.org/jetty/configure.dtd">
+<!--
+  Jetty context descriptor for ROOT.war.
+  Datasource connection parameters are provided via environment variables:
+    DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_TIMEZONE
+-->
+<Configure id='wac' class="org.eclipse.jetty.ee10.webapp.WebAppContext">
+    <New id="txDatasource" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg>java:comp/env/jdbc/superfly</Arg>
+        <Arg>
+            <New class="org.apache.commons.dbcp2.BasicDataSource">
+                <!-- Connection URL uses system properties injected by entrypoint.sh -->
+                <Set name="url">jdbc:mysql://<Property name="db.host" default="mysql"/>:<Property name="db.port" default="3306"/>/<Property name="db.name" default="sso"/>?characterEncoding=utf8&amp;useInformationSchema=true&amp;noAccessToProcedureBodies=false&amp;useLocalSessionState=true&amp;autoReconnect=false&amp;serverTimezone=<Property name="db.timezone" default="UTC"/></Set>
+                <Set name="driverClassName">com.mysql.cj.jdbc.Driver</Set>
+                <Set name="username"><Property name="db.user" default="sso"/></Set>
+                <Set name="password"><Property name="db.password" default=""/></Set>
+                <Set name="accessToUnderlyingConnectionAllowed">true</Set>
+                <Set name="testOnBorrow">true</Set>
+                <Set name="validationQuery">{call create_collections()}</Set>
+            </New>
+        </Arg>
+    </New>
+</Configure>

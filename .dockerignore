@@ -1,0 +1,47 @@
+# Version control
+.git
+.gitignore
+
+# Docker files themselves
+Dockerfile
+compose*.yml
+.dockerignore
+docker/
+
+# Build output (rebuilt inside Docker)
+**/target/
+**/*.war
+**/*.jar
+!install/*.jar
+
+# IDE and editor
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# AI Factory
+.ai-factory/
+.claude/
+AGENTS.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment files (never bake into image)
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+**/surefire-reports/
+**/failsafe-reports/
+
+# Maven wrapper (already COPY'd explicitly if needed)
+# Keep mvnw / .mvn in the image for development stage

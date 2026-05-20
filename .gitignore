@@ -5,3 +5,6 @@ target
 .classpath
 .project
 .settings
+
+# Docker secrets — never commit
+.env

@@ -1,0 +1,57 @@
+name: ${COMPOSE_PROJECT_NAME:-superfly}
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  app:
+    build:
+      context: .
+      target: production
+    image: superfly-app:${APP_VERSION:-latest}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:-sso}
+      DB_USER: ${DB_USER:-sso}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_TIMEZONE: ${DB_TIMEZONE:-UTC}
+      JETTY_PORT: "8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *default-logging
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:8.0-debian
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-sso}
+      MYSQL_USER: ${DB_USER:-sso}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-sso}", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    logging: *default-logging
+    networks:
+      - backend
+
+volumes:
+  mysql_data:
+
+networks:
+  backend:

@@ -1,3 +1,5 @@
+[← Руководство по интеграции](integration-guide.md) · [Back to README](../README.md) · [Выпуск релиза →](releasing.md)
+
 # Миграция на модули Superfly Client EE8 / EE10
 
 ## Обзор
@@ -228,3 +230,8 @@ API и пакеты те же (`com.payneteasy.superfly.wicket.*`), классы
   - общий core берётся из `superfly-spring-security-core`;
   - для EE10 можно использовать готовые web-компоненты на `jakarta.servlet.*` из `superfly-spring-security`;
   - для EE8 — использовать общий core и готовый web-адаптер `superfly-spring-security-ee8` на `javax.servlet.*` и Spring Security 5.8.x.
+
+## See Also
+
+- [Руководство по интеграции](integration-guide.md) — подключение к клиентскому приложению
+- [Конфигурация](configuration.md) — настройка сервера Superfly
