@@ -12,6 +12,42 @@
     <name>Superfly Spring Security EE8</name>
     <description>Java EE 8 (javax.servlet) adapter for Superfly Spring Security core</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <!--
+                Pin Spring Framework to 5.x for EE8 compatibility.
+                Parent POM defines spring.version=6.2.18 in dependencyManagement, which would
+                override the Spring 5.x transitive deps from spring-security-web:5.8.13.
+                These entries restore the correct 5.x versions for EE8 (javax.servlet) environment.
+            -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>5.3.39</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>5.3.39</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>5.3.39</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>5.3.39</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-expression</artifactId>
+                <version>5.3.39</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <!--Justification: Core Superfly Spring Security model shared between EE8/EE10 -->
@@ -60,6 +96,33 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>ban-jakarta-in-ee8-security</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>jakarta.servlet:*</exclude>
+                                        <exclude>jakarta.servlet-api:*</exclude>
+                                    </excludes>
+                                    <message>EE8 security module must not depend on jakarta.servlet (use javax.servlet)</message>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
 

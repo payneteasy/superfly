@@ -14,14 +14,16 @@
 
     <dependencies>
         <dependency>
-            <!--Justification: Core functionality for Spring Security; authentication/authorization model -->
+            <!--Justification: provided — consumers (ee8, ee10) bring their own Spring Security version; core compiles against 6.x from parent DM -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <!--Justification: Core Spring framework types used by core classes -->
+            <!--Justification: provided — consumers (ee8, ee10) bring their own Spring Framework version; core compiles against 6.x from parent DM -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Optional Spring context annotations (e.g. @Service) -->
@@ -68,6 +70,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 
 </project>
 
