@@ -113,7 +113,7 @@ public class ExternalFormSecurityFilter implements Filter {
                 response.sendRedirect(request.getParameter("targetUrl"));
             } catch (Exception e) {
                 LOG.error("Could not validate token", e);
-                showBadTokenPage(response, e.getMessage());
+                showBadTokenPage(response, "Token validation failed");
             }
             return;
         }
@@ -139,7 +139,7 @@ public class ExternalFormSecurityFilter implements Filter {
         if(subsystemToken == null) {
             throw new IllegalStateException("No 'subsystemToken' in paraters");
         }
-        LOG.info("Checking token {}", subsystemToken);
+        LOG.debug("Checking subsystem token");
         SSOUser ssoUser = ssoService.exchangeSubsystemToken(new ExchangeSubsystemTokenRequest(subsystemToken));
         if(ssoUser == null) {
             throw new IllegalStateException("Token is not valid");

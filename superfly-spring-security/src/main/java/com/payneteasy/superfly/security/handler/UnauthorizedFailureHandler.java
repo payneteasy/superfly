@@ -23,7 +23,7 @@ public class UnauthorizedFailureHandler implements AuthenticationFailureHandler 
         response.setHeader("Content-Type", "text/plain");
 
         PrintWriter writer = response.getWriter();
-        writer.print(exception.getMessage());
+        writer.print("Authentication failed");
         writer.close();
     }
 }
