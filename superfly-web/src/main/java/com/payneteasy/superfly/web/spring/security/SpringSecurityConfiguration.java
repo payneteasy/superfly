@@ -65,6 +65,18 @@ public class SpringSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
+            .headers(headers -> headers
+                // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
+                // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline'; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "img-src 'self' data:; " +
+                    "frame-ancestors 'none'; " +
+                    "form-action 'self'"
+                ))
+            )
             .authorizeHttpRequests(
                     auth ->
                             auth
