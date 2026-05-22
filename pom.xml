@@ -15,7 +15,7 @@
         <module>superfly-common</module>
         <module>superfly-client-web-security</module>
         <module>superfly-client-opt</module>
-        <module>superfly-spring-security</module>
+        <module>superfly-spring-security-ee10</module>
         <module>superfly-spi-support</module>
         <module>superfly-crypto</module>
         <module>superfly-wicket</module>
@@ -194,7 +194,7 @@
             <dependency>
                 <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
                 <groupId>com.payneteasy.superfly</groupId>
-                <artifactId>superfly-spring-security</artifactId>
+                <artifactId>superfly-spring-security-ee10</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -28,7 +28,7 @@
         <dependency>
             <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-spring-security</artifactId>
+            <artifactId>superfly-spring-security-ee10</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Cryptography support for SuperFly, handling secure data operations -->

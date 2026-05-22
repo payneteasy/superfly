@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-spring-security</artifactId>
+            <artifactId>superfly-spring-security-ee10</artifactId>
             <version>${superfly.version}</version>
             <exclusions>
                 <exclusion>
