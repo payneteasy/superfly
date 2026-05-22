@@ -52,8 +52,8 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
                      RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
              );
         } catch (Exception e) {
-            logger.error("Failed to decrypt password", e);
-            throw new RemoteAuthException("Decryption failed", "INTERNAL_ERROR", e);
+            logger.warn("Failed to decrypt password: {}", e.getMessage());
+            throw new RemoteAuthException("Decryption failed", "BAD_REQUEST");
         }
 
         // 3. Authenticate User
@@ -105,8 +105,8 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
                     RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
             );
         } catch (Exception e) {
-             logger.error("Failed to decrypt OTP", e);
-             throw new RemoteAuthException("Decryption failed", "INTERNAL_ERROR", e);
+            logger.warn("Failed to decrypt OTP: {}", e.getMessage());
+            throw new RemoteAuthException("Decryption failed", "BAD_REQUEST");
         }
 
         // 4. Verify OTP
@@ -120,12 +120,10 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     private UISubsystem validateSubsystem(String subsystemName, String bearerToken) throws RemoteAuthException {
         UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemName);
         if (subsystem == null) {
-            throw new RemoteAuthException("Subsystem not found", "INTERNAL_ERROR"); // Or 404 equivalent
+            throw new RemoteAuthException("Subsystem not found", "UNAUTHORIZED");
         }
-        // Assuming bearerToken is just the token value.
-        // The format in header is "Bearer <token>", but the controller should extract <token>.
         if (subsystem.getSubsystemToken() == null || !subsystem.getSubsystemToken().equals(bearerToken)) {
-            throw new RemoteAuthException("Invalid subsystem token", "INTERNAL_ERROR"); // Or 401
+            throw new RemoteAuthException("Invalid subsystem token", "UNAUTHORIZED");
         }
         return subsystem;
     }

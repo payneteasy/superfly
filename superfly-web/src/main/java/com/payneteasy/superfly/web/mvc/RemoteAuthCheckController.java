@@ -25,8 +25,8 @@ public class RemoteAuthCheckController {
     }
 
     @RequestMapping(value = "/check-password/{subsystemName}/{username}", method = RequestMethod.POST, produces = "application/json")
-    public CheckPasswordResponse checkPassword(@PathVariable String subsystemName,
-                                               @PathVariable String username,
+    public CheckPasswordResponse checkPassword(@PathVariable("subsystemName") String subsystemName,
+                                               @PathVariable("username") String username,
                                                @RequestBody CheckPasswordRequest requestBody,
                                                @RequestHeader(value = "Authorization", required = false) String authHeader,
                                                HttpServletRequest request) throws RemoteAuthException {
@@ -49,8 +49,8 @@ public class RemoteAuthCheckController {
     }
 
     @RequestMapping(value = "/check-otp/{subsystemName}/{username}", method = RequestMethod.POST, produces = "application/json")
-    public CheckOtpResponse checkOtp(@PathVariable String subsystemName,
-                                     @PathVariable String username,
+    public CheckOtpResponse checkOtp(@PathVariable("subsystemName") String subsystemName,
+                                     @PathVariable("username") String username,
                                      @RequestBody CheckOtpRequest requestBody,
                                      @RequestHeader(value = "Authorization", required = false) String authHeader) throws RemoteAuthException {
 
@@ -85,6 +85,8 @@ public class RemoteAuthCheckController {
 
         if ("INTERNAL_ERROR".equals(errorCode)) {
              status = HttpStatus.INTERNAL_SERVER_ERROR;
+        } else if ("UNAUTHORIZED".equals(errorCode)) {
+             status = HttpStatus.UNAUTHORIZED;
         }
 
         return createErrorResponse(errorCode, e.getMessage(), status);
