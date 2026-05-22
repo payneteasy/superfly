@@ -6,6 +6,7 @@ import com.payneteasy.superfly.api.request.SendSystemDataRequest;
 import com.payneteasy.superfly.client.exception.CollectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ import java.util.TimerTask;
  *
  * @author Roman Puchkovskiy
  */
-public class SuperflyDataSender {
+public class SuperflyDataSender implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(SuperflyDataSender.class);
 

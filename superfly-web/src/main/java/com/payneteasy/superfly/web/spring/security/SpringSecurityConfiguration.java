@@ -2,7 +2,6 @@ package com.payneteasy.superfly.web.spring.security;
 
 import com.payneteasy.superfly.client.ActionDescriptionCollector;
 import com.payneteasy.superfly.client.ScanningActionDescriptionCollector;
-import com.payneteasy.superfly.client.XmlActionDescriptionCollector;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter;
 import com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint;
@@ -21,7 +20,6 @@ import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.annotation.Secured;
@@ -224,10 +222,4 @@ public class SpringSecurityConfiguration {
     }
 
 
-    @Bean
-    public ActionDescriptionCollector xmlActionDescriptionCollector() {
-        XmlActionDescriptionCollector collector = new XmlActionDescriptionCollector();
-        collector.setResource(new ClassPathResource("actions.xml"));
-        return collector;
-    }
 }

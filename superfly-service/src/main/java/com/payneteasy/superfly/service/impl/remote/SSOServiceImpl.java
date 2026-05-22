@@ -13,6 +13,7 @@ import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SSOServiceImpl implements SSOService {
     @Setter
+    @Autowired(required = false)
     private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();
     private final InternalSSOService          internalSSOService;
     private final HOTPService                 hotpService;
@@ -295,7 +296,7 @@ public class SSOServiceImpl implements SSOService {
 
 
     @Override
-    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
-        return internalSSOService.getEvents(lastEventTime, waitTimeMs);
+    public List<SSOEvent> getEvents(GetEventsRequest request) {
+        return internalSSOService.getEvents(request);
     }
 }

@@ -13,7 +13,6 @@
         <module>superfly-web</module>
         <module>superfly-httpclient-ssl</module>
         <module>superfly-common</module>
-        <module>superfly-client</module>
         <module>superfly-client-web-security</module>
         <module>superfly-client-opt</module>
         <module>superfly-spring-security</module>
@@ -147,12 +146,6 @@
                 <!--Justification: Common utilities and shared functionality for SuperFly components -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <!--Justification: Client library for interaction with SuperFly services -->
-                <groupId>com.payneteasy.superfly</groupId>
-                <artifactId>superfly-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -364,7 +357,7 @@
                 <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.5.17</version>
+                <version>1.5.25</version>
             </dependency>
             <dependency>
                 <!--Justification: Core library for Logback, necessary for logging configurations and functionality -->

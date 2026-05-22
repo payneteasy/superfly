@@ -21,9 +21,9 @@
             <artifactId>superfly-common</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Client library for interaction with SuperFly services -->
+            <!--Justification: Core client library for interaction with SuperFly services (servlet-API-free) -->
             <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-client</artifactId>
+            <artifactId>superfly-client-core</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Core functionality of the Spring framework -->

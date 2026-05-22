@@ -3,7 +3,6 @@ package com.payneteasy.superfly.api;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -181,7 +180,7 @@ public interface SSOService {
     /**
      * Get events from lastEventTime.
      *
-     * @param lastEventTime lastEventTime
+     * @param request request containing lastEventTime and waitTimeMs
      */
-    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs);
+    List<SSOEvent> getEvents(GetEventsRequest request);
 }

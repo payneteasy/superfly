@@ -2,6 +2,8 @@ package com.payneteasy.superfly.client;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.request.TouchSessionsRequest;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +21,7 @@ import java.util.TimerTask;
  *
  * @author Roman Puchkovskiy
  */
-public class SessionToucherImpl implements SessionToucher {
+public class SessionToucherImpl implements SessionToucher, InitializingBean, DisposableBean {
     private boolean enabled = true;
     private SSOService ssoService;
     private final int flushPeriodInSeconds;
@@ -62,6 +64,16 @@ public class SessionToucherImpl implements SessionToucher {
 
     private long getFlushPeriodInMillis() {
         return flushPeriodInSeconds * 1000L;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        startup();
+    }
+
+    @Override
+    public void destroy() {
+        shutdown();
     }
 
     /**

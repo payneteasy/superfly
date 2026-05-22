@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Start" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="Start" type="Application" factoryName="Application" activateToolWindowBeforeRun="false" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="com.payneteasy.superfly.Start" />
     <module name="superfly-web" />
     <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
