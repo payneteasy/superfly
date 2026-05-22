@@ -94,6 +94,9 @@ public class SpringSecurityConfiguration {
             .logout(logout -> logout
                     .logoutUrl("/j_spring_security_logout")
                     .logoutSuccessHandler(logoutSuccessHandler()))
+            // CSRF disabled intentionally: all state-changing REST endpoints use token-based auth
+            // (X-Subsystem-Token or Authorization: Bearer), not cookies. Wicket admin pages are
+            // protected by Wicket's own stateful page-version tokens embedded in action URLs.
             .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
         ;
