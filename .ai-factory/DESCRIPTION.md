@@ -60,6 +60,9 @@ Superfly — это централизованный сервер аутенти
 - Разделение EE8/EE10 позволяет подключать библиотеку к приложениям как на javax, так и на jakarta
 - Веб-сервер — Jetty (embedded), конфигурация через `jetty-env.conf`
 - Транзакции управляются через Spring `@Transactional`
+- `superfly-client-opt` зависит от `superfly-client-core` (не `superfly-client`):
+  дубликаты `ScanningActionDescriptionCollector` / `XmlActionDescriptionCollector`
+  перемещены в `superfly-client-core`, из `superfly-client-opt` удалены
 
 ## Нефункциональные требования
 
