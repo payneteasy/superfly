@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
+import com.payneteasy.superfly.api.request.GetEventsRequest;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.UserRegisterRequest;
@@ -380,8 +381,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs) {
-        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs);
+    public List<SSOEvent> getEvents(GetEventsRequest request) {
+        List<Event> events = eventService.getEvents(request.getLastEventTime(), request.getWaitTimeMs(), request.getSubsystemName());
         if (events != null && !events.isEmpty()) {
             logger.info("getEvents call info={}", events);
             return events.stream()

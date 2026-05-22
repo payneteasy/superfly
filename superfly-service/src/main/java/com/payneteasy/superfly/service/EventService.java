@@ -10,5 +10,5 @@ import java.util.List;
  * 
  */
 public interface EventService {
-    List<Event> getEvents(Date lastEventTime, long waitTime);
+    List<Event> getEvents(Date lastEventTime, long waitTime, String subsystemName);
 }

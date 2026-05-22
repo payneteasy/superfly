@@ -1,6 +1,6 @@
 drop procedure if exists ui_get_events;
 delimiter $$
-create procedure ui_get_events(i_last_event_time datetime, i_limit int)
+create procedure ui_get_events(i_last_event_time datetime, i_limit int, i_subsystem_name varchar(32))
  main_sql:
   begin
     select e.event_id
@@ -8,9 +8,14 @@ create procedure ui_get_events(i_last_event_time datetime, i_limit int)
            ,e.event_data
            ,et.event_code as event_type_code
       from events e
-          inner join event_types et on et.event_type_id=e.event_type_id
-     where event_time > i_last_event_time
-       order by event_time
+          inner join event_types et on et.event_type_id = e.event_type_id
+     where e.event_time > i_last_event_time
+       and (
+             i_subsystem_name is null
+             or e.subsystem_id = (select ssys_id from subsystems where subsystem_name = i_subsystem_name limit 1)
+             or e.subsystem_id is null
+           )
+       order by e.event_time
      limit i_limit
      ;
   end

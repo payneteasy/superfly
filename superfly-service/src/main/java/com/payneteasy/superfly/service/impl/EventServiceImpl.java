@@ -38,9 +38,9 @@ public class EventServiceImpl implements EventService, DisposableBean {
     }
 
     @Override
-    public List<Event> getEvents(Date lastEventTime, long waitTimeMs) {
-        List<Event> events = eventDao.getEvents(lastEventTime, EVENTS_LIMIT);
-        List<Event> result = (events !=null ? new ArrayList<>(events) : new ArrayList<>());
+    public List<Event> getEvents(Date lastEventTime, long waitTimeMs, String subsystemName) {
+        List<Event> events = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
+        List<Event> result = (events != null ? new ArrayList<>(events) : new ArrayList<>());
         if (result.isEmpty()) {
             long now = System.currentTimeMillis();
             long finishTime = now + waitTimeMs;
@@ -50,9 +50,9 @@ public class EventServiceImpl implements EventService, DisposableBean {
                 } catch (InterruptedException e) {
                     logger.error(e.getMessage(), e);
                 }
-                final List<Event> newEvents = eventDao.getEvents(lastEventTime , EVENTS_LIMIT);
+                final List<Event> newEvents = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
 
-                if (newEvents!=null && !newEvents.isEmpty()) {
+                if (newEvents != null && !newEvents.isEmpty()) {
                     result.addAll(newEvents);
                     break;
                 }
