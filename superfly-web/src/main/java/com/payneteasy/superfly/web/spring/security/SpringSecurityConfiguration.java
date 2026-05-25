@@ -10,7 +10,6 @@ import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
@@ -53,13 +52,11 @@ public class SpringSecurityConfiguration {
     private final SuperflyProperties    properties;
     private final LoggerSink            loggerSink;
     private final AuthenticationManager authenticationManager;
-    private final SubsystemService      subsystemService;
 
-    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager, SubsystemService subsystemService) {
+    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager) {
         this.properties = properties;
         this.loggerSink = loggerSink;
         this.authenticationManager = authenticationManager;
-        this.subsystemService = subsystemService;
     }
 
     @Bean
@@ -154,8 +151,7 @@ public class SpringSecurityConfiguration {
     public SubsystemAuthenticationFilter subsystemAuthenticationFilter() {
         SubsystemAuthenticationFilter filter = new SubsystemAuthenticationFilter(
                 antPathRequestMatcher("/remoting/sso.service/**"),
-                authenticationManager,
-                subsystemService
+                authenticationManager
         );
         filter.setSuccessHandler((request, response, authentication) -> {});
         filter.setFailureHandler(new JsonAuthenticationFailureHandler());

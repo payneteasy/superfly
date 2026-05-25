@@ -63,9 +63,20 @@ public class SSOHttpServiceApiClient implements SSOService {
         return new HttpClientImpl();
     }
 
+    private static final String ALLOW_INSECURE_PROPERTY = "superfly.client.allowInsecureScheme";
+
     private String validateUrl(String url) {
         if (url == null || url.isBlank()) {
             throw new IllegalArgumentException("baseUrl must not be null or empty");
+        }
+        if (url.startsWith("http://")) {
+            if (Boolean.getBoolean(ALLOW_INSECURE_PROPERTY)) {
+                log.warn("Insecure HTTP scheme in baseUrl='{}' — allowed via -D{}=true (PCI DSS 4.2.1 violation)", url, ALLOW_INSECURE_PROPERTY);
+            } else {
+                throw new IllegalArgumentException(
+                        "baseUrl must use HTTPS (PCI DSS 4.2.1). Got: " + url +
+                        ". To allow HTTP set -D" + ALLOW_INSECURE_PROPERTY + "=true");
+            }
         }
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
@@ -195,9 +206,7 @@ public class SSOHttpServiceApiClient implements SSOService {
         String url         = baseUrl + endpoint;
         String requestBody = serializationManager.serialize(request);
 
-        if (log.isDebugEnabled()) {
-            log.debug("Sending request to {}: {}", url, requestBody);
-        }
+        log.debug("Sending POST to endpoint={}", url);
 
         HttpResponse response;
         try {
@@ -205,9 +214,7 @@ public class SSOHttpServiceApiClient implements SSOService {
                     buildRequest(url, requestBody),
                     parameters
             );
-            if (log.isDebugEnabled()) {
-                log.debug("Get response status: {}, body: {}", response.getStatusCode(), new String(response.getBody(), StandardCharsets.UTF_8));
-            }
+            log.debug("Response status={} from endpoint={}", response.getStatusCode(), url);
         } catch (HttpConnectException | HttpWriteException | HttpReadException e) {
             throw new SsoConnectionException("Connection error: " + e.getMessage(), e);
         }

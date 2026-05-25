@@ -186,6 +186,8 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     private String truststorePassword = null;
     private SSLContext sslcontext = null;
 
+    private static final String[] DEFAULT_ENABLED_PROTOCOLS = {"TLSv1.2", "TLSv1.3"};
+
     private String[] enabledProtocols = null;
 
     /**
@@ -294,11 +296,11 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
                                 if (certs[c] instanceof X509Certificate) {
                                     X509Certificate cert = (X509Certificate)certs[c];
                                     LOG.debug(" Certificate " + (c + 1) + ":");
-                                    LOG.debug("  Subject DN: " + cert.getSubjectDN());
+                                    LOG.debug("  Subject DN: " + cert.getSubjectX500Principal());
                                     LOG.debug("  Signature Algorithm: " + cert.getSigAlgName());
                                     LOG.debug("  Valid from: " + cert.getNotBefore() );
                                     LOG.debug("  Valid until: " + cert.getNotAfter());
-                                    LOG.debug("  Issuer: " + cert.getIssuerDN());
+                                    LOG.debug("  Issuer: " + cert.getIssuerX500Principal());
                                 }
                             }
                         }
@@ -316,17 +318,17 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
                         Certificate trustedcert = keystore.getCertificate(alias);
                         if (trustedcert != null && trustedcert instanceof X509Certificate) {
                             X509Certificate cert = (X509Certificate)trustedcert;
-                            LOG.debug("  Subject DN: " + cert.getSubjectDN());
+                            LOG.debug("  Subject DN: " + cert.getSubjectX500Principal());
                             LOG.debug("  Signature Algorithm: " + cert.getSigAlgName());
                             LOG.debug("  Valid from: " + cert.getNotBefore() );
                             LOG.debug("  Valid until: " + cert.getNotAfter());
-                            LOG.debug("  Issuer: " + cert.getIssuerDN());
+                            LOG.debug("  Issuer: " + cert.getIssuerX500Principal());
                         }
                     }
                 }
                 trustmanagers = createTrustManagers(keystore);
             }
-            SSLContext sslcontext = SSLContext.getInstance("SSL");
+            SSLContext sslcontext = SSLContext.getInstance("TLS");
             sslcontext.init(keymanagers, trustmanagers, null);
             return sslcontext;
         } catch (NoSuchAlgorithmException e) {
@@ -461,11 +463,10 @@ public class AuthSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     }
 
     private void doPreConnectSocketStuff(Socket socket) {
-        if (enabledProtocols != null) {
-            if (socket instanceof SSLSocket) {
-                SSLSocket sslSocket = (SSLSocket) socket;
-                sslSocket.setEnabledProtocols(enabledProtocols);
-            }
+        if (socket instanceof SSLSocket sslSocket) {
+            String[] protocols = enabledProtocols != null ? enabledProtocols : DEFAULT_ENABLED_PROTOCOLS;
+            LOG.debug("Restricting TLS protocols to {}", (Object) protocols);
+            sslSocket.setEnabledProtocols(protocols);
         }
     }
 }

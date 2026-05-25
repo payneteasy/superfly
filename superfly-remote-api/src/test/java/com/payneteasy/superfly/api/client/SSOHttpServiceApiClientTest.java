@@ -109,7 +109,7 @@ public class SSOHttpServiceApiClientTest {
         // Check that URL without trailing / is handled correctly
         SSOHttpServiceApiClient client1 = new SSOHttpServiceApiClient(
                 HttpRequestParameters.builder().build(),
-                "http://example.com/api",
+                "https://example.com/api",
                 SUBSYSTEM_NAME,
                 SUBSYSTEM_TOKEN,
                 serializationManager
@@ -118,7 +118,7 @@ public class SSOHttpServiceApiClientTest {
         // Check that URL with trailing / is handled correctly
         SSOHttpServiceApiClient client2 = new SSOHttpServiceApiClient(
                 HttpRequestParameters.builder().build(),
-                "http://example.com/api/",
+                "https://example.com/api/",
                 SUBSYSTEM_NAME,
                 SUBSYSTEM_TOKEN,
                 serializationManager

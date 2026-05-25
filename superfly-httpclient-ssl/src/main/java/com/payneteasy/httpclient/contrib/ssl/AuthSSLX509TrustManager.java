@@ -78,11 +78,11 @@ public class AuthSSLX509TrustManager implements X509TrustManager
             for (int c = 0; c < certificates.length; c++) {
                 X509Certificate cert = certificates[c];
                 LOG.info(" Client certificate " + (c + 1) + ":");
-                LOG.info("  Subject DN: " + cert.getSubjectDN());
+                LOG.info("  Subject DN: " + cert.getSubjectX500Principal());
                 LOG.info("  Signature Algorithm: " + cert.getSigAlgName());
                 LOG.info("  Valid from: " + cert.getNotBefore() );
                 LOG.info("  Valid until: " + cert.getNotAfter());
-                LOG.info("  Issuer: " + cert.getIssuerDN());
+                LOG.info("  Issuer: " + cert.getIssuerX500Principal());
             }
         }
         defaultTrustManager.checkClientTrusted(certificates,authType);
@@ -96,11 +96,11 @@ public class AuthSSLX509TrustManager implements X509TrustManager
             for (int c = 0; c < certificates.length; c++) {
                 X509Certificate cert = certificates[c];
                 LOG.info(" Server certificate " + (c + 1) + ":");
-                LOG.info("  Subject DN: " + cert.getSubjectDN());
+                LOG.info("  Subject DN: " + cert.getSubjectX500Principal());
                 LOG.info("  Signature Algorithm: " + cert.getSigAlgName());
                 LOG.info("  Valid from: " + cert.getNotBefore() );
                 LOG.info("  Valid until: " + cert.getNotAfter());
-                LOG.info("  Issuer: " + cert.getIssuerDN());
+                LOG.info("  Issuer: " + cert.getIssuerX500Principal());
             }
         }
         defaultTrustManager.checkServerTrusted(certificates,authType);
