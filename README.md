@@ -50,6 +50,13 @@ cd superfly
     <artifactId>superfly-spring-security-ee8</artifactId>
     <version>2.0-3-SNAPSHOT</version>
 </dependency>
+
+<!-- Optional: SSL/HTTP client factory beans (EE8- and EE10-compatible, no Servlet API) -->
+<dependency>
+    <groupId>com.payneteasy.superfly</groupId>
+    <artifactId>superfly-client-opt</artifactId>
+    <version>2.0-3-SNAPSHOT</version>
+</dependency>
 ```
 
 ---
