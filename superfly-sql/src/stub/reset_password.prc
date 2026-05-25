@@ -20,7 +20,7 @@ main_sql:
            u.hotp_logins_failed = null
            where u.user_id = i_user_id;
 
-    call int_create_event('PASSWORD_RESET', v_user_name);
+    call int_create_event('PASSWORD_RESET', v_user_name, null);
 
     select 'OK' status, null error_message;
   end
