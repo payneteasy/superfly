@@ -44,7 +44,7 @@
 </dependency>
 ```
 
-Имена классов и пакетов те же (`com.payneteasy.superfly.client.session.*`, `SuperflyLogoutFilter`, `SessionMappingLocator` и т.д.), конфигурация фильтров в `web.xml` или Spring не меняется.
+Имена классов и пакетов те же (фильтры в `com.payneteasy.superfly.client.session.*`, `SuperflyLogoutFilter` и т.д.; абстракции сессий `SessionMappingLocator` и `HttpSessionWrapper` — в `com.payneteasy.superfly.common.session`), конфигурация фильтров в `web.xml` или Spring не меняется.
 
 ### Проекты на Java EE 8 (javax)
 
@@ -71,7 +71,7 @@
 
 ## Сессии и обёртки
 
-- **SessionMappingLocator**, **HttpSessionWrapper** и реализация маппинга сессий живут в **superfly-client-core** (без javax/jakarta).
+- **SessionMappingLocator**, **HttpSessionWrapper** и реализация маппинга сессий (`HashMapBackedSessionMapping`) живут в **superfly-common** (без javax/jakarta).
 - Реализации под конкретный API:
   - **JakartaHttpSessionWrapper** — в **superfly-client-ee10** (`jakarta.servlet.http.HttpSession`).
   - **JavaxHttpSessionWrapper** — в **superfly-client-ee8** (`javax.servlet.http.HttpSession`).
