@@ -17,33 +17,33 @@
             <!--
                 Pin Spring Framework to 5.x for EE8 compatibility.
                 Parent POM defines spring.version=6.2.18 in dependencyManagement, which would
-                override the Spring 5.x transitive deps from spring-security-web:5.8.13.
+                override the Spring 5.x transitive deps from spring-security-web:${spring-security5.version}.
                 These entries restore the correct 5.x versions for EE8 (javax.servlet) environment.
             -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
-                <version>5.3.39</version>
+                <version>${spring5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
-                <version>5.3.39</version>
+                <version>${spring5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
-                <version>5.3.39</version>
+                <version>${spring5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
-                <version>5.3.39</version>
+                <version>${spring5.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-expression</artifactId>
-                <version>5.3.39</version>
+                <version>${spring5.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -67,26 +67,26 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <!-- EE8 adapter targets Spring Security 5.x (javax.*); version is fixed here to avoid jakarta-only API from 6.x -->
-            <version>5.8.13</version>
+            <version>${spring-security5.version}</version>
         </dependency>
         <dependency>
             <!--Justification: Web security filters and entry points for EE8 (javax.servlet) -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.8.13</version>
+            <version>${spring-security5.version}</version>
         </dependency>
         <dependency>
             <!--Justification: Spring Security configuration support -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.8.13</version>
+            <version>${spring-security5.version}</version>
         </dependency>
 
         <dependency>
             <!--Justification: Spring Web (5.x, javax.servlet-based) for GenericFilterBean and related web support in EE8 adapter -->
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.3.39</version>
+            <version>${spring5.version}</version>
         </dependency>
 
         <dependency>
