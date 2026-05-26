@@ -70,6 +70,7 @@ cd superfly
 | [Доменная модель](docs/domain-model.md) | Сущности, связи, перечисления |
 | [API Reference](docs/api.md) | RPC и REST endpoints, форматы запросов |
 | [Руководство по интеграции](docs/integration-guide.md) | Подключение к клиентскому приложению |
+| [SSL / mTLS](docs/ssl-mtls.md) | TLS-соединение, hostname verification, кастомный CA |
 | [Миграция EE8 / EE10](docs/migration-client-ee8-ee10.md) | Переход на раздельные модули |
 | [Выпуск релиза](docs/releasing.md) | Публикация в Maven Central |
 
