@@ -4,6 +4,7 @@ import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.wicket.page.action.ListActionsPage;
 import com.payneteasy.superfly.web.wicket.page.group.ListGroupsPage;
+import com.payneteasy.superfly.web.wicket.page.monitoring.MonitoringPage;
 import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
@@ -63,6 +64,7 @@ public abstract class BasePage extends SessionAccessorPage {
         addNavBarItem("roles", ListRolesPage.class);
         addNavBarItem("sessions", ListSessionsPage.class);
         addNavBarItem("smtp", ListSmtpServersPage.class);
+        addNavBarItem("monitoring", MonitoringPage.class);
 
 
     }

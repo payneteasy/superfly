@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         SpringSecurityConfiguration.class,
         AopConfig.class,
         QuartzConfig.class,
+        MetricsConfiguration.class,
 })
 @EnableTransactionManagement
 public class SpringRootConfiguration {

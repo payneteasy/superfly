@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<body>
+<wicket:extend>
+
+    <!-- Health status row -->
+    <div class="d-flex align-items-center mb-3">
+        <span wicket:id="health-status" class="badge badge-success mr-2">HEALTHY</span>
+        <small class="text-muted">Last success: <span wicket:id="last-success">—</span></small>
+    </div>
+
+    <!-- Per-operation metrics table -->
+    <div class="card mb-4">
+        <div class="card-header"><strong>SSO Operations</strong></div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-bordered table-hover mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Operation</th>
+                        <th class="text-right">Calls</th>
+                        <th class="text-right">Errors</th>
+                        <th class="text-right">Error %</th>
+                        <th class="text-right">Avg ms</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr wicket:id="operations">
+                        <td><span wicket:id="op-name">authenticate</span></td>
+                        <td class="text-right"><span wicket:id="op-calls">0</span></td>
+                        <td class="text-right"><span wicket:id="op-errors">0</span></td>
+                        <td class="text-right"><span wicket:id="op-error-pct">0.0%</span></td>
+                        <td class="text-right"><span wicket:id="op-avg-ms">0 ms</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap 4 Accordion: integration guides -->
+    <div class="accordion" id="monitoring-accordion">
+
+        <!-- Panel 1: Prometheus -->
+        <div class="card">
+            <div class="card-header" id="heading-prometheus">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" type="button"
+                            data-toggle="collapse" data-target="#collapse-prometheus"
+                            aria-expanded="false" aria-controls="collapse-prometheus">
+                        📊 Connect Prometheus
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse-prometheus" class="collapse" aria-labelledby="heading-prometheus"
+                 data-parent="#monitoring-accordion">
+                <div class="card-body">
+                    <p>Add <code>micrometer-registry-prometheus</code> to your classpath and expose the
+                       <code>/actuator/prometheus</code> endpoint, then configure Prometheus:</p>
+                    <pre class="bg-light p-3 rounded"><code># prometheus.yml
+scrape_configs:
+  - job_name: superfly
+    static_configs:
+      - targets: ['&lt;host&gt;:8080']
+    metrics_path: /actuator/prometheus
+    scrape_interval: 15s</code></pre>
+                    <p class="mb-1"><strong>Useful PromQL queries:</strong></p>
+                    <ul>
+                        <li>Total call rate:
+                            <code>rate(sso_call_duration_seconds_count[1m])</code></li>
+                        <li>Error rate per operation:
+                            <code>rate(sso_call_duration_seconds_count{status="error"}[5m])</code></li>
+                        <li>P99 latency:
+                            <code>histogram_quantile(0.99, rate(sso_call_duration_seconds_bucket[5m]))</code></li>
+                        <li>Time since last success (seconds):
+                            <code>time() - sso_last_success_epoch_ms / 1000</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Grafana -->
+        <div class="card">
+            <div class="card-header" id="heading-grafana">
+                <h5 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button"
+                            data-toggle="collapse" data-target="#collapse-grafana"
+                            aria-expanded="false" aria-controls="collapse-grafana">
+                        📈 Grafana Dashboard
+                    </button>
+                </h5>
+            </div>
+            <div id="collapse-grafana" class="collapse" aria-labelledby="heading-grafana"
+                 data-parent="#monitoring-accordion">
+                <div class="card-body">
+                    <p>Import the Superfly SSO dashboard into Grafana:</p>
+                    <ol>
+                        <li>Open Grafana → <strong>Dashboards → Import</strong></li>
+                        <li>Upload <code>grafana/superfly-sso-dashboard.json</code> from the project repo</li>
+                        <li>Select the Prometheus datasource pointing to your Superfly instance</li>
+                    </ol>
+                    <p><strong>Recommended alert rules:</strong></p>
+                    <ul>
+                        <li>Error rate &gt; 10% for 5 minutes →
+                            <code>rate(sso_call_duration_seconds_count{status="error"}[5m]) /
+                                  rate(sso_call_duration_seconds_count[5m]) &gt; 0.1</code></li>
+                        <li>No successful calls for 10 minutes →
+                            <code>time() - sso_last_success_epoch_ms / 1000 &gt; 600</code></li>
+                        <li>P99 latency &gt; 2 s →
+                            <code>histogram_quantile(0.99,
+                                  rate(sso_call_duration_seconds_bucket[5m])) &gt; 2</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /accordion -->
+
+</wicket:extend>
+</body>
+</html>

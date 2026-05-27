@@ -23,6 +23,7 @@ import com.payneteasy.superfly.web.wicket.page.role.EditRolePage;
 import com.payneteasy.superfly.web.wicket.page.role.ListRolesPage;
 import com.payneteasy.superfly.web.wicket.page.role.ViewRolePage;
 import com.payneteasy.superfly.web.wicket.page.session.ListSessionsPage;
+import com.payneteasy.superfly.web.wicket.page.monitoring.MonitoringPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.CreateSmtpServerPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.ListSmtpServersPage;
 import com.payneteasy.superfly.web.wicket.page.smtp_server.UpdateSmtpServerPage;
@@ -99,6 +100,8 @@ public class SuperflyApplication extends BaseApplication {
         mountBookmarkablePageWithPath("smtp-servers/create", CreateSmtpServerPage.class);
         mountBookmarkablePageWithPath("smtp-servers/update", UpdateSmtpServerPage.class);
         mountBookmarkablePageWithPath("smtp-servers/view", ViewSmtpServerPage.class);
+
+        mountBookmarkablePageWithPath("/monitoring", MonitoringPage.class);
 
         getRequestCycleSettings().setRenderStrategy(RequestCycleSettings.RenderStrategy.REDIRECT_TO_RENDER);
     }
