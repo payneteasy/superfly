@@ -22,16 +22,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <!--Justification: Paynet http client API.-->
+            <!--Justification: Paynet http client API — IHttpClient contract and request/response types -->
             <groupId>com.payneteasy.http-client</groupId>
             <artifactId>http-client-api</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Paynet http client API.-->
-            <groupId>com.payneteasy.http-client</groupId>
-            <artifactId>http-client-impl</artifactId>
+            <!--Justification: Apache HttpClient 5 — transport implementation (ApacheHC5HttpClient) -->
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: superfly-httpclient-ssl: JdkSslSocketFactoryBuilder for mTLS setup in tests/docs -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-httpclient-ssl</artifactId>
+        </dependency>
+<dependency>
             <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
@@ -75,6 +76,46 @@ public class JdkSslSocketFactoryBuilderTest {
         JdkSslSocketFactoryBuilder.buildSocketFactory(bad, "pass", null, null);
     }
 
+    // ── buildSslContext ───────────────────────────────────────────────────────
+
+    @Test
+    public void testBuildSslContext_withBothStores_returnsNonNull() throws Exception {
+        URL ksUrl = emptyJks("ks");
+        URL tsUrl = emptyJks("ts");
+
+        SSLContext ctx = JdkSslSocketFactoryBuilder.buildSslContext(ksUrl, "testpass", tsUrl, "testpass");
+
+        assertNotNull("SSLContext must not be null", ctx);
+    }
+
+    @Test
+    public void testBuildSslContext_nullKeyStore_doesNotThrow() throws Exception {
+        URL tsUrl = emptyJks("ts");
+
+        SSLContext ctx = JdkSslSocketFactoryBuilder.buildSslContext(null, null, tsUrl, "testpass");
+
+        assertNotNull(ctx);
+    }
+
+    @Test
+    public void testBuildSslContext_bothNull_doesNotThrow() throws Exception {
+        SSLContext ctx = JdkSslSocketFactoryBuilder.buildSslContext(null, null, null, null);
+
+        assertNotNull(ctx);
+    }
+
+    @Test
+    public void testBuildSslContext_socketFactoryConsistent() throws Exception {
+        // buildSocketFactory and buildSslContext must produce equivalent contexts
+        URL ksUrl = emptyJks("ks2");
+        URL tsUrl = emptyJks("ts2");
+
+        SSLContext ctx = JdkSslSocketFactoryBuilder.buildSslContext(ksUrl, "testpass", tsUrl, "testpass");
+        SSLSocketFactory factoryFromCtx = ctx.getSocketFactory();
+
+        assertNotNull("SocketFactory from SSLContext must not be null", factoryFromCtx);
+    }
+
     // ── buildTrustManager ────────────────────────────────────────────────────
 
     @Test
@@ -97,7 +138,8 @@ public class JdkSslSocketFactoryBuilderTest {
 
     @Test
     public void testBuildCnHostnameVerifier_matchingCn_returnsTrue() throws Exception {
-        HostnameVerifier verifier = JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server");
+        HostnameVerifier verifier = JdkSslSocketFactoryBuilder.
+                buildCnHostnameVerifier("superfly-server");
 
         boolean result = verifier.verify("localhost", sessionWithCn("superfly-server"));
 

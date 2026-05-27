@@ -143,6 +143,18 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Apache HttpClient 5 — connection pooling, explicit lifecycle, modern HTTP/1.1 -->
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <!--Justification: Common utilities and shared functionality for SuperFly components -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-common</artifactId>
@@ -1105,6 +1117,7 @@
 
     <properties>
         <jdbcproc.version>1.1-25</jdbcproc.version>
+        <httpclient5.version>5.4.4</httpclient5.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring.version>6.2.18</spring.version>
         <spring.security.version>6.4.11</spring.security.version>

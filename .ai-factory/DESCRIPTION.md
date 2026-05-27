@@ -50,6 +50,7 @@ Superfly — это централизованный сервер аутенти
 | `superfly-crypto` | Шифрование и хэширование паролей |
 | `superfly-common` | Shared utilities |
 | `superfly-httpclient-ssl` | HTTP client с SSL |
+| `superfly-httpclient-hc5` | Apache HC5 транспорт (connection pool, AutoCloseable) |
 | `superfly-sql` | SQL-скрипты и миграции |
 | `superfly-integration-test` | Интеграционные тесты (против реальной БД) |
 

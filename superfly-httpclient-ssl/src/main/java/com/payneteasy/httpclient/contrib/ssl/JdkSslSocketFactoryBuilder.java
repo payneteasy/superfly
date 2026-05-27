@@ -109,9 +109,15 @@ public class JdkSslSocketFactoryBuilder {
         return null;
     }
 
-    // ── internals ────────────────────────────────────────────────────────────
-
-    private static SSLContext buildSslContext(
+    /**
+     * Builds an {@link SSLContext} from a keyStore and a trustStore.
+     * Either URL may be {@code null}: {@code null} keyStore skips client auth setup;
+     * {@code null} trustStore uses the JVM default trust anchors.
+     * <p>
+     * Use this method when the caller needs an {@link SSLContext} directly (e.g. Apache HttpClient 5)
+     * rather than a {@link SSLSocketFactory}.
+     */
+    public static SSLContext buildSslContext(
             URL keyStoreUrl, String keyStorePassword,
             URL trustStoreUrl, String trustStorePassword
     ) throws GeneralSecurityException, IOException {

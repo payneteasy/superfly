@@ -72,6 +72,7 @@ cd superfly
 | [Руководство по интеграции](docs/integration-guide.md) | Подключение к клиентскому приложению |
 | [SSO HTTP Client](docs/sso-http-client.md) | Клиентский `SSOHttpServiceApiClient`, per-endpoint timeouts |
 | [SSL / mTLS](docs/ssl-mtls.md) | TLS-соединение, hostname verification, кастомный CA |
+| [Apache HC5 Transport](docs/httpclient-hc5.md) | Connection pooling, AutoCloseable lifecycle, mTLS |
 | [Миграция EE8 / EE10](docs/migration-client-ee8-ee10.md) | Переход на раздельные модули |
 | [Выпуск релиза](docs/releasing.md) | Публикация в Maven Central |
 
