@@ -27,7 +27,9 @@ public class SSOHttpServiceApiClientSecurityTest {
     private ApiSerializationManager serializer;
     private ListAppender<ILoggingEvent> logCapture;
     private Logger               clientLogger;
-    private Level                originalLevel;
+    private Logger               configLogger;
+    private Level                originalClientLevel;
+    private Level                originalConfigLevel;
 
     @Before
     public void setUp() {
@@ -35,18 +37,24 @@ public class SSOHttpServiceApiClientSecurityTest {
         serializer = new ApiSerializationManager();
 
         clientLogger = (Logger) LoggerFactory.getLogger(SSOHttpServiceApiClient.class);
-        originalLevel = clientLogger.getLevel();
+        configLogger = (Logger) LoggerFactory.getLogger(SSOClientConfig.class);
+        originalClientLevel = clientLogger.getLevel();
+        originalConfigLevel = configLogger.getLevel();
         clientLogger.setLevel(Level.DEBUG);
+        configLogger.setLevel(Level.DEBUG);
 
         logCapture = new ListAppender<>();
         logCapture.start();
         clientLogger.addAppender(logCapture);
+        configLogger.addAppender(logCapture);
     }
 
     @After
     public void tearDown() {
         clientLogger.detachAppender(logCapture);
-        clientLogger.setLevel(originalLevel);
+        configLogger.detachAppender(logCapture);
+        clientLogger.setLevel(originalClientLevel);
+        configLogger.setLevel(originalConfigLevel);
         System.clearProperty("superfly.client.allowInsecureScheme");
     }
 
@@ -131,27 +139,22 @@ public class SSOHttpServiceApiClientSecurityTest {
     // ── helpers ──────────────────────────────────────────────────────────────
 
     private SSOHttpServiceApiClient newClient(String baseUrl) {
-        return new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                baseUrl,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializer
-        );
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(baseUrl)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        return new SSOHttpServiceApiClient(mockHttpClient, config, serializer);
     }
 
     private SSOHttpServiceApiClient newTestableClient() {
-        return new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                HTTPS_URL,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializer
-        ) {
-            @Override
-            protected IHttpClient getHttpClient() {
-                return mockHttpClient;
-            }
-        };
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(HTTPS_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        return new SSOHttpServiceApiClient(mockHttpClient, config, serializer);
     }
 }

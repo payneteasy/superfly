@@ -42,88 +42,90 @@ public class SSOHttpServiceApiClientTest {
         httpClient = EasyMock.createMock(IHttpClient.class);
         serializationManager = new ApiSerializationManager();
 
-        HttpRequestParameters parameters = HttpRequestParameters.builder().build();
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(BASE_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
 
-        // Mock http client
-        client = new TestableHttpServiceApiClient(
-                parameters,
-                BASE_URL,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        // Inject mock transport directly via new DI constructor
+        client = new SSOHttpServiceApiClient(httpClient, config, serializationManager);
     }
 
     @Test
     public void testConstructorValidation() {
+        SSOClientConfig validConfig = SSOClientConfig.builder()
+                .baseUrl(BASE_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+
         // Valid arguments
-        new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                BASE_URL,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        new SSOHttpServiceApiClient(httpClient, validConfig, serializationManager);
 
-        // Check for null and empty values
+        // null IHttpClient → NPE
         assertThrows(NullPointerException.class, () ->
-                new SSOHttpServiceApiClient(
-                        null,
-                        BASE_URL,
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                new SSOHttpServiceApiClient(null, validConfig, serializationManager)
         );
 
+        // null SSOClientConfig → NPE
         assertThrows(NullPointerException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        BASE_URL,
-                        null,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                new SSOHttpServiceApiClient(httpClient, null, serializationManager)
         );
 
+        // null ApiSerializationManager → NPE
+        assertThrows(NullPointerException.class, () ->
+                new SSOHttpServiceApiClient(httpClient, validConfig, null)
+        );
+
+        // SSOClientConfig validation: null baseUrl
         assertThrows(IllegalArgumentException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        null,
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                SSOClientConfig.builder()
+                        .baseUrl(null)
+                        .subsystemName(SUBSYSTEM_NAME)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
+        // SSOClientConfig validation: empty baseUrl
         assertThrows(IllegalArgumentException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        "",
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                SSOClientConfig.builder()
+                        .baseUrl("")
+                        .subsystemName(SUBSYSTEM_NAME)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
-        // Check that URL without trailing / is handled correctly
-        SSOHttpServiceApiClient client1 = new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                "https://example.com/api",
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
+        // SSOClientConfig validation: null subsystemName
+        assertThrows(NullPointerException.class, () ->
+                SSOClientConfig.builder()
+                        .baseUrl(BASE_URL)
+                        .subsystemName(null)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
-        // Check that URL with trailing / is handled correctly
-        SSOHttpServiceApiClient client2 = new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                "https://example.com/api/",
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        // URL without trailing / handled correctly
+        SSOClientConfig cfg1 = SSOClientConfig.builder()
+                .baseUrl("https://example.com/api")
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        assertEquals("https://example.com/api", cfg1.getBaseUrl());
+
+        // URL with trailing / is trimmed
+        SSOClientConfig cfg2 = SSOClientConfig.builder()
+                .baseUrl("https://example.com/api/")
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        assertEquals("https://example.com/api", cfg2.getBaseUrl());
     }
+
 
     @Test
     public void testAuthenticate_Success() throws SsoAuthException, HttpWriteException, HttpConnectException, HttpReadException {
@@ -592,23 +594,6 @@ public class SSOHttpServiceApiClientTest {
             }
             // Reset the state of mocks after exceptions
             resetAll();
-        }
-    }
-
-    private class TestableHttpServiceApiClient extends SSOHttpServiceApiClient {
-        public TestableHttpServiceApiClient(
-                HttpRequestParameters httpRequestParameters,
-                String baseUrl,
-                String subsystemName,
-                String subsystemToken,
-                ApiSerializationManager serializationManager
-        ) {
-            super(httpRequestParameters, baseUrl, subsystemName, subsystemToken, serializationManager);
-        }
-
-        @Override
-        protected IHttpClient getHttpClient() {
-            return httpClient;
         }
     }
 
