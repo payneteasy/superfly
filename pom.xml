@@ -12,6 +12,7 @@
         <module>superfly-service</module>
         <module>superfly-web</module>
         <module>superfly-httpclient-ssl</module>
+        <module>superfly-httpclient-hc5</module>
         <module>superfly-common</module>
         <module>superfly-client-web-security</module>
         <module>superfly-client-opt</module>

@@ -27,14 +27,6 @@
             <artifactId>http-client-api</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Apache HttpClient 5 — transport implementation for ApacheHC5HttpClient;
-                optional so consumers that use JDK transport are not forced to bundle httpclient5.
-                Consumers that use ApacheHC5HttpClient must declare httpclient5 in their own pom. -->
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <!--Justification: superfly-httpclient-ssl: JdkSslSocketFactoryBuilder for mTLS setup in tests/docs -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-httpclient-ssl</artifactId>
