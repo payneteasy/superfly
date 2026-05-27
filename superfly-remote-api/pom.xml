@@ -42,6 +42,12 @@
             <artifactId>gson</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Micrometer — metrics facade for MetricsSSOService decorator; optional so it's not pulled transitively into consumer modules -->
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
