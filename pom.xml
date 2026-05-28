@@ -144,6 +144,13 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <!--Justification: Apache HttpClient 5 transport implementation (ApacheHC5HttpClient);
+                    consumers who need HC5 transport must declare this artifact explicitly -->
+                <groupId>com.payneteasy.superfly</groupId>
+                <artifactId>superfly-httpclient-hc5</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <!--Justification: Apache HttpClient 5 — connection pooling, explicit lifecycle, modern HTTP/1.1 -->
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
