@@ -183,11 +183,6 @@
             <artifactId>logback-core</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Micrometer — metrics facade for MonitoringPage and MetricsSSOService server-side instrumentation -->
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-        </dependency>
-        <dependency>
             <!--Justification: Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>

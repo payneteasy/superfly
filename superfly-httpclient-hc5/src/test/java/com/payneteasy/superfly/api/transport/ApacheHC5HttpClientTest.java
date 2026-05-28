@@ -47,6 +47,18 @@ public class ApacheHC5HttpClientTest {
         if (server != null) server.stop(0);
     }
 
+    /**
+     * Contract test: дефолты pool size — single-host симметрия (20/20).
+     * Изменение этих констант должно потребовать осознанного обновления теста и причины в PR
+     * (см. ROADMAP.md SSO-3-tune: paynet — single SSO-host setup, ≈ 20–30 RPS).
+     */
+    @Test
+    public void testDefaultPoolSizes() {
+        assertEquals(20, ApacheHC5HttpClient.DEFAULT_MAX_CONN_TOTAL);
+        assertEquals(20, ApacheHC5HttpClient.DEFAULT_MAX_CONN_PER_ROUTE);
+        assertEquals(30, ApacheHC5HttpClient.DEFAULT_IDLE_EVICTION_SEC);
+    }
+
     @Test
     public void testSuccessfulPost() throws Exception {
         server.createContext("/api/login", exchange -> {

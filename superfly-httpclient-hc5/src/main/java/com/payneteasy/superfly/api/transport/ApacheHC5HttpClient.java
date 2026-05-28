@@ -70,11 +70,23 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
 
     // ── connection pool defaults ──────────────────────────────────────────────
 
-    /** Максимальное суммарное число соединений в пуле. */
-    public static final int DEFAULT_MAX_CONN_TOTAL      = 50;
+    /**
+     * Максимальное суммарное число соединений в пуле.
+     *
+     * <p>Дефолт {@code 20} рассчитан на single-host setup (consumer видит один SSO-host):
+     * {@code maxConnTotal == maxConnPerRoute}. Покрывает peak-нагрузку типичного consumer
+     * (paynet ≈ 20–30 RPS). Для multi-host или high-RPS — увеличить осознанно через builder.
+     */
+    public static final int DEFAULT_MAX_CONN_TOTAL      = 20;
 
-    /** Максимальное число соединений на один маршрут (host:port). */
-    public static final int DEFAULT_MAX_CONN_PER_ROUTE  = 25;
+    /**
+     * Максимальное число соединений на один маршрут (host:port).
+     *
+     * <p>Симметрично {@link #DEFAULT_MAX_CONN_TOTAL} для single-host setup: при одном
+     * SSO-сервере «total» и «perRoute» — один и тот же лимит. Для multi-host увеличить
+     * {@code maxConnTotal} пропорционально количеству хостов, сохраняя {@code perRoute=20}.
+     */
+    public static final int DEFAULT_MAX_CONN_PER_ROUTE  = 20;
 
     /** Время простоя (сек) после которого соединение вытесняется из пула. */
     public static final int DEFAULT_IDLE_EVICTION_SEC   = 30;

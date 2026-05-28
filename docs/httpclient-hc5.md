@@ -7,7 +7,7 @@
 
 | Проблема `HttpClientImpl` | Решение в `ApacheHC5HttpClient` |
 |---------------------------|--------------------------------|
-| Нет connection pooling — каждый вызов = новый TCP+TLS handshake | PoolingHttpClientConnectionManager (по умолчанию 50/25 conn) |
+| Нет connection pooling — каждый вызов = новый TCP+TLS handshake | PoolingHttpClientConnectionManager (по умолчанию 20/20 conn) |
 | Нет `AutoCloseable` — resource leak при timeout | `implements AutoCloseable`, `close()` корректно шатдаунит пул |
 | Нет eviction idle соединений | `evictIdleConnections(30s)` |
 
@@ -32,19 +32,23 @@ ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
     // HostnameVerifier — опционально; null = стандартная hostname verification
     .hostnameVerifier(JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server"))
     // Connection pool (дефолты ниже)
-    .maxConnTotal(50)      // суммарный лимит
-    .maxConnPerRoute(25)   // лимит на маршрут (host:port)
+    .maxConnTotal(20)      // суммарный лимит
+    .maxConnPerRoute(20)   // лимит на маршрут (host:port)
     .idleEvictionSec(30)   // eviction idle connections
     .build();
 ```
 
 ### Дефолтные значения
 
-| Параметр | Значение |
-|----------|---------|
-| `maxConnTotal` | 50 |
-| `maxConnPerRoute` | 25 |
-| `idleEvictionSec` | 30 |
+| Параметр | Значение | Обоснование |
+|----------|---------|-------------|
+| `maxConnTotal` | 20 | Покрывает peak load типичного consumer (paynet ~20-30 RPS) |
+| `maxConnPerRoute` | 20 | = total для single-host setup (consumer видит один SSO-host) |
+| `idleEvictionSec` | 30 | Освобождает соединения за пределами обычного traffic burst |
+
+> Если consumer обслуживает несколько SSO-серверов (горячее переключение) — увеличьте
+> `maxConnTotal` пропорционально количеству хостов, сохраняя `maxConnPerRoute=20`.
+> Для high-RPS приложений (> 100 RPS к SSO) — поднимите оба значения, измерив реальный peak.
 
 ## Per-request timeout
 
