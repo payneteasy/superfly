@@ -88,9 +88,9 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: HTTP requests handling library. -->
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <!--Justification: IHttpClient transport abstraction for delivering notification callbacks. -->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-api</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Velocity template engine support-->

@@ -11,7 +11,6 @@
         <module>superfly-spi</module>
         <module>superfly-service</module>
         <module>superfly-web</module>
-        <module>superfly-httpclient-ssl</module>
         <module>superfly-httpclient-hc5</module>
         <module>superfly-common</module>
         <module>superfly-client-web-security</module>
@@ -135,12 +134,6 @@
                 <!--Justification: Core service implementation for SuperFly authentication/authorization -->
                 <groupId>com.payneteasy.superfly</groupId>
                 <artifactId>superfly-service</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <!--Justification: SSL-enabled HTTP client for secure communication with SuperFly services -->
-                <groupId>com.payneteasy.superfly</groupId>
-                <artifactId>superfly-httpclient-ssl</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -525,18 +518,6 @@
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectj.version}</version>
             </dependency>
-            <dependency>
-                <!--Justification: HTTP requests handling library. -->
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             <!--Justification: Utilities for file and stream operations. -->
             <dependency>
                 <groupId>commons-io</groupId>
@@ -738,22 +719,6 @@
                 <version>1.84</version>
             </dependency>
 
-            <dependency>
-                <!--Justification: Provides SSL/TLS support with fixes for specific vulnerabilities -->
-                <groupId>ca.juliusdavies</groupId>
-                <artifactId>not-yet-commons-ssl</artifactId>
-                <!-- This version contains a fix that implements the same thing
-                     as a fix for CVE-2015-5262.
-                     Also, there is a fix that allows us to run on Java 9+.
-                -->
-                <version>0.3.17-20180724</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
 
             <dependency>
                 <!--Justification: Reflection library to obtain metadata about classes -->

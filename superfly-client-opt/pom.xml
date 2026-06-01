@@ -15,9 +15,14 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: HTTP requests handling library. -->
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
+            <!--Justification: IHttpClient transport abstraction exposed as a Spring bean. -->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: ApacheHC5HttpClient — HttpClient 5 transport implementation behind the IHttpClient bean. -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-httpclient-hc5</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Core functionality of the Spring framework -->
@@ -53,17 +58,6 @@
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client-core</artifactId>
         </dependency>
-        <dependency>
-            <!--Justification: SSL-enabled HTTP client for secure communication with SuperFly services -->
-            <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-httpclient-ssl</artifactId>
-        </dependency>
-        <dependency>
-            <!--Justification: Provides SSL/TLS support with fixes for specific vulnerabilities -->
-            <groupId>ca.juliusdavies</groupId>
-            <artifactId>not-yet-commons-ssl</artifactId>
-        </dependency>
-
         <dependency>
             <!--Justification: Reflection library to obtain metadata about classes -->
             <groupId>org.reflections</groupId>

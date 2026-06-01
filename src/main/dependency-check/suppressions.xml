@@ -49,35 +49,6 @@
         <cpe>cpe:/a:sun:javamail:1.4</cpe>
     </suppress>
 
-    <!-- These are suppressed because they relate to AbstractVerifier
-         vulnerability of httpclient 4.x which is not even present
-         in the commons-httpclient 3.x -->
-    <suppress>
-        <notes><![CDATA[
-      file name: commons-httpclient-3.1.jar
-      ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2014-3577</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-      file name: commons-httpclient-3.1.jar
-      ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2012-6153</cve>
-    </suppress>
-
-    <!-- Suppressing this because it is about httpclient 4.x, not 3.x.
-        Analogous code we use with 3.x is patched to avoid this vulnerability.
-    -->
-    <suppress>
-        <notes><![CDATA[
-  file name: commons-httpclient-3.1.jar
-  ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2015-5262</cve>
-    </suppress>
-
     <!-- This is not PGP -->
     <suppress>
        <notes><![CDATA[

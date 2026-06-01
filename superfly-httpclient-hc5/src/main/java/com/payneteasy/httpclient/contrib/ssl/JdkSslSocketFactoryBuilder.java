@@ -27,8 +27,8 @@ import java.util.Set;
 
 /**
  * Builds JDK-native {@link SSLSocketFactory} and {@link X509TrustManager} from keyStore/trustStore URLs.
- * Unlike {@link AuthSSLProtocolSocketFactory} (Apache Commons HC), this builder has no servlet-container
- * or legacy-HTTP dependency and can be used with {@code HttpRequestParameters.sslSocketFactory}.
+ * Unlike the former commons-httpclient {@code AuthSSLProtocolSocketFactory}, this builder has no
+ * servlet-container or legacy-HTTP dependency and feeds the ApacheHC5HttpClient SSL context directly.
  */
 public class JdkSslSocketFactoryBuilder {
 
