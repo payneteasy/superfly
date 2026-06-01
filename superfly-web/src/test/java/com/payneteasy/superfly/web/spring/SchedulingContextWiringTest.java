@@ -8,7 +8,6 @@ import com.payneteasy.superfly.service.UserService;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.util.HashMap;
@@ -61,8 +60,14 @@ public class SchedulingContextWiringTest {
     /**
      * Заглушки реальных зависимостей. {@code sessionService} намеренно зависит
      * от {@link Notifier}, воспроизводя ребро цикла.
+     *
+     * <p>НЕ помечен {@code @Configuration}/{@code @Component} специально: иначе
+     * широкий продакшн-скан ({@code @ComponentScan("com.payneteasy.superfly")})
+     * подхватил бы этот тестовый класс при запуске {@code Start} с тестовым
+     * classpath и зарегистрировал дублирующий бин {@code userService}.
+     * При явном {@code register(StubBeans.class)} в тесте Spring всё равно
+     * обрабатывает {@code @Bean}-методы (lite-режим), сохраняя ребро цикла.
      */
-    @Configuration
     static class StubBeans {
 
         @Bean
