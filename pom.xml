@@ -526,12 +526,6 @@
                 <version>${aspectj.version}</version>
             </dependency>
             <dependency>
-                <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>2.3.2</version>
-            </dependency>
-            <dependency>
                 <!--Justification: HTTP requests handling library. -->
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
