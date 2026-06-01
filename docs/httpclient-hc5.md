@@ -21,7 +21,7 @@
 </dependency>
 ```
 
-Транзитивно тащит: `org.apache.httpcomponents.client5:httpclient5:5.4.4`, `superfly-httpclient-ssl`.
+Транзитивно тащит: `org.apache.httpcomponents.client5:httpclient5:5.4.4`. SSL-хелперы (`JdkSslSocketFactoryBuilder` и др.) входят в сам модуль `superfly-httpclient-hc5` (пакет `com.payneteasy.httpclient.contrib.ssl`).
 
 ## Builder API
 
@@ -180,5 +180,5 @@ superfly-httpclient-hc5/src/test/java/.../ApacheHC5HttpClientTest.java
 
 - [SSL/mTLS Integration Guide](ssl-mtls.md)
 - [SSO HTTP Client](sso-http-client.md)
-- `JdkSslSocketFactoryBuilder` — `superfly-httpclient-ssl`
+- `JdkSslSocketFactoryBuilder` — `superfly-httpclient-hc5` (пакет `com.payneteasy.httpclient.contrib.ssl`)
 - `SSOClientConfig.parametersFor(endpoint)` — per-endpoint timeout config

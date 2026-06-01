@@ -23,7 +23,7 @@ Truststore:      содержит cert { CN=myCA }
 JDK: подпись myCA на сертификате сервера валидна? → ✅ доверяем
 ```
 
-Кастомный `AuthSSLX509TrustManager` из модуля `superfly-httpclient-ssl` оборачивает стандартный JDK TrustManager и дополнительно логирует информацию о сертификате — это полезно для отладки. Сама верификация цепочки выполняется делегатом (стандартный JDK).
+Кастомный `AuthSSLX509TrustManager` из модуля `superfly-httpclient-hc5` оборачивает стандартный JDK TrustManager и дополнительно логирует информацию о сертификате — это полезно для отладки. Сама верификация цепочки выполняется делегатом (стандартный JDK).
 
 ### Шаг 2 — Hostname verification (HostnameVerifier)
 
@@ -66,55 +66,61 @@ evil.internal получил cert { CN=evil.internal } от того же CA
 
 ---
 
-## Компоненты SSL в superfly-httpclient-ssl
+## Компоненты SSL в superfly-httpclient-hc5
 
-Модуль `superfly-httpclient-ssl` предоставляет:
+После миграции на Apache HttpClient 5 SSL-хелперы живут в модуле `superfly-httpclient-hc5`
+(пакет `com.payneteasy.httpclient.contrib.ssl`); отдельный модуль `superfly-httpclient-ssl`
+и commons-coupled класс `AuthSSLProtocolSocketFactory` (для Apache Commons HttpClient 3.x) удалены.
 
 | Класс | Назначение |
 |-------|-----------|
-| `JdkSslSocketFactoryBuilder` | Строит `SSLSocketFactory` и `HostnameVerifier` из JKS-файлов |
+| `JdkSslSocketFactoryBuilder` | Строит `SSLContext` (для HC5), `SSLSocketFactory` и `HostnameVerifier` из JKS-файлов |
 | `AuthSSLX509TrustManager` | Обёртка над стандартным TrustManager с логированием сертификата |
 | `AuthSSLX509KeyManager` | Обёртка над стандартным KeyManager с логированием |
-| `AuthSSLProtocolSocketFactory` | Legacy: SSLSocketFactory для Apache Commons HttpClient 3.x |
 
 ### JdkSslSocketFactoryBuilder
 
-Основной entry point для современного кода (используется совместно с `http-client-impl`).
+Основной entry point для HC5 — `buildSslContext(...)`: собирает `SSLContext` из keystore + truststore,
+который передаётся в `ApacheHC5HttpClient.Builder.sslContext(...)`.
 
 ```java
-// Собрать SSLSocketFactory из keystore + truststore
-SSLSocketFactory factory = JdkSslSocketFactoryBuilder.buildSocketFactory(
+// SSLContext для HC5 (keyStore/trustStore — java.net.URL; любой может быть null)
+SSLContext ssl = JdkSslSocketFactoryBuilder.buildSslContext(
         keyStoreUrl,   keyStorePassword,
         trustStoreUrl, trustStorePassword
 );
 
-// Получить TrustManager (для диагностики или ручного использования)
-X509TrustManager tm = JdkSslSocketFactoryBuilder.buildTrustManager(
-        trustStoreUrl, trustStorePassword
-);
-
-// Получить HostnameVerifier по CN вместо hostname
+// HostnameVerifier по CN вместо hostname (для dev / self-signed)
 HostnameVerifier verifier = JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server");
+
+// Legacy: SSLSocketFactory (если нужен напрямую, вне HC5)
+SSLSocketFactory factory = JdkSslSocketFactoryBuilder.buildSocketFactory(
+        keyStoreUrl, keyStorePassword, trustStoreUrl, trustStorePassword);
 ```
 
 ---
 
-## Конфигурация HttpRequestParameters
+## Конфигурация SSL в ApacheHC5HttpClient
 
-`HttpRequestParameters` из `http-client-api` принимает SSL-параметры:
+SSL/mTLS настраивается **один раз при создании** клиента через builder — HC5 использует
+пул соединений с единым SSL-контекстом:
 
-| Поле | Тип | Назначение |
-|------|-----|-----------|
-| `sslSocketFactory` | `SSLSocketFactory` | Контролирует какому CA доверяем (шаг 1) |
-| `hostnameVerifier` | `HostnameVerifier` | Контролирует проверку hostname (шаг 2) |
-| `trustManager` | `X509TrustManager` | Не используется в `HttpClientImpl` — поле присутствует для совместимости |
-
-`HttpClientImpl` применяет оба поля к `HttpsURLConnection`:
+| Метод builder | Тип | Назначение |
+|---------------|-----|-----------|
+| `.sslContext(SSLContext)` | `SSLContext` | Какому CA доверяем + клиентский сертификат для mTLS (шаги 1). `null` → JVM default |
+| `.hostnameVerifier(HostnameVerifier)` | `HostnameVerifier` | Проверка hostname (шаг 2). `null` → стандартная проверка |
 
 ```java
-((HttpsURLConnection) connection).setSSLSocketFactory(parameters.getSslSocketFactory());
-((HttpsURLConnection) connection).setHostnameVerifier(parameters.getHostnameVerifier());
+try (ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
+        .sslContext(ssl)
+        .hostnameVerifier(verifier)
+        .build()) {
+    // client.send(request, params)
+}
 ```
+
+> Поля `sslSocketFactory` / `hostnameVerifier` в per-request `HttpRequestParameters`
+> игнорируются HC5 — SSL фиксируется на уровне пула при создании клиента.
 
 ---
 
@@ -125,9 +131,8 @@ HostnameVerifier verifier = JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("
 Сертификат выдан доверенным публичным CA (Let's Encrypt, DigiCert и т.д.), CN/SAN соответствует реальному hostname.
 
 ```java
-HttpRequestParameters params = HttpRequestParameters.builder()
-        .timeouts(timeouts)
-        .build(); // sslSocketFactory и hostnameVerifier не нужны — JDK использует системный truststore
+// sslContext/hostnameVerifier не нужны — JDK использует системный truststore
+ApacheHC5HttpClient client = ApacheHC5HttpClient.builder().build();
 ```
 
 ### Сценарий 2: HTTPS с кастомным CA, CN совпадает с hostname (прод с внутренним PKI)
@@ -138,15 +143,14 @@ URL:  https://superfly.internal:8446/...
 ```
 
 ```java
-SSLSocketFactory factory = JdkSslSocketFactoryBuilder.buildSocketFactory(
+SSLContext ssl = JdkSslSocketFactoryBuilder.buildSslContext(
         keyStoreUrl, keyStorePassword,
         trustStoreUrl, trustStorePassword  // truststore с кастомным CA
 );
 
-HttpRequestParameters params = HttpRequestParameters.builder()
-        .timeouts(timeouts)
-        .sslSocketFactory(factory)  // кастомный CA
-        // hostnameVerifier не нужен — CN совпадает с hostname
+ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
+        .sslContext(ssl)            // кастомный CA
+        // hostnameVerifier не нужен — CN/SAN совпадает с hostname
         .build();
 ```
 
@@ -162,12 +166,12 @@ URL:  https://localhost:8446/...
 **Вариант A — CN-based verifier (рекомендуется для dev):**
 
 ```java
-SSLSocketFactory factory = JdkSslSocketFactoryBuilder.buildSocketFactory(...);
+SSLContext ssl = JdkSslSocketFactoryBuilder.buildSslContext(
+        keyStoreUrl, keyStorePassword, trustStoreUrl, trustStorePassword);
 HostnameVerifier verifier = JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server");
 
-HttpRequestParameters params = HttpRequestParameters.builder()
-        .timeouts(timeouts)
-        .sslSocketFactory(factory)
+ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
+        .sslContext(ssl)
         .hostnameVerifier(verifier)
         .build();
 ```
@@ -187,30 +191,35 @@ subjectAltName=DNS:superfly-server,DNS:localhost,IP:127.0.0.1
 
 ## Конфигурация в клиентском приложении (Spring)
 
-`SuperflySsoServiceConfig` управляет параметрами SSL на стороне клиента:
-
-| Поле | Дефолт | Описание |
-|------|--------|---------|
-| `keyStoreResourceUrl` | `classpath:stores/paynet-local.jks` | Keystore с клиентским сертификатом и приватным ключом |
-| `keyStorePassword` | `changeit` | Пароль keystore |
-| `trustStoreResourceUrl` | `classpath:stores/cacert.jks` | Truststore с сертификатом CA |
-| `trustStorePassword` | `changeit` | Пароль truststore |
-| `expectedServerCn` | `superfly-server` | CN сертификата сервера; `null` = использовать стандартный hostname verifier |
-
-`SpringUISuperflyClientConfiguration` автоматически применяет SSL когда `keyStoreResourceUrl != null`:
+Клиентское приложение собирает `ApacheHC5HttpClient` как Spring-бин (`IHttpClient`) и применяет
+SSL, когда заданы пути к keystore/truststore. Типичный паттерн @Bean-фабрики:
 
 ```java
-if (ssoConfig.getKeyStoreResourceUrl() != null) {
-    paramsBuilder.sslSocketFactory(buildSslSocketFactory());
-    if (ssoConfig.getExpectedServerCn() != null) {
-        paramsBuilder.hostnameVerifier(
-            JdkSslSocketFactoryBuilder.buildCnHostnameVerifier(ssoConfig.getExpectedServerCn())
-        );
+@Bean
+public IHttpClient superflyHttpClient(SsoClientProperties cfg) throws Exception {
+    ApacheHC5HttpClient.Builder builder = ApacheHC5HttpClient.builder();
+    if (cfg.getKeyStoreUrl() != null) {
+        builder.sslContext(JdkSslSocketFactoryBuilder.buildSslContext(
+                cfg.getKeyStoreUrl(),   cfg.getKeyStorePassword(),
+                cfg.getTrustStoreUrl(), cfg.getTrustStorePassword()));
+        if (cfg.getExpectedServerCn() != null) {   // CN сервера; null → стандартный hostname verifier
+            builder.hostnameVerifier(
+                JdkSslSocketFactoryBuilder.buildCnHostnameVerifier(cfg.getExpectedServerCn()));
+        }
     }
+    return builder.build();   // AutoCloseable — Spring закроет пул на shutdown
 }
 ```
 
-Для прода с корректным SAN в сертификате — установить `expectedServerCn: null` в YAML-конфиге.
+Рекомендуемые параметры конфигурации приложения:
+
+| Параметр | Описание |
+|----------|---------|
+| `keyStoreUrl` / `keyStorePassword` | Keystore с клиентским сертификатом и приватным ключом (mTLS) |
+| `trustStoreUrl` / `trustStorePassword` | Truststore с сертификатом CA сервера |
+| `expectedServerCn` | CN сертификата сервера; `null` = стандартный hostname verifier (прод с корректным SAN) |
+
+Для прода с корректным SAN в сертификате — оставить `expectedServerCn` пустым.
 
 ---
 

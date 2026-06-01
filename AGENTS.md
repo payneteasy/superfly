@@ -65,7 +65,7 @@ superfly/
 │
 ├── superfly-common/               # Shared utilities
 ├── superfly-crypto/               # Шифрование, хэширование
-├── superfly-httpclient-ssl/       # HTTP client с SSL mutual auth
+├── superfly-httpclient-hc5/       # HTTP client (Apache HC5) + SSL/mTLS хелперы
 │
 ├── superfly-sql/                  # SQL-скрипты и миграции
 │   ├── src/                       # Stored procedures
