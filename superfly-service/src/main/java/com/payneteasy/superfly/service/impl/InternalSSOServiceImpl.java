@@ -381,8 +381,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public List<SSOEvent> getEvents(GetEventsRequest request) {
-        List<Event> events = eventService.getEvents(request.getLastEventTime(), request.getWaitTimeMs(), request.getSubsystemName());
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier) {
+        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs, subsystemIdentifier);
         if (events != null && !events.isEmpty()) {
             logger.info("getEvents call info={}", events);
             return events.stream()

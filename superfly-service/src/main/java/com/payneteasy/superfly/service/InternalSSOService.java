@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
@@ -178,5 +179,5 @@ public interface InternalSSOService {
 
     boolean hasOtpMasterKey(String username);
 
-    List<SSOEvent> getEvents(GetEventsRequest request);
+    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier);
 }
