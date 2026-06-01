@@ -17,7 +17,7 @@
             <!--Justification: Render html UI with Wicket 8 (EE8 / javax.servlet) -->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
-            <version>8.16.0</version>
+            <version>8.18.0</version>
             <type>pom</type>
         </dependency>
         <dependency>
