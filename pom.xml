@@ -586,24 +586,6 @@
             </dependency>
 
             <dependency>
-                <!--Justification: Required for XRemoting functionality-->
-                <groupId>com.googlecode.xremoting</groupId>
-                <artifactId>xremoting-core</artifactId>
-                <version>1.0-10</version>
-            </dependency>
-            <dependency>
-                <!--Justification: Provides XML serialization capabilities-->
-                <groupId>com.thoughtworks.xstream</groupId>
-                <artifactId>xstream</artifactId>
-                <version>1.4.21</version>
-            </dependency>
-            <dependency>
-                <!--Justification: Used for Hessian serialization-->
-                <groupId>com.caucho</groupId>
-                <artifactId>hessian</artifactId>
-                <version>4.0.66</version>
-            </dependency>
-            <dependency>
                 <!--Justification: Mustache template rendering functionality-->
                 <groupId>com.github.spullara.mustache.java</groupId>
                 <artifactId>compiler</artifactId>

@@ -168,6 +168,14 @@
     <servlet>
         <servlet-name>remoting</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- Empty child context: request handlers (RemoteApiController) are inherited from the
+             root context (WebConfig @EnableWebMvc). The obsolete /WEB-INF/remoting-servlet.xml
+             (dead XML/Hessian exporters) has been removed, so an explicit empty contextConfigLocation
+             prevents DispatcherServlet from trying to load the missing default config. -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>

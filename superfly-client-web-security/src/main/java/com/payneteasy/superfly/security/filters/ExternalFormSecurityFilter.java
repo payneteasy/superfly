@@ -1,12 +1,17 @@
 package com.payneteasy.superfly.security.filters;
 
-import com.caucho.hessian.client.HessianProxyFactory;
+import com.payneteasy.http.client.api.HttpRequestParameters;
+import com.payneteasy.http.client.api.HttpTimeouts;
+import com.payneteasy.http.client.impl.HttpClientImpl;
 import com.payneteasy.superfly.api.ActionDescription;
 import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.api.request.SendSystemDataRequest;
 import com.payneteasy.superfly.api.SSOAction;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.client.SSOClientConfig;
+import com.payneteasy.superfly.api.client.SSOHttpServiceApiClient;
+import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
 import com.payneteasy.superfly.security.filters.internal.SecurityFilterFlow;
 import com.payneteasy.superfly.security.spring.SecuredBeanPostProcessor;
 import com.payneteasy.superfly.security.spring.internal.SecurityContext;
@@ -18,16 +23,21 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ExternalFormSecurityFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExternalFormSecurityFilter.class);
+
+    private static final int DEFAULT_TIMEOUT_MS = 30_000;
+
+    /** Path-сегмент JSON remote-api на стороне SSO-сервера (RemoteApiController @RequestMapping). */
+    private static final String REMOTE_API_PATH = "/remoting/sso.service";
 
     private final ExcludedPaths paths;
     private final String loginFormUrl;
@@ -35,7 +45,29 @@ public class ExternalFormSecurityFilter implements Filter {
     private final SSOService    ssoService;
     private final String packageName;
     private final String systemName;
+    /** true, если транспортный JSON-клиент создан этим фильтром и должен закрываться в {@link #destroy()}. */
+    private final boolean ownsSsoService;
 
+    /**
+     * DI-конструктор: {@link SSOService} инжектится снаружи (тесты / Spring-конфигурация).
+     * Жизненным циклом клиента управляет вызывающая сторона — {@link #destroy()} его не закрывает.
+     */
+    public ExternalFormSecurityFilter(ExcludedPaths aPaths
+            , String aSystemName
+            , String aSsoWebBaseUrl
+            , String aPackageName
+            , SSOService aSsoService
+    ) {
+        this(aPaths, aSystemName, aSsoWebBaseUrl, aPackageName, aSsoService, false);
+    }
+
+    /**
+     * URL-конструктор (обратная совместимость для интеграторов): собирает JSON-клиент
+     * {@link SSOHttpServiceApiClient} поверх {@link HttpClientImpl}, заменяя прежний Hessian-транспорт.
+     *
+     * @param aSsoServiceBaseUrl базовый URL SSO-сервера (HTTPS; добавляется {@value #REMOTE_API_PATH}).
+     *                           Допускается http только при {@code -Dsuperfly.client.allowInsecureScheme=true}.
+     */
     public ExternalFormSecurityFilter(ExcludedPaths aPaths
             , String aSystemName
             , String aAccessToken
@@ -43,24 +75,39 @@ public class ExternalFormSecurityFilter implements Filter {
             , String aPackageName
             , String aSsoServiceBaseUrl
     ) {
+        this(aPaths, aSystemName, aSsoWebBaseUrl, aPackageName,
+                buildJsonClient(aSystemName, aAccessToken, aSsoServiceBaseUrl), true);
+    }
+
+    private ExternalFormSecurityFilter(ExcludedPaths aPaths
+            , String aSystemName
+            , String aSsoWebBaseUrl
+            , String aPackageName
+            , SSOService aSsoService
+            , boolean aOwnsSsoService
+    ) {
         paths = aPaths;
         loginFormUrl = aSsoWebBaseUrl + "/sso/login?subsystemIdentifier=" + aSystemName + "&targetUrl=";
         logoutUrl    = aSsoWebBaseUrl + "/sso/logout?subsystemIdentifier=" + aSystemName + "&targetUrl=";
         packageName = aPackageName;
         systemName = aSystemName;
+        ssoService = Objects.requireNonNull(aSsoService, "ssoService must not be null");
+        ownsSsoService = aOwnsSsoService;
+        LOG.debug("ExternalFormSecurityFilter initialized: system={} ownsClient={}", aSystemName, aOwnsSsoService);
+    }
 
-        HessianProxyFactory factory = new HessianProxyFactory();
-        factory.setUser(aSystemName);
-        factory.setPassword(aAccessToken);
-        factory.setConnectTimeout(30_000);
-        factory.setReadTimeout(30_000);
-        String serviceUrl = aSsoServiceBaseUrl + "/remoting/basic.hessian.service";
-        try {
-            ssoService = (SSOService) factory.create(SSOService.class, serviceUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalStateException("Could not parse url: " + serviceUrl, e);
-        }
-
+    private static SSOService buildJsonClient(String aSystemName, String aAccessToken, String aSsoServiceBaseUrl) {
+        String baseUrl = aSsoServiceBaseUrl + REMOTE_API_PATH;
+        LOG.info("Building JSON SSO client: baseUrl={} subsystem={}", baseUrl, aSystemName);
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(baseUrl)
+                .subsystemName(aSystemName)
+                .subsystemToken(aAccessToken)
+                .defaultParameters(HttpRequestParameters.builder()
+                        .timeouts(new HttpTimeouts(DEFAULT_TIMEOUT_MS, DEFAULT_TIMEOUT_MS))
+                        .build())
+                .build();
+        return new SSOHttpServiceApiClient(new HttpClientImpl(), config, new ApiSerializationManager());
     }
 
     @Override
@@ -167,5 +214,13 @@ public class ExternalFormSecurityFilter implements Filter {
 
     @Override
     public void destroy() {
+        if (ownsSsoService && ssoService instanceof AutoCloseable closeable) {
+            try {
+                LOG.debug("Closing owned JSON SSO client");
+                closeable.close();
+            } catch (Exception e) {
+                LOG.warn("Error while closing SSO client", e);
+            }
+        }
     }
 }

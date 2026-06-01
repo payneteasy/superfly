@@ -83,23 +83,6 @@
             <artifactId>quartz</artifactId>
         </dependency>
 
-        <dependency>
-            <!--Justification: Required for XRemoting functionality-->
-            <groupId>com.googlecode.xremoting</groupId>
-            <artifactId>xremoting-core</artifactId>
-        </dependency>
-        <dependency>
-            <!--Justification: Provides XML serialization capabilities-->
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>
-
-        <dependency>
-            <!--Justification: Used for Hessian serialization-->
-            <groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-        </dependency>
-
         <!-- WICKET DEPENDENCIES -->
         <dependency>
             <!--Justification: Render html UI-->

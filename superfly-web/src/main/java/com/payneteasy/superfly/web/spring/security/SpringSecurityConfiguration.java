@@ -86,11 +86,6 @@ public class SpringSecurityConfiguration {
                                     .permitAll()
                                     .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"))
                                     .hasAuthority("ROLE_SUBSYSTEM")
-                                    .requestMatchers(
-                                            antPathRequestMatcher("/remoting/oauth2.hessian.service/**"),
-                                            antPathRequestMatcher("/remoting/basic.hessian.service/**")
-                                    )
-                                    .permitAll()
                                     .anyRequest()
                                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_ACTION_TEMP_PASSWORD"))
             .exceptionHandling(httpSecurity ->
