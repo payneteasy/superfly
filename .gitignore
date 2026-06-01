@@ -13,6 +13,12 @@ target
 .ai-factory.json
 .ai-factory/
 .claude/
+.cursor/
+.mcp.json
 skills-lock.json
 PLAN.md
 FIX_PLAN.md
+
+# IDE run configs & generated plan docs — local, not for repo
+.run/
+docs/plans/
