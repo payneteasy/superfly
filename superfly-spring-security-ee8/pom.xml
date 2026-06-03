@@ -15,35 +15,48 @@
     <dependencyManagement>
         <dependencies>
             <!--
-                Pin Spring Framework to 5.x for EE8 compatibility.
-                Parent POM defines spring.version=6.2.18 in dependencyManagement, which would
-                override the Spring 5.x transitive deps from spring-security-web:${spring-security5.version}.
-                These entries restore the correct 5.x versions for EE8 (javax.servlet) environment.
+                Pin Spring Framework to 5.x AND force provided scope for EE8 compatibility.
+
+                Version: parent POM defines spring.version=6.2.18 in dependencyManagement, which would
+                otherwise override the Spring 5.x transitive deps pulled by spring-security-*:${spring-security5.version}.
+                These entries restore the correct 5.x versions for the EE8 (javax.servlet) environment.
+
+                Scope (provided): this module is a *published library* for external javax.servlet
+                consumers, not part of the running EE10 SSO server. Forcing the Spring 5.x transitive
+                deps to provided here prevents them from being exported transitively onto the consumer's
+                compile classpath. The consumer supplies its own javax-compatible Spring 5.x (variant B,
+                same contract as javax.servlet-api below). provided still keeps them on this module's own
+                compile/test classpath, so compilation against javax-5.x APIs is unaffected.
             -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring5.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
                 <version>${spring5.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring5.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${spring5.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-expression</artifactId>
                 <version>${spring5.version}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -61,25 +74,36 @@
             <artifactId>superfly-client-ee8</artifactId>
         </dependency>
 
-        <!-- EE8-compatible Spring stack (to be refined when web adapters are implemented) -->
+        <!--
+            EE8-compatible Spring stack (to be refined when web adapters are implemented).
+
+            All framework deps below are provided: this module is a published library for external
+            javax.servlet consumers, not the running EE10 SSO server. provided keeps them on this
+            module's own compile/test classpath (compilation works) but stops them from being exported
+            transitively onto the consumer's classpath — the consumer brings its own javax-compatible
+            Spring Security 5.x / Spring 5.x (variant B). Version pins stay 5.x (avoid jakarta-only 6.x API).
+        -->
         <dependency>
             <!--Justification: Core functionality for Spring Security in EE8 environments (javax.servlet-based API) -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <!-- EE8 adapter targets Spring Security 5.x (javax.*); version is fixed here to avoid jakarta-only API from 6.x -->
             <version>${spring-security5.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Web security filters and entry points for EE8 (javax.servlet) -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
             <version>${spring-security5.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Spring Security configuration support -->
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
             <version>${spring-security5.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -87,6 +111,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring5.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -114,6 +139,38 @@
                                         <exclude>jakarta.servlet-api:*</exclude>
                                     </excludes>
                                     <message>EE8 security module must not depend on jakarta.servlet (use javax.servlet)</message>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                    <!--
+                        Variant B guard: the Spring 5.x / Spring Security 5.x stack must stay
+                        <scope>provided</scope> so it is never exported transitively onto an EE8
+                        consumer's classpath. We ban these groups ONLY at compile/runtime scope
+                        (the exported scopes) — provided/test do not match, so this passes today
+                        and fails the build if any of those deps is ever switched back to compile
+                        or runtime (transitive CVE re-leak).
+
+                        Note: bannedDependencies in enforcer 3.4.1 has no includeProvidedDependencies
+                        flag; scope is matched via the 5th segment of the exclude pattern
+                        (groupId:artifactId:version:type:scope:classifier). searchTransitive stays
+                        at its default (true). Internal com.payneteasy.superfly:* deps are a
+                        different groupId and are unaffected.
+                    -->
+                    <execution>
+                        <id>ban-transitive-framework-leak</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>org.springframework:*:*:*:compile</exclude>
+                                        <exclude>org.springframework:*:*:*:runtime</exclude>
+                                        <exclude>org.springframework.security:*:*:*:compile</exclude>
+                                        <exclude>org.springframework.security:*:*:*:runtime</exclude>
+                                    </excludes>
+                                    <message>EE8 Spring / Spring Security deps must stay scope=provided (variant B): they must not leak onto an EE8 consumer's compile/runtime classpath. The consumer brings its own javax-compatible Spring 5.x.</message>
                                 </bannedDependencies>
                             </rules>
                             <fail>true</fail>
