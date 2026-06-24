@@ -4,7 +4,6 @@ import com.payneteasy.superfly.service.mapping.MappingService;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
-import org.apache.wicket.markup.html.form.CheckGroupSelector;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -30,7 +29,6 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
         final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<>("checkgroup-mapped",
                 mappingModel.getSelectedInMapped());
         form.add(checkGroupMapped);
-        checkGroupMapped.add(new CheckGroupSelector("master-checkbox-map", checkGroupMapped));
         checkGroupMapped.add(new Label("mapped-item-name", getHeaderItemName()));
 
         final IModel<List<T>> mappedListModel = new LoadableDetachableModel<List<T>>() {
@@ -63,7 +61,6 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
         final CheckGroup<MappingService> checkGroupUnMapped = new CheckGroup<>("checkgroup-unmapped",
                 mappingModel.getSelectedInUnMapped());
         form.add(checkGroupUnMapped);
-        checkGroupUnMapped.add(new CheckGroupSelector("master-checkbox-unmap", checkGroupUnMapped));
         checkGroupUnMapped.add(new Label("unmapped-item-name", getHeaderItemName()));
 
         final IModel<List<T>> unmappedListModel = new LoadableDetachableModel<List<T>>() {
