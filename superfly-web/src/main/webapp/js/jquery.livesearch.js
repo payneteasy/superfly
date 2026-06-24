@@ -24,8 +24,7 @@ jQuery.fn.fastLiveFilter = function(list, options) {
     var oldDisplay = len > 0 ? lis[0].style.display : "block";
     callback(len); // do a one-time callback on initialization to make sure everything's in sync
 
-    input.change(function() {
-        // var startTime = new Date().getTime();
+    function doFilter() {
         var filter = input.val().toLowerCase();
         var li;
         var numShown = 0;
@@ -43,15 +42,8 @@ jQuery.fn.fastLiveFilter = function(list, options) {
             }
         }
         callback(numShown);
-        // var endTime = new Date().getTime();
-        // console.log('Search for ' + filter + ' took: ' + (endTime - startTime) + ' (' + numShown + ' results)');
-        return false;
-    }).keydown(function() {
-            // TODO: one point of improvement could be in here: currently the change event is
-            // invoked even if a change does not occur (e.g. by pressing a modifier key or
-            // something)
-            clearTimeout(keyTimeout);
-            keyTimeout = setTimeout(function() { input.change(); }, timeout);
-        });
+    }
+
+    input.on('input', doFilter).on('change', doFilter);
     return this; // maintain jQuery chainability
 }
