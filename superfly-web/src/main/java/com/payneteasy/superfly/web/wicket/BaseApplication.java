@@ -11,11 +11,10 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
-import org.apache.wicket.request.Url;
 import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.UrlPathPageParametersEncoder;
-import org.apache.wicket.request.resource.UrlResourceReference;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.file.Path;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public abstract class BaseApplication extends WebApplication {
         }
 
         getJavaScriptLibrarySettings().setJQueryReference(
-                new UrlResourceReference(Url.parse("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"))
+                new ContextRelativeResourceReference("js/jquery-3.7.0.js", false)
         );
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
         getDebugSettings().setOutputMarkupContainerClassName(false);
