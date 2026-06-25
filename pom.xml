@@ -1,10 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
     <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-parent</artifactId>
     <packaging>pom</packaging>
@@ -77,23 +72,6 @@
             <email>kuccyp@gmail.com</email>
         </developer>
     </developers>
-
-    <!--
-    -      Distributions
-    -->
-    <distributionManagement>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>sonatype oss RELEASE repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-        </repository>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>sonatype oss SNAPSHOT repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
 
     <repositories>
         <!-- Atlassian repositories -->
@@ -964,6 +942,21 @@
 
     <profiles>
         <profile>
+            <id>deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <configuration>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
             <id>gpg-sign</id>
             <build>
                 <plugins>
@@ -979,28 +972,6 @@
                                 <argument>loopback</argument>
                             </gpgArguments>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>deploy</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
