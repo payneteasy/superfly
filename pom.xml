@@ -327,7 +327,7 @@
                 <!--Justification: Core library for Logback, necessary for logging configurations and functionality -->
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.5.33</version>
+                <version>1.5.35</version>
             </dependency>
             <dependency>
                 <!--Justification: Allows the use of SLF4J API with legacy Commons Logging applications -->
