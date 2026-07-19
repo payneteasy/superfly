@@ -1,358 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://www.owasp.org/index.php/OWASP_Dependency_Check_Suppression">
-    <!-- this is our module, not PGP in which these vulnerabilities are found -->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- superfly-crypto is our own module, not the "PGP" product the CVE/CPE data points at.
+         Version-agnostic so it survives module version bumps. -->
     <suppress>
         <notes><![CDATA[
-      file name: superfly-crypto-1.6-6-SNAPSHOT.jar
-      ]]></notes>
-        <sha1>851212e5584b21d22ec32a88f0fc5a60321adee3</sha1>
-        <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-      file name: superfly-crypto-1.6-6-SNAPSHOT.jar
-      ]]></notes>
-        <sha1>f70cca6343136ff015ae059b3f2dd728b57397de</sha1>
-        <cpe>cpe:/a:pgp:pgp:1.6.6</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-      file name: superfly-crypto-1.6-6-SNAPSHOT.jar
-      ]]></notes>
-        <sha1>8ae1efd2f5083030fd84623816bcd3a6c0192999</sha1>
-        <cve>CVE-2001-0265</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-      file name: superfly-crypto-1.6-9-SNAPSHOT.jar
-      ]]></notes>
-        <sha1>8575fb242603f2f2906bc1dd2679502db30a21fe</sha1>
+        superfly-crypto is our own helper module, falsely matched against cpe:/a:pgp:pgp.
+        ]]></notes>
+        <gav regex="true">^com\.payneteasy\.superfly:superfly-crypto:.*$</gav>
+        <cpe>cpe:/a:pgp:pgp</cpe>
         <cve>CVE-2001-0265</cve>
     </suppress>
 
-    <!-- bcpg supports OpenPGP API, but it does not contain OpenPGP's vulnerability -->
+    <!-- bcpg provides the OpenPGP API but is not the vulnerable "openpgp" product.
+         Version-agnostic so it survives Bouncy Castle bumps. -->
     <suppress>
         <notes><![CDATA[
-      file name: bcpg-jdk15-1.45.jar
-      ]]></notes>
-        <sha1>15eab6dce094fa9ea71fa6f6d69056b9fe6e493c</sha1>
-        <cve>CVE-2005-0366</cve>
-    </suppress>
-
-    <!-- The following is suppressed because multiple same email
-         problem does not affect Superfly -->
-    <suppress>
-        <notes><![CDATA[
-      file name: mail-1.4.jar
-      ]]></notes>
-        <sha1>1aa1579ae5ecd41920c4f355b0a9ef40b68315dd</sha1>
-        <cpe>cpe:/a:sun:javamail:1.4</cpe>
-    </suppress>
-
-    <!-- These are suppressed because they relate to AbstractVerifier
-         vulnerability of httpclient 4.x which is not even present
-         in the commons-httpclient 3.x -->
-    <suppress>
-        <notes><![CDATA[
-      file name: commons-httpclient-3.1.jar
-      ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2014-3577</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-      file name: commons-httpclient-3.1.jar
-      ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2012-6153</cve>
-    </suppress>
-
-    <!-- Suppressing this because it is about httpclient 4.x, not 3.x.
-        Analogous code we use with 3.x is patched to avoid this vulnerability.
-    -->
-    <suppress>
-        <notes><![CDATA[
-  file name: commons-httpclient-3.1.jar
-  ]]></notes>
-        <sha1>964cd74171f427720480efdec40a7c7f6e58426a</sha1>
-        <cve>CVE-2015-5262</cve>
-    </suppress>
-
-    <!-- This is not PGP -->
-    <suppress>
-       <notes><![CDATA[
-       file name: superfly-crypto-1.7-1-SNAPSHOT.jar
-       ]]></notes>
-       <sha1>31b230d2853993661055176acb0d92f8eb18192c</sha1>
-       <cpe>cpe:/a:pgp:pgp:1.7.1</cpe>
-    </suppress>
-
-    <!-- This is not openpgp -->
-    <suppress>
-       <notes><![CDATA[
-       file name: bcpg-jdk15on-1.58.jar
-       ]]></notes>
-       <sha1>b92c863d75bbdbfa88f08301cb243f406a58bec4</sha1>
-       <cpe>cpe:/a:openpgp:openpgp:1.58</cpe>
-    </suppress>
-
-    <!-- CVE data is inaccurate: version 1.3.3 has fix for CVE-2016-1000031,
-         see https://commons.apache.org/proper/commons-fileupload/security-reports.html -->
-    <suppress>
-       <notes><![CDATA[
-       file name: commons-fileupload-1.3.3.jar
-       ]]></notes>
-       <sha1>04ff14d809195b711fd6bcc87e6777f886730ca1</sha1>
-       <cve>CVE-2016-1000031</cve>
-    </suppress>
-
-    <!--CVE-2018-1258: The vulnerability is present only in Spring Framework 5.0.5.RELEASE.
-        If the application does not use Spring Framework 5.0.5.RELEASE then it is not impacted.-->
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-core-5.4.7.jar
+        bcpg-jdk18on implements the OpenPGP API but is not the vulnerable OpenPGP product.
         ]]></notes>
-        <sha1>a3706c9bbd48d1933cb38bafcea07c2b6148e878</sha1>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-web-5.4.7.jar
-        ]]></notes>
-        <sha1>33c4ecc4d51632b4c52e59cc129779a0e5bfefac</sha1>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-config-5.4.7.jar
-        ]]></notes>
-        <sha1>a9384989345a88c3ad71b2d6fcfb43cfc966e87f</sha1>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-core-5.5.8.jar
-        ]]></notes>
-        <sha1>7a93b88235e4a8ac4f46116e867cecbc3f524b48</sha1>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-web-5.5.8.jar
-        ]]></notes>
-        <sha1>3a3f6d8e593bce5624bfe0aa4a898bc1826d621a</sha1>
-        <cve>CVE-2018-1258</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: spring-security-config-5.5.8.jar
-        ]]></notes>
-        <sha1>0d718f457cba424663223fbd27e7704ceb9cfee4</sha1>
-        <cve>CVE-2018-1258</cve>
+        <gav regex="true">^org\.bouncycastle:bcpg-jdk18on:.*$</gav>
+        <cpe>cpe:/a:openpgp:openpgp</cpe>
     </suppress>
 
-
-
-    <!-- These CVEs point to old versions of xstream, not io.github.x-stream:mxparser.-->
+    <!-- CVE-2016-1000027: Spring Framework 4.x/5.x RCE via HttpInvokerServiceExporter
+         deserialization of untrusted data. Superfly does NOT use HttpInvokerServiceExporter,
+         RMI or any unsafe deserialization endpoint (the XML/HTTP-invoker remoting stack was
+         removed in this refactor — transport is JSON-only). Fixed in Spring 6.x, which is not
+         affected; only the EE8 transitive spring-web 5.3.x is flagged. Not exploitable here. -->
     <suppress>
         <notes><![CDATA[
-        file name: mxparser-1.2.2.jar
+        spring-web 5.3.x (EE8): not exploitable — HttpInvokerServiceExporter/unsafe
+        deserialization is not used; HTTP-invoker remoting removed (JSON-only transport).
         ]]></notes>
-        <sha1>476fb3b3bb3716cad797cd054ce45f89445794e9</sha1>
-        <cve>CVE-2013-7285</cve>
-        <cve>CVE-2016-3674</cve>
-        <cve>CVE-2017-7957</cve>
-        <cve>CVE-2020-26217</cve>
-        <cve>CVE-2020-26258</cve>
-        <cve>CVE-2020-26259</cve>
-        <cve>CVE-2021-21341</cve>
-        <cve>CVE-2021-21342</cve>
-        <cve>CVE-2021-21343</cve>
-        <cve>CVE-2021-21344</cve>
-        <cve>CVE-2021-21345</cve>
-        <cve>CVE-2021-21346</cve>
-        <cve>CVE-2021-21347</cve>
-        <cve>CVE-2021-21348</cve>
-        <cve>CVE-2021-21349</cve>
-        <cve>CVE-2021-21350</cve>
-        <cve>CVE-2021-21351</cve>
-        <cve>CVE-2021-29505</cve>
-        <cve>CVE-2021-39139</cve>
-        <cve>CVE-2021-39140</cve>
-        <cve>CVE-2021-39141</cve>
-        <cve>CVE-2021-39144</cve>
-        <cve>CVE-2021-39145</cve>
-        <cve>CVE-2021-39146</cve>
-        <cve>CVE-2021-39147</cve>
-        <cve>CVE-2021-39148</cve>
-        <cve>CVE-2021-39149</cve>
-        <cve>CVE-2021-39150</cve>
-        <cve>CVE-2021-39151</cve>
-        <cve>CVE-2021-39152</cve>
-        <cve>CVE-2021-39153</cve>
-        <cve>CVE-2021-39154</cve>
-        <cve>CVE-2022-41966</cve>
+        <gav regex="true">^org\.springframework:spring-web:5\..*$</gav>
+        <cve>CVE-2016-1000027</cve>
     </suppress>
 
-    <!-- These CVEs point to old versions of logback, not org.logback-extensions:logback-ext-spring. -->
+    <!-- TEMPORARY: CVE-2026-22732 (Spring Security HTTP response headers may not be written).
+         Fixed in spring-security 5.8.24 / 6.4.15, but those patch artifacts are not yet
+         published on Maven Central (latest available: 5.8.16 / 6.4.13, already in use).
+         REVISIT and remove this suppression once 6.4.15 / 5.8.24 (or newer in-line) are
+         released, then bump spring.security.version / spring-security5.version. -->
     <suppress>
         <notes><![CDATA[
-        file name: logback-ext-spring-0.1.5.jar
+        TEMPORARY: no fixed artifact published yet (need >=5.8.24 / >=6.4.15).
+        Remove once the patched spring-security release is available and bumped.
         ]]></notes>
-        <sha1>4b0d63c7e2f55e0621bb4796a5860e36ba73bd74</sha1>
-        <cve>CVE-2017-5929</cve>
-        <cve>CVE-2021-42550</cve>
+        <gav regex="true">^org\.springframework\.security:spring-security-.*:(5\.8\.|6\.4\.).*$</gav>
+        <cve>CVE-2026-22732</cve>
     </suppress>
 
-    <!-- JQuery 3.5.1 override is applied. -->
+    <!-- ============================================================================
+         EE8 provided-scope residual findings (variant B).
+
+         The EE8 wrapper modules (superfly-spring-security-ee8, superfly-wicket-ee8) are
+         *published libraries* for external javax.servlet consumers, NOT part of the running
+         EE10 SSO server (superfly-web runs on Spring 6 / Wicket 10). Their framework deps were
+         switched to <scope>provided</scope>, so Spring 5.x / Wicket 8 are no longer exported
+         transitively onto a consumer's compile classpath — the consumer supplies its own
+         javax-compatible Spring 5.x / Wicket 8.x.
+
+         skipProvidedScope is intentionally NOT enabled, so the aggregate scan still sees these
+         provided deps on the libraries themselves. The suppressions below clear those residual
+         findings with the justification "provided, not shipped transitively, not the EE10 runtime".
+         Each is VERSION-PINNED so it cannot mask the in-line EE10 stack:
+           - spring-core is pinned 5.3.x (spring-core 6.2.18 is clean — must stay visible).
+           - spring-security is pinned 5.8.x: CVE-2026-22746 / -22748 are SHARED with the open EE10
+             6.4.13 finding; a cve-only or 6.4-matching suppress would hide a real EE10 issue.
+         ============================================================================ -->
+
+    <!-- Spring Framework 5.3.x jars (EE8 provided): not exported transitively; not the EE10 runtime
+         (Spring Framework 6.2.18 carries none of these). dependency-check attributes these Spring
+         Framework CVEs to whichever 5.3.x jar matches the spring_framework CPE (spring-core AND the
+         transitive spring-jcl), so the gav is broadened to org.springframework:spring-*:5.3.x.
+         Pinned to 5.3 and to the org.springframework groupId so the in-line 6.x stack and the
+         org.springframework.security artifacts stay visible. -->
     <suppress>
         <notes><![CDATA[
-        file name: wicket-core-7.18.0.jar: jquery-1.12.4.js
+        Spring Framework 5.3.x jars (EE8): provided in superfly-spring-security-ee8, not exported
+        transitively to consumers and not part of the EE10 server runtime (Spring Framework 6.2.18
+        is unaffected). Covers spring-core and its transitive spring-jcl, both flagged against the
+        same spring_framework CPE at 5.3.39. Version-pinned to 5.3 so the in-line 6.x stack is not masked.
         ]]></notes>
-        <sha1>433836da7e015f2eb3fc386817de88b78248f6ef</sha1>
+        <gav regex="true">^org\.springframework:spring-.*:5\.3\..*$</gav>
+        <cve>CVE-2024-38820</cve>
+        <cve>CVE-2026-22735</cve>
+        <cve>CVE-2026-22737</cve>
+        <cve>CVE-2026-22740</cve>
+        <cve>CVE-2026-22741</cve>
+        <cve>CVE-2026-22745</cve>
+    </suppress>
+
+    <!-- spring-security 5.8.x (EE8 provided): not exported transitively; not the EE10 runtime.
+         CVE-2026-22746/-22748 are SHARED with spring-security 6.4.13 — the 6.4.x finding stays
+         OPEN (tracked, awaiting patch). MUST pin 5.8 here; cve-only/6.4 match is forbidden. -->
+    <suppress>
+        <notes><![CDATA[
+        spring-security 5.8.x (EE8): provided in superfly-spring-security-ee8, not exported
+        transitively and not the EE10 server runtime. CVE-2026-22746/-22748 are shared with the
+        open EE10 6.4.13 finding, so this suppress is strictly pinned to 5.8 and must NOT be
+        widened to 6.4.x.
+        ]]></notes>
+        <gav regex="true">^org\.springframework\.security:spring-security-.*:5\.8\..*$</gav>
+        <cve>CVE-2026-22746</cve>
+        <cve>CVE-2026-22748</cve>
+    </suppress>
+
+    <!-- jQuery bundled inside wicket-core 8.x (EE8 provided). The bundled JS is attributed to the
+         wicket-core jar, not to our module; it has no Maven GAV identifier, so it is matched by
+         filePath (pinned to wicket-core 8.x). Wicket 8 is provided in superfly-wicket-ee8 and not
+         exported transitively; the EE10 server runs Wicket 10 (unaffected). Covers both the CVEs
+         and the retire.js advisory entries for the bundled jQuery. -->
+    <suppress>
+        <notes><![CDATA[
+        Legacy jQuery bundled in wicket-core 8.x (EE8): wicket is provided in superfly-wicket-ee8,
+        not exported transitively, and not the EE10 server runtime (Wicket 10). The bundled jQuery
+        is part of the wicket-core jar, not our code.
+        ]]></notes>
+        <filePath regex="true">^.*wicket-core-8\..*\.jar.*jquery.*\.js$</filePath>
         <cve>CVE-2015-9251</cve>
         <cve>CVE-2019-11358</cve>
         <cve>CVE-2020-11022</cve>
         <cve>CVE-2020-11023</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-core-7.18.0.jar: jquery-1.12.4.min.js
-        ]]></notes>
-        <sha1>5a9dcfbef655a2668e78baebeaa8dc6f41d8dabb</sha1>
-        <cve>CVE-2015-9251</cve>
-        <cve>CVE-2019-11358</cve>
-        <cve>CVE-2020-11022</cve>
-        <cve>CVE-2020-11023</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-core-7.18.0.jar: jquery-2.2.4.js
-        ]]></notes>
-        <sha1>26e6b63b81813d8ad942c90d369df2673602b812</sha1>
-        <cve>CVE-2015-9251</cve>
-        <cve>CVE-2019-11358</cve>
-        <cve>CVE-2020-11022</cve>
-        <cve>CVE-2020-11023</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-core-7.18.0.jar: jquery-2.2.4.min.js
-        ]]></notes>
-        <sha1>69bb69e25ca7d5ef0935317584e6153f3fd9a88c</sha1>
-        <cve>CVE-2015-9251</cve>
-        <cve>CVE-2019-11358</cve>
-        <cve>CVE-2020-11022</cve>
-        <cve>CVE-2020-11023</cve>
-    </suppress>
-
-    <!-- We don't use components which require YUI. -->
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: calendar-min.js
-        ]]></notes>
-        <sha1>2c0ea6a839df080c4bb7925f7e46840ae284e5bc</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: calendar.js
-        ]]></notes>
-        <sha1>81fdbfa751ce9876375810febb66dd7ea5430405</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: dom-min.js
-        ]]></notes>
-        <sha1>bf1d45bf1645918f24cbfd35726a65632ead2f66</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: dom.js
-        ]]></notes>
-        <sha1>4891d997f6630d463539a5f9eb88d56b21e7eddb</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: event-min.js
-        ]]></notes>
-        <sha1>1c3f7df5fd8cf5937bb26f0ca76d09dc3e87eb5c</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: event.js
-        ]]></notes>
-        <sha1>f58c82c7e8388d7945996d97d327e51720b8db24</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: yahoo-dom-event.js
-        ]]></notes>
-        <sha1>63aa83b8b83f9569802c3b24819cc477f4b5fdf3</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: yahoo-min.js
-        ]]></notes>
-        <sha1>f63225ad08c2769101b7db1604bb84eef07d6747</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: yahoo.js
-        ]]></notes>
-        <sha1>117431b4de69f8927468fe55d068c495ebe77e27</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: yuiloader-min.js
-        ]]></notes>
-        <sha1>14ab8b78242e9c57899f4be78f393d7ccfaa0cc4</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-        file name: wicket-datetime-7.18.0.jar: yuiloader.js
-        ]]></notes>
-        <sha1>03fbda977f5ef8619db207e2f6f140a5ed01f4f9</sha1>
-        <cve>CVE-2012-5881</cve>
-        <cve>CVE-2012-5882</cve>
-        <cve>CVE-2012-5883</cve>
-    </suppress>
-
-    <!-- Suppressing as bcpg is not openpgp -->
-    <suppress>
-        <notes><![CDATA[
-        file name: bcpg-jdk15on-1.70.jar
-        ]]></notes>
-        <sha1>062f72ec06f31a6c31a3f3355fce0384b21126d7</sha1>
-        <cpe>cpe:/a:openpgp:openpgp:1.70</cpe>
+        <vulnerabilityName regex="true">^jquery issue:.*$</vulnerabilityName>
     </suppress>
 </suppressions>

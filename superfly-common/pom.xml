@@ -15,11 +15,6 @@
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: Provides the Jakarta Servlet API required for building web applications -->
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-        </dependency>
-        <dependency>
             <!--Justification: Logging API for the application -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

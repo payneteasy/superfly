@@ -63,8 +63,6 @@ public abstract class BasePage extends SessionAccessorPage {
         addNavBarItem("roles", ListRolesPage.class);
         addNavBarItem("sessions", ListSessionsPage.class);
         addNavBarItem("smtp", ListSmtpServersPage.class);
-
-
     }
 
     protected abstract String getTitle();

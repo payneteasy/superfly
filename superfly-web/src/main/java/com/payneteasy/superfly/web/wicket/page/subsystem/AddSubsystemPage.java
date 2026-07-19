@@ -4,11 +4,16 @@ import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -16,14 +21,20 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.List;
 
 @Secured("ROLE_ADMIN")
 public class AddSubsystemPage extends BasePage {
+
+    private static final Logger logger = LoggerFactory.getLogger(AddSubsystemPage.class);
+
     @SpringBean
     private SubsystemService subsystemService;
     @SpringBean
@@ -87,6 +98,34 @@ public class AddSubsystemPage extends BasePage {
             }
         }, true));
 
+        final Label labelPublicKey = new Label("publicKey", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return subsystem.getPublicKey();
+            }
+        });
+        labelPublicKey.setOutputMarkupId(true);
+
+        form.add(new Label("publicKeyLabel", new ResourceModel("subsystem.add.publicKey")));
+        form.add(labelPublicKey);
+        form.add(new IndicatingAjaxLink<String>("generateNewKeyPair") {
+            private static final long serialVersionUID = 1L;
+
+            public void onClick(AjaxRequestTarget aTarget) {
+                try {
+                    var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA);
+                    subsystem.setPrivateKey(keyPairData.privateKey());
+                    subsystem.setPublicKey(keyPairData.publicKey());
+                    subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
+                    aTarget.add(labelPublicKey);
+                } catch (Exception e) {
+                    logger.error("Error while generating key pair for subsystem {}", subsystem.getName(), e);
+                    error("Error while generating key pair: " + e.getMessage());
+                }
+
+            }
+        });
+
         form.add(new SubmitLink("submit-link"));
         form.add(new BookmarkablePageLink<Page>("cancel", ListSubsystemsPage.class));
     }
@@ -94,5 +133,9 @@ public class AddSubsystemPage extends BasePage {
     @Override
     protected String getTitle() {
         return "Add subsystem";
+    }
+
+    private KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
+        return subsystemService.generateKeyPair(algorithm);
     }
 }

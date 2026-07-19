@@ -3,24 +3,23 @@ package com.payneteasy.superfly.web.obtainer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
 
 /**
- * Obtains subsystem identifier in the following way: returns principal
- * property from Authentication stored in the current SecurityContext.
- * This is to extract username (which is interpreted as subsystem identifier)
- * authenticated using SSL certificates, for instance.
- * 
- * @author Roman Puchkovskiy
- * @see X509PreAuthenticatedProcessingFilter
- * @see org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor
- * @see org.springframework.security.web.authentication.preauth.x509.X509PrincipalExtractor
+ * Obtains subsystem identifier: uses hint when provided, otherwise falls back
+ * to the authenticated principal in the SecurityContext (set by SubsystemAuthenticationFilter
+ * via X-Subsystem-Name header).
  */
+@Component
 public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
         SubsystemIdentifierObtainer {
 
     public String obtainSubsystemIdentifier(String hint) {
+        if (hint != null) {
+            return hint;
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return getUsername(authentication);
     }

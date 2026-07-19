@@ -1,0 +1,60 @@
+# Production hardening overlay
+# Usage: docker compose -f compose.yml -f compose.production.yml up -d
+
+x-security: &hardened
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &prod-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  app:
+    <<: *hardened
+    image: ${APP_IMAGE:-superfly-app}:${APP_VERSION}
+    # No build: in production — use pre-built image
+    build: !reset null
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+          pids: 256
+        reservations:
+          memory: 512M
+    restart: unless-stopped
+    logging: *prod-logging
+    # No ports: exposed to host — use external load balancer or proxy
+
+  mysql:
+    <<: *hardened
+    cap_add:
+      # MySQL needs DAC_OVERRIDE for socket files
+      - DAC_OVERRIDE
+    tmpfs:
+      - /tmp:noexec,nosuid,size=50m
+    # MySQL needs a writable data dir — override read_only for specific paths
+    read_only: false
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+          pids: 512
+        reservations:
+          memory: 512M
+    restart: unless-stopped
+    logging: *prod-logging
+    # No ports exposed — app connects via internal Docker network only
+
+networks:
+  backend:
+    internal: true

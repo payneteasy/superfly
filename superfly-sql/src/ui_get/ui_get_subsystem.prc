@@ -15,7 +15,10 @@ create procedure ui_get_subsystem(i_ssys_id int(10))
            ss.subsystem_token,
            ss.subsystem_url,
            ss.landing_url,
-           ss.login_form_css_url
+           ss.login_form_css_url,
+           ss.public_key,
+           ss.private_key,
+           ss.encryption_algorithm
       from subsystems ss
         left join smtp_servers smtp
           on smtp.ssrv_id = ss.ssrv_ssrv_id
@@ -37,6 +40,9 @@ call save_routine_information('ui_get_subsystem',
                                         'subsystem_token varchar',
                                         'subsystem_url varchar',
                                         'landing_url varchar',
-                                        'login_form_css_url varchar'
+                                        'login_form_css_url varchar',
+                                        'public_key varchar',
+                                        'private_key varchar',
+                                        'encryption_algorithm varchar'
                               )
      );

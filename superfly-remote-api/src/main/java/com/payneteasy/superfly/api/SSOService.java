@@ -176,4 +176,11 @@ public interface SSOService {
      * @param request change user role request containing username, new role, and subsystem hint
      */
     void changeUserRole(ChangeUserRoleRequest request);
+
+    /**
+     * Get events from lastEventTime.
+     *
+     * @param request request containing lastEventTime and waitTimeMs
+     */
+    List<SSOEvent> getEvents(GetEventsRequest request);
 }

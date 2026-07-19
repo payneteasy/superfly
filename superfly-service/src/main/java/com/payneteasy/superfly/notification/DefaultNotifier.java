@@ -1,23 +1,22 @@
 package com.payneteasy.superfly.notification;
 
 import com.payneteasy.superfly.notification.strategy.NotificationSendStrategy;
-import com.payneteasy.superfly.service.job.SendNotificationOnceJob;
-import com.payneteasy.superfly.utils.SchedulerUtils;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Default Notifier implementation which delegates some actions to strategies.
+ *
+ * <p>Notifications are dispatched asynchronously with a short delay via Spring's
+ * {@link TaskScheduler} (previously a one-shot Quartz job). The send is a single
+ * attempt: on failure the notification is logged and dropped, matching the prior
+ * {@code SendNotificationOnceJob} semantics.
  *
  * @author Roman Puchkovskiy
  */
@@ -25,50 +24,46 @@ import java.util.Objects;
 @Component
 public class DefaultNotifier implements Notifier {
 
-    private Scheduler scheduler;
-    private String    sendStrategyBeanName;
-    @Setter
-    private int       maxRetries = 3;
+    /** Delay before dispatching, identical to the former Quartz trigger start offset. */
+    private static final Duration SEND_DELAY = Duration.ofSeconds(1);
+
+    private final TaskScheduler            taskScheduler;
+    private final NotificationSendStrategy sendStrategy;
 
     @Autowired
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    @Autowired
-    public void setSendStrategyBeanName(ApplicationContext context, NotificationSendStrategy sendStrategyBeanName) {
-        Objects.requireNonNull(context, "context");
-        String[] beanNamesForType = context.getBeanNamesForType(sendStrategyBeanName.getClass());
-        Objects.checkIndex(0, beanNamesForType.length);
-
-        this.sendStrategyBeanName = beanNamesForType[0];
+    public DefaultNotifier(TaskScheduler taskScheduler, NotificationSendStrategy sendStrategy) {
+        this.taskScheduler = taskScheduler;
+        this.sendStrategy = sendStrategy;
     }
 
     public void notifyAboutLogout(List<LogoutNotification> notifications) {
         log.info("Notifying about logout: {}", notifications);
-        for (LogoutNotification notification : notifications) {
-            createJob(notification);
-        }
+        notifications.forEach(this::scheduleSend);
     }
 
     public void notifyAboutUsersChanged(List<UsersChangedNotification> notifications) {
         log.info("Notifying about users changed: {}", notifications);
-        for (UsersChangedNotification notification : notifications) {
-            createJob(notification);
-        }
+        notifications.forEach(this::scheduleSend);
     }
 
-    private void createJob(AbstractNotification notification) {
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("beanName", sendStrategyBeanName);
-        dataMap.put("notification", notification);
+    private void scheduleSend(AbstractNotification notification) {
+        log.debug("Scheduling notification send in {}: {}", SEND_DELAY, notification);
+        taskScheduler.schedule(() -> send(notification), Instant.now().plus(SEND_DELAY));
+    }
 
-        dataMap.put("retriesLeft", maxRetries); // deprecated
-
+    private void send(AbstractNotification notification) {
+        log.debug("Sending notification: {}", notification);
         try {
-            SchedulerUtils.scheduleJob(scheduler, SendNotificationOnceJob.class, dataMap);
-        } catch (SchedulerException e) {
-            log.error(e.getMessage(), e);
+            if (notification instanceof LogoutNotification logoutNotification) {
+                sendStrategy.send(logoutNotification);
+            } else if (notification instanceof UsersChangedNotification usersChangedNotification) {
+                sendStrategy.send(usersChangedNotification);
+            } else {
+                throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
+            }
+        } catch (Exception e) {
+            log.error("Error while trying to send a notification, no more retries, dropping: {}",
+                      notification, e);
         }
     }
 }

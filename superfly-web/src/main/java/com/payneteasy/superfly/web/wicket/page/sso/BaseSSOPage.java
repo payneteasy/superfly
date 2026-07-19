@@ -71,7 +71,7 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
 
     private HttpSession getHttpSession() {
         HttpServletRequest request = getHttpServletRequest();
-        return request.getSession(false);
+        return request.getSession(true);
     }
 
     private HttpServletRequest getHttpServletRequest() {

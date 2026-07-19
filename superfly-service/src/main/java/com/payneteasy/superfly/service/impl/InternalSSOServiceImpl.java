@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
+import com.payneteasy.superfly.api.request.GetEventsRequest;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.UserRegisterRequest;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -369,5 +371,24 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public boolean hasOtpMasterKey(String username) {
         return userService.getOtpMasterKeyByUsername(username) != null;
+    }
+
+    private EventService eventService;
+
+    @Autowired
+    public void setEventService(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    @Override
+    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier) {
+        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs, subsystemIdentifier);
+        if (events != null && !events.isEmpty()) {
+            logger.info("getEvents call info={}", events);
+            return events.stream()
+                    .map(event -> new SSOEvent(event.getEventId(), event.getEventTime(), event.getEventTypeCode(), event.getEventData()))
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 }

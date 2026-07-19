@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.io.Serializable;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetUserStatusesRequest {
+public class GetUserStatusesRequest implements Serializable {
     private List<String> userNames;
 }

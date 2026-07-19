@@ -1,0 +1,37 @@
+# Development overrides — auto-loaded by docker compose
+# Mounts source code for hot-reload via Maven Jetty plugin
+
+services:
+  app:
+    build:
+      target: development
+    volumes:
+      # Mount full source for mvn jetty:run hot-reload
+      - .:/app
+      # Cache Maven local repo between rebuilds
+      - maven_cache:/root/.m2
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      # jetty-env.conf reads these via <SystemProperty name="db.*"/>
+      MAVEN_OPTS: >-
+        -Ddb.host=mysql
+        -Ddb.port=3306
+        -Ddb.name=${DB_NAME:-sso}
+        -Ddb.user=${DB_USER:-sso}
+        -Ddb.password=${DB_PASSWORD}
+        -Ddb.timezone=${DB_TIMEZONE:-UTC}
+    command:
+      - ./mvnw
+      - -pl
+      - superfly-web
+      - -am
+      - jetty:run
+
+  mysql:
+    # Expose MySQL port to host for GUI clients (DBeaver, IntelliJ, etc.)
+    ports:
+      - "127.0.0.1:${MYSQL_HOST_PORT:-3306}:3306"
+
+volumes:
+  maven_cache:

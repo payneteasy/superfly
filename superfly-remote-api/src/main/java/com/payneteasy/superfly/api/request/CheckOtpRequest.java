@@ -5,11 +5,12 @@ import com.payneteasy.superfly.api.SSOUser;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
-public class CheckOtpRequest {
+public class CheckOtpRequest implements Serializable {
     private String userName;
     private String code;
     private OTPType otpType;

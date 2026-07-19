@@ -240,6 +240,13 @@ public class UserDaoTest extends AbstractDaoTest {
     }
 
     @Test
+    public void testResetPassword() {
+        long userId = getAnyUserId();
+        RoutineResult result = userDao.resetPassword(userId, "new-password-hash");
+        assertRoutineResult(result);
+    }
+
+    @Test
     public void testCloneUser() {
         long userId = getAnyUserId();
         UICloneUserRequest request = new UICloneUserRequest();

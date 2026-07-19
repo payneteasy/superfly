@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.payneteasy.superfly</groupId>
+        <artifactId>superfly-parent</artifactId>
+        <version>2.0-3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>superfly-spring-security-core</artifactId>
+    <name>Superfly Spring Security Core</name>
+    <description>Core authentication model and helpers for Superfly Spring Security integration (no servlet API)</description>
+
+    <dependencies>
+        <dependency>
+            <!--Justification: provided — consumers (ee8, ee10) bring their own Spring Security version; core compiles against 6.x from parent DM -->
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: provided — consumers (ee8, ee10) bring their own Spring Framework version; core compiles against 6.x from parent DM -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Optional Spring context annotations (e.g. @Service) -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!--Justification: Optional Spring beans for @Autowired, @Component -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!--Justification: Optional access to RequestContextHolder in session accessors -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!--Justification: Remote API contract for Superfly authentication/authorization -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-remote-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Common utilities and shared functionality for Superfly components -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-common</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: ActionDescriptionCollector for CollectingActionsSource -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-client-core</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Logging API for the application -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Lombok annotations used in several core classes -->
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+
+</project>
+

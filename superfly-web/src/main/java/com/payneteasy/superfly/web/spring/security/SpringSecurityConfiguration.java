@@ -2,7 +2,6 @@ package com.payneteasy.superfly.web.spring.security;
 
 import com.payneteasy.superfly.client.ActionDescriptionCollector;
 import com.payneteasy.superfly.client.ScanningActionDescriptionCollector;
-import com.payneteasy.superfly.client.XmlActionDescriptionCollector;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter;
 import com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint;
@@ -11,7 +10,6 @@ import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
@@ -21,7 +19,6 @@ import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.annotation.Secured;
@@ -55,18 +52,28 @@ public class SpringSecurityConfiguration {
     private final SuperflyProperties    properties;
     private final LoggerSink            loggerSink;
     private final AuthenticationManager authenticationManager;
-    private final SubsystemService      subsystemService;
 
-    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager, SubsystemService subsystemService) {
+    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager) {
         this.properties = properties;
         this.loggerSink = loggerSink;
         this.authenticationManager = authenticationManager;
-        this.subsystemService = subsystemService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
+            .headers(headers -> headers
+                // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
+                // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline'; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "img-src 'self' data:; " +
+                    "frame-ancestors 'none'; " +
+                    "form-action 'self'"
+                ))
+            )
             .authorizeHttpRequests(
                     auth ->
                             auth
@@ -79,11 +86,6 @@ public class SpringSecurityConfiguration {
                                     .permitAll()
                                     .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"))
                                     .hasAuthority("ROLE_SUBSYSTEM")
-                                    .requestMatchers(
-                                            antPathRequestMatcher("/remoting/oauth2.hessian.service/**"),
-                                            antPathRequestMatcher("/remoting/basic.hessian.service/**")
-                                    )
-                                    .permitAll()
                                     .anyRequest()
                                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_ACTION_TEMP_PASSWORD"))
             .exceptionHandling(httpSecurity ->
@@ -96,6 +98,9 @@ public class SpringSecurityConfiguration {
             .logout(logout -> logout
                     .logoutUrl("/j_spring_security_logout")
                     .logoutSuccessHandler(logoutSuccessHandler()))
+            // CSRF disabled intentionally: all state-changing REST endpoints use token-based auth
+            // (X-Subsystem-Token or Authorization: Bearer), not cookies. Wicket admin pages are
+            // protected by Wicket's own stateful page-version tokens embedded in action URLs.
             .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
         ;
@@ -141,8 +146,7 @@ public class SpringSecurityConfiguration {
     public SubsystemAuthenticationFilter subsystemAuthenticationFilter() {
         SubsystemAuthenticationFilter filter = new SubsystemAuthenticationFilter(
                 antPathRequestMatcher("/remoting/sso.service/**"),
-                authenticationManager,
-                subsystemService
+                authenticationManager
         );
         filter.setSuccessHandler((request, response, authentication) -> {});
         filter.setFailureHandler(new JsonAuthenticationFailureHandler());
@@ -224,10 +228,4 @@ public class SpringSecurityConfiguration {
     }
 
 
-    @Bean
-    public ActionDescriptionCollector xmlActionDescriptionCollector() {
-        XmlActionDescriptionCollector collector = new XmlActionDescriptionCollector();
-        collector.setResource(new ClassPathResource("actions.xml"));
-        return collector;
-    }
 }

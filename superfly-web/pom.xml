@@ -28,7 +28,7 @@
         <dependency>
             <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-spring-security</artifactId>
+            <artifactId>superfly-spring-security-ee10</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Cryptography support for SuperFly, handling secure data operations -->
@@ -77,29 +77,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
-        <dependency>
-            <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-
-        <dependency>
-            <!--Justification: Required for XRemoting functionality-->
-            <groupId>com.googlecode.xremoting</groupId>
-            <artifactId>xremoting-core</artifactId>
-        </dependency>
-        <dependency>
-            <!--Justification: Provides XML serialization capabilities-->
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>
-
-        <dependency>
-            <!--Justification: Used for Hessian serialization-->
-            <groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-        </dependency>
-
         <!-- WICKET DEPENDENCIES -->
         <dependency>
             <!--Justification: Render html UI-->
@@ -192,6 +169,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Jackson JSON processor -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
 
