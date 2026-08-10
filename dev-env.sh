@@ -19,6 +19,8 @@ CONTAINER=superfly-mysql-dev
 NETWORK=superfly-dev-net
 IMAGE=mysql:5.7
 ROOT_PASSWORD=charpa
+# must match the port in superfly-web/src/main/webapp/WEB-INF/jetty-web.xml
+HOST_PORT=3344
 
 ROOT_DIR=$(cd "$(dirname "$0")" && pwd)
 SHIM_DIR=$ROOT_DIR/target/dev-env
@@ -39,6 +41,7 @@ setup_client() {
 
     if [ -n "$major" ] && [ "$major" -lt 9 ]; then
         export SSO_DB_HOST=127.0.0.1
+        export SSO_DB_PORT=$HOST_PORT
         echo "Using local mysql client (major version $major)"
         return
     fi
@@ -52,15 +55,17 @@ EOF
     chmod +x "$SHIM_DIR/mysql"
     export PATH="$SHIM_DIR:$PATH"
     # inside the shim container "localhost" is the container itself, so the
-    # scripts have to address the database by its container name
+    # scripts have to address the database by its container name — and over the
+    # docker network it listens on 3306, not on the published host port
     export SSO_DB_HOST=$CONTAINER
+    export SSO_DB_PORT=3306
     echo "Local mysql client is ${major:-missing} — routing through $IMAGE instead"
 }
 
 wait_for_mysql() {
     local i
     for i in $(seq 1 60); do
-        if mysql --protocol=TCP -h "$SSO_DB_HOST" -u root -p"$ROOT_PASSWORD" \
+        if mysql --protocol=TCP -h "$SSO_DB_HOST" --port "$SSO_DB_PORT" -u root -p"$ROOT_PASSWORD" \
                 -e "select 1" > /dev/null 2>&1; then
             return 0
         fi
@@ -82,12 +87,12 @@ quietly() {
 }
 
 run_root_sql() {
-    quietly mysql --protocol=TCP -h "$SSO_DB_HOST" \
+    quietly mysql --protocol=TCP -h "$SSO_DB_HOST" --port "$SSO_DB_PORT" \
         -u root -p"$ROOT_PASSWORD" "$@"
 }
 
 run_sso_sql() {
-    quietly mysql --protocol=TCP -h "$SSO_DB_HOST" \
+    quietly mysql --protocol=TCP -h "$SSO_DB_HOST" --port "$SSO_DB_PORT" \
         -u "$SSO_DB_USERNAME" -p"$SSO_DB_PASSWORD" "$SSO_DB_DATABASE" "$@"
 }
 
@@ -96,7 +101,7 @@ cmd_up() {
     docker rm -f "$CONTAINER" > /dev/null 2>&1 || true
     docker run -d --name "$CONTAINER" --platform linux/amd64 \
         --network "$NETWORK" -e MYSQL_ROOT_PASSWORD="$ROOT_PASSWORD" \
-        -p 3306:3306 "$IMAGE" --log-bin-trust-function-creators=1 > /dev/null
+        -p "$HOST_PORT":3306 "$IMAGE" --log-bin-trust-function-creators=1 > /dev/null
 
     setup_client
     echo "Waiting for MySQL ..."
@@ -163,7 +168,7 @@ cmd_app() {
 cmd_sql() {
     setup_client
     # not run through the warning filter: piping would break the interactive shell
-    mysql --protocol=TCP -h "$SSO_DB_HOST" -u "$SSO_DB_USERNAME" \
+    mysql --protocol=TCP -h "$SSO_DB_HOST" --port "$SSO_DB_PORT" -u "$SSO_DB_USERNAME" \
         -p"$SSO_DB_PASSWORD" "$SSO_DB_DATABASE"
 }
 

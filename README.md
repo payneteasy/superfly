@@ -11,18 +11,16 @@ Superfly позволяет зарегистрировать пользоват�
 ## Быстрый старт
 
 ```bash
-# Клонировать и собрать
 git clone https://github.com/payneteasy/superfly.git
 cd superfly
 ./mvnw -DskipTests package
 
-# Настроить БД (MySQL)
-# Отредактировать superfly-web/src/main/webapp/WEB-INF/jetty-web.xml
-# Запустить сервер (Jetty)
-./mvnw -pl superfly-web jetty:run
+./dev-env.sh up      # MySQL 5.7, схема и хранимые процедуры
+./dev-env.sh app     # приложение на http://localhost:8085/superfly/
 ```
 
-После запуска веб-интерфейс доступен по адресу `http://localhost:8080`.
+Веб-интерфейс — `http://localhost:8085/superfly/`, логин `admin` / `123admin123`.
+Для базы нужен Docker, для `app` — ещё JDK; Maven берётся из `mvnw`.
 
 ## Локальная разработка
 
@@ -36,7 +34,8 @@ cd superfly
 ./dev-env.sh down    # снести контейнер и сеть
 ```
 
-Логин `admin` / `123admin123`. Для базы нужен Docker, для `app` — ещё JDK; Maven берётся из `mvnw`.
+Параметры подключения к базе лежат в `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`;
+`dev-env.sh` поднимает MySQL на том же порту, что прописан там.
 
 Два ограничения, которые ломаются неочевидно:
 
