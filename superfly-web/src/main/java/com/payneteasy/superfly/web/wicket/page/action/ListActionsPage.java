@@ -71,16 +71,13 @@ public class ListActionsPage extends BasePage {
                 if (Strings.isEmpty(input)) {
                     return Collections.<String>emptyList().iterator();
                 }
+                UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
+                List<Long> subsystemIds = subsystem == null
+                        ? null
+                        : Collections.singletonList(subsystem.getId());
                 List<String> choices = new ArrayList<String>(10);
-                List<UIActionForFilter> action = actionService.getActionForFilter();
-                for (UIActionForFilter uia : action) {
-                    final String name = uia.getActionName();
-                    if (name.toUpperCase().startsWith(input.toUpperCase())) {
-                        choices.add(name);
-                        if (choices.size() == 10) {
-                            break;
-                        }
-                    }
+                for (UIActionForFilter uia : actionService.getActionForFilter(input, subsystemIds, 10)) {
+                    choices.add(uia.getActionName());
                 }
                 return choices.iterator();
             }

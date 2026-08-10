@@ -62,8 +62,10 @@ public class ActionServiceImpl implements ActionService {
                         .collectionToCommaDelimitedString(subsystemIds));
     }
 
-    public List<UIActionForFilter> getActionForFilter() {
-        return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
+    public List<UIActionForFilter> getActionForFilter(String actionNamePrefix,
+                                                     List<Long> subsystemIds, int recordsCount) {
+        return actionDao.getActionsForFilter(StringUtils
+                .collectionToCommaDelimitedString(subsystemIds), actionNamePrefix, 0, recordsCount);
     }
 
     public RoutineResult copyActionProperties(long actionId, long templateActionId,

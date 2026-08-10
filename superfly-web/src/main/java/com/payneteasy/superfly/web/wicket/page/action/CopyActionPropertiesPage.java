@@ -52,6 +52,10 @@ public class CopyActionPropertiesPage extends BasePage {
 
         Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
         add(filtersForm);
+
+        UIAction   action = actionService.getAction(actionId);
+        final long subId  = action.getSubsystemId();
+
         final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto",
                                                                                                    new Model<>("")
         ) {
@@ -61,25 +65,18 @@ public class CopyActionPropertiesPage extends BasePage {
                 if (Strings.isEmpty(input)) {
                     return Collections.emptyIterator();
                 }
-                List<String>            choices = new ArrayList<>(20);
-                List<UIActionForFilter> action  = actionService.getActionForFilter();
-                for (UIActionForFilter uia : action) {
-                    final String name = uia.getActionName();
-                    if (name.toUpperCase().startsWith(input.toUpperCase())) {
-                        choices.add(name);
-
-                        if (choices.size() == 20) {
-                            break;
-                        }
-                    }
+                List<String> choices = new ArrayList<>(20);
+                for (UIActionForFilter uia : actionService.getActionForFilter(input,
+                                                                              Collections.singletonList(subId),
+                                                                              20
+                )) {
+                    choices.add(uia.getActionName());
                 }
                 return choices.iterator();
             }
         };
         filtersForm.add(autoTextNameAction);
 
-        UIAction   action = actionService.getAction(actionId);
-        final long subId  = action.getSubsystemId();
         filtersForm.add(new Label("name-action", action.getActionName()));
         filtersForm.add(new Label("name-description", action.getActionDescription()));
         filtersForm.add(new Label("subname-action", action.getSubsystemName()));
