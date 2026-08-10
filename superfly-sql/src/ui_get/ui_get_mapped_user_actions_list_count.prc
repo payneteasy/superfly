@@ -3,7 +3,7 @@ delimiter $$
 create procedure ui_get_mapped_user_actions_list_count(i_user_id int(10),
                                                        i_ssys_list text,
                                                        i_role_id int(10),
-                                                       i_action_name varchar(100)
+                                                       i_action_name varchar(128)
 )
  main_sql:
   begin

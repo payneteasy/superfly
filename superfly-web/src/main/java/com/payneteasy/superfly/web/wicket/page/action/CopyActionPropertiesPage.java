@@ -8,6 +8,7 @@ import com.payneteasy.superfly.web.wicket.component.PagingDataView;
 import com.payneteasy.superfly.web.wicket.component.paging.SuperflyPagingNavigator;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.repeater.IndexedSortableDataProvider;
+import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -66,7 +67,15 @@ public class CopyActionPropertiesPage extends BasePage {
         });
 
         final ActionFilter actionFilter = new ActionFilter();
-        Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
+        final ObjectHolder<DataView<UIActionForList>> dataViewHolder = new ObjectHolder<>();
+        Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form") {
+            @Override
+            protected void onSubmit() {
+                // a freshly applied filter must be shown from its first page,
+                // otherwise a stale page number renders an empty table
+                dataViewHolder.getObject().setCurrentPage(0);
+            }
+        };
         add(filtersForm);
 
         UIAction action = actionService.getAction(actionId);
@@ -141,6 +150,7 @@ public class CopyActionPropertiesPage extends BasePage {
             }
 
         };
+        dataViewHolder.setObject(actionDataView);
         filtersForm.add(actionDataView);
         filtersForm.add(new OrderByLink<>("order-by-actionName", "actionName", actionDataProvider));
         filtersForm.add(new OrderByLink<>("order-by-actionDescription", "actionDescription", actionDataProvider));

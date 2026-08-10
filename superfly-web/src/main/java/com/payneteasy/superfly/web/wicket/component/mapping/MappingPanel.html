@@ -8,11 +8,14 @@
 <wicket:panel>
  <form wicket:id="form-mapping">
 
+     <!-- default button: Enter in a search field must search, not Grant -->
+     <input type="submit" wicket:id="search" value="Search" class="d-none"/>
+
      <div class="row">
 
          <div class="col-12 col-sm-5">
 
-            <input type="text" id="unmapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
+            <input type="text" wicket:id="unmapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
             <!--table     -->
              <wicket:container wicket:id="checkgroup-unmapped">
@@ -38,7 +41,7 @@
 
          <div class="col-sm-5">
 
-             <input type="text" id="mapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
+             <input type="text" wicket:id="mapped-query" class="form-control s-mapping-input" autocomplete="off" placeholder="Type to search"/>
 
              <!--table-->
              <wicket:container wicket:id="checkgroup-mapped">
@@ -104,8 +107,10 @@
             syncMaster();
         }
         $(document).ready(function(){
-            $("#unmapped-query").fastLiveFilter('#unmapped-list').focus();
-            $("#mapped-query").fastLiveFilter('#mapped-list');
+            // change() re-applies the filter to the list the server has just
+            // rendered, so a query kept in the field after a submit still narrows
+            $("#unmapped-query").fastLiveFilter('#unmapped-list').focus().change();
+            $("#mapped-query").fastLiveFilter('#mapped-list').change();
             bindMasterCheckbox('master-checkbox-unmap', 'unmapped-query', 'unmapped-list');
             bindMasterCheckbox('master-checkbox-map',   'mapped-query',   'mapped-list');
         });

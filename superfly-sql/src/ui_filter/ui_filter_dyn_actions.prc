@@ -1,7 +1,7 @@
 drop procedure if exists ui_filter_dyn_actions;
 delimiter $$
 create procedure ui_filter_dyn_actions(i_ssys_list text,
-                                       i_action_name varchar(100),
+                                       i_action_name varchar(128),
                                        i_start_from int(10),
                                        i_records_count int(10)
 )
@@ -24,8 +24,8 @@ create procedure ui_filter_dyn_actions(i_ssys_list text,
                  '  from actions a, subsystems ss ',
                  ' where a.ssys_ssys_id = ss.ssys_id ',
                  v_conditions,
-                 '       and a.action_name like ',
-                 quote(concat(coalesce(i_action_name, ''), '%')),
+                 '       and lower(coalesce(a.action_name, "")) like ',
+                 quote(concat(lower(coalesce(i_action_name, '')), '%')),
                  ' ',
                  'order by a.action_name ',
                  ' limit ',

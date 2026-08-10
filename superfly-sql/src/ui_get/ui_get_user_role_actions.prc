@@ -2,8 +2,8 @@ drop procedure if exists ui_get_user_role_actions;
 delimiter $$
 create procedure ui_get_user_role_actions(i_user_id int(10),
                                           i_ssys_list text,
-                                          i_action_name varchar(100),
-                                          i_role_name varchar(100)
+                                          i_action_name varchar(128),
+                                          i_role_name varchar(128)
 )
  main_sql:
   begin
@@ -23,8 +23,8 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
                      left join
                        roles r
                      on r.role_id = ur.role_role_id
-                        and r.role_name like
-                             concat('%', coalesce(i_role_name, r.role_name), '%'
+                        and lower(coalesce(r.role_name, '')) like
+                             concat('%', lower(coalesce(i_role_name, r.role_name, '')), '%'
                              )
                    left join
                      subsystems ss
@@ -41,8 +41,8 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
            left join
              actions a
            on a.ssys_ssys_id = ss.ssys_id and ga.actn_actn_id = a.actn_id
-              and a.action_name like
-                   concat('%', coalesce(i_action_name, a.action_name), '%')
+              and lower(coalesce(a.action_name, '')) like
+                   concat('%', lower(coalesce(i_action_name, a.action_name, '')), '%')
            and instr(concat(',', coalesce(i_ssys_list, ss.ssys_id), ','),
                      concat(',', ss.ssys_id, ',')
               ) > 0
@@ -64,8 +64,8 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
                    left join
                      roles r
                    on r.role_id = ur.role_role_id
-                      and r.role_name like
-                           concat('%', coalesce(i_role_name, r.role_name), '%')
+                      and lower(coalesce(r.role_name, '')) like
+                           concat('%', lower(coalesce(i_role_name, r.role_name, '')), '%')
                  left join
                    subsystems ss
                  on r.ssys_ssys_id = ss.ssys_id
@@ -78,8 +78,8 @@ create procedure ui_get_user_role_actions(i_user_id int(10),
            left join
              actions a
            on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = ss.ssys_id
-              and a.action_name like
-                   concat('%', coalesce(i_action_name, a.action_name), '%')
+              and lower(coalesce(a.action_name, '')) like
+                   concat('%', lower(coalesce(i_action_name, a.action_name, '')), '%')
            and instr(concat(',', coalesce(i_ssys_list, ss.ssys_id), ','),
                      concat(',', ss.ssys_id, ',')
               ) > 0

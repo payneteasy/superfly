@@ -2,16 +2,19 @@ package com.payneteasy.superfly.web.wicket.component.mapping;
 
 import com.payneteasy.superfly.service.mapping.MappingService;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Check;
 import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +28,15 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
         Form<MappingModel<MappingService>> form = new Form<>("form-mapping",
                 new Model<>(mappingModel));
         add(form);
+
+        // Enter in one of the search fields has to re-query the lists; without an
+        // explicit default button the browser would press "Grant >" instead.
+        Button searchButton = new Button("search");
+        form.add(searchButton);
+        form.setDefaultButton(searchButton);
+
+        form.add(searchField("unmapped-query", mappingModel, "searchUnMappedString"));
+        form.add(searchField("mapped-query", mappingModel, "searchMappedString"));
 
         final CheckGroup<MappingService> checkGroupMapped = new CheckGroup<>("checkgroup-mapped",
                 mappingModel.getSelectedInMapped());
@@ -47,7 +59,7 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
             }
 
         };
-        mappedListView.setReuseItems(true);
+        mappedListView.setReuseItems(false);
         checkGroupMapped.add(mappedListView);
         form.add(new SubmitLink("remove-items") {
 
@@ -77,7 +89,7 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
                 item.add(new Check<>("selected", new Model<>(unmapped)));
             }
         };
-        unmappedListView.setReuseItems(true);
+        unmappedListView.setReuseItems(false);
         checkGroupUnMapped.add(unmappedListView);
 
         form.add(new SubmitLink("add-items") {
@@ -100,6 +112,18 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
 
     private IModel<String> createObjectNameModel(String itemName) {
         return new Model<>(itemName);
+    }
+
+    /**
+     * Search field bound to the panel's model, keeping the markup id stable so
+     * that the live JS filter in MappingPanel.html still finds it.
+     */
+    private TextField<String> searchField(String wicketId,
+            MappingModel<MappingService> mappingModel, String property) {
+        TextField<String> field = new TextField<>(wicketId,
+                new PropertyModel<String>(mappingModel, property));
+        field.setMarkupId(wicketId);
+        return field;
     }
     
     private List<Long> objectsToIds(Collection<? extends MappingService> objects) {
