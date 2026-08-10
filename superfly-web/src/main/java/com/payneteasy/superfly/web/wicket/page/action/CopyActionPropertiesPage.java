@@ -68,6 +68,10 @@ public class CopyActionPropertiesPage extends BasePage {
         final ActionFilter actionFilter = new ActionFilter();
         Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
         add(filtersForm);
+
+        UIAction action = actionService.getAction(actionId);
+        final long subId = action.getSubsystemId();
+
         final AutoCompleteTextField<String> autoTextNameAction = new AutoCompleteTextField<String>("auto", new Model<>("")) {
 
             @Override
@@ -76,24 +80,15 @@ public class CopyActionPropertiesPage extends BasePage {
                     return Collections.<String>emptyList().iterator();
                 }
                 List<String> choices = new ArrayList<String>(20);
-                List<UIActionForFilter> action = actionService.getActionForFilter();
-                for (UIActionForFilter uia : action) {
-                    final String name = uia.getActionName();
-                    if (name.toUpperCase().startsWith(input.toUpperCase())) {
-                        choices.add(name);
-
-                        if (choices.size() == 20) {
-                            break;
-                        }
-                    }
+                for (UIActionForFilter uia : actionService.getActionForFilter(input,
+                        Collections.singletonList(subId), 20)) {
+                    choices.add(uia.getActionName());
                 }
                 return choices.iterator();
             }
         };
         filtersForm.add(autoTextNameAction);
 
-        UIAction action = actionService.getAction(actionId);
-        final long subId = action.getSubsystemId();
         filtersForm.add(new Label("name-action", action == null ? null : action.getActionName()));
         filtersForm.add(new Label("name-description", action == null ? null : action.getActionDescription()));
         filtersForm.add(new Label("subname-action", action == null ? null : action.getSubsystemName()));

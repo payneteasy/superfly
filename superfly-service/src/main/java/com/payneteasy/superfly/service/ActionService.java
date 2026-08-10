@@ -27,7 +27,8 @@ public interface ActionService {
     long getActionsWithGroupCount(String actionName, String description,
             List<Long> subsystemIds);
 
-    List<UIActionForFilter> getActionForFilter();
+    List<UIActionForFilter> getActionForFilter(String actionNamePrefix,
+            List<Long> subsystemIds, int recordsCount);
     void copyActionProperties(long actionId, long actionIdCopy,
             boolean userPrivileges);
     UIAction getAction(long actionId);
