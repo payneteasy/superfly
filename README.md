@@ -40,6 +40,27 @@ All dynamically-generated URLs are made compatible with nginx mod\_security modu
   * [Installing on Tomcat](../wiki/IntallOnTomcat.md)
   * [FAQ](../wiki/FAQ.md)
 
+## Running locally ##
+
+`dev-env.sh` brings up a throwaway database and the admin UI so the screens can be checked by hand:
+
+```
+./dev-env.sh up      # start MySQL 5.7, install the schema and the stored procedures
+./dev-env.sh seed    # add sample actions and groups
+./dev-env.sh app     # run the app on http://localhost:8085/superfly/
+./dev-env.sh sql     # open a mysql shell on the dev database
+./dev-env.sh down    # remove the container and the network
+```
+
+Log in as `admin` / `123admin123`. Docker is needed for the database; `app` additionally needs a JDK, and drives Maven through the bundled `mvnw`.
+
+Two constraints worth knowing about, since both fail in confusing ways:
+
+  * The database must be **MySQL 5.7**. On 8.0 the schema does not install at all, because `groups` became a reserved word there.
+  * `all-proc.sql` is built on the `\.` (source) directive, which the **mysql 9.x** client no longer supports. When the client on `PATH` is that new, the script routes every `mysql` invocation through the client inside the MySQL 5.7 image instead; an older local client is used directly.
+
+Note that the stored procedures are installed separately from the WAR, so a running instance can be up to date while its procedures are not. `/management/version.txt` reports the deployed version and needs no authentication.
+
 # Gratitudes #
 
 Thanks to [JProfiler](http://www.ej-technologies.com/products/jprofiler/overview.html) for their wonderful [Java profiler](http://www.ej-technologies.com/products/jprofiler/overview.html).
