@@ -66,6 +66,10 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
             @Override
             public void onSubmit() {
                 mappingProcess(entityId, null, objectsToIds(checkGroupMapped.getModelObject()));
+                // clear leftover search text so the reloaded lists are not
+                // unexpectedly filtered by whatever was typed before this submit
+                mappingModel.setSearchMappedString(null);
+                mappingModel.setSearchUnMappedString(null);
             }
 
         });
@@ -96,6 +100,10 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
             @Override
             public void onSubmit() {
                 mappingProcess(entityId, objectsToIds(checkGroupUnMapped.getModelObject()), null);
+                // clear leftover search text so the reloaded lists are not
+                // unexpectedly filtered by whatever was typed before this submit
+                mappingModel.setSearchMappedString(null);
+                mappingModel.setSearchUnMappedString(null);
             }
 
         });
@@ -123,6 +131,7 @@ public abstract class MappingPanel<T extends MappingService> extends Panel {
         TextField<String> field = new TextField<>(wicketId,
                 new PropertyModel<String>(mappingModel, property));
         field.setMarkupId(wicketId);
+        field.setOutputMarkupId(true);
         return field;
     }
     
