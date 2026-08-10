@@ -37,6 +37,12 @@ public class ActionServiceImpl implements ActionService {
                 .collectionToCommaDelimitedString(subsystemIds));
     }
 
+    public long getActionsWithGroupCount(String actionName, String description,
+                                         List<Long> subsystemIds) {
+        return actionDao.getActionsWithGroupCount(actionName, description, StringUtils
+                .collectionToCommaDelimitedString(subsystemIds));
+    }
+
     public List<UIActionForList> getActions(long startFrom, long recordsCount,
                                             int orderFieldNumber, boolean asc, String actionNamePrefix,
                                             String description, List<Long> subsystemIds) {

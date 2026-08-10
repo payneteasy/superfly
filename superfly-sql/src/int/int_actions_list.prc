@@ -9,26 +9,33 @@ create procedure int_actions_list(i_action_name varchar(128),
   begin
     declare v_search_conditions   text default '';
 
+    if i_ssys_list is not null and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid subsystem list';
+    end if;
+
     if i_action_name is not null then
       set v_search_conditions   =
-            concat(" and a.action_name like '%", i_action_name, "%' ");
+            concat(" and a.action_name like ",
+                   quote(concat('%', i_action_name, '%')),
+                   " "
+            );
     end if;
 
     if i_action_description is not null then
       set v_search_conditions   =
             concat(v_search_conditions,
-                   " and a.action_description like '%",
-                   i_action_description,
-                   "%' "
+                   " and a.action_description like ",
+                   quote(concat('%', i_action_description, '%')),
+                   " "
             );
     end if;
 
     if i_ssys_list is not null then
       set v_search_conditions   =
             concat(v_search_conditions,
-                   " and instr(concat(',', '",
-                   i_ssys_list,
-                   "', ','), concat(',', a.ssys_ssys_id, ',')) > 0 "
+                   " and instr(concat(',', ",
+                   quote(i_ssys_list),
+                   ", ','), concat(',', a.ssys_ssys_id, ',')) > 0 "
             );
     end if;
 

@@ -48,6 +48,10 @@ public interface ActionDao {
     long getActionCount(String actionName, String description,
             String subsystemIds);
 
+    @AStoredProcedure(name = "ui_get_actions_list_with_group_count")
+    long getActionsWithGroupCount(String actionName, String description,
+            String subsystemIds);
+
     @AStoredProcedure(name = "ui_filter_dyn_actions")
     List<UIActionForFilter> getActionsForFilter(String subsystemIds,
             String actionNamePrefix, int startFrom, int recordsCount);
