@@ -132,12 +132,13 @@ public class ListActionsPage extends BasePage {
 
             public long size() {
                 UISubsystemForFilter subsystem = stickyFilters.getSubsystem();
+                String actionForFilter = stickyFilters.getActionNameSubstring();
                 if (subsystem == null) {
-                    return actionService.getActionCount(null, null, null);
+                    return actionService.getActionsWithGroupCount(actionForFilter, null, null);
                 } else {
                     List<Long> subsystemId = new ArrayList<Long>();
                     subsystemId.add(subsystem.getId());
-                    return actionService.getActionCount(null, null, subsystemId);
+                    return actionService.getActionsWithGroupCount(actionForFilter, null, subsystemId);
                 }
             }
 

@@ -24,6 +24,9 @@ public interface ActionService {
     long getActionCount(String actionName, String description,
             List<Long> subsystemIds);
 
+    long getActionsWithGroupCount(String actionName, String description,
+            List<Long> subsystemIds);
+
     List<UIActionForFilter> getActionForFilter();
 
     RoutineResult copyActionProperties(long actionId, long templateActionId, boolean userPrivileges);

@@ -192,6 +192,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_actions_list_with_group.prc
 
+\. ui_get/ui_get_actions_list_with_group_count.prc
+
 \. ui_get/ui_get_actions_list_count.prc
 
 \. ui_get/ui_get_subsystems_list.prc

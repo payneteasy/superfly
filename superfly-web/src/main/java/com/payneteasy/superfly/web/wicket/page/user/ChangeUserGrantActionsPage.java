@@ -9,6 +9,8 @@ import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.mapping.MappingPanel;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
+import com.payneteasy.superfly.web.wicket.page.role.ChangeRoleActionsPage;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -46,6 +48,9 @@ public class ChangeUserGrantActionsPage extends BasePage {
         add(new Label("user-name", user.getUsername()));
         add(new Label("sub-name", subsystem.getName()));
         add(new Label("role-name",role.getRoleName()));
+
+        add(new BookmarkablePageLink<Page>("link-actions-to-role", ChangeRoleActionsPage.class,
+                PageParametersBuilder.fromPair("id", roleId)));
 
         add(new MappingPanel<UIActionForCheckboxForUser>("mapping-panel", userId){
 
