@@ -4,7 +4,7 @@ create procedure int_user_actions_list_count(i_user_id int(10),
                                              i_ssys_list text,
                                              i_role_id int(10),
                                              i_mapping_status varchar(1),
-                                             i_action_name varchar(100)
+                                             i_action_name varchar(128)
 )
  main_sql:
   begin
@@ -19,8 +19,8 @@ create procedure int_user_actions_list_count(i_user_id int(10),
                join
                  actions a
                on a.actn_id = ra.actn_actn_id
-                  and a.action_name like
-                       concat('%', coalesce(i_action_name, ''), '%')
+                  and lower(coalesce(a.action_name, '')) like
+                       concat('%', lower(coalesce(i_action_name, '')), '%')
              join
                subsystems ss
              on a.ssys_ssys_id = ss.ssys_id

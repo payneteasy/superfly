@@ -33,13 +33,15 @@ public class ActionServiceImpl implements ActionService {
 
     public long getActionCount(String actionName, String description,
                                List<Long> subsystemIds) {
-        return actionDao.getActionCount(actionName, description, StringUtils
+        return actionDao.getActionCount(StringUtils.toLikeNeedle(actionName),
+                StringUtils.toLikeNeedle(description), StringUtils
                 .collectionToCommaDelimitedString(subsystemIds));
     }
 
     public long getActionsWithGroupCount(String actionName, String description,
                                          List<Long> subsystemIds) {
-        return actionDao.getActionsWithGroupCount(actionName, description, StringUtils
+        return actionDao.getActionsWithGroupCount(StringUtils.toLikeNeedle(actionName),
+                StringUtils.toLikeNeedle(description), StringUtils
                 .collectionToCommaDelimitedString(subsystemIds));
     }
 
@@ -47,7 +49,8 @@ public class ActionServiceImpl implements ActionService {
                                             int orderFieldNumber, boolean asc, String actionNamePrefix,
                                             String description, List<Long> subsystemIds) {
         return actionDao.getActions(startFrom, recordsCount, orderFieldNumber,
-                asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
+                asc ? DaoConstants.ASC : DaoConstants.DESC, StringUtils.toLikeNeedle(actionNamePrefix),
+                StringUtils.toLikeNeedle(description), StringUtils
                         .collectionToCommaDelimitedString(subsystemIds));
     }
 
@@ -56,14 +59,16 @@ public class ActionServiceImpl implements ActionService {
                                                               int orderFieldNumber, boolean asc, String actionNamePrefix,
                                                               String description, List<Long> subsystemIds) {
         return actionDao.getActionsWithGroup(startFrom, recordsCount, orderFieldNumber,
-                asc ? DaoConstants.ASC : DaoConstants.DESC, actionNamePrefix, description, StringUtils
+                asc ? DaoConstants.ASC : DaoConstants.DESC, StringUtils.toLikeNeedle(actionNamePrefix),
+                StringUtils.toLikeNeedle(description), StringUtils
                         .collectionToCommaDelimitedString(subsystemIds));
     }
 
     public List<UIActionForFilter> getActionForFilter(String actionNamePrefix,
                                                      List<Long> subsystemIds, int recordsCount) {
         return actionDao.getActionsForFilter(StringUtils
-                .collectionToCommaDelimitedString(subsystemIds), actionNamePrefix, 0, recordsCount);
+                .collectionToCommaDelimitedString(subsystemIds),
+                StringUtils.toLikeNeedle(actionNamePrefix), 0, recordsCount);
     }
 
     public void copyActionProperties(long actionId, long actionIdCopy,

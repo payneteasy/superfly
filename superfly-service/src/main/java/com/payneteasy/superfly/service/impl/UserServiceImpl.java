@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import static com.payneteasy.superfly.utils.StringUtils.toLikeNeedle;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -283,7 +285,7 @@ public class UserServiceImpl implements UserService {
                 .toString();
         return userDao.getAllUserActions(startFrom, recordsCount,
                 DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-                userId, subsystemIds, actionSubstring);
+                userId, subsystemIds, toLikeNeedle(actionSubstring));
     }
 
     @Override
@@ -292,7 +294,7 @@ public class UserServiceImpl implements UserService {
         String subsystemIds = subsystemId == null ? null : subsystemId
                 .toString();
         return userDao.getAllUserActionsCount(userId, subsystemIds,
-                actionSubstring);
+                toLikeNeedle(actionSubstring));
     }
 
     @Override
@@ -303,7 +305,7 @@ public class UserServiceImpl implements UserService {
                 .toString();
         return userDao.getUnmappedUserActions(startFrom, recordsCount,
                 DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-                userId, subsystemIds, roleId, actionSubstring);
+                userId, subsystemIds, roleId, toLikeNeedle(actionSubstring));
     }
 
     @Override
@@ -312,7 +314,7 @@ public class UserServiceImpl implements UserService {
         String subsystemIds = subsystemId == null ? null : subsystemId
                 .toString();
         return userDao.getUnmappedUserActionsCount(userId, subsystemIds,
-                roleId, actionSubstring);
+                roleId, toLikeNeedle(actionSubstring));
     }
 
     @Override
@@ -335,7 +337,7 @@ public class UserServiceImpl implements UserService {
             String subsystemIds, String actionNameSubstring,
             String roleNameSubstring) {
         return userDao.getUserRoleActions(userId, subsystemIds,
-                actionNameSubstring, roleNameSubstring);
+                toLikeNeedle(actionNameSubstring), toLikeNeedle(roleNameSubstring));
     }
 
     @Override
@@ -365,7 +367,7 @@ public class UserServiceImpl implements UserService {
                 .toString();
         return userDao.getMappedUserActions(startFrom, recordsCount,
                 DaoConstants.DEFAULT_SORT_FIELD_NUMBER, DaoConstants.ASC,
-                userId, subsystemIds, roleId, actionSubstring);
+                userId, subsystemIds, roleId, toLikeNeedle(actionSubstring));
     }
 
     @Override
@@ -374,7 +376,7 @@ public class UserServiceImpl implements UserService {
         String subsystemIds = subsystemId == null ? null : subsystemId
                 .toString();
         return userDao.getMappedUserActionsCount(userId, subsystemIds, roleId,
-                actionSubstring);
+                toLikeNeedle(actionSubstring));
     }
 
     @Override

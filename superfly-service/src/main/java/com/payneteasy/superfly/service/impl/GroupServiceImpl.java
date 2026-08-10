@@ -109,11 +109,11 @@ public class GroupServiceImpl implements GroupService {
         return groupDao.getAllGroupMappedActions(startFrom, recordsCount,
                 orderFieldNumber,
                 orderType ? DaoConstants.ASC : DaoConstants.DESC,
-                groupId, actionSubstring);
+                groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
     public long getAllGroupMappedActionsCount(long groupId, String actionSubstring) {
-        return groupDao.getAllGroupMappedActionsCount(groupId, actionSubstring);
+        return groupDao.getAllGroupMappedActionsCount(groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
     public List<UIActionForCheckboxForGroup> getAllGroupActions(long startFrom,
@@ -122,11 +122,11 @@ public class GroupServiceImpl implements GroupService {
         return groupDao.getAllGroupActions(startFrom, recordsCount,
                 orderFieldNumber,
                 orderType ? DaoConstants.ASC : DaoConstants.DESC,
-                groupId, actionSubstring);
+                groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
     public long getAllGroupActionsCount(long groupId, String actionSubstring) {
-        return groupDao.getAllGroupActionsCount(groupId, actionSubstring);
+        return groupDao.getAllGroupActionsCount(groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
     public RoutineResult cloneGroup(UICloneGroupRequest request) {
@@ -144,12 +144,12 @@ public class GroupServiceImpl implements GroupService {
         return groupDao.getAllGroupUnMappedActions(startFrom, recordsCount,
                 orderFieldNumber,
                 orderType ? DaoConstants.ASC : DaoConstants.DESC,
-                groupId, actionSubstring);
+                groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
     public int getAllGroupUnMappedActionsCount(long groupId,
             String actionSubstring) {
-        return groupDao.getAllGroupUnMappedActionsCount(groupId, actionSubstring);
+        return groupDao.getAllGroupUnMappedActionsCount(groupId, StringUtils.toLikeNeedle(actionSubstring));
     }
 
 }
