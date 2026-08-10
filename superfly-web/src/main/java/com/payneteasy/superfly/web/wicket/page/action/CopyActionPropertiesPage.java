@@ -113,9 +113,10 @@ public class CopyActionPropertiesPage extends BasePage {
             }
 
             public long size() {
+                String actionForFilter = autoTextNameAction.getModelObject();
                 List<Long> subsystemId = new ArrayList<Long>();
                 subsystemId.add(subId);
-                return actionService.getActionCount(null, null, subsystemId);
+                return actionService.getActionCount(actionForFilter, null, subsystemId);
 
             }
 
