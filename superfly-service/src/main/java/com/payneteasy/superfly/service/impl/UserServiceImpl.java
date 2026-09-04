@@ -49,8 +49,6 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private static final OTPType DEFAULT_MANDATORY_OTP_TYPE = OTPType.GOOGLE_AUTH;
-
     private UserDao userDao;
     private NotificationService notificationService;
     private LoggerSink loggerSink;
@@ -586,7 +584,7 @@ public class UserServiceImpl implements UserService {
         if (!isOtpOptional) {
             UserForDescription user = userDao.getUserForDescription(username);
             if (user != null && user.getOtpType() == OTPType.NONE) {
-                userDao.updateUserOtpType(username, DEFAULT_MANDATORY_OTP_TYPE.code());
+                userDao.updateUserOtpType(username, OtpTypeDefaults.MANDATORY_DEFAULT.code());
                 loggerSink.info(logger, "AUTO_SET_OTP_TYPE", true, username);
             }
         }
@@ -600,11 +598,14 @@ public class UserServiceImpl implements UserService {
      *         together with the result of the DAO call
      */
     private boolean assignDefaultOtpTypeIfOtpMandatory(UIUser user) {
-        if (!user.isOtpOptional() && normalizeOtpType(user.getOtpType()) == OTPType.NONE) {
-            user.setOtpType(DEFAULT_MANDATORY_OTP_TYPE.code());
-            return true;
+        // reject an unknown code instead of letting it pass as "no OTP" below
+        normalizeOtpType(user.getOtpType());
+
+        if (!OtpTypeDefaults.needsDefaultType(user)) {
+            return false;
         }
-        return false;
+        user.setOtpType(OtpTypeDefaults.MANDATORY_DEFAULT.code());
+        return true;
     }
 
     /**

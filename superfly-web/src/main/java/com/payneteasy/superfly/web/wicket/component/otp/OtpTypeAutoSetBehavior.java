@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.wicket.component.otp;
 
-import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.model.ui.user.OtpTypeDefaults;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import org.apache.wicket.Component;
@@ -20,12 +20,6 @@ import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
  */
 public class OtpTypeAutoSetBehavior extends OnChangeAjaxBehavior {
 
-    /**
-     * OTP type assigned when OTP becomes mandatory while no type is chosen.
-     * Kept in sync with the service layer, which applies the same rule on save.
-     */
-    public static final OTPType DEFAULT_MANDATORY_OTP_TYPE = OTPType.GOOGLE_AUTH;
-
     private static final String MESSAGE_KEY = "user.otpTypeAutoSet";
 
     private final UIUser                        user;
@@ -40,11 +34,11 @@ public class OtpTypeAutoSetBehavior extends OnChangeAjaxBehavior {
 
     @Override
     protected void onUpdate(AjaxRequestTarget target) {
-        if (user.isOtpOptional() || OTPType.fromCode(user.getOtpType()) != OTPType.NONE) {
+        if (!OtpTypeDefaults.needsDefaultType(user)) {
             return;
         }
 
-        user.setOtpType(DEFAULT_MANDATORY_OTP_TYPE.code());
+        user.setOtpType(OtpTypeDefaults.MANDATORY_DEFAULT.code());
         // a form component renders the value it received, not the model, so a stale
         // selection (a previous failed submit, or the choice we have just overridden)
         // would survive the re-render

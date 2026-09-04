@@ -55,8 +55,6 @@ public class CreateUserPage extends BasePage {
     public CreateUserPage() {
         super(ListUsersPage.class);
         final UIUserCheckPassword user = new UIUserCheckPassword();
-        // matches the DB default 'Y', so an untouched form does not create a user with mandatory OTP
-        user.setOtpOptional(true);
 
         List<UISubsystemForFilter> listSub = subsystemService.getSubsystemsForFilter();
         for (UISubsystemForFilter sub : listSub) {
