@@ -142,9 +142,23 @@ public class CreateUserPage extends BasePage {
 
         form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
 
-        form.add(new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender()));
+        final LabelDropDownChoiceRow<String> otpTypeRow =
+                new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender());
+        otpTypeRow.setOutputMarkupId(true);
+        form.add(otpTypeRow);
 
-        form.add(new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional"));
+        LabelCheckBoxRow isOtpOptionalRow = new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional");
+        isOtpOptionalRow.getCheckBox().add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (!user.isOtpOptional() && OTPType.fromCode(user.getOtpType()) == OTPType.NONE) {
+                    user.setOtpType(OTPType.GOOGLE_AUTH.code());
+                    info(getString("user.otpTypeAutoSet"));
+                    target.add(otpTypeRow, getFeedbackPanel());
+                }
+            }
+        });
+        form.add(isOtpOptionalRow);
         form.add(new Button("add") {
 
             @Override

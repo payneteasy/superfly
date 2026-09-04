@@ -57,6 +57,13 @@ public interface SSOService {
      */
     List<SSOUserWithActions> getUsersWithActions(GetUsersWithActionsRequest request);
 
+    /**
+     * Updates the OTP type of a user.
+     * <p>
+     * An unknown OTP type code is rejected. Setting type 'none' for a user whose OTP
+     * is mandatory (is_otp_optional = false) is rejected with a conflict error: make
+     * OTP optional first.
+     */
     void updateUserOtpType(UpdateUserOtpTypeRequest request);
 
     /**
@@ -108,6 +115,13 @@ public interface SSOService {
      */
     String getUrlToGoogleAuthQrCode(GetGoogleAuthQrCodeRequest request);
 
+    /**
+     * Updates the "is OTP optional" flag of a user.
+     * <p>
+     * When OTP is made mandatory (isOtpOptional = false) and the user's OTP type is
+     * 'none' or not set, the OTP type is automatically set to 'google_auth', so this
+     * call may change not only the flag.
+     */
     void updateUserIsOtpOptionalValue(UpdateUserIsOtpOptionalValueRequest request);
 
     /**

@@ -62,6 +62,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 
         UIUserForCreate user = new UIUserForCreate();
         user.setUsername("test-user");
+        user.setOtpOptional(true);
         userService.createUser(user, "subsystem");
 
         EasyMock.verify(loggerSink);
@@ -82,6 +83,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 
         UIUserForCreate user = new UIUserForCreate();
         user.setUsername("test-user");
+        user.setOtpOptional(true);
         userService.createUser(user, "subsystem");
 
         EasyMock.verify(loggerSink);
@@ -96,6 +98,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 
         UIUser user = new UIUser();
         user.setUsername("test-user");
+        user.setOtpOptional(true);
         userService.updateUser(user);
 
         EasyMock.verify(loggerSink);
@@ -110,6 +113,7 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
 
         UIUser user = new UIUser();
         user.setUsername("test-user");
+        user.setOtpOptional(true);
         userService.updateUser(user);
 
         EasyMock.verify(loggerSink);

@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.SsoConflictException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
@@ -46,6 +47,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    private static final OTPType DEFAULT_MANDATORY_OTP_TYPE = OTPType.GOOGLE_AUTH;
 
     private UserDao userDao;
     private NotificationService notificationService;
@@ -165,6 +168,7 @@ public class UserServiceImpl implements UserService {
     public RoutineResult updateUser(UIUser user) {
         UIUserForCreate userForDao = new UIUserForCreate();
         copyUserAndEncryptPassword(user, userForDao);
+        assignDefaultOtpTypeIfOtpMandatory(userForDao);
         // password and salt are not updated here
         RoutineResult result = userDao.updateUser(userForDao);
         loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
@@ -462,6 +466,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoutineResult createUser(UIUserForCreate user) {
+        assignDefaultOtpTypeIfOtpMandatory(user);
         return userDao.createUser(user);
     }
 
@@ -556,12 +561,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserOtpType(String username, String otpType) {
-        userDao.updateUserOtpType(username,otpType);
+        OTPType newOtpType = otpType == null ? OTPType.NONE : OTPType.strictFromCode(otpType);
+        if (newOtpType == OTPType.NONE) {
+            UserForDescription user = userDao.getUserForDescription(username);
+            if (user != null && !user.isOtpOptional()) {
+                throw new SsoConflictException("Cannot set OTP type 'none' for user '" + username
+                        + "': OTP is mandatory for this user, make OTP optional first");
+            }
+        }
+        userDao.updateUserOtpType(username, newOtpType.code());
     }
 
     @Override
     public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
         userDao.updateUserIsOtpOptionalValue(username,isOtpOptional);
+        if (!isOtpOptional) {
+            UserForDescription user = userDao.getUserForDescription(username);
+            if (user != null && user.getOtpType() == OTPType.NONE) {
+                userDao.updateUserOtpType(username, DEFAULT_MANDATORY_OTP_TYPE.code());
+                loggerSink.info(logger, "AUTO_SET_OTP_TYPE", true, username);
+            }
+        }
+    }
+
+    /**
+     * Authentication code enforces mandatory OTP only when the user has a concrete OTP type,
+     * so a user with mandatory OTP must never remain with type 'none'/null.
+     */
+    private void assignDefaultOtpTypeIfOtpMandatory(UIUser user) {
+        if (!user.isOtpOptional() && OTPType.fromCode(user.getOtpType()) == OTPType.NONE) {
+            user.setOtpType(DEFAULT_MANDATORY_OTP_TYPE.code());
+            loggerSink.info(logger, "AUTO_SET_OTP_TYPE", true, user.getUsername());
+        }
     }
 
     @Override
