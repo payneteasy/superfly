@@ -2,6 +2,8 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
+import com.payneteasy.superfly.api.exceptions.SsoBadRequestException;
+import com.payneteasy.superfly.api.exceptions.SsoConflictException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
@@ -165,8 +167,12 @@ public class UserServiceImpl implements UserService {
     public RoutineResult updateUser(UIUser user) {
         UIUserForCreate userForDao = new UIUserForCreate();
         copyUserAndEncryptPassword(user, userForDao);
+        boolean otpTypeAssigned = assignDefaultOtpTypeIfOtpMandatory(userForDao);
         // password and salt are not updated here
         RoutineResult result = userDao.updateUser(userForDao);
+        if (otpTypeAssigned) {
+            loggerSink.info(logger, "AUTO_SET_OTP_TYPE", result.isOk(), user.getUsername());
+        }
         loggerSink.info(logger, "UPDATE_USER", result.isOk(), user.getUsername());
         return result;
     }
@@ -462,7 +468,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoutineResult createUser(UIUserForCreate user) {
-        return userDao.createUser(user);
+        boolean otpTypeAssigned = assignDefaultOtpTypeIfOtpMandatory(user);
+        RoutineResult result = userDao.createUser(user);
+        if (otpTypeAssigned) {
+            loggerSink.info(logger, "AUTO_SET_OTP_TYPE", result.isOk(), user.getUsername());
+        }
+        return result;
     }
 
     @Override
@@ -556,12 +567,60 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserOtpType(String username, String otpType) {
-        userDao.updateUserOtpType(username,otpType);
+        OTPType newOtpType = normalizeOtpType(otpType);
+        if (newOtpType == OTPType.NONE) {
+            UserForDescription user = userDao.getUserForDescription(username);
+            if (user != null && !user.isOtpOptional()) {
+                throw new SsoConflictException("Cannot set OTP type 'none' for user '" + username
+                        + "': OTP is mandatory for this user, make OTP optional first");
+            }
+        }
+        userDao.updateUserOtpType(username, newOtpType.code());
     }
 
     @Override
     public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
         userDao.updateUserIsOtpOptionalValue(username,isOtpOptional);
+        if (!isOtpOptional) {
+            UserForDescription user = userDao.getUserForDescription(username);
+            if (user != null && user.getOtpType() == OTPType.NONE) {
+                userDao.updateUserOtpType(username, OtpTypeDefaults.MANDATORY_DEFAULT.code());
+                loggerSink.info(logger, "AUTO_SET_OTP_TYPE", true, username);
+            }
+        }
+    }
+
+    /**
+     * Authentication code enforces mandatory OTP only when the user has a concrete OTP type,
+     * so a user with mandatory OTP must never remain with type 'none'/null.
+     *
+     * @return true if the OTP type was assigned, so that the caller can audit it
+     *         together with the result of the DAO call
+     */
+    private boolean assignDefaultOtpTypeIfOtpMandatory(UIUser user) {
+        // reject an unknown code instead of letting it pass as "no OTP" below
+        normalizeOtpType(user.getOtpType());
+
+        if (!OtpTypeDefaults.needsDefaultType(user)) {
+            return false;
+        }
+        user.setOtpType(OtpTypeDefaults.MANDATORY_DEFAULT.code());
+        return true;
+    }
+
+    /**
+     * Maps an OTP type code to the enum: an absent or blank code means "no OTP",
+     * an unknown code is rejected instead of being silently stored as no OTP.
+     */
+    private static OTPType normalizeOtpType(String otpTypeCode) {
+        if (otpTypeCode == null || otpTypeCode.trim().isEmpty()) {
+            return OTPType.NONE;
+        }
+        try {
+            return OTPType.strictFromCode(otpTypeCode);
+        } catch (IllegalStateException e) {
+            throw new SsoBadRequestException("Unknown OTP type code: '" + otpTypeCode + "'");
+        }
     }
 
     @Override
