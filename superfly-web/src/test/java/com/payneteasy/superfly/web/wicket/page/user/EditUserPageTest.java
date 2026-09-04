@@ -6,6 +6,7 @@ import com.payneteasy.superfly.model.ui.user.UIUserDetails;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.easymock.EasyMock;
@@ -18,10 +19,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class EditUserPageTest extends AbstractPageTest {
 
     private static final String OTP_TYPE_PATH = "form:otpType:container:field-id";
+    private static final String OTP_TYPE_ROW_PATH = "form:otpType";
     private static final String OTP_OPTIONAL_PATH = "form:isOtpOptional:field-id";
 
     private UserService userService;
@@ -80,8 +84,29 @@ public class EditUserPageTest extends AbstractPageTest {
         tester.executeAjaxEvent(OTP_OPTIONAL_PATH, "change");
     }
 
+    private void selectOtpTypeAndFireAjax(OTPType otpType) {
+        FormTester formTester = tester.newFormTester("form");
+        // otpTypes() lists OTPType.values() in declaration order, so the ordinal is the choice index
+        formTester.select("otpType:container:field-id", otpType.ordinal());
+        tester.executeAjaxEvent(OTP_TYPE_PATH, "change");
+    }
+
     private Object renderedOtpType() {
         return tester.getComponentFromLastRenderedPage(OTP_TYPE_PATH).getDefaultModelObject();
+    }
+
+    /**
+     * Asserting the model alone would still pass if the row were never repainted or the
+     * administrator never told, so pin both down.
+     */
+    private void assertOtpTypeAutoSetReported() {
+        tester.assertComponentOnAjaxResponse(OTP_TYPE_ROW_PATH);
+        assertFalse("expected an info message about the automatically set OTP type",
+                tester.getMessages(FeedbackMessage.INFO).isEmpty());
+    }
+
+    private void assertNothingReported() {
+        assertTrue("expected no info message", tester.getMessages(FeedbackMessage.INFO).isEmpty());
     }
 
     @Test
@@ -91,6 +116,7 @@ public class EditUserPageTest extends AbstractPageTest {
         setOtpOptionalAndFireAjax(false);
 
         assertEquals(OTPType.GOOGLE_AUTH.code(), renderedOtpType());
+        assertOtpTypeAutoSetReported();
     }
 
     @Test
@@ -100,6 +126,7 @@ public class EditUserPageTest extends AbstractPageTest {
         setOtpOptionalAndFireAjax(false);
 
         assertEquals(OTPType.GOOGLE_AUTH.code(), renderedOtpType());
+        assertNothingReported();
     }
 
     @Test
@@ -109,5 +136,41 @@ public class EditUserPageTest extends AbstractPageTest {
         setOtpOptionalAndFireAjax(true);
 
         assertEquals(OTPType.NONE.code(), renderedOtpType());
+        assertNothingReported();
+    }
+
+    /**
+     * The drop down is not submitted with the check box ajax request, so without a behavior
+     * of its own the rule would be decided on a stale OTP type.
+     */
+    @Test
+    public void choosingNoneWhileOtpIsMandatoryRevertsToGoogleAuth() {
+        startPageForUser(OTPType.GOOGLE_AUTH.code(), false);
+
+        selectOtpTypeAndFireAjax(OTPType.NONE);
+
+        assertEquals(OTPType.GOOGLE_AUTH.code(), renderedOtpType());
+        assertOtpTypeAutoSetReported();
+    }
+
+    @Test
+    public void choosingNoneWhileOtpIsOptionalIsKept() {
+        startPageForUser(OTPType.GOOGLE_AUTH.code(), true);
+
+        selectOtpTypeAndFireAjax(OTPType.NONE);
+
+        assertEquals(OTPType.NONE.code(), renderedOtpType());
+        assertNothingReported();
+    }
+
+    @Test
+    public void choosingNoneThenMakingOtpMandatoryAutoSetsGoogleAuth() {
+        startPageForUser(OTPType.GOOGLE_AUTH.code(), true);
+
+        selectOtpTypeAndFireAjax(OTPType.NONE);
+        setOtpOptionalAndFireAjax(false);
+
+        assertEquals(OTPType.GOOGLE_AUTH.code(), renderedOtpType());
+        assertOtpTypeAutoSetReported();
     }
 }

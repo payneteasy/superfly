@@ -6,6 +6,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.user.UICloneUserRequest;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
 import com.payneteasy.superfly.password.SHA256RandomGUIDSaltGenerator;
@@ -117,6 +118,82 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
         userService.updateUser(user);
 
         EasyMock.verify(loggerSink);
+    }
+
+    @Test
+    public void testCreateUserAutoSetsOtpType() throws Exception {
+        userDao.createUser(anyObject(UIUserForCreate.class));
+        EasyMock.expectLastCall().andAnswer(new IAnswer<RoutineResult>() {
+            public RoutineResult answer() throws Throwable {
+                UIUserForCreate user = (UIUserForCreate) EasyMock.getCurrentArguments()[0];
+                user.setId(1L);
+                return okResult();
+            }
+        });
+        loggerSink.info(anyObject(Logger.class), eq("AUTO_SET_OTP_TYPE"), eq(true), eq("test-user"));
+        loggerSink.info(anyObject(Logger.class), eq("CREATE_USER"), eq(true), eq("test-user"));
+        EasyMock.replay(loggerSink, userDao);
+
+        UIUserForCreate user = new UIUserForCreate();
+        user.setUsername("test-user");
+        user.setOtpOptional(false);
+        userService.createUser(user, "subsystem");
+
+        EasyMock.verify(loggerSink);
+    }
+
+    /**
+     * The audit trail must not claim an OTP type was set on a user that was never created.
+     */
+    @Test
+    public void testCreateUserAutoSetOtpTypeFail() throws Exception {
+        userDao.createUser(anyObject(UIUserForCreate.class));
+        EasyMock.expectLastCall().andReturn(failureResult());
+        loggerSink.info(anyObject(Logger.class), eq("AUTO_SET_OTP_TYPE"), eq(false), eq("test-user"));
+        loggerSink.info(anyObject(Logger.class), eq("CREATE_USER"), eq(false), eq("test-user"));
+        EasyMock.replay(loggerSink, userDao);
+
+        UIUserForCreate user = new UIUserForCreate();
+        user.setUsername("test-user");
+        user.setOtpOptional(false);
+        userService.createUser(user, "subsystem");
+
+        EasyMock.verify(loggerSink);
+    }
+
+    @Test
+    public void testUpdateUserAutoSetsOtpType() throws Exception {
+        userDao.updateUser(anyObject(UIUser.class));
+        EasyMock.expectLastCall().andReturn(okResult());
+        loggerSink.info(anyObject(Logger.class), eq("AUTO_SET_OTP_TYPE"), eq(true), eq("test-user"));
+        loggerSink.info(anyObject(Logger.class), eq("UPDATE_USER"), eq(true), eq("test-user"));
+        EasyMock.replay(loggerSink, userDao);
+
+        UIUser user = new UIUser();
+        user.setUsername("test-user");
+        user.setOtpOptional(false);
+        userService.updateUser(user);
+
+        EasyMock.verify(loggerSink);
+    }
+
+    @Test
+    public void testUpdateUserIsOtpOptionalValueAutoSetsOtpType() throws Exception {
+        userDao.updateUserIsOtpOptionalValue("test-user", false);
+        EasyMock.expectLastCall();
+        UserForDescription userForDescription = new UserForDescription();
+        userForDescription.setUsername("test-user");
+        userForDescription.setOtpTypeCode("none");
+        userForDescription.setOtpOptional(false);
+        EasyMock.expect(userDao.getUserForDescription("test-user")).andReturn(userForDescription);
+        userDao.updateUserOtpType("test-user", "google_auth");
+        EasyMock.expectLastCall();
+        loggerSink.info(anyObject(Logger.class), eq("AUTO_SET_OTP_TYPE"), eq(true), eq("test-user"));
+        EasyMock.replay(loggerSink, userDao);
+
+        userService.updateUserIsOtpOptionalValue("test-user", false);
+
+        EasyMock.verify(loggerSink, userDao);
     }
 
     @Test

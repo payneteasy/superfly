@@ -8,11 +8,10 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.otp.OtpTypeAutoSetBehavior;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
@@ -97,19 +96,11 @@ public class EditUserPage extends BasePage {
         final LabelDropDownChoiceRow<String> otpTypeRow =
                 new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender());
         otpTypeRow.setOutputMarkupId(true);
+        otpTypeRow.getDropDownChoice().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
         form.add(otpTypeRow);
 
         LabelCheckBoxRow isOtpOptionalRow = new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional");
-        isOtpOptionalRow.getCheckBox().add(new OnChangeAjaxBehavior() {
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                if (!user.isOtpOptional() && OTPType.fromCode(user.getOtpType()) == OTPType.NONE) {
-                    user.setOtpType(OTPType.GOOGLE_AUTH.code());
-                    info(getString("user.otpTypeAutoSet"));
-                    target.add(otpTypeRow, getFeedbackPanel());
-                }
-            }
-        });
+        isOtpOptionalRow.getCheckBox().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
         form.add(isOtpOptionalRow);
 
         form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));

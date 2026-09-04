@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.MessageSendException;
+import com.payneteasy.superfly.api.exceptions.SsoBadRequestException;
 import com.payneteasy.superfly.api.exceptions.SsoConflictException;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -334,7 +335,33 @@ public class UserServiceImplTest {
     public void testUpdateUserOtpTypeUnknownCodeRejected() {
         EasyMock.replay(userDao);
 
-        assertThrows(IllegalStateException.class, () -> userService.updateUserOtpType("pete", "garbage"));
+        assertThrows(SsoBadRequestException.class, () -> userService.updateUserOtpType("pete", "garbage"));
+
+        EasyMock.verify(userDao);
+    }
+
+    @Test
+    public void testUpdateUserOtpTypeBlankCodeMeansNone() {
+        EasyMock.expect(userDao.getUserForDescription("pete")).andReturn(userForDescription("google_auth", true));
+        userDao.updateUserOtpType("pete", "none");
+        EasyMock.replay(userDao);
+
+        userService.updateUserOtpType("pete", "  ");
+
+        EasyMock.verify(userDao);
+    }
+
+    @Test
+    public void testCreateUserWithUnknownOtpTypeRejected() {
+        EasyMock.replay(userDao);
+
+        UIUserForCreate user = new UIUserForCreate();
+        user.setUsername("pete");
+        user.setPassword("secret");
+        user.setOtpType("garbage");
+        user.setOtpOptional(false);
+
+        assertThrows(SsoBadRequestException.class, () -> userService.createUser(user, "subsystem"));
 
         EasyMock.verify(userDao);
     }
