@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <news>
+    <release number="1.7-38" date="2026.09.18">
+        <item type="task">
+            <name>OTP type is set automatically when OTP becomes mandatory</name>
+            <description>
+                In the admin UI, clearing the "is OTP optional" flag for a user whose
+                OTP type is 'none' or not set now sets the type to Google Auth, both
+                right in the form and on save. On the create user form the flag is
+                checked by default, matching the database default.
+            </description>
+        </item>
+    </release>
+
     <release number="1.5" date="2013.06.26">
         <item type="task">
             <name>UI design and usability</name>
