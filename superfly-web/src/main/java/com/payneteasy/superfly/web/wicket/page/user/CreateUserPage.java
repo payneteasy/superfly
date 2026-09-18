@@ -144,6 +144,10 @@ public class CreateUserPage extends BasePage {
         final LabelDropDownChoiceRow<String> otpTypeRow =
                 new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender());
         otpTypeRow.setOutputMarkupId(true);
+        // every drop down row renders the id="field-id" from its markup, and wicket binds the
+        // ajax handler by that id: without a unique one the handler would end up on the first
+        // such select in the document (the subsystem one) instead of this one
+        otpTypeRow.getDropDownChoice().setMarkupId("otpTypeSelect");
         otpTypeRow.getDropDownChoice().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
         form.add(otpTypeRow);
 
