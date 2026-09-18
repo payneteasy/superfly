@@ -106,5 +106,6 @@
 -->
 <entry key="otpType.none">None</entry>
 <entry key="otpType.google_auth">Google Auth</entry>
+<entry key="user.otpTypeAutoSet">Тип OTP автоматически установлен в Google Auth</entry>
 
 </properties>

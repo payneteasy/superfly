@@ -2,12 +2,14 @@ package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
+import com.payneteasy.superfly.model.ui.user.OtpTypeDefaults;
 import com.payneteasy.superfly.model.ui.user.UIUser;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.component.field.LabelCheckBoxRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.otp.OtpTypeAutoSetBehavior;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
 import org.apache.wicket.Page;
@@ -54,6 +56,11 @@ public class EditUserPage extends BasePage {
         Form<UIUserWithPassword2> form = new Form<UIUserWithPassword2>("form", new Model<UIUserWithPassword2>(user)) {
             @Override
             protected void onSubmit() {
+                // the ajax behavior only fires on a change, so a form saved without touching
+                // either control must still not leave mandatory OTP without an OTP type
+                if (OtpTypeDefaults.needsDefaultType(user)) {
+                    user.setOtpType(OtpTypeDefaults.MANDATORY_DEFAULT.code());
+                }
                 userService.updateUser(user);
                 getRequestCycle().setResponsePage(ListUsersPage.class);
                 info("User updated: " + user.getUsername());
@@ -92,9 +99,15 @@ public class EditUserPage extends BasePage {
 
         form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
 
-        form.add(new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender()));
+        final LabelDropDownChoiceRow<String> otpTypeRow =
+                new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender());
+        otpTypeRow.setOutputMarkupId(true);
+        otpTypeRow.getDropDownChoice().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
+        form.add(otpTypeRow);
 
-        form.add(new LabelCheckBoxRow( "isOtpOptional",user, "user.create.isOtpOptional"));
+        LabelCheckBoxRow isOtpOptionalRow = new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional");
+        isOtpOptionalRow.getCheckBox().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
+        form.add(isOtpOptionalRow);
 
         form.add(new BookmarkablePageLink<Page>("cancel", ListUsersPage.class));
     }

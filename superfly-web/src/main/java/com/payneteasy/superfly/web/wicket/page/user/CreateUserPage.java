@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
+import com.payneteasy.superfly.model.ui.user.OtpTypeDefaults;
 import com.payneteasy.superfly.model.ui.user.UserCreationResult;
 import com.payneteasy.superfly.service.RoleService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -15,6 +16,7 @@ import com.payneteasy.superfly.web.wicket.component.field.LabelDropDownChoiceRow
 import com.payneteasy.superfly.web.wicket.component.field.LabelPasswordTextFieldRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextAreaRow;
 import com.payneteasy.superfly.web.wicket.component.field.LabelTextFieldRow;
+import com.payneteasy.superfly.web.wicket.component.otp.OtpTypeAutoSetBehavior;
 import com.payneteasy.superfly.web.wicket.page.BasePage;
 import com.payneteasy.superfly.web.wicket.validation.PasswordInputValidator;
 import com.payneteasy.superfly.web.wicket.validation.PublicKeyValidator;
@@ -139,13 +141,24 @@ public class CreateUserPage extends BasePage {
 
         form.add(new LabelTextFieldRow<String>(user,"organization","user.create.organization", false));
 
-        form.add(new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender()));
+        final LabelDropDownChoiceRow<String> otpTypeRow =
+                new LabelDropDownChoiceRow<>("otpType", user, "user.create.otpTypeCode", otpTypes(), otpRender());
+        otpTypeRow.setOutputMarkupId(true);
+        otpTypeRow.getDropDownChoice().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
+        form.add(otpTypeRow);
 
-        form.add(new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional"));
+        LabelCheckBoxRow isOtpOptionalRow = new LabelCheckBoxRow("isOtpOptional", user, "user.create.isOtpOptional");
+        isOtpOptionalRow.getCheckBox().add(new OtpTypeAutoSetBehavior(user, otpTypeRow, getFeedbackPanel()));
+        form.add(isOtpOptionalRow);
         form.add(new Button("add") {
 
             @Override
             public void onSubmit() {
+                // the ajax behavior only fires on a change, so a form saved without touching
+                // either control must still not leave mandatory OTP without an OTP type
+                if (OtpTypeDefaults.needsDefaultType(user)) {
+                    user.setOtpType(OtpTypeDefaults.MANDATORY_DEFAULT.code());
+                }
                 UIRoleForList role = rolesRow.getDropDownChoice().getModelObject();
                 user.setRoleId(role.getId());
                 UserCreationResult result = userService.createUser(user, subsystem == null ? null : subsystem.getName());
