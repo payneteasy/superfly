@@ -43,7 +43,10 @@ public class HOTPServiceImplTest {
 
     @Test
     public void testValidateGoogleTimePassword() throws SsoDecryptException {
-        String totpPassword = String.valueOf(
+        // %06d: codes below 100000 must keep their leading zeros, otherwise
+        // validateGoogleTimePassword rejects them by the 6-digit pattern
+        String totpPassword = String.format(
+                "%06d",
                 service.getGoogleAuthenticator().get().getTotpPassword(credentials.getKey())
         );
 
