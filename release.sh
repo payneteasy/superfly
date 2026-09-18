@@ -12,7 +12,7 @@ GPG_PASSPHRASE=$1
 
 # Подготовка релиза
 echo "Запуск подготовки релиза..."
-mvn --batch-mode release:prepare
+./mvnw --batch-mode release:prepare
 
 if [ $? -ne 0 ]; then
     echo "Ошибка при подготовке релиза!"
@@ -21,7 +21,7 @@ fi
 
 # Выполнение релиза с подписью GPG
 echo "Выполнение релиза..."
-mvn release:perform -P gpg-sign -Dgpg.passphrase="${GPG_PASSPHRASE}"
+./mvnw release:perform -P gpg-sign -Dgpg.passphrase="${GPG_PASSPHRASE}"
 
 if [ $? -ne 0 ]; then
     echo "Ошибка при выполнении релиза!"
