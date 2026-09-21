@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <news>
+    <release number="2.0-3" date="2026.09.04">
+        <item type="task">
+            <name>OTP type is set automatically when OTP becomes mandatory</name>
+            <description>
+                When the "is OTP optional" flag is cleared for a user whose OTP type
+                is 'none' or not set, the type is automatically set to Google Auth
+                (both in the admin UI and in the service layer, so the Remote API is
+                covered too). Setting OTP type 'none' for a user with mandatory OTP
+                is now rejected with a conflict error, and an unknown OTP type code
+                is rejected instead of silently resetting the type.
+            </description>
+        </item>
+    </release>
+
     <release number="1.5" date="2013.06.26">
         <item type="task">
             <name>UI design and usability</name>

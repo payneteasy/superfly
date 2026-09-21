@@ -26,7 +26,12 @@ public class UIUser implements Serializable {
     private String salt;
     private String  publicKey;
     private String  otpType = OTPType.NONE.code();
-    private boolean isOtpOptional;
+    /**
+     * Mirrors the DB default {@code is_otp_optional='Y'}: a user built in code and not
+     * loaded from the DB must not silently end up with mandatory OTP (which would now
+     * also force an OTP type on them).
+     */
+    private boolean isOtpOptional = true;
     private UISubsystemForFilter subsystemForEmail;
     private String organization;
 
