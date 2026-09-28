@@ -13,10 +13,13 @@ create procedure int_actions_list(i_action_name varchar(128),
       signal sqlstate '45000' set message_text = 'invalid subsystem list';
     end if;
 
+    -- lower() on both sides keeps the search case-insensitive whatever collation
+    -- the deployed database uses; LIKE wildcards inside the needle are expected
+    -- to be already escaped with a backslash by the caller
     if i_action_name is not null then
       set v_search_conditions   =
-            concat(" and a.action_name like ",
-                   quote(concat('%', i_action_name, '%')),
+            concat(" and lower(coalesce(a.action_name, '')) like ",
+                   quote(concat('%', lower(i_action_name), '%')),
                    " "
             );
     end if;
@@ -24,8 +27,8 @@ create procedure int_actions_list(i_action_name varchar(128),
     if i_action_description is not null then
       set v_search_conditions   =
             concat(v_search_conditions,
-                   " and a.action_description like ",
-                   quote(concat('%', i_action_description, '%')),
+                   " and lower(coalesce(a.action_description, '')) like ",
+                   quote(concat('%', lower(i_action_description), '%')),
                    " "
             );
     end if;

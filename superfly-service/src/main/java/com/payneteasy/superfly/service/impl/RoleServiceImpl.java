@@ -125,11 +125,11 @@ public class RoleServiceImpl implements RoleService {
             long roleId, String actionName) {
         return roleDao.getAllRoleActions(startFrom, recordsCount,
                 orderFieldNumber, ascending ? DaoConstants.ASC
-                        : DaoConstants.DESC, roleId, actionName);
+                        : DaoConstants.DESC, roleId, StringUtils.toLikeNeedle(actionName));
     }
 
     public long getAllRoleActionsCount(long roleId, String actionName) {
-        return roleDao.getAllRoleActionsCount(roleId, actionName);
+        return roleDao.getAllRoleActionsCount(roleId, StringUtils.toLikeNeedle(actionName));
     }
 
     public List<UIActionForCheckboxForRole> getMappedRoleActions(long startFrom,
@@ -137,11 +137,11 @@ public class RoleServiceImpl implements RoleService {
             long roleId, String actionName) {
         return roleDao.getMappedRoleActions(startFrom, recordsCount,
                 orderFieldNumber, ascending ? DaoConstants.ASC
-                        : DaoConstants.DESC, roleId, actionName);
+                        : DaoConstants.DESC, roleId, StringUtils.toLikeNeedle(actionName));
     }
 
     public long getMappedRoleActionsCount(long roleId, String actionName) {
-        return roleDao.getMappedRoleActionsCount(roleId, actionName);
+        return roleDao.getMappedRoleActionsCount(roleId, StringUtils.toLikeNeedle(actionName));
     }
 
     public long getAllRoleGroupsCount(long roleId) {
@@ -168,7 +168,7 @@ public class RoleServiceImpl implements RoleService {
 
         return roleDao.getUnMappedRoleActions(startFrom, recordsCount,
                 orderFieldNumber, ascending ? DaoConstants.ASC
-                        : DaoConstants.DESC, roleId, actionName);
+                        : DaoConstants.DESC, roleId, StringUtils.toLikeNeedle(actionName));
     }
 
     public List<UIGroupForCheckbox> getMappedRoleGroups(long startFrom,

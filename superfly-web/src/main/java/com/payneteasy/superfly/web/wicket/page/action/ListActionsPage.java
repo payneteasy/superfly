@@ -53,7 +53,15 @@ public class ListActionsPage extends BasePage {
         super(ListActionsPage.class);
 
         final StickyFilters stickyFilters = getSession().getStickyFilters();
-        Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form");
+        final ObjectHolder<DataView<UIActionWithGroupForList>> dataViewHolder = new ObjectHolder<>();
+        Form<ActionFilter> filtersForm = new Form<ActionFilter>("filters-form") {
+            @Override
+            protected void onSubmit() {
+                // a freshly applied filter must be shown from its first page,
+                // otherwise a stale page number renders an empty table
+                dataViewHolder.getObject().setCurrentPage(0);
+            }
+        };
         add(filtersForm);
 
         DropDownChoice<UISubsystemForFilter> subsystemDropdown = new DropDownChoice<UISubsystemForFilter>(
@@ -192,6 +200,7 @@ public class ListActionsPage extends BasePage {
             }
 
         };
+        dataViewHolder.setObject(actionsDataView);
         checkGroup.add(actionsDataView);
         form.add(new Button("log-action") {
 

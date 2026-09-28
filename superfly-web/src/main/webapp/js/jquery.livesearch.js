@@ -25,7 +25,7 @@ jQuery.fn.fastLiveFilter = function(list, options) {
     callback(len); // do a one-time callback on initialization to make sure everything's in sync
 
     function doFilter() {
-        var filter = input.val().toLowerCase();
+        var filter = jQuery.trim(input.val()).toLowerCase();
         var li;
         var numShown = 0;
         for (var i = 0; i < len; i++) {

@@ -1,7 +1,7 @@
 drop procedure if exists ui_get_all_group_actions_list_count;
 delimiter $$
 create procedure ui_get_all_group_actions_list_count(i_grop_id int(10),
-                                                     i_action_name varchar(100)
+                                                     i_action_name varchar(128)
 )
  main_sql:
   begin

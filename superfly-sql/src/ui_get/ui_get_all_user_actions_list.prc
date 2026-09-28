@@ -6,7 +6,7 @@ create procedure ui_get_all_user_actions_list(i_start_from int(10),
                                               i_order_type varchar(4),
                                               i_user_id int(10),
                                               i_ssys_list text,
-                                              i_action_name varchar(100)
+                                              i_action_name varchar(128)
 )
  main_sql:
   begin
