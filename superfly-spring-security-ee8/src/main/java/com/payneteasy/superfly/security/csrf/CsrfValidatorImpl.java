@@ -65,7 +65,7 @@ public class CsrfValidatorImpl implements CsrfValidator {
         }
 
         if (!csrf.equals(token)) {
-            logger.error("CSRF is invalid. Expected {} but was {}", token, csrf);
+            logger.error("CSRF is invalid: token from request does not match the session token");
             throw new CsrfLoginTokenException("Invalid CSRF token.",
                     "Invalid login token. This can be caused if you trying to login with multiple browser tabs.");
         }

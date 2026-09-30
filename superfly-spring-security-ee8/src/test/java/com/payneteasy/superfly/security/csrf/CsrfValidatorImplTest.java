@@ -1,14 +1,19 @@
 package com.payneteasy.superfly.security.csrf;
 
 import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
@@ -107,6 +112,30 @@ public class CsrfValidatorImplTest {
         EasyMock.replay(request, session);
 
         assertRejected("Invalid CSRF token.");
+    }
+
+    @Test
+    public void validateToken_whenTokenMismatch_doesNotLogTokens() {
+        Logger logger = (Logger) LoggerFactory.getLogger(CsrfValidatorImpl.class);
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        try {
+            expectSessionToken("session-secret-token");
+            EasyMock.expect(request.getParameter("_csrf")).andReturn("request-secret-token");
+            EasyMock.replay(request, session);
+
+            assertRejected("Invalid CSRF token.");
+        } finally {
+            logger.detachAppender(appender);
+        }
+
+        assertFalse(appender.list.isEmpty());
+        for (ILoggingEvent event : appender.list) {
+            String text = event.getFormattedMessage() + " " + java.util.Arrays.toString(event.getArgumentArray());
+            assertFalse(text, text.contains("session-secret-token"));
+            assertFalse(text, text.contains("request-secret-token"));
+        }
     }
 
     @Test
