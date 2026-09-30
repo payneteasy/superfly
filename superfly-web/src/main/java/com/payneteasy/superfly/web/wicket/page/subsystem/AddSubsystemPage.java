@@ -113,10 +113,10 @@ public class AddSubsystemPage extends BasePage {
 
             public void onClick(AjaxRequestTarget aTarget) {
                 try {
-                    var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA);
+                    var keyPairData = generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA_OAEP);
                     subsystem.setPrivateKey(keyPairData.privateKey());
                     subsystem.setPublicKey(keyPairData.publicKey());
-                    subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
+                    subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA_OAEP.name());
                     aTarget.add(labelPublicKey);
                 } catch (Exception e) {
                     logger.error("Error while generating key pair for subsystem {}", subsystem.getName(), e);

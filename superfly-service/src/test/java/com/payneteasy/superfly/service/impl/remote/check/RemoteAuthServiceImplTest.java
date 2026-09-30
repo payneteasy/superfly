@@ -117,6 +117,57 @@ public class RemoteAuthServiceImplTest {
         assertSessionRejected(BILLING, token, "good-otp-enc");
     }
 
+    @Test
+    public void decryptionFailuresAreLimitedPerSubsystem() throws Exception {
+        RemoteAuthCryptoService crypto = createMock(RemoteAuthCryptoService.class);
+        expect(crypto.decryptPassword(eq("garbage"), anyString(), anyObject()))
+                .andThrow(new BadPaddingException("bad padding")).times(20);
+        replay(crypto);
+        RemoteAuthServiceImpl limited = new RemoteAuthServiceImpl(subsystemService, internalSSOService, crypto);
+
+        for (int i = 0; i < 21; i++) {
+            try {
+                limited.checkPassword(BILLING, USER, "garbage", token(BILLING), "127.0.0.1", "test");
+                fail("garbage must not decrypt");
+            } catch (RemoteAuthException e) {
+                assertEquals("BAD_REQUEST", e.getErrorCode());
+                assertEquals("Decryption failed", e.getMessage());
+            }
+        }
+        // the 21st call did not reach crypto (times(20) would fail on an unexpected call)
+        verify(crypto);
+    }
+
+    @Test
+    public void decryptionFailureLimitAppliesToOtpAndIsIndependentPerSubsystem() throws Exception {
+        RemoteAuthCryptoService crypto = createMock(RemoteAuthCryptoService.class);
+        expect(crypto.decryptPassword(eq("garbage"), anyString(), anyObject()))
+                .andThrow(new BadPaddingException("bad padding")).times(20);
+        expect(crypto.decryptPassword(eq("good"), anyString(), anyObject())).andReturn("password");
+        replay(crypto);
+        RemoteAuthServiceImpl limited = new RemoteAuthServiceImpl(subsystemService, internalSSOService, crypto);
+
+        for (int i = 0; i < 20; i++) {
+            try {
+                limited.checkPassword(BILLING, USER, "garbage", token(BILLING), "127.0.0.1", "test");
+                fail("garbage must not decrypt");
+            } catch (RemoteAuthException e) {
+                assertEquals("BAD_REQUEST", e.getErrorCode());
+            }
+        }
+        // billing is over the limit: checkOtp is rejected without touching crypto
+        try {
+            limited.checkOtp(BILLING, USER, "garbage", "any-session", token(BILLING));
+            fail("limit must apply to checkOtp");
+        } catch (RemoteAuthException e) {
+            assertEquals("BAD_REQUEST", e.getErrorCode());
+            assertEquals("Decryption failed", e.getMessage());
+        }
+        // crm has its own counter
+        assertNotNull(limited.checkPassword(CRM, USER, "good", token(CRM), "127.0.0.1", "test").getSessionToken());
+        verify(crypto);
+    }
+
     private String checkPassword(String subsystemName) throws RemoteAuthException {
         return service.checkPassword(subsystemName, USER, "password-enc", token(subsystemName), "127.0.0.1", "test")
                 .getSessionToken();

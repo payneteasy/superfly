@@ -7,19 +7,25 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 
 @Service
 public class RemoteAuthCryptoServiceImpl implements RemoteAuthCryptoService {
 
+    private static final OAEPParameterSpec OAEP_SHA256 = new OAEPParameterSpec(
+            "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
+
     @Override
     public KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
         return switch (algorithm) {
-            case RSA -> {
+            case RSA, RSA_OAEP -> {
                 try {
                     KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
                     keyPairGenerator.initialize(4096);
@@ -85,7 +91,8 @@ public class RemoteAuthCryptoServiceImpl implements RemoteAuthCryptoService {
         byte[] keyBytes = Base64.getDecoder().decode(normalized);
 
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance(algorithm.name());
+        // RSA_OAEP keys are plain RSA keys; only the padding differs
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
         return keyFactory.generatePrivate(keySpec);
     }
@@ -98,6 +105,17 @@ public class RemoteAuthCryptoServiceImpl implements RemoteAuthCryptoService {
             case RSA -> {
                 Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                 cipher.init(Cipher.DECRYPT_MODE, privateKey);
+                yield cipher.doFinal(encrypted);
+            }
+            case RSA_OAEP -> {
+                Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+                // Explicit spec: the bare OAEPWithSHA-256AndMGF1Padding name makes SunJCE use MGF1 with SHA-1,
+                // which breaks ciphertexts produced by OpenSSL/WebCrypto/Node (MGF1-SHA256).
+                try {
+                    cipher.init(Cipher.DECRYPT_MODE, privateKey, OAEP_SHA256);
+                } catch (InvalidAlgorithmParameterException e) {
+                    throw new InvalidKeyException("Unsupported OAEP parameters", e);
+                }
                 yield cipher.doFinal(encrypted);
             }
             case EC -> throw new UnsupportedOperationException(

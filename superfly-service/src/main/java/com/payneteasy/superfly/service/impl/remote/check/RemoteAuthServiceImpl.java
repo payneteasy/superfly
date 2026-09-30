@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class RemoteAuthServiceImpl implements RemoteAuthService {
@@ -22,6 +23,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     private static final Logger logger = LoggerFactory.getLogger(RemoteAuthServiceImpl.class);
 
     static final int MAX_OTP_ATTEMPTS = 3;
+    static final int MAX_DECRYPTION_FAILURES_PER_MINUTE = 20;
 
     private final SubsystemService subsystemService;
     private final InternalSSOService internalSSOService;
@@ -30,6 +32,11 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     private final Cache<String, RemoteSession> sessionCache = Caffeine.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .maximumSize(10_000)
+            .build();
+
+    // Decryption failures per subsystem: limits padding-oracle probing with a valid bearer token.
+    private final Cache<String, AtomicInteger> decryptionFailures = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.MINUTES)
             .build();
 
     public RemoteAuthServiceImpl(SubsystemService subsystemService,
@@ -44,6 +51,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     public RemoteAuthSession checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException {
         // 1. Validate Subsystem and Token
         UISubsystem subsystem = validateSubsystem(subsystemName, bearerToken);
+        checkDecryptionFailureLimit(subsystemName);
 
         // 2. Decrypt Password
         String password;
@@ -55,6 +63,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
              );
         } catch (Exception e) {
             logger.warn("Failed to decrypt password: {}", e.getMessage());
+            registerDecryptionFailure(subsystemName);
             throw new RemoteAuthException("Decryption failed", "BAD_REQUEST");
         }
 
@@ -88,6 +97,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     public String checkOtp(String subsystemName, String username, String otpEncrypted, String sessionToken, String bearerToken) throws RemoteAuthException {
         // 1. Validate Subsystem and Token
         UISubsystem subsystem = validateSubsystem(subsystemName, bearerToken);
+        checkDecryptionFailureLimit(subsystemName);
 
         // 2. Validate Session Token. The session is taken out of the cache for the duration of the check:
         // a token is single-use on success and can't be used by concurrent requests to brute-force the OTP.
@@ -109,6 +119,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
             );
         } catch (Exception e) {
             logger.warn("Failed to decrypt OTP: {}", e.getMessage());
+            registerDecryptionFailure(subsystemName);
             returnAfterFailedAttempt(sessionToken, session);
             throw new RemoteAuthException("Decryption failed", "BAD_REQUEST");
         }
@@ -120,6 +131,18 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
             return "BAD_USER_OR_PASSWORD_OR_OTP";
         }
         return "SUCCESS";
+    }
+
+    private void checkDecryptionFailureLimit(String subsystemName) throws RemoteAuthException {
+        AtomicInteger failures = decryptionFailures.getIfPresent(subsystemName);
+        if (failures != null && failures.get() >= MAX_DECRYPTION_FAILURES_PER_MINUTE) {
+            logger.warn("Decryption failure limit exceeded for subsystem {}", subsystemName);
+            throw new RemoteAuthException("Decryption failed", "BAD_REQUEST");
+        }
+    }
+
+    private void registerDecryptionFailure(String subsystemName) {
+        decryptionFailures.get(subsystemName, k -> new AtomicInteger()).incrementAndGet();
     }
 
     private void returnAfterFailedAttempt(String sessionToken, RemoteSession session) {
