@@ -23,9 +23,12 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -38,6 +41,8 @@ public class JdkSslSocketFactoryBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(JdkSslSocketFactoryBuilder.class);
 
     public static final String DEFAULT_KEYSTORE_TYPE = "PKCS12";
+
+    private static final int SAN_DNS_NAME = 2;
 
     private JdkSslSocketFactoryBuilder() {}
 
@@ -92,7 +97,7 @@ public class JdkSslSocketFactoryBuilder {
                 if (certs.length > 0 && certs[0] instanceof X509Certificate) {
                     X509Certificate cert = (X509Certificate) certs[0];
                     String cn = extractCn(cert.getSubjectX500Principal().getName());
-                    boolean ok = cn != null && allowed.contains(cn);
+                    boolean ok = (cn != null && allowed.contains(cn)) || hasAllowedDnsSan(cert, allowed);
                     LOG.debug("CN hostname check: host={}, cert-cn={}, allowed={}, result={}", hostname, cn, allowed, ok);
                     return ok;
                 }
@@ -110,6 +115,19 @@ public class JdkSslSocketFactoryBuilder {
             }
         }
         return null;
+    }
+
+    private static boolean hasAllowedDnsSan(X509Certificate cert, Set<String> allowed) throws CertificateParsingException {
+        Collection<List<?>> sans = cert.getSubjectAlternativeNames();
+        if (sans == null) {
+            return false;
+        }
+        for (List<?> san : sans) {
+            if (san.size() >= 2 && Integer.valueOf(SAN_DNS_NAME).equals(san.get(0)) && allowed.contains(san.get(1))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

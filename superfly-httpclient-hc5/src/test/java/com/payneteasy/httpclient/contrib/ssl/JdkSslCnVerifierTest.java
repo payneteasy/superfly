@@ -24,6 +24,15 @@ public class JdkSslCnVerifierTest {
         assertFalse(JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("a").verify("h", session));
     }
 
+    @Test
+    public void sanOnlyCertificateMatchesDnsName() throws Exception {
+        Collection<List<?>> sans = List.of(List.of(2, "superfly-server"), List.of(7, "10.0.0.1"));
+        SSLSession session = session("O=Org", sans);
+        assertTrue(JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server").verify("h", session));
+        assertFalse(JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("10.0.0.1").verify("h", session));
+        assertFalse(JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("other").verify("h", session));
+    }
+
     private static SSLSession session(String dn, Collection<List<?>> sans) throws Exception {
         X509Certificate cert = EasyMock.createMock(X509Certificate.class);
         expect(cert.getSubjectX500Principal()).andReturn(new X500Principal(dn)).anyTimes();

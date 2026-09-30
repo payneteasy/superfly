@@ -176,6 +176,7 @@ public class JdkSslSocketFactoryBuilderTest {
     private SSLSession sessionWithCn(String cn) throws Exception {
         X509Certificate cert = EasyMock.createMock(X509Certificate.class);
         expect(cert.getSubjectX500Principal()).andReturn(new X500Principal("CN=" + cn)).anyTimes();
+        expect(cert.getSubjectAlternativeNames()).andReturn(null).anyTimes();
         replay(cert);
 
         SSLSession session = EasyMock.createMock(SSLSession.class);
