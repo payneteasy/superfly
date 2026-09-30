@@ -101,7 +101,7 @@ cmd_up() {
     docker rm -f "$CONTAINER" > /dev/null 2>&1 || true
     docker run -d --name "$CONTAINER" --platform linux/amd64 \
         --network "$NETWORK" -e MYSQL_ROOT_PASSWORD="$ROOT_PASSWORD" \
-        -p "$HOST_PORT":3306 "$IMAGE" --log-bin-trust-function-creators=1 > /dev/null
+        -p "127.0.0.1:$HOST_PORT:3306" "$IMAGE" --log-bin-trust-function-creators=1 > /dev/null
 
     setup_client
     echo "Waiting for MySQL ..."
