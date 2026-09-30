@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.web.security.exception.SubsystemNotAllowedHostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -51,7 +52,7 @@ public class SubsystemAuthenticationProvider implements AuthenticationProvider {
         UserDetails userDetails;
         try {
             userDetails = subsystemDetailsService.loadUserByUsername(subsystemName);
-        } catch (UsernameNotFoundException e) {
+        } catch (UsernameNotFoundException | SubsystemNotAllowedHostException e) {
             // Намеренно не различаем "не найден" и "неверный токен" — предотвращаем enumeration subsystem-ов
             log.warn("Subsystem auth rejected: invalid token for subsystem={}", sanitize(subsystemName));
             throw new BadCredentialsException("Invalid subsystem token");
