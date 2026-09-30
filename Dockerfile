@@ -84,6 +84,9 @@ COPY --from=builder /build/jetty-lib/ ${JETTY_BASE}/lib/ext/
 
 # Copy context descriptor and entrypoint
 COPY docker/jetty/ROOT.xml ${JETTY_BASE}/webapps/ROOT.xml
+# logback.xml inside the WAR sits in WEB-INF/, not on the classpath, so without
+# this file logback falls back to root DEBUG and logs stored procedure arguments
+COPY docker/jetty/logback.xml ${JETTY_BASE}/etc/logback.xml
 # web.xml has no resource-ref, and Jetty binds a webapp-scoped Resource to
 # java:comp/env only when one is declared
 # (kept out of webapps/: every .xml there is deployed as a context descriptor)
@@ -113,4 +116,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD wget -qO- http://localhost:${JETTY_PORT}/ >/dev/null 2>&1 || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["java", "-jar", "/opt/jetty/start.jar"]
+CMD ["java", "-Dlogback.configurationFile=/var/lib/jetty/etc/logback.xml", "-jar", "/opt/jetty/start.jar"]
