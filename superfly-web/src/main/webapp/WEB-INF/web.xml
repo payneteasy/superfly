@@ -115,6 +115,11 @@
     <listener>
         <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
     </listener>
+    <!-- Exposes the current request to RequestContextHolder before the security filter chain runs:
+         SecurityAuditApplicationListener takes the client IP from there. -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
 
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
