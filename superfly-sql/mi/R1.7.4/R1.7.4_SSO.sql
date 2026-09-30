@@ -1,15 +1,11 @@
-drop table if exists event_types;
-
-create table event_types (
+create table if not exists event_types (
   event_type_id        int auto_increment,
   event_code           varchar(24) not null,
   event_name           varchar(64) not null,
   primary key pk_event_types(event_type_id)
 ) engine = innodb;
 
-drop table if exists events;
-
-create table events (
+create table if not exists events (
   event_id             bigint auto_increment,
   event_time           datetime not null,
   event_type_id        int,
