@@ -221,6 +221,17 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- dev datasource (localhost:3344), used only by Start.java from src/main/webapp;
+                         in Docker the datasource comes from docker/jetty/ROOT.xml -->
+                    <packagingExcludes>WEB-INF/jetty-web.xml</packagingExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
         <finalName>superfly</finalName>
     </build>
 
