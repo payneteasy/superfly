@@ -12,12 +12,22 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 
-import java.net.URLEncoder;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Map;
 
 public class GoogleAuthSetupPanel extends Panel {
-    private static final String TOTP_URI_FORMAT =
-            "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=%s";
+    private static final int QR_SIZE = 150;
 
     private final String username;
     private final IModel<String> totpSecret;
@@ -44,8 +54,7 @@ public class GoogleAuthSetupPanel extends Panel {
                 new LoadableDetachableModel<String>() {
                     @Override
                     protected String load() {
-                        return String.format(TOTP_URI_FORMAT,
-                                URLEncoder.encode(getOtpAuthTotpURL(subsystem, username, totpSecret.getObject()), StandardCharsets.UTF_8));
+                        return toQrDataUri(getOtpAuthTotpURL(subsystem, username, totpSecret.getObject()));
                     }
                 })
         );
@@ -53,6 +62,27 @@ public class GoogleAuthSetupPanel extends Panel {
         refreshable.add(new HiddenField<>("key-input", Model.of(totpSecret.getObject()))
                 .add(new AttributeModifier("name", "j_key")));
         refreshable.add(new Label("key", totpSecret));
+    }
+
+    // Rendered locally: CSP allows only 'self' and data: images, and the secret must not leave the server.
+    static String toQrDataUri(String content) {
+        try {
+            BitMatrix matrix = new QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, QR_SIZE, QR_SIZE,
+                    Map.of(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8.name()));
+            BufferedImage image = new BufferedImage(matrix.getWidth(), matrix.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            for (int x = 0; x < matrix.getWidth(); x++) {
+                for (int y = 0; y < matrix.getHeight(); y++) {
+                    image.setRGB(x, y, matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF);
+                }
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            if (!ImageIO.write(image, "png", out)) {
+                throw new IllegalStateException("No PNG writer available");
+            }
+            return "data:image/png;base64," + Base64.getEncoder().encodeToString(out.toByteArray());
+        } catch (WriterException | IOException e) {
+            throw new IllegalStateException("Cannot render QR code", e);
+        }
     }
 
     private String generateKey() {

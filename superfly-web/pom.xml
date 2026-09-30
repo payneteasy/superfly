@@ -95,6 +95,11 @@
             <artifactId>wicket-extensions</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Generates the Google Authenticator QR code locally (no third-party QR service) -->
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: Core Wicket testers for Unit Tests. -->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-tester</artifactId>

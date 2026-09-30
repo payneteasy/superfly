@@ -788,6 +788,12 @@
             </dependency>
 
             <dependency>
+                <!--Justification: Generates QR codes locally for Google Authenticator setup, so the TOTP secret is not sent to a third-party service -->
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.5.4</version>
+            </dependency>
+            <dependency>
                 <!--Justification: Lombok simplifies Java development by automating boilerplate code generation, reducing manual effort, and minimizing errors. -->
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
