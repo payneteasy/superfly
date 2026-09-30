@@ -2,17 +2,17 @@
 .git
 .gitignore
 
-# Docker files themselves
+# Docker files themselves (docker/ is needed by the production stage)
 Dockerfile
 compose*.yml
 .dockerignore
-docker/
 
 # Build output (rebuilt inside Docker)
 **/target/
 **/*.war
 **/*.jar
 !install/*.jar
+!.mvn/wrapper/maven-wrapper.jar
 
 # IDE and editor
 .idea/
@@ -42,6 +42,3 @@ logs/
 # Test artifacts
 **/surefire-reports/
 **/failsafe-reports/
-
-# Maven wrapper (already COPY'd explicitly if needed)
-# Keep mvnw / .mvn in the image for development stage
