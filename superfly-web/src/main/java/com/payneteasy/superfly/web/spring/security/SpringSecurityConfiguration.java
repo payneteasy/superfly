@@ -42,7 +42,9 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import java.util.List;
 import java.util.Map;
@@ -120,8 +122,18 @@ public class SpringSecurityConfiguration {
             .addFilterAt(passwordAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(initOtpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(otpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(insufficientAuthenticationHandlingFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
+        // Must run after ExceptionTranslationFilter (it turns the exception into the step-specific redirect)
+        // and before AuthorizationFilter. Public paths are skipped, as they were security="none" in 1.7.x.
+        http.addFilterBefore(new SkipMatchingRequestsFilter(
+                insufficientAuthenticationHandlingFilter(),
+                new OrRequestMatcher(
+                        antPathRequestMatcher("/favicon.ico"),
+                        antPathRequestMatcher("/css/**"),
+                        antPathRequestMatcher("/login*"),
+                        antPathRequestMatcher("/sso/**"),
+                        antPathRequestMatcher("/management/version.txt"))),
+                AuthorizationFilter.class);
 
         return http.build();
     }
