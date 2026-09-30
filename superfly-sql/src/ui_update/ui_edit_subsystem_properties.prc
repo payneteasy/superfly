@@ -28,7 +28,8 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
            subsystem_url = i_subsystem_url,
            landing_url = i_landing_url,
            login_form_css_url = i_login_form_css_url,
-           private_key = i_private_key,
+           -- UI does not load the stored key (ui_get_subsystem), null means "keep", a value comes from key generation
+           private_key = coalesce(i_private_key, private_key),
            public_key = i_public_key,
            encryption_algorithm = i_encryption_algorithm
      where ssys_id = i_ssys_id;
