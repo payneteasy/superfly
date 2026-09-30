@@ -2,51 +2,62 @@
 
 # API Reference
 
-Superfly предоставляет два типа API:
+Superfly предоставляет два типа API. Формат везде только JSON (XML-сериализация и Spring HTTP invoker удалены).
 
-| Тип | Путь | Формат | Назначение |
-|-----|------|--------|-----------|
-| [RPC API](#rpc-api-ssoservice) | `/sso.service/{method}` | JSON / XML | Аутентификация, управление пользователями |
-| [REST API](#rest-api) | `/check-password`, `/check-otp` | JSON | Проверка учётных данных |
+| Тип | Путь | Назначение |
+|-----|------|-----------|
+| [RPC API](#rpc-api-remotingssoservice) | `/remoting/sso.service/{method}` | Аутентификация, управление пользователями, события |
+| [Remote-auth](#remote-auth-ssocheck) | `/sso/check/check-password/{subsystem}/{user}`, `/sso/check/check-otp/{subsystem}/{user}` | Проверка зашифрованного пароля и OTP внешней системой |
+
+Пути указаны относительно context path приложения (в Docker-образе это `/`, при локальном запуске `/superfly`).
 
 ---
 
 ## Аутентификация
 
-### RPC API (`/sso.service/**`)
+### RPC API (`/remoting/sso.service/**`)
 
-Требует роль `ROLE_SUBSYSTEM`. Поддерживается:
-- **Bearer Token**: `Authorization: Bearer {subsystem_token}`
-- **Basic Auth**: `Authorization: Basic {base64(user:password)}`
+Требует роль `ROLE_SUBSYSTEM`. Подсистема аутентифицируется одним из способов:
+
+- **Заголовки** `X-Subsystem-Name: {subsystem}` и `X-Subsystem-Token: {subsystemToken}` (так ходит `SSOHttpServiceApiClient`);
+- **Клиентский сертификат** (mTLS, X509).
 
 Токен подсистемы (`subsystemToken`) задаётся при регистрации подсистемы в UI.
 
-### REST API (`/check-password`, `/check-otp`)
+### Remote-auth (`/sso/check/**`)
 
-Обязателен заголовок:
+Путь доступен без сессии, токен проверяет сам контроллер. Обязателен заголовок:
+
 ```
 Authorization: Bearer {subsystem_token}
 ```
 
+Любой другой путь под `/sso/check/` закрыт.
+
 ---
 
-## RPC API: `/sso.service`
+## RPC API: `/remoting/sso.service`
 
-Каждый метод — это `POST /{methodName}` с JSON-телом.
+Каждый метод — `POST /remoting/sso.service/{methodName}` с JSON-телом (`Content-Type: application/json`).
+Имена методов и типы запросов соответствуют интерфейсу `SSOService` из `superfly-remote-api`;
+поля тела — поля классов `com.payneteasy.superfly.api.request.*`. Даты — `yyyy-MM-dd'T'HH:mm:ssZ`.
 
-**Content-Type**: `application/json` (по умолчанию) или `application/xml`
+**Статусы ответа:** `200` — успех; `202` — метод бросил исключение (тело — `ExceptionWrapper`);
+`500` — сбой самого вызова (неизвестный метод, невалидное тело), тело тоже `ExceptionWrapper`.
+Клиент `SSOHttpServiceApiClient` разбирает `ExceptionWrapper` при любом статусе, кроме `200`.
 
-**Обработка ошибок**: все исключения возвращаются как `ExceptionWrapper` с кодом ошибки:
+**Обработка ошибок** — тело `ExceptionWrapper`:
 ```json
-{ "className": "com.payneteasy.superfly.api.exceptions.UserNotFoundException",
-  "message": "User 'john' not found" }
+{ "exceptionClass": "com.payneteasy.superfly.api.UserNotFoundException",
+  "message": "User 'john' not found",
+  "detailMessage": "com.payneteasy.superfly.api.UserNotFoundException: User 'john' not found" }
 ```
 
 ---
 
 ### Аутентификация
 
-#### `POST /sso.service/authenticate`
+#### `authenticate`
 
 Проверяет логин/пароль. Возвращает сессию с ролями и действиями.
 
@@ -56,6 +67,8 @@ Authorization: Bearer {subsystem_token}
   "username": "john",
   "password": "secret",
   "authRequestInfo": {
+    "ipAddress": "10.0.0.5",
+    "sessionInfo": "Mozilla/5.0",
     "subsystemIdentifier": "MY_APP"
   }
 }
@@ -65,11 +78,14 @@ Authorization: Bearer {subsystem_token}
 ```json
 {
   "name": "john",
-  "sessionId": 42,
-  "otpType": "none",
+  "sessionId": "42",
+  "otpType": "NONE",
   "isOtpOptional": false,
   "actionsMap": {
-    "OPERATOR": ["READ_ORDERS", "UPDATE_STATUS"]
+    "OPERATOR": [
+      { "name": "READ_ORDERS", "loggingNeeded": false },
+      { "name": "UPDATE_STATUS", "loggingNeeded": true }
+    ]
   },
   "preferences": {}
 }
@@ -77,36 +93,31 @@ Authorization: Bearer {subsystem_token}
 
 ---
 
-#### `POST /sso.service/pseudoAuthenticate`
+#### `pseudoAuthenticate`
 
-Аутентификация без проверки пароля (для доверенных систем). Параметры аналогичны `authenticate`.
+Аутентификация без проверки пароля (для доверенных систем).
+
+**Request:** `{ "username": "john", "subsystemIdentifier": "MY_APP" }`
 
 ---
 
-#### `POST /sso.service/exchangeSubsystemToken`
+#### `exchangeSubsystemToken`
 
 Обменивает SSO-токен (redirect-based flow) на сессию пользователя.
 
-**Request:**
-```json
-{ "subsystemToken": "abc123..." }
-```
+**Request:** `{ "subsystemToken": "abc123..." }`
 
 **Response:** `SSOUser | null`
 
 ---
 
-#### `POST /sso.service/checkOtp`
+#### `checkOtp`
 
 Проверяет OTP-код для двухфакторной аутентификации.
 
 **Request:**
 ```json
-{
-  "username": "john",
-  "otpEncrypted": "...",
-  "sessionId": 42
-}
+{ "userName": "john", "code": "123456", "otpType": "GOOGLE_AUTH", "isOtpOptional": false }
 ```
 
 **Response:** `boolean` — `true` если код верный
@@ -115,27 +126,21 @@ Authorization: Bearer {subsystem_token}
 
 ---
 
-#### `POST /sso.service/hasOtpMasterKey`
+#### `hasOtpMasterKey`
 
 Проверяет, настроен ли Google Authenticator для пользователя.
 
-**Request:**
-```json
-{ "username": "john" }
-```
+**Request:** `{ "username": "john" }`
 
 **Response:** `boolean`
 
 ---
 
-#### `POST /sso.service/touchSessions`
+#### `touchSessions`
 
 Обновляет время активности сессий (предотвращает таймаут).
 
-**Request:**
-```json
-{ "sessionIds": [42, 43, 44] }
-```
+**Request:** `{ "sessionIds": [42, 43, 44] }`
 
 **Response:** `void`
 
@@ -143,9 +148,10 @@ Authorization: Bearer {subsystem_token}
 
 ### Управление пользователями
 
-#### `POST /sso.service/registerUser`
+#### `registerUser`
 
 Регистрирует нового пользователя. Пароль должен соответствовать политике безопасности.
+Тело — `UserRegisterRequest` (поля `UserDescription` плюс `password`, `subsystemHint`, `roleGrants`).
 
 **Request:**
 ```json
@@ -156,12 +162,11 @@ Authorization: Bearer {subsystem_token}
   "firstName": "John",
   "lastName": "Doe",
   "organization": "Acme Corp",
-  "subsystemHint": "MY_APP",
-  "otpType": "none",
+  "otpType": "NONE",
   "isOtpOptional": false,
-  "isPasswordTemp": false,
+  "subsystemHint": "MY_APP",
   "roleGrants": [
-    { "roleName": "OPERATOR", "subsystemName": "MY_APP" }
+    { "subsystemIdentifier": "MY_APP", "principalName": "OPERATOR" }
   ]
 }
 ```
@@ -172,14 +177,11 @@ Authorization: Bearer {subsystem_token}
 
 ---
 
-#### `POST /sso.service/getUserDescription`
+#### `getUserDescription`
 
 Возвращает профиль пользователя.
 
-**Request:**
-```json
-{ "username": "john" }
-```
+**Request:** `{ "username": "john" }`
 
 **Response:** `UserDescription | null`
 ```json
@@ -189,180 +191,130 @@ Authorization: Bearer {subsystem_token}
   "firstName": "John",
   "lastName": "Doe",
   "organization": "Acme Corp",
-  "otpType": "none",
-  "isOtpOptional": false,
-  "publicKey": null
+  "publicKey": null,
+  "otpType": "NONE",
+  "isOtpOptional": false
 }
 ```
 
 ---
 
-#### `POST /sso.service/updateUserDescription`
+#### `updateUserDescription`
 
 Обновляет профиль пользователя.
 
-**Request:** `UserDescription` (те же поля, что и в `getUserDescription`)
+**Request:** `{ "userDescription": { ...поля UserDescription, как в getUserDescription... } }`
 
 **Исключения:** `UserNotFoundException`, `BadPublicKeyException`
 
 ---
 
-#### `POST /sso.service/changeTempPassword`
+#### `changeTempPassword`
 
 Меняет временный пароль (при первом входе).
 
-**Request:**
-```json
-{
-  "username": "john",
-  "newPassword": "NewSecurePass1!"
-}
-```
+**Request:** `{ "username": "john", "newPassword": "NewSecurePass1!" }`
 
 **Исключения:** `PolicyValidationException`
 
 ---
 
-#### `POST /sso.service/resetPassword`
+#### `resetPassword`
 
 Сбрасывает пароль пользователя администратором.
 
-**Request:**
-```json
-{
-  "username": "john",
-  "newPassword": "TempPass1!",
-  "isPasswordTemp": true
-}
-```
+**Request:** `{ "username": "john", "password": "TempPass1!", "sendByEmail": false }`
 
 **Исключения:** `UserNotFoundException`, `PolicyValidationException`
 
 ---
 
-#### `POST /sso.service/getUserStatuses`
+#### `getUserStatuses`
 
-Возвращает статусы нескольких пользователей (заблокирован, приостановлен и т.д.).
+Возвращает статусы нескольких пользователей.
 
-**Request:**
-```json
-{ "usernames": ["john", "jane"] }
-```
+**Request:** `{ "userNames": ["john", "jane"] }`
 
-**Response:** `List<UserStatus>`
+**Response:** `List<UserStatus>` — `username`, `accountLocked`, `lastLoginDate`, `loginsFailed`, `lastFailedLoginDate`, `lastFailedLoginIp`
 
 ---
 
-#### `POST /sso.service/getUsersWithActions`
+#### `getUsersWithActions`
 
 Возвращает пользователей с их действиями для указанной подсистемы.
 
-**Request:**
-```json
-{ "subsystemIdentifier": "MY_APP" }
-```
+**Request:** `{ "subsystemIdentifier": "MY_APP" }`
 
 **Response:** `List<SSOUserWithActions>`
 ```json
 [
   {
-    "username": "john",
+    "name": "john",
     "email": "john@example.com",
-    "actions": ["READ_ORDERS", "UPDATE_STATUS"]
+    "actions": [ { "name": "READ_ORDERS", "loggingNeeded": false } ]
   }
 ]
 ```
 
 ---
 
-#### `POST /sso.service/completeUser`
+#### `completeUser`
 
-Завершает процесс регистрации пользователя (активирует аккаунт).
+Завершает процесс регистрации пользователя.
+
+**Request:** `{ "username": "john" }`
 
 ---
 
-#### `POST /sso.service/changeUserRole`
+#### `changeUserRole`
 
 Меняет роль пользователя в подсистеме.
 
-**Request:**
-```json
-{
-  "username": "john",
-  "subsystemName": "MY_APP",
-  "newRoleName": "ADMIN"
-}
-```
+**Request:** `{ "username": "john", "newRole": "ADMIN", "subsystemHint": "MY_APP" }`
 
 ---
 
 ### OTP / Google Authenticator
 
-#### `POST /sso.service/updateUserOtpType`
+#### `updateUserOtpType`
 
-Меняет тип OTP для пользователя.
-
-**Request:**
-```json
-{
-  "username": "john",
-  "otpType": "google_auth"
-}
-```
+**Request:** `{ "username": "john", "otpType": "google_auth" }`
 
 ---
 
-#### `POST /sso.service/updateUserIsOtpOptionalValue`
+#### `updateUserIsOtpOptionalValue`
 
-Устанавливает, является ли OTP обязательным.
+Устанавливает, является ли OTP необязательным.
 
-**Request:**
-```json
-{
-  "username": "john",
-  "isOtpOptional": true
-}
-```
+**Request:** `{ "username": "john", "isOtpOptional": true }`
 
 ---
 
-#### `POST /sso.service/resetGoogleAuthMasterKey`
+#### `resetGoogleAuthMasterKey`
 
 Сбрасывает и перегенерирует мастер-ключ Google Authenticator.
 
-**Request:**
-```json
-{
-  "username": "john",
-  "masterKeyEncrypted": "..."
-}
-```
+**Request:** `{ "username": "john" }`
 
-**Response:** `String` — новый мастер-ключ (зашифрованный)
+**Response:** `String` — новый мастер-ключ
 
 **Исключения:** `UserNotFoundException`, `SsoDecryptException`
 
 ---
 
-#### `POST /sso.service/getUrlToGoogleAuthQrCode`
+#### `getUrlToGoogleAuthQrCode`
 
 Возвращает `otpauth://` URI для QR-кода.
 
-**Request:**
-```json
-{
-  "username": "john",
-  "masterKeyEncrypted": "..."
-}
-```
+**Request:** `{ "secretKey": "...", "issuer": "Superfly", "accountName": "john" }`
 
-**Response:** `String` — `otpauth://totp/Superfly:john?secret=...`
+**Response:** `String` — `otpauth://totp/...`
 
 ---
 
 ### Синхронизация данных
 
-#### `POST /sso.service/sendSystemData`
+#### `sendSystemData`
 
 Регистрирует список действий подсистемы (синхронизирует Actions в Superfly).
 Вызывается при старте приложения.
@@ -382,16 +334,15 @@ Authorization: Bearer {subsystem_token}
 
 ---
 
-#### `POST /sso.service/getEvents`
+#### `getEvents`
 
-Long-polling для получения событий (изменения прав, блокировки).
+Long-polling для получения событий. Подсистема определяется по аутентификации запроса.
+`waitTimeMs` ограничен сервером 75 секундами — socket timeout клиента должен быть больше.
+События без подсистемы клиентам не отдаются.
 
 **Request:**
 ```json
-{
-  "lastEventTime": "2025-01-01T00:00:00+0300",
-  "waitTimeMs": 30000
-}
+{ "lastEventTime": "2025-01-01T00:00:00+0300", "waitTimeMs": 30000 }
 ```
 
 **Response:** `List<SSOEvent>`
@@ -400,88 +351,140 @@ Long-polling для получения событий (изменения пра
   {
     "eventId": 1,
     "eventTime": "2025-05-20T12:00:00+0300",
-    "eventTypeCode": "USER_LOCKED",
-    "eventData": "{\"username\":\"john\"}"
+    "eventTypeCode": "PASSWORD_RESET",
+    "eventData": "john"
   }
 ]
 ```
 
+`PASSWORD_RESET` пишется отдельной записью на каждую подсистему, в которой у пользователя есть роли.
+
 ---
 
-## REST API
+## Remote-auth (`/sso/check`)
 
-### `POST /check-password/{subsystemName}/{username}`
+Проверка пароля и OTP внешней системой, которая не использует `SSOService`. Пароль и OTP
+передаются зашифрованными открытым ключом подсистемы.
 
-Проверяет зашифрованный пароль пользователя.
+### Шифрование
+
+Пара ключей (RSA 4096) генерируется в админке на странице создания/редактирования подсистемы
+(«Generate new RSA key pair», затем сохранить форму); там же показывается открытый ключ в PEM. Закрытый ключ в UI не выводится.
+Алгоритм хранится в колонке `subsystems.encryption_algorithm`:
+
+| Алгоритм | Padding | Кому |
+|----------|---------|------|
+| `RSA_OAEP` | `RSA/ECB/OAEPPadding`: OAEP, хеш SHA-256, MGF1-SHA256, label пустой | новые ключи из админки |
+| `RSA` | PKCS#1 v1.5 | старые ключи, пока подсистема не перегенерировала ключ |
+| `EC` | — | не поддерживается |
+
+Шифротекст передаётся в base64url (RFC 4648 §5), открытый текст — UTF-8.
+
+**Переход существующей подсистемы на OAEP:** на странице редактирования подсистемы нажать
+«Generate new RSA key pair», сохранить форму (алгоритм станет `RSA_OAEP`) и перевести клиента на новый ключ и OAEP.
+Пока ключ не перегенерирован, подсистема остаётся на `RSA` (PKCS#1).
+
+Пример на Java — параметры OAEP нужно указывать явно: имя `OAEPWithSHA-256AndMGF1Padding` без
+`OAEPParameterSpec` даёт MGF1 с SHA-1 и расходится с OpenSSL/WebCrypto:
+
+```java
+byte[] der = Base64.getMimeDecoder().decode(publicKeyPem
+        .replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", ""));
+PublicKey key = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(der));
+
+Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+cipher.init(Cipher.ENCRYPT_MODE, key, new OAEPParameterSpec(
+        "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT));
+String passwordEncrypted = Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(cipher.doFinal(password.getBytes(StandardCharsets.UTF_8)));
+```
+
+То же через OpenSSL (`subsystem-public.pem` — открытый ключ подсистемы):
+
+```bash
+printf '%s' "$PASSWORD" \
+  | openssl pkeyutl -encrypt -pubin -inkey subsystem-public.pem \
+      -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha256 \
+  | openssl base64 -A | tr '+/' '-_' | tr -d '='
+```
+
+### Лимит ошибок расшифровки
+
+Не более **20 ошибок расшифровки в минуту на подсистему** (защита от подбора через padding oracle
+с валидным токеном). Сверх лимита запрос отклоняется без попытки расшифровки:
+`400`, `type: BAD_REQUEST`, `title: Decryption failed` — тот же ответ, что и при обычной ошибке расшифровки.
+
+### `POST /sso/check/check-password/{subsystemName}/{username}`
 
 **Request:**
 ```
-POST /check-password/MY_APP/john
+POST /sso/check/check-password/MY_APP/john
 Authorization: Bearer {subsystem_token}
 Content-Type: application/json
 
-{
-  "username": "john",
-  "passwordEncrypted": "..."
-}
+{ "username": "john", "passwordEncrypted": "..." }
 ```
 
 **Response (200 OK):**
 ```json
-{
-  "username": "john",
-  "sessionToken": "session-abc123",
-  "otpRequired": false
-}
+{ "username": "john", "sessionToken": "9b2f...-uuid", "otpRequired": false }
 ```
 
-**HTTP-коды:** `200 OK` · `400 Bad Request` · `401 Unauthorized` · `500 Internal Server Error`
+`sessionToken` живёт 5 минут, привязан к подсистеме и пользователю и одноразовый при успешной проверке OTP
+(после 3 неверных OTP аннулируется).
 
----
-
-### `POST /check-otp/{subsystemName}/{username}`
-
-Проверяет OTP-код для завершения двухфакторной аутентификации.
+### `POST /sso/check/check-otp/{subsystemName}/{username}`
 
 **Request:**
 ```
-POST /check-otp/MY_APP/john
+POST /sso/check/check-otp/MY_APP/john
 Authorization: Bearer {subsystem_token}
 Content-Type: application/json
 
-{
-  "username": "john",
-  "otpEncrypted": "...",
-  "sessionToken": "session-abc123"
-}
+{ "username": "john", "otpEncrypted": "...", "sessionToken": "9b2f...-uuid" }
 ```
 
 **Response (200 OK):**
 ```json
-{
-  "username": "john",
-  "sessionToken": "session-abc123",
-  "result": "OK"
-}
+{ "username": "john", "sessionToken": "9b2f...-uuid", "result": "SUCCESS" }
 ```
+
+`result` — `SUCCESS` или `BAD_USER_OR_PASSWORD_OR_OTP`.
+
+### Ошибки
+
+Тело ошибки — `{ "type": "...", "title": "...", "detail": "...", "errorId": "<uuid>" }`:
+
+| `type` | HTTP | Причина |
+|--------|------|---------|
+| `UNAUTHORIZED` | 401 | нет/неверный Bearer-токен, неизвестная подсистема |
+| `BAD_REQUEST` | 400 | невалидный JSON, не заполнены поля, логин в пути и теле не совпадает, ошибка расшифровки (в т.ч. по лимиту) |
+| `BAD_USER_OR_PASSWORD_OR_OTP` | 400 | неверный логин/пароль, неверная или просроченная сессия OTP |
+| `USER_SHOULD_CHANGE_PASSWORD` | 400 | у пользователя временный пароль |
+| `INTERNAL_ERROR` | 500 | внутренняя ошибка |
 
 ---
 
 ## Иерархия исключений
 
+Все наследуются от `SsoException extends RuntimeException`.
+
 ```
 SsoException
-  ├── SsoAuthException          — ошибки аутентификации
-  ├── SsoClientException        — ошибки клиента (400)
-  ├── SsoServerException        — ошибки сервера (500)
-  ├── SsoConnectionException    — проблемы соединения
-  ├── SsoDecryptException       — ошибки шифрования
-  ├── UserNotFoundException     — пользователь не найден
-  ├── UserExistsException       — пользователь уже существует
-  ├── PolicyValidationException — нарушение политики паролей
-  ├── BadPublicKeyException     — некорректный публичный ключ
-  └── MessageSendException      — ошибка отправки email
+  ├── SsoClientException            — ошибки клиента (4xx)
+  │     ├── SsoBadRequestException, SsoUnauthorizedException, SsoForbiddenException,
+  │     │   SsoNotFoundException, SsoConflictException
+  │     ├── UserExistsException       — пользователь уже существует
+  │     ├── PolicyValidationException — нарушение политики паролей
+  │     ├── BadPublicKeyException     — некорректный публичный ключ
+  │     └── MessageSendException      — ошибка отправки email
+  ├── SsoServerException            — ошибки сервера (5xx)
+  ├── SsoAuthException, SsoUserException, SsoDataException, SsoSystemException, SsoParseException
+  ├── SsoConnectionException        — проблемы соединения
+  └── SsoDecryptException           — ошибки шифрования
 ```
+
+`UserNotFoundException` (наследник `SsoException`) лежит в `com.payneteasy.superfly.api`, не в `exceptions`.
 
 ---
 
@@ -489,3 +492,4 @@ SsoException
 
 - [Доменная модель](domain-model.md) — структура сущностей
 - [Руководство по интеграции](integration-guide.md) — как подключить клиентское приложение
+- [SSO HTTP Client](sso-http-client.md) — клиент для RPC API

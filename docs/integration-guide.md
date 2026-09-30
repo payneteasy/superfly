@@ -8,8 +8,8 @@
 
 | Стек приложения | Артефакт |
 |-----------------|---------|
-| Spring 6 + Jakarta EE 10 (`jakarta.servlet.*`) | `superfly-spring-security` |
-| Spring 5 + Java EE 8 (`javax.servlet.*`) | `superfly-spring-security-ee8` |
+| Spring 6 + Jakarta EE 10 (`jakarta.servlet.*`) | `superfly-spring-security-ee10` |
+| Spring 5 + Java EE 8 (`javax.servlet.*`, JDK 21) | `superfly-spring-security-ee8` |
 | Общие типы без Servlet API | `superfly-spring-security-core` |
 | Wicket 10 (Jakarta) | `superfly-wicket` |
 | Wicket 8 (javax) | `superfly-wicket-ee8` |
@@ -22,7 +22,7 @@
 ```xml
 <dependency>
     <groupId>com.payneteasy.superfly</groupId>
-    <artifactId>superfly-spring-security</artifactId>
+    <artifactId>superfly-spring-security-ee10</artifactId>
     <version>${superfly.version}</version>
 </dependency>
 ```
@@ -76,23 +76,25 @@
 ### Базовый URL
 
 ```
-http://superfly-server:8080/
+https://superfly-server/remoting/sso.service/{method}
 ```
 
-### Проверка учётных данных
+Запросы — `POST` с JSON-телом и заголовками `X-Subsystem-Name` / `X-Subsystem-Token`
+(или клиентский сертификат). Проверка учётных данных — метод `authenticate`:
 
 ```http
-POST /api/v1/auth/login
+POST /remoting/sso.service/authenticate
 Content-Type: application/json
+X-Subsystem-Name: MY_SUBSYSTEM
+X-Subsystem-Token: {subsystemToken}
 
-{
-  "username": "user",
-  "password": "secret",
-  "subsystem": "MY_SUBSYSTEM"
-}
+{ "username": "user", "password": "secret",
+  "authRequestInfo": { "subsystemIdentifier": "MY_SUBSYSTEM" } }
 ```
 
-Ответ: JSON с токеном сессии или ошибкой.
+Ответ: `SSOUser` с ролями и действиями (`null`, если логин/пароль неверны) или `ExceptionWrapper` при ошибке.
+Из Java используйте [`SSOHttpServiceApiClient`](sso-http-client.md). Внешним системам без `SSOService`
+предназначены `/sso/check/check-password` и `/sso/check/check-otp` с шифрованием пароля — см. [API Reference](api.md#remote-auth-ssocheck).
 
 ## Подсистемы (Subsystems)
 
@@ -163,4 +165,5 @@ protected void init() {
 ## See Also
 
 - [Конфигурация](configuration.md) — настройка сервера Superfly
-- [Миграция EE8 / EE10](migration-client-ee8-ee10.md) — переход на раздельные модули
+- [Миграция EE8 / EE10](migration-client-ee8-ee10.md) — переход на раздельные модули, breaking changes
+- [SSO HTTP Client](sso-http-client.md) — клиент RPC API

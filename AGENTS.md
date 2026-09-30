@@ -11,12 +11,12 @@ EE8/EE10 (javax/jakarta servlet) клиентские библиотеки.
 
 ## Технологический стек
 
-- **Язык:** Java 21
-- **Фреймворк:** Spring Framework 6.2.18 + Spring Security 6.4.11
-- **Веб-UI:** Apache Wicket 10.6.0
+- **Язык:** Java 21 (включая EE8-модули: `release` не понижается)
+- **Фреймворк:** Spring Framework 6.2.19 + Spring Security 6.4.13 (EE8-модули: Spring 5.3.39 / Spring Security 5.8.16, provided)
+- **Веб-UI:** Apache Wicket 10.9.1 (superfly-wicket-ee8 — Wicket 8.18.0, provided)
 - **База данных:** MySQL (stored procedures, jdbc-proc)
 - **Logging:** SLF4J 2.0 + Logback
-- **Сборка:** Maven (multi-module, 20 модулей)
+- **Сборка:** Maven (multi-module, 19 модулей)
 - **CI:** GitHub Actions
 
 ## Структура проекта
@@ -52,13 +52,12 @@ superfly/
 ├── superfly-client-core/          # Клиент без servlet зависимости
 ├── superfly-client-ee8/           # Клиент для javax.servlet (EE8)
 ├── superfly-client-ee10/          # Клиент для jakarta.servlet (EE10)
-├── superfly-client/               # Клиент (алиас/агрегат)
 ├── superfly-client-web-security/  # Web security клиент
 ├── superfly-client-opt/           # Клиент с опциональными фичами
 │
 ├── superfly-spring-security-core/ # Spring Security integration (core, без servlet)
 ├── superfly-spring-security-ee8/  # Spring Security для EE8 (javax.servlet)
-├── superfly-spring-security/      # Spring Security для EE10 (jakarta.servlet)
+├── superfly-spring-security-ee10/ # Spring Security для EE10 (jakarta.servlet); зависит от -core
 │
 ├── superfly-wicket/               # Wicket компоненты (EE10)
 ├── superfly-wicket-ee8/           # Wicket компоненты (EE8)
@@ -113,12 +112,12 @@ superfly/
 
 | Файл | Назначение |
 |------|-----------|
-| `Dockerfile` | Multi-stage: builder → production (Jetty 12) + development (mvn jetty:run) |
-| `compose.yml` | База: app + MySQL 8.0 |
-| `compose.override.yml` | Dev-оверрайды: source mount, Maven hot-reload |
+| `Dockerfile` | Multi-stage: builder → production (Jetty 12 ee10, JRE 21); стадии development нет |
+| `compose.yml` | База: app + MySQL 5.7 |
+| `compose.override.yml` | Dev-оверрайд: публикует MySQL на 127.0.0.1 (приложение — `./dev-env.sh app`) |
 | `compose.production.yml` | Hardened production: read_only, cap_drop, resource limits |
 | `docker/jetty/ROOT.xml` | Jetty context descriptor с JNDI datasource (env vars) |
-| `docker/jetty/entrypoint.sh` | Передаёт DB-параметры как Java system properties |
+| `docker/jetty/entrypoint.sh` | Передаёт в Jetty только порт; `DB_*` читаются из окружения в `ROOT.xml` |
 | `.env.example` | Шаблон переменных окружения |
 
 ## Правила для агентов

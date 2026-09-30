@@ -4,7 +4,11 @@
 
 `SSOHttpServiceApiClient` — клиентская реализация `SSOService` в `superfly-remote-api`,
 работающая поверх HTTP. Используется paynet и другими подсистемами для вызова RPC-эндпоинтов
-SSO-сервера.
+SSO-сервера (`/remoting/sso.service/{method}`, см. [API Reference](api.md)).
+
+> **Breaking changes относительно предыдущих версий:** класс `final`, единственный конструктор
+> `(IHttpClient, SSOClientConfig, ApiSerializationManager)`, `superfly-remote-api` больше не приносит
+> `http-client-impl`. Подробности и замены — в [списке изменений](migration-client-ee8-ee10.md#breaking-changes).
 
 ## Принципы
 
@@ -29,6 +33,9 @@ SSOHttpServiceApiClient ──uses──> IHttpClient
 ```
 
 Транспорт инжектируется через конструктор — клиент не зависит от конкретной реализации HTTP.
+`superfly-remote-api` зависит только от `http-client-api`: реализацию (`ApacheHC5HttpClient` из
+`superfly-httpclient-hc5` или `HttpClientImpl` из `com.payneteasy.http-client:http-client-impl`)
+приложение подключает само.
 Это позволяет подменять `IHttpClient` без правки `SSOHttpServiceApiClient`: для тестов
 (EasyMock/Mockito), для production (Apache HC5 с connection pooling), для отладки.
 
@@ -43,7 +50,7 @@ IHttpClient transport = ApacheHC5HttpClient.builder()
 
 // 2. Build config
 SSOClientConfig config = SSOClientConfig.builder()
-    .baseUrl("https://superfly.example.com/sso.service")
+    .baseUrl("https://superfly.example.com/remoting/sso.service")
     .subsystemName("paynet-ui")
     .subsystemToken(System.getenv("SSO_TOKEN"))
     .defaultParameters(HttpRequestParameters.builder()
@@ -69,6 +76,9 @@ SSOUser user = sso.authenticate(new AuthenticateRequest("john", "secret"));
 
 `SSOHttpServiceApiClient` thread-safe и предназначен для долгого жизненного цикла —
 создавайте один экземпляр на приложение и переиспользуйте.
+
+Клиент передаёт `X-Subsystem-Name` / `X-Subsystem-Token` (токен опционален, если подсистема
+аутентифицируется клиентским сертификатом) и всегда шлёт JSON.
 
 ## Per-endpoint таймауты
 
@@ -120,6 +130,11 @@ ApacheHC5HttpClient transport = ApacheHC5HttpClient.builder()
 ```
 
 См. [SSL/mTLS Integration](ssl-mtls.md) и [HC5 transport](httpclient-hc5.md).
+
+### Повторы и редиректы
+
+Транспорт HC5 не делает автоматических повторов и не следует редиректам: запрос уходит один раз
+на `baseUrl`. Повтор идемпотентных вызовов — на стороне consumer (см. ниже).
 
 ### Logging policy
 

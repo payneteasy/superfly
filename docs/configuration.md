@@ -6,9 +6,16 @@
 
 Конфигурация DataSource задаётся в Jetty XML-файлах.
 
-### `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`
+### Production (Docker): `docker/jetty/ROOT.xml`
 
-Основной конфиг для деплоя на Jetty. Используется в production.
+В образе DataSource описан в `docker/jetty/ROOT.xml` и читает параметры из **переменных окружения**:
+`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_TIMEZONE` (порт Jetty — `JETTY_PORT`).
+Пароль передавайте только через окружение/секреты. Запуск — в [Установке и запуске](getting-started.md#docker-образ).
+
+### Dev: `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`
+
+Конфиг для локального запуска (`./dev-env.sh app`, `Start.java`) с dev-базой на `localhost:3344`.
+Исключён из WAR (`packagingExcludes`), поэтому в контейнере и на сервере не используется. Структура:
 
 ```xml
 <Configure id='wac' class="org.eclipse.jetty.ee10.webapp.WebAppContext">
@@ -36,7 +43,7 @@
 
 ### `superfly-web/src/main/resources/jetty-env.conf`
 
-Конфиг для разработки через `mvn jetty:run`. Структура аналогична `jetty-web.xml`, но использует `org.apache.commons.dbcp.BasicDataSource` (dbcp1).
+Вариант DataSource с параметрами из system properties (`db.host`, `db.port`, `db.name`, `db.user`, `db.password`, `db.timezone`) на `org.apache.commons.dbcp.BasicDataSource` (dbcp1).
 
 | Параметр | Описание |
 |----------|---------|
@@ -49,14 +56,10 @@
 
 ## Параметры запуска Jetty
 
-Порт и другие параметры Jetty задаются при запуске через Maven:
+- **Docker:** порт задаёт `JETTY_PORT` (по умолчанию 8080), см. `docker/jetty/entrypoint.sh`.
+- **Локально:** `./dev-env.sh app` запускает `Start.java` на `http://localhost:8085/superfly/`.
 
-```bash
-# Изменить порт (по умолчанию 8080)
-./mvnw -pl superfly-web jetty:run -Djetty.http.port=9090
-```
-
-Или в `superfly-web/pom.xml` в конфигурации `jetty-maven-plugin`.
+Стадии `development` и `jetty:run` в Docker/Maven больше нет.
 
 ## Spring Application Context
 
@@ -74,7 +77,7 @@ Superfly поддерживает несколько политик пароле
 
 | Значение | Описание |
 |----------|---------|
-| `NONE` | Без политики (пароли не хэшируются) |
+| `NONE` | Без политики сложности. Пароли хэшируются SHA-256 с солью из `users.salt`, как и при `PCIDSS` |
 | `PCIDSS` | Политика PCI DSS: минимум 8 символов, спецсимволы |
 
 ## SMTP (Email-уведомления)
@@ -85,9 +88,14 @@ SMTP-серверы настраиваются через веб-интерфе�
 
 HOTP-провайдер настраивается через `superfly-spi`. Реализация подключается через Spring DI. По умолчанию используется `NullHOTPProvider` (2FA отключена).
 
+## Content-Security-Policy
+
+Origin из `landingUrl` и `subsystemUrl` всех подсистем добавляются в директиву `form-action`, а `loginFormCssUrl` — в `style-src`.
+Список кэшируется на 5 минут и сбрасывается сразу при правке подсистемы в админке.
+
 ## Переменные окружения
 
-На данный момент все параметры задаются через XML-конфиги Jetty и Spring, а не через переменные окружения. Для контейнеризации рекомендуется использовать внешние конфиги с volume-монтированием `jetty-web.xml`.
+Подключение к БД в Docker-образе задаётся `DB_*` и `JETTY_PORT` (см. выше). Остальные параметры — через XML-конфиги Jetty и Spring.
 
 ## See Also
 

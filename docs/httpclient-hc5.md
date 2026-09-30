@@ -11,6 +11,10 @@
 | Нет `AutoCloseable` — resource leak при timeout | `implements AutoCloseable`, `close()` корректно шатдаунит пул |
 | Нет eviction idle соединений | `evictIdleConnections(30s)` |
 
+Дополнительно: автоматические повторы и обработка редиректов **отключены** — запрос уходит ровно
+один раз на заданный URL (повтор идемпотентных вызовов — забота consumer). Ожидание соединения из
+пула (`connectionRequestTimeout`) ограничено тем же значением, что и `connectTimeout`.
+
 ## Зависимость
 
 ```xml
@@ -62,7 +66,7 @@ HttpRequestParameters params = HttpRequestParameters.builder()
 HttpResponse response = client.send(request, params);
 ```
 
-Поля `sslSocketFactory` и `hostnameVerifier` из `HttpRequestParameters` игнорируются — HC5 использует pooled connections с одним SSL-контекстом, заданным при создании.
+Поля `sslSocketFactory`, `hostnameVerifier` и `trustManager` в `HttpRequestParameters` **не поддерживаются**: HC5 использует pooled connections с одним SSL-контекстом, заданным при создании, поэтому непустое значение приводит к `IllegalArgumentException` (а не молча игнорируется). SSL настраивается только в `ApacheHC5HttpClient.builder()`.
 
 ## Exception mapping
 
@@ -138,7 +142,10 @@ PoolingHttpClientConnectionManager
 CloseableHttpClient (мТLS соединение к superfly-server)
 ```
 
-Если CN сертификата сервера не совпадает с hostname соединения (например CN=`superfly-server`, host=`localhost`) — используйте CN hostname verifier:
+Тип keystore/truststore по умолчанию — `PKCS12` (раньше был JKS); JKS-файлы JDK по-прежнему открывает. Явный тип (общий для обоих хранилищ) задаёт перегрузка
+`buildSslContext(keyStoreUrl, ksPwd, trustStoreUrl, tsPwd, "JKS")`.
+
+Если CN сертификата сервера не совпадает с hostname соединения (например CN=`superfly-server`, host=`localhost`) — используйте CN hostname verifier (он принимает ожидаемое значение как в CN, так и среди SAN `dNSName`):
 
 ```java
 builder.hostnameVerifier(
@@ -163,18 +170,9 @@ builder.hostnameVerifier(
 
 ## Тесты
 
-```
-superfly-httpclient-hc5/src/test/java/.../ApacheHC5HttpClientTest.java
-```
-
-6 тестов с embedded JDK `HttpServer` (без WireMock):
-
-1. `testSuccessfulPost` — POST 200 + body
-2. `testConnectTimeoutThrows` → `HttpConnectException`
-3. `testResponseTimeoutThrows` → `HttpReadException`
-4. `testPerRequestTimeoutOverride` — per-request override работает
-5. `testAutoCloseableShutdown` — после `close()` → `IllegalStateException`
-6. `testHeadersForwardedCorrectly` — headers доходят до сервера
+Классы в `superfly-httpclient-hc5/src/test/java`: `ApacheHC5HttpClientTest` (запросы, таймауты, lifecycle, заголовки),
+`ApacheHC5HttpClientHardeningTest` (повторы, редиректы, пул, per-request SSL), `JdkSslSocketFactoryBuilderTest`,
+`JdkSslCnVerifierTest`. Используется embedded JDK `HttpServer` (без WireMock).
 
 ## См. также
 

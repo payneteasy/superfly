@@ -74,7 +74,7 @@ evil.internal получил cert { CN=evil.internal } от того же CA
 
 | Класс | Назначение |
 |-------|-----------|
-| `JdkSslSocketFactoryBuilder` | Строит `SSLContext` (для HC5), `SSLSocketFactory` и `HostnameVerifier` из JKS-файлов |
+| `JdkSslSocketFactoryBuilder` | Строит `SSLContext` (для HC5), `SSLSocketFactory` и `HostnameVerifier` из keystore-файлов (по умолчанию `PKCS12`) |
 | `AuthSSLX509TrustManager` | Обёртка над стандартным TrustManager с логированием сертификата |
 | `AuthSSLX509KeyManager` | Обёртка над стандартным KeyManager с логированием |
 
@@ -90,7 +90,14 @@ SSLContext ssl = JdkSslSocketFactoryBuilder.buildSslContext(
         trustStoreUrl, trustStorePassword
 );
 
-// HostnameVerifier по CN вместо hostname (для dev / self-signed)
+// То же с явным типом хранилищ (по умолчанию PKCS12; JKS-файлы JDK открывает и так)
+SSLContext sslJks = JdkSslSocketFactoryBuilder.buildSslContext(
+        keyStoreUrl,   keyStorePassword,
+        trustStoreUrl, trustStorePassword, "JKS"
+);
+
+// HostnameVerifier по CN вместо hostname (для dev / self-signed);
+// значение сверяется с CN сертификата и с его SAN dNSName
 HostnameVerifier verifier = JdkSslSocketFactoryBuilder.buildCnHostnameVerifier("superfly-server");
 
 // Legacy: SSLSocketFactory (если нужен напрямую, вне HC5)
@@ -119,8 +126,9 @@ try (ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
 }
 ```
 
-> Поля `sslSocketFactory` / `hostnameVerifier` в per-request `HttpRequestParameters`
-> игнорируются HC5 — SSL фиксируется на уровне пула при создании клиента.
+> Поля `sslSocketFactory` / `hostnameVerifier` / `trustManager` в per-request `HttpRequestParameters`
+> не поддерживаются: непустое значение даёт `IllegalArgumentException` — SSL фиксируется на уровне пула
+> при создании клиента.
 
 ---
 
@@ -220,6 +228,20 @@ public IHttpClient superflyHttpClient(SsoClientProperties cfg) throws Exception 
 | `expectedServerCn` | CN сертификата сервера; `null` = стандартный hostname verifier (прод с корректным SAN) |
 
 Для прода с корректным SAN в сертификате — оставить `expectedServerCn` пустым.
+
+### mTLS для уведомлений (`superfly-client-opt`)
+
+`HttpClientSpringConfiguration` собирает `IHttpClient` для доставки уведомлений Superfly. Без свойств ниже
+используется SSL-контекст JVM. Пароли задавайте только через переменные окружения или внешний конфиг
+(например, `superfly.notification.http.keystore-password=${NOTIFICATION_KEYSTORE_PASSWORD}`), не в репозитории.
+
+| Свойство | Описание |
+|----------|---------|
+| `superfly.notification.http.keystore-url` | URL keystore с клиентским сертификатом (mTLS) |
+| `superfly.notification.http.keystore-password` | Пароль keystore |
+| `superfly.notification.http.truststore-url` | URL truststore с CA сервера |
+| `superfly.notification.http.truststore-password` | Пароль truststore |
+| `superfly.notification.http.keystore-type` | Тип обоих хранилищ, по умолчанию `PKCS12` |
 
 ---
 

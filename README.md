@@ -6,7 +6,7 @@
 
 Superfly позволяет зарегистрировать пользователей один раз и управлять их правами доступа
 из единой точки для всех подключённых систем. Поддерживает Spring Security, Apache Wicket
-и оба поколения Servlet API (Java EE 8 / Jakarta EE 10).
+и оба поколения Servlet API (Java EE 8 / Jakarta EE 10); все модули, включая EE8, требуют JDK 21.
 
 ## Быстрый старт
 
@@ -20,7 +20,9 @@ cd superfly
 ```
 
 Веб-интерфейс — `http://localhost:8085/superfly/`, логин `admin` / `123admin123`.
-Для базы нужен Docker, для `app` — ещё JDK; Maven берётся из `mvnw`.
+Для базы нужен Docker, для `app` — ещё JDK 21; Maven берётся из `mvnw`. Образ Docker и `compose.yml` — в [Установке и запуске](docs/getting-started.md#docker-образ).
+
+Обновляетесь с прошлой версии? Breaking changes и шаги обновления БД — в [миграции EE8 / EE10](docs/migration-client-ee8-ee10.md#breaking-changes).
 
 ## Локальная разработка
 
@@ -60,7 +62,7 @@ cd superfly
 <!-- Jakarta EE 10 (Spring 6) -->
 <dependency>
     <groupId>com.payneteasy.superfly</groupId>
-    <artifactId>superfly-spring-security</artifactId>
+    <artifactId>superfly-spring-security-ee10</artifactId>
     <version>2.0-3-SNAPSHOT</version>
 </dependency>
 
@@ -71,7 +73,7 @@ cd superfly
     <version>2.0-3-SNAPSHOT</version>
 </dependency>
 
-<!-- Optional: SSL/HTTP client factory beans (EE8- and EE10-compatible, no Servlet API) -->
+<!-- Optional: notification HTTP client (Apache HC5, mTLS), action collectors (EE8- and EE10-compatible, no Servlet API) -->
 <dependency>
     <groupId>com.payneteasy.superfly</groupId>
     <artifactId>superfly-client-opt</artifactId>
@@ -93,7 +95,7 @@ cd superfly
 | [SSO HTTP Client](docs/sso-http-client.md) | Клиентский `SSOHttpServiceApiClient`, per-endpoint timeouts |
 | [SSL / mTLS](docs/ssl-mtls.md) | TLS-соединение, hostname verification, кастомный CA |
 | [Apache HC5 Transport](docs/httpclient-hc5.md) | Connection pooling, AutoCloseable lifecycle, mTLS |
-| [Миграция EE8 / EE10](docs/migration-client-ee8-ee10.md) | Переход на раздельные модули |
+| [Миграция EE8 / EE10](docs/migration-client-ee8-ee10.md) | Раздельные модули, breaking changes, обновление |
 | [Выпуск релиза](docs/releasing.md) | Публикация в Maven Central |
 
 ## Лицензия

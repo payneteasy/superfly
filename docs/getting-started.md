@@ -8,142 +8,84 @@
 |-----------|--------|
 | Java | 21+ |
 | Maven | 3.9+ (или `./mvnw`) |
-| MariaDB | 10.3+ (рекомендуется) |
-| Docker | любая (для быстрого старта) |
+| MySQL | **5.7** |
+| Docker | любая (для базы и образа) |
 | Git | любая |
 
-> **MariaDB vs MySQL:** SQL-схема использует синтаксис MariaDB (в частности `GRANT ... IDENTIFIED BY`
-> и таблицу `groups`). Для MySQL 8+ потребуется адаптация миграций.
+> **Только MySQL 5.7.** На 8.0 схема не устанавливается: `groups` там стало зарезервированным словом.
 
 ---
 
 ## Быстрый старт (локальная разработка)
 
-### 1. Запустить MariaDB в Docker
-
 ```bash
-docker run -d --name superfly-db \
-  -p 3344:3306 \
-  -e MYSQL_ROOT_PASSWORD=1234 \
-  mariadb:10.3 \
-  --character-set-server=utf8mb4 \
-  --collation-server=utf8mb4_general_ci
+git clone https://github.com/payneteasy/superfly.git
+cd superfly
+./mvnw -DskipTests package
 
-# Ждём готовности (10–20 сек)
-until mysql -h 127.0.0.1 -P 3344 -u root -p1234 -e "SELECT 1" 2>/dev/null; do
-  echo "Waiting for MariaDB..."; sleep 2
-done
+./dev-env.sh up      # MySQL 5.7, схема и хранимые процедуры
+./dev-env.sh app     # приложение на http://localhost:8085/superfly/
 ```
 
-Переменные окружения миграционных скриптов:
+Откройте `http://localhost:8085/superfly/`, логин `admin`, пароль `123admin123`.
+
+`dev-env.sh` публикует MySQL только на `127.0.0.1:3344`. Остальные команды (`seed`, `sql`, `down`) и ограничения
+описаны в [README](../README.md#локальная-разработка). Параметры подключения dev-контура лежат в
+`superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`; этот файл не попадает в WAR.
+
+---
+
+## Обновление существующей базы
+
+Миграции лежат в `superfly-sql/mi/R<version>/`. Скрипты читают переменные окружения:
 
 | Переменная | По умолчанию | Описание |
 |------------|-------------|---------|
 | `SSO_DB_HOST` | `localhost` | Хост БД |
 | `SSO_DB_PORT` | `3344` | Порт |
 | `SSO_DB_ROOT` | `root` | Root-пользователь |
-| `SSO_DB_ROOT_PASSWORD` | `1234` | Root-пароль |
+| `SSO_DB_ROOT_PASSWORD` | dev-значение | Root-пароль (для не-dev базы задайте свой) |
 | `SSO_DB_USERNAME` | `sso` | Пользователь приложения |
-| `SSO_DB_PASSWORD` | `123sso123` | Пароль приложения |
+| `SSO_DB_PASSWORD` | dev-значение | Пароль приложения (для не-dev базы задайте свой) |
 | `SSO_DB_DATABASE` | `sso` | Имя базы |
-
-### 2. Накатить миграции
 
 ```bash
 cd superfly-sql/mi
-bash all_mi.sh
+version_from=R1.7.4 bash all_mi.sh     # с какой версии применять; по умолчанию R1.0.0
+cd ../src && ./all-proc.sh             # хранимые процедуры ставятся отдельно от WAR
 ```
 
-Скрипт последовательно применяет все версии R1.0.0 → R1.7.x. Логи пишутся в `<version>/target/*.log`.
-
-Для нестандартного порта:
-
-```bash
-SSO_DB_PORT=3343 bash all_mi.sh
-```
-
-### 3. Сбросить пароль admin
-
-Миграции создают пользователя `admin` с солью (для pcidss-политики). В dev-режиме используется
-политика `none` (см. шаг 4), поэтому нужно сбросить хеш на SHA-256 без соли:
-
-```bash
-# SHA-256("123admin123") = c9cddf4205cb7b6e6e918dc967bb6505d1447a2a499ef165a8c03784170307ee
-mysql -h 127.0.0.1 -P 3344 -u sso -p123sso123 sso -e "
-UPDATE users
-SET user_password = 'c9cddf4205cb7b6e6e918dc967bb6505d1447a2a499ef165a8c03784170307ee',
-    salt = NULL
-WHERE user_name = 'admin';
-"
-```
-
-Пользователь admin должен иметь:
-
-```sql
-SELECT user_name, user_password, salt FROM users WHERE user_name = 'admin';
--- user_password = c9cddf42...  salt = NULL
-SELECT COUNT(*) FROM user_roles ur JOIN users u ON u.user_id = ur.user_user_id WHERE u.user_name = 'admin';
--- >= 1
-```
-
-### 4. Добавить dev-политику в override-web.xml
-
-Файл `superfly-web/src/test/resources/jetty/override-web.xml` должен содержать:
-
-```xml
-<context-param>
-    <param-name>superfly-policy</param-name>
-    <param-value>none</param-value>
-</context-param>
-```
-
-**Почему это нужно:** `web.xml` устанавливает `superfly-policy=pcidss` → `RandomStoredSaltSource`.
-При логине она читает соль из БД и вычисляет хеш с ней. Если `salt=NULL` — аутентификация падает.
-Политика `none` активирует `NullSaltSource` → SHA-256 без соли. Файл `override-web.xml` используется
-только `Start.java` и не попадает в production WAR.
-
-### 5. Собрать проект
-
-```bash
-./mvnw -DskipTests -pl superfly-web -am package
-```
-
-### 6. Запустить
-
-**Через IDEA:** Run-конфиг `Start` из `.run/Start.run.xml`  
-- Main class: `com.payneteasy.superfly.Start`
-- Модуль: `superfly-web`
-
-**Через Maven:**
-
-```bash
-./mvnw -pl superfly-web -DskipTests jetty:run
-```
-
-Приложение ждёт нажатия клавиши для остановки.
-
-### 7. Проверить
-
-Откройте `http://localhost:8085/superfly/`
-
-| Поле | Значение |
-|------|---------|
-| Логин | `admin` |
-| Пароль | `123admin123` |
+Миграции прерываются на первой ошибке. Что делать при обновлении с конкретных версий — в
+[заметках об обновлении](migration-client-ee8-ee10.md#обновление). Версию задеплоенного приложения отдаёт
+`/management/version.txt` без авторизации.
 
 ---
 
-## Настройка подключения к БД
+## Docker-образ
 
-Файл `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml` — подключение по умолчанию:
+Образ собирается из `Dockerfile` (стадия `production`): WAR на Jetty 12 (ee10), JRE 21, непривилегированный пользователь.
+Схему БД образ не ставит — примените миграции и процедуры, как описано выше.
 
-```xml
-<Set name="url">jdbc:mysql://localhost:3344/sso?characterEncoding=utf8
-    &amp;useInformationSchema=true&amp;noAccessToProcedureBodies=false
-    &amp;useLocalSessionState=true</Set>
-<Set name="username">sso</Set>
-<Set name="password">123sso123</Set>
+```bash
+docker build --target production -t superfly-app .
+
+docker run -d -p 8080:8080 \
+  -e DB_HOST=db.example.com -e DB_PORT=3306 -e DB_NAME=sso \
+  -e DB_USER=sso -e DB_PASSWORD -e DB_TIMEZONE=UTC \
+  superfly-app
 ```
+
+Параметры `DB_*` читаются из окружения (`docker/jetty/ROOT.xml`), порт Jetty — `JETTY_PORT` (по умолчанию 8080).
+`-e DB_PASSWORD` без значения берёт пароль из окружения хоста, чтобы он не попадал в историю команд.
+
+`compose.yml` поднимает приложение и MySQL 5.7 (`.env` создаётся из `.env.example`; `DB_PASSWORD` и
+`DB_ROOT_PASSWORD` обязательны). `compose.production.yml` добавляет hardening (`read_only`, `cap_drop`, лимиты ресурсов):
+
+```bash
+docker compose -f compose.yml -f compose.production.yml up -d
+```
+
+`compose.override.yml` подхватывается автоматически и публикует MySQL на `127.0.0.1`.
 
 ---
 
@@ -151,16 +93,15 @@ SELECT COUNT(*) FROM user_roles ur JOIN users u ON u.user_id = ur.user_user_id W
 
 | Симптом | Причина | Решение |
 |---------|---------|---------|
-| `Connection refused` на 3344 | MariaDB не запущена | Шаг 1 |
-| `Table 'sso.users' doesn't exist` | Миграции не накатаны | Шаг 2 |
-| Логин неверен (правильный пароль) | salt != NULL или policy=pcidss | Шаги 3–4 |
-| `NullPointerException` при старте | Нет JNDI datasource | Проверить `jetty-web.xml` |
-| Wicket error после логина | Нет `user_role_actions` | Проверить шаг 3: роли накатаны? |
+| `Connection refused` на 3344 | База не запущена | `./dev-env.sh up` |
+| `Table 'sso.users' doesn't exist` | Миграции не накатаны | `./dev-env.sh up` или `all_mi.sh` |
+| Схема не ставится, ошибка на `groups` | MySQL 8.0 | Использовать MySQL 5.7 |
+| `NullPointerException` при старте | Нет JNDI datasource | Проверить `jetty-web.xml` (dev) или `DB_*` (Docker) |
 
 ---
 
 ## Следующие шаги
 
-- [Конфигурация](configuration.md) — настройка портов, БД, параметров приложения
+- [Конфигурация](configuration.md) — база данных, политики, CSP
 - [Руководство по интеграции](integration-guide.md) — подключение клиентских приложений
-- [Миграция EE8/EE10](migration-client-ee8-ee10.md) — javax/jakarta split
+- [Миграция EE8/EE10](migration-client-ee8-ee10.md) — javax/jakarta split, breaking changes

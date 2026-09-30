@@ -11,30 +11,52 @@
 - **superfly-client-ee10** — фильтры, слушатели и `JakartaHttpSessionWrapper` для приложений на **Jakarta EE 10** (`jakarta.servlet.*`).
 - **superfly-client-ee8** — те же фильтры и слушатели для приложений на **Java EE 8** (`javax.servlet.*`), плюс `JavaxHttpSessionWrapper`.
 
-Артефакт **superfly-client** оставлен для обратной совместимости: это POM-фасад, который подключает **superfly-client-ee10**. Менять группу/артефакт в существующих проектах не обязательно.
+Фасадных артефактов **superfly-client** и **superfly-spring-security** (без суффикса) больше нет — подключайте модуль под свой стек (см. таблицу ниже).
+
+**Java:** все модули, включая EE8, собираются и работают на **JDK 21** (`release` не понижается). EE8-модули нужны приложениям, которые остаются на javax-стеке (`javax.servlet.*`, Spring 5, Wicket 8), а не приложениям на старых JDK.
+
+## Breaking changes
+
+Относительно версий до 2.0-3:
+
+1. **`SSOHttpServiceApiClient`** (`superfly-remote-api`): класс стал `final` (наследоваться нельзя — оборачивайте через `SSOService`-декоратор), а конструктор `(HttpRequestParameters, baseUrl, subsystemName, subsystemToken, ApiSerializationManager)` заменён на `(IHttpClient, SSOClientConfig, ApiSerializationManager)`. Транспорт теперь внедряется снаружи, клиент `AutoCloseable`. Переход — в [SSO HTTP Client](sso-http-client.md).
+2. **`http-client-impl` больше не приходит транзитивно** из `superfly-remote-api` (он зависит только от `http-client-api`). Нужна реализация — подключите `superfly-httpclient-hc5` (`ApacheHC5HttpClient`) или добавьте `com.payneteasy.http-client:http-client-impl` явно. `superfly-client-web-security` по-прежнему тянет `http-client-impl` для URL-конструктора `ExternalFormSecurityFilter`.
+3. **Только HTTPS:** `SSOClientConfig` (и URL-конструктор `ExternalFormSecurityFilter`) отвергают `http://` с `IllegalArgumentException`. Для локальной разработки — `-Dsuperfly.client.allowInsecureScheme=true` (в лог пишется WARN); в production не использовать.
+4. **Удалены `HttpClientFactoryBean` и `StoresAndSSLConfig`** (`superfly-client-opt`, Apache Commons HttpClient 3.x) и модуль `superfly-httpclient-ssl`. Замена: `IHttpClient` на `ApacheHC5HttpClient` и SSL-хелперы `JdkSslSocketFactoryBuilder` из `superfly-httpclient-hc5` (пакет `com.payneteasy.httpclient.contrib.ssl`). В `superfly-client-opt` бин `httpClientFactoryBean` заменён бином `notificationHttpClient`; mTLS включается свойствами `superfly.notification.http.*` (см. [SSL / mTLS](ssl-mtls.md#mtls-для-уведомлений-superfly-client-opt)). Тип keystore по умолчанию теперь `PKCS12` (был JKS; JKS-файлы JDK по-прежнему открывает, явный тип — параметр `keystore-type`).
+5. **HC5-транспорт:** автоматические повторы и редиректы отключены; per-request `sslSocketFactory`/`hostnameVerifier`/`trustManager` в `HttpRequestParameters` дают `IllegalArgumentException` (SSL задаётся в `ApacheHC5HttpClient.builder()`). См. [Apache HC5 Transport](httpclient-hc5.md).
+6. **Фасады удалены:** `superfly-client` → `superfly-client-ee10` (Jakarta) или `superfly-client-ee8` (javax); `superfly-spring-security` → `superfly-spring-security-ee10`.
+7. **Remote-auth (`check-password`/`check-otp`):** новые ключи подсистем — `RSA_OAEP`, а на ошибки расшифровки действует лимит 20 в минуту на подсистему. Коды и формат ответов прежние; подробности и примеры шифрования — в [API Reference](api.md#шифрование).
+8. **Long-poll `getEvents`:** `waitTimeMs` ограничен сервером 75 секундами.
+
+## Обновление
+
+Порядок обновления сервера:
+
+1. **БД.** При обновлении с 1.7-36/37/38 запустите миграции начиная с R1.7.4 — она идемпотентна и добавляет `events.subsystem_id`, индекс и внешний ключ:
+
+   ```bash
+   cd superfly-sql/mi
+   version_from=R1.7.4 bash all_mi.sh
+   ```
+
+   Скрипты подключаются переменными `SSO_DB_*` (см. [Установка и запуск](getting-started.md#обновление-существующей-базы)). Миграции теперь прерываются на первой ошибке — не игнорируйте ненулевой код возврата. Хранимые процедуры переустанавливаются отдельно (`superfly-sql/src/all-proc.sh`).
+2. **Пароли.** При обновлении с 2.0-1/2.0-2 под политикой `none` сбросьте пароли пользователей: хеширование с солью (`users.salt`) под `none` восстановлено, а в 2.0-1/2.0-2 пароли под `none` могли записываться без соли — такие хеши могут не пройти проверку. Под политикой `pcidss` (значение в `web.xml` по умолчанию) ничего делать не нужно.
+3. **События.** События без подсистемы больше не отдаются клиентам, запрашивающим события по имени подсистемы. `PASSWORD_RESET` теперь пишется отдельной записью на каждую подсистему, в которой у пользователя есть роли.
+4. **Remote-auth.** Существующие подсистемы остаются на `RSA` (PKCS#1). Чтобы перейти на OAEP — перегенерируйте ключ на странице редактирования подсистемы и переведите клиента на OAEP ([как шифровать](api.md#шифрование)).
+5. **CSP.** Origin `landingUrl`/`subsystemUrl` всех подсистем добавляются в `form-action`, а `loginFormCssUrl` — в `style-src`. Список обновляется в течение 5 минут или сразу после правки подсистемы в админке.
 
 ## Выбор артефакта
 
 | Стек приложения | Подключаемый артефакт |
 |-----------------|------------------------|
-| Jakarta EE 10, Spring 6, сервлеты `jakarta.servlet.*` | `superfly-client-ee10` или по‑прежнему `superfly-client` |
+| Jakarta EE 10, Spring 6, сервлеты `jakarta.servlet.*` | `superfly-client-ee10` |
 | Java EE 8, сервлеты `javax.servlet.*` | `superfly-client-ee8` |
 
 ## Минимальные изменения
 
-### Проекты на Jakarta EE 10 (как раньше)
+### Проекты на Jakarta EE 10
 
-Зависимость можно не менять:
-
-```xml
-<dependency>
-    <groupId>com.payneteasy.superfly</groupId>
-    <artifactId>superfly-client</artifactId>
-    <version>${superfly.version}</version>
-</dependency>
-```
-
-Либо явно перейти на EE10-адаптер:
+Артефакт `superfly-client` удалён — замените его на EE10-адаптер:
 
 ```xml
 <dependency>
@@ -48,7 +70,7 @@
 
 ### Проекты на Java EE 8 (javax)
 
-Подключить только EE8-адаптер, без `superfly-client` и без `superfly-client-ee10`:
+EE8-адаптер собирается и запускается на JDK 21; нужен тем, кто остаётся на `javax.servlet.*`. Подключить только его, без `superfly-client-ee10`:
 
 ```xml
 <dependency>
@@ -62,12 +84,10 @@
 
 ### Опциональные возможности (superfly-client-opt)
 
-Если используется **superfly-client-opt** (например, `XmlActionDescriptionCollector`, `ScanningActionDescriptionCollector`, Spring `HttpClientFactoryBean`):
+Если используется **superfly-client-opt** (например, `XmlActionDescriptionCollector`, `ScanningActionDescriptionCollector`, Spring-конфигурация `HttpClientSpringConfiguration`):
 
 - Коллекторы действий перенесены в **superfly-client-core**; при зависимости от **superfly-client-opt** они подтягиваются через **superfly-client-core**.
-- Для проектов только на EE8 подключайте `superfly-client-ee8` и при необходимости `superfly-client-opt` (он тянет `superfly-client-ee10`; при конфликте javax/jakarta используйте только `superfly-client-ee8` и `superfly-client-core` и подключайте коллекторы из core).
-
-Рекомендация: для EE8-приложений подключать `superfly-client-ee8` и при необходимости `superfly-client-core`; `superfly-client-opt` оставить для проектов на Jakarta, если нужны фабрики и конфигурации под Spring.
+- `superfly-client-opt` не зависит от Servlet API (зависит от `superfly-client-core`, `superfly-remote-api` и `superfly-httpclient-hc5`), поэтому его можно подключать и в EE8-, и в EE10-проектах.
 
 ## Сессии и обёртки
 
@@ -147,7 +167,7 @@ API и пакеты те же (`com.payneteasy.superfly.wicket.*`), классы
 
 ### EE10 / Jakarta (web-слой)
 
-Для приложений на Jakarta EE 10 используются web-компоненты из модуля `superfly-spring-security`, завязанные на `jakarta.servlet.*` и зависящие от core:
+Для приложений на Jakarta EE 10 используются web-компоненты из модуля `superfly-spring-security-ee10`, завязанные на `jakarta.servlet.*` и зависящие от core:
 
 - фильтры и entry point-ы:
   - `SuperflyUsernamePasswordAuthenticationProcessingFilter`
@@ -163,14 +183,14 @@ API и пакеты те же (`com.payneteasy.superfly.wicket.*`), классы
   - `SSOUserSessionBindFilter`
   - `UnauthorizedFailureHandler`.
 
-Они ожидают стек **Spring 6 / Spring Security 6 + Jakarta Servlet API**.
+Они ожидают стек **Spring 6 / Spring Security 6 + Jakarta Servlet API**. Модуль зависит от `superfly-spring-security-core` и приносит его транзитивно — отдельно core подключать не нужно.
 
 Рекомендуемая зависимость:
 
 ```xml
 <dependency>
     <groupId>com.payneteasy.superfly</groupId>
-    <artifactId>superfly-spring-security</artifactId>
+    <artifactId>superfly-spring-security-ee10</artifactId>
     <version>${superfly.version}</version>
 </dependency>
 ```
@@ -308,15 +328,18 @@ suppressions** (`src/main/dependency-check/suppressions.xml`) с обоснов�
 
 ## Итог
 
-- **Клиент:** для EE10 используйте `superfly-client-ee10` или фасад `superfly-client`; для EE8 — `superfly-client-ee8`.
+- **Клиент:** для EE10 используйте `superfly-client-ee10`; для EE8 — `superfly-client-ee8`. Фасада `superfly-client` больше нет.
 - **Wicket:** для Wicket 10 (Jakarta) — `superfly-wicket`; для Wicket 8 (EE8) — `superfly-wicket-ee8`.
 - **Spring Security:**
   - общий core берётся из `superfly-spring-security-core`;
-  - для EE10 можно использовать готовые web-компоненты на `jakarta.servlet.*` из `superfly-spring-security`;
+  - для EE10 можно использовать готовые web-компоненты на `jakarta.servlet.*` из `superfly-spring-security-ee10`;
   - для EE8 — использовать общий core и готовый web-адаптер `superfly-spring-security-ee8` на `javax.servlet.*` и Spring Security 5.8.x.
 - **provided-scope (с 2.0-3):** framework-стек EE8-модулей (Spring 5.x / Spring Security 5.8.x / Wicket 8) больше не приходит транзитивно — потребитель подключает его сам; см. [«Контракт provided-scope»](#контракт-provided-scope-для-ee8-потребителей).
 
 ## See Also
 
+- [SSO HTTP Client](sso-http-client.md) — новый конструктор `SSOHttpServiceApiClient`
+- [Apache HC5 Transport](httpclient-hc5.md) и [SSL / mTLS](ssl-mtls.md) — транспорт и mTLS
+- [API Reference](api.md) — пути, формат ошибок, шифрование remote-auth
 - [Руководство по интеграции](integration-guide.md) — подключение к клиентскому приложению
 - [Конфигурация](configuration.md) — настройка сервера Superfly
