@@ -17,7 +17,7 @@ x-logging: &prod-logging
 services:
   app:
     <<: *hardened
-    image: ${APP_IMAGE:-superfly-app}:${APP_VERSION}
+    image: ${APP_IMAGE:-superfly-app}:${APP_VERSION:-latest}
     # No build: in production — use pre-built image
     build: !reset null
     tmpfs:
@@ -32,12 +32,20 @@ services:
           memory: 512M
     restart: unless-stopped
     logging: *prod-logging
-    # No ports: exposed to host — use external load balancer or proxy
+    # backend is internal (no host access), so the app also joins frontend,
+    # which carries the published port from compose.yml. Bind it to loopback
+    # or front it with a reverse proxy.
+    networks:
+      - backend
+      - frontend
 
   mysql:
     <<: *hardened
     cap_add:
-      # MySQL needs DAC_OVERRIDE for socket files
+      # entrypoint chowns the data dir and drops from root to the mysql user
+      - CHOWN
+      - SETUID
+      - SETGID
       - DAC_OVERRIDE
     tmpfs:
       - /tmp:noexec,nosuid,size=50m
@@ -58,3 +66,4 @@ services:
 networks:
   backend:
     internal: true
+  frontend:

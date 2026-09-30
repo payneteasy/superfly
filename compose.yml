@@ -31,7 +31,11 @@ services:
       - backend
 
   mysql:
-    image: mysql:8.0-debian
+    # 5.7, not 8.0: the schema does not install on 8.0 (`groups` is reserved there).
+    # Only amd64 images exist, hence the explicit platform on arm64 hosts.
+    image: mysql:5.7
+    platform: linux/amd64
+    command: ["--log-bin-trust-function-creators=1"]
     environment:
       MYSQL_DATABASE: ${DB_NAME:-sso}
       MYSQL_USER: ${DB_USER:-sso}
