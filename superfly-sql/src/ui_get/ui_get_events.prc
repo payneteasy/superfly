@@ -9,11 +9,10 @@ create procedure ui_get_events(i_last_event_time datetime, i_limit int, i_subsys
            ,et.event_code as event_type_code
       from events e
           inner join event_types et on et.event_type_id = e.event_type_id
-     where e.event_time > i_last_event_time
+     where e.event_time > coalesce(i_last_event_time, '1970-01-01')
        and (
              i_subsystem_name is null
              or e.subsystem_id = (select ssys_id from subsystems where subsystem_name = i_subsystem_name limit 1)
-             or e.subsystem_id is null
            )
        order by e.event_time
      limit i_limit
