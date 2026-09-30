@@ -97,6 +97,7 @@ import static com.payneteasy.superfly.api.serialization.ApiSerializer.CONTENT_TY
 @Slf4j
 public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable {
 
+    private static final int    MAX_ERROR_BODY_LENGTH = 200;
     private static final String HEADER_SUBSYSTEM_NAME  = "X-Subsystem-Name";
     private static final String HEADER_SUBSYSTEM_TOKEN = "X-Subsystem-Token";
     private static final String HEADER_CONTENT_TYPE    = "Content-Type";
@@ -349,8 +350,12 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
         }
     }
 
+    private static String truncate(String body) {
+        return body != null && body.length() > MAX_ERROR_BODY_LENGTH ? body.substring(0, MAX_ERROR_BODY_LENGTH) + "..." : body;
+    }
+
     private static RuntimeException statusToException(Endpoint endpoint, int status, String body) {
-        String message = String.format("HTTP error %d from %s: %s", status, endpoint, body);
+        String message = String.format("HTTP error %d from %s: %s", status, endpoint, truncate(body));
         return switch (status) {
             case 400 -> new SsoBadRequestException(message);
             case 401 -> new SsoUnauthorizedException(message);
