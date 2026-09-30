@@ -10,10 +10,15 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 
 @AllArgsConstructor
 @Configuration
-@ComponentScan(basePackages = "com.payneteasy.superfly")
+// web.mvc belongs to the rest-api servlet context (dispatcher-servlet.xml); in root it would
+// also be mapped under the remoting servlet.
+@ComponentScan(basePackages = "com.payneteasy.superfly",
+        excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
+                pattern = "com\\.payneteasy\\.superfly\\.web\\.mvc\\..*"))
 public class SpringServiceConfiguration {
     private final SuperflyProperties properties;
 

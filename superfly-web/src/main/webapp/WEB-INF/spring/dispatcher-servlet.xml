@@ -7,8 +7,13 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:component-scan base-package="com.payneteasy.superfly.service,com.payneteasy.superfly.web" />
+    <!-- Child context of the public rest-api servlet (/sso/check/*): remote-auth controller only.
+         Services come from the root context. Do not widen the scan: anything mapped here is public. -->
+    <context:component-scan base-package="com.payneteasy.superfly.web.mvc" />
     <mvc:annotation-driven />
 
-</beans>
+    <!-- web.xml sets detectAllHandlerMappings=false, so DispatcherServlet looks up this name only. -->
+    <alias name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"
+           alias="handlerMapping" />
 
+</beans>

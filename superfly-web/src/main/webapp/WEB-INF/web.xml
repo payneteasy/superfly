@@ -157,6 +157,15 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>/WEB-INF/spring/dispatcher-servlet.xml</param-value>
         </init-param>
+        <!-- /sso/check/* is public (bearer check is done by RemoteAuthCheckController itself).
+             With the default detectAllHandlerMappings=true DispatcherServlet also picks up the root
+             context's handler mappings and would expose RemoteApiController (whole SSOService)
+             here without authentication. Only the "handlerMapping" bean of this servlet's own
+             context is used instead. -->
+        <init-param>
+            <param-name>detectAllHandlerMappings</param-name>
+            <param-value>false</param-value>
+        </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
 

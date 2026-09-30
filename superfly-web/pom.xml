@@ -148,6 +148,12 @@
             <artifactId>commons-pool</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <!--Justification: Servlet API mocks for web context wiring tests -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->

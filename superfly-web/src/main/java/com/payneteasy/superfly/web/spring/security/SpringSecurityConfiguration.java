@@ -77,6 +77,14 @@ public class SpringSecurityConfiguration {
             .authorizeHttpRequests(
                     auth ->
                             auth
+                                    // rest-api servlet: only remote-auth endpoints (they check the
+                                    // subsystem bearer token themselves). Must precede /sso/** permitAll,
+                                    // otherwise anything mapped under /sso/check/ becomes public.
+                                    .requestMatchers(antPathRequestMatcher("/sso/check/check-password/**"),
+                                                     antPathRequestMatcher("/sso/check/check-otp/**"))
+                                    .permitAll()
+                                    .requestMatchers(antPathRequestMatcher("/sso/check/**"))
+                                    .denyAll()
                                     .requestMatchers(antPathRequestMatcher("/favicon.ico"),
                                                      antPathRequestMatcher("/css/**"),
                                                      antPathRequestMatcher("/login*"),
