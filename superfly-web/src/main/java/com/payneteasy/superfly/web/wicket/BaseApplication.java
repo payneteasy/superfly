@@ -54,6 +54,7 @@ public abstract class BaseApplication extends WebApplication {
                 new ContextRelativeResourceReference("js/jquery-3.7.0.js", false)
         );
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
+        getRequestCycleListeners().add(SameOriginResourceIsolationPolicy.newRequestCycleListener());
         getDebugSettings().setOutputMarkupContainerClassNameStrategy(DebugSettings.ClassOutputStrategy.NONE);
         getSecuritySettings().setCryptFactory(new KeyInSessionSunJceCryptFactory()); // diff key per user
         final IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
