@@ -16,6 +16,8 @@ import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcess
 import com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.handler.JsonAuthenticationFailureHandler;
 import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
+import com.payneteasy.superfly.service.impl.SubsystemOriginCache;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -59,20 +61,19 @@ public class SpringSecurityConfiguration {
         this.authenticationManager = authenticationManager;
     }
 
+    private static SubsystemOriginCache.Urls subsystemUrls(ObjectProvider<SubsystemOriginCache> originCache) {
+        SubsystemOriginCache cache = originCache.getIfAvailable();
+        return cache == null ? SubsystemOriginCache.Urls.EMPTY : cache.getUrls();
+    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
             .headers(headers -> headers
                 // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
                 // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
-                .contentSecurityPolicy(csp -> csp.policyDirectives(
-                    "default-src 'self'; " +
-                    "script-src 'self' 'unsafe-inline'; " +
-                    "style-src 'self' 'unsafe-inline'; " +
-                    "img-src 'self' data:; " +
-                    "frame-ancestors 'none'; " +
-                    "form-action 'self'"
-                ))
+                // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
+                .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
             )
             .authorizeHttpRequests(
                     auth ->
