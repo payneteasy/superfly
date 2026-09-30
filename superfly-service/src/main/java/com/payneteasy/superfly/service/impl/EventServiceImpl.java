@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.LongSupplier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -25,7 +27,18 @@ public class EventServiceImpl implements EventService, DisposableBean {
     private EventDao eventDao;
     private static final int DELAY_TIME_MS = 500;
     private static final int EVENTS_LIMIT = 200;
+    // the paynet client waits for the response for 90 s
+    static final long MAX_WAIT_TIME_MS = 75_000;
     private final AtomicBoolean isShutdown = new AtomicBoolean(false);
+
+    @FunctionalInterface
+    interface Sleeper {
+        void sleep(long millis) throws InterruptedException;
+    }
+
+    // test seams
+    LongSupplier clock = System::currentTimeMillis;
+    Sleeper sleeper = Thread::sleep;
 
     @Override
     public void destroy() throws Exception {
@@ -37,18 +50,21 @@ public class EventServiceImpl implements EventService, DisposableBean {
         this.eventDao = eventDao;
     }
 
+    // long-polling: a transaction held while sleeping would pin a REPEATABLE READ snapshot
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<Event> getEvents(Date lastEventTime, long waitTimeMs, String subsystemName) {
         List<Event> events = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
         List<Event> result = (events != null ? new ArrayList<>(events) : new ArrayList<>());
         if (result.isEmpty()) {
-            long now = System.currentTimeMillis();
-            long finishTime = now + waitTimeMs;
+            long now = clock.getAsLong();
+            long finishTime = now + Math.max(0, Math.min(waitTimeMs, MAX_WAIT_TIME_MS));
             while ((now < finishTime) && !isShutdown.get()) {
                 try {
-                    Thread.sleep(DELAY_TIME_MS);
+                    sleeper.sleep(DELAY_TIME_MS);
                 } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
+                    break;
                 }
                 final List<Event> newEvents = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
 
@@ -56,7 +72,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
                     result.addAll(newEvents);
                     break;
                 }
-                now = System.currentTimeMillis();
+                now = clock.getAsLong();
             }
         }
         return result;
