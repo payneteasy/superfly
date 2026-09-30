@@ -63,13 +63,13 @@
          provided deps on the libraries themselves. The suppressions below clear those residual
          findings with the justification "provided, not shipped transitively, not the EE10 runtime".
          Each is VERSION-PINNED so it cannot mask the in-line EE10 stack:
-           - spring-core is pinned 5.3.x (spring-core 6.2.18 is clean — must stay visible).
+           - spring-core is pinned 5.3.x (spring-core 6.2.19 is clean — must stay visible).
            - spring-security is pinned 5.8.x: CVE-2026-22746 / -22748 are SHARED with the open EE10
              6.4.13 finding; a cve-only or 6.4-matching suppress would hide a real EE10 issue.
          ============================================================================ -->
 
     <!-- Spring Framework 5.3.x jars (EE8 provided): not exported transitively; not the EE10 runtime
-         (Spring Framework 6.2.18 carries none of these). dependency-check attributes these Spring
+         (Spring Framework 6.2.19 carries none of these). dependency-check attributes these Spring
          Framework CVEs to whichever 5.3.x jar matches the spring_framework CPE (spring-core AND the
          transitive spring-jcl), so the gav is broadened to org.springframework:spring-*:5.3.x.
          Pinned to 5.3 and to the org.springframework groupId so the in-line 6.x stack and the
@@ -77,7 +77,7 @@
     <suppress>
         <notes><![CDATA[
         Spring Framework 5.3.x jars (EE8): provided in superfly-spring-security-ee8, not exported
-        transitively to consumers and not part of the EE10 server runtime (Spring Framework 6.2.18
+        transitively to consumers and not part of the EE10 server runtime (Spring Framework 6.2.19
         is unaffected). Covers spring-core and its transitive spring-jcl, both flagged against the
         same spring_framework CPE at 5.3.39. Version-pinned to 5.3 so the in-line 6.x stack is not masked.
         ]]></notes>

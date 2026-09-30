@@ -35,7 +35,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 # ─────────────────────────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-alpine AS production
 
-ARG JETTY_VERSION=12.0.32
+ARG JETTY_VERSION=12.0.36
 ENV JETTY_HOME=/opt/jetty
 ENV JETTY_BASE=/var/lib/jetty
 ENV JETTY_PORT=8080

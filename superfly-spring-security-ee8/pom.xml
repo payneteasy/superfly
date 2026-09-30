@@ -17,7 +17,7 @@
             <!--
                 Pin Spring Framework to 5.x AND force provided scope for EE8 compatibility.
 
-                Version: parent POM defines spring.version=6.2.18 in dependencyManagement, which would
+                Version: parent POM defines spring.version=6.2.19 in dependencyManagement, which would
                 otherwise override the Spring 5.x transitive deps pulled by spring-security-*:${spring-security5.version}.
                 These entries restore the correct 5.x versions for the EE8 (javax.servlet) environment.
 
