@@ -26,6 +26,11 @@
             <artifactId>superfly-client-ee10</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: Core Superfly Spring Security model shared between EE8/EE10 -->
+            <groupId>com.payneteasy.superfly</groupId>
+            <artifactId>superfly-spring-security-core</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: Core client library for interaction with SuperFly services (servlet-API-free) -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client-core</artifactId>
