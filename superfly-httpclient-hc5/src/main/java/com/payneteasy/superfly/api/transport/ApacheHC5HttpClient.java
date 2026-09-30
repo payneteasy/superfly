@@ -34,7 +34,10 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +54,9 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  *
  * <p>SSL/mTLS настраивается один раз при создании через {@link Builder#sslContext(SSLContext)}.
- * Per-request поля {@code sslSocketFactory} и {@code hostnameVerifier} из {@link HttpRequestParameters}
- * игнорируются — HC5 использует pooled connections с одним SSL-контекстом.
+ * Per-request поля {@code sslSocketFactory}, {@code hostnameVerifier} и {@code trustManager}
+ * из {@link HttpRequestParameters} не поддерживаются (HC5 использует pooled connections с одним
+ * SSL-контекстом) — непустое значение вызывает {@link IllegalArgumentException}.
  *
  * <p>Использование:
  * <pre>{@code
@@ -110,6 +114,8 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
 
         this.httpClient = HttpClients.custom()
                 .setConnectionManager(connManager)
+                .disableAutomaticRetries()
+                .disableRedirectHandling()
                 .evictIdleConnections(TimeValue.of(builder.idleEvictionSec, TimeUnit.SECONDS))
                 .build();
 
@@ -127,6 +133,8 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
         if (closed) {
             throw new IllegalStateException("ApacheHC5HttpClient is already closed");
         }
+
+        rejectPerRequestSsl(params);
 
         String url = request.getUrl();
         long startMs = System.currentTimeMillis();
@@ -162,13 +170,30 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
             throw new HttpReadException("Response timeout from " + url, e);
 
         } catch (IOException e) {
-            String msg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
-            if (msg.contains("connect") || msg.contains("refused") || msg.contains("unreachable")) {
+            if (isConnectFailure(e)) {
                 LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
                 throw new HttpConnectException("Connection failed to " + url, e);
             }
             LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
             throw new HttpReadException("I/O error communicating with " + url, e);
+        }
+    }
+
+    private static boolean isConnectFailure(IOException e) {
+        return e instanceof ConnectException
+                || e instanceof UnknownHostException
+                || e instanceof NoRouteToHostException
+                || e instanceof ConnectTimeoutException;
+    }
+
+    /** SSL is pool-wide here; silently ignoring per-request SSL settings would weaken the caller's intended TLS checks. */
+    private static void rejectPerRequestSsl(HttpRequestParameters params) {
+        if (params == null) {
+            return;
+        }
+        if (params.getSslSocketFactory() != null || params.getHostnameVerifier() != null || params.getTrustManager() != null) {
+            throw new IllegalArgumentException("Per-request sslSocketFactory/hostnameVerifier/trustManager are not supported; "
+                    + "configure them on ApacheHC5HttpClient.builder()");
         }
     }
 
@@ -284,6 +309,7 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
             HttpTimeouts timeouts = params.getTimeouts();
             RequestConfig requestConfig = RequestConfig.custom()
                     .setConnectTimeout(Timeout.ofMilliseconds(timeouts.getConnectTimeoutMs()))
+                    .setConnectionRequestTimeout(Timeout.ofMilliseconds(timeouts.getConnectTimeoutMs()))
                     .setResponseTimeout(Timeout.ofMilliseconds(timeouts.getReadTimeoutMs()))
                     .build();
             context.setRequestConfig(requestConfig);
