@@ -32,6 +32,85 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
     public SuperflyUsernamePasswordAuthenticationProvider() {
     }
 
+    /**
+     * Authenticates user based on token type and authentication flow.
+     *
+     * <p>Supported authentication scenarios:</p>
+     *
+     * <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; font-family: Arial, sans-serif;">
+     *   <thead>
+     *     <tr>
+     *       <th>Second Factory parameter</th>
+     *       <th>Requires OTP</th>
+     *       <th>OTP Type</th>
+     *       <th>Result</th>
+     *       <th style="text-align: left;">Token / Action</th>
+     *     </tr>
+     *   </thead>
+     *   <tbody>
+     *     <tr>
+     *       <td>No</td>
+     *       <td>False</td>
+     *       <td>NONE</td>
+     *       <td>Authentication success</td>
+     *       <td>{@link UsernamePasswordCheckedToken}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>Yes</td>
+     *       <td>False</td>
+     *       <td>NONE</td>
+     *       <td>Authentication success</td>
+     *       <td>{@link UsernamePasswordCheckedToken}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>No</td>
+     *       <td>False</td>
+     *       <td>NOT NONE</td>
+     *       <td>Authentication success</td>
+     *       <td>{@link UsernamePasswordCheckedToken}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>Yes</td>
+     *       <td>False</td>
+     *       <td>NOT NONE</td>
+     *       <td>Proceed with OTP validation</td>
+     *       <td>{@code checkOtp()}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>Yes</td>
+     *       <td>True</td>
+     *       <td>NONE</td>
+     *       <td>Authentication failure</td>
+     *       <td>{@link BadCredentialsException}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>No</td>
+     *       <td>True</td>
+     *       <td>NONE</td>
+     *       <td>Authentication failure</td>
+     *       <td>{@link BadCredentialsException}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>No</td>
+     *       <td>True</td>
+     *       <td>NOT NONE</td>
+     *       <td>Redirect to OTP screen</td>
+     *       <td>{@link OtpUsernamePasswordCheckedToken}</td>
+     *     </tr>
+     *     <tr>
+     *       <td>Yes</td>
+     *       <td>True</td>
+     *       <td>NOT NONE</td>
+     *       <td>Proceed with OTP validation</td>
+     *       <td>{@code checkOtp()}</td>
+     *     </tr>
+     *   </tbody>
+     * </table>
+     *
+     * @param authentication authentication token containing credentials
+     * @return fully authenticated token with authorities
+     * @throws AuthenticationException if authentication fails at any stage
+     */
     public Authentication authenticate(Authentication authentication)
             throws AuthenticationException {
         if (authentication instanceof UsernamePasswordAuthRequestInfoAuthenticationToken authRequest) {
