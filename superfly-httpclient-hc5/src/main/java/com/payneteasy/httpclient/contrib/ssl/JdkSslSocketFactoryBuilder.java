@@ -3,6 +3,9 @@ package com.payneteasy.httpclient.contrib.ssl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -34,6 +37,8 @@ public class JdkSslSocketFactoryBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(JdkSslSocketFactoryBuilder.class);
 
+    public static final String DEFAULT_KEYSTORE_TYPE = "PKCS12";
+
     private JdkSslSocketFactoryBuilder() {}
 
     /**
@@ -62,7 +67,7 @@ public class JdkSslSocketFactoryBuilder {
             return null;
         }
         LOG.debug("Building X509TrustManager from trustStore={}", trustStoreUrl);
-        KeyStore ks = loadKeyStore(trustStoreUrl, trustStorePassword);
+        KeyStore ks = loadKeyStore(trustStoreUrl, trustStorePassword, DEFAULT_KEYSTORE_TYPE);
         TrustManager[] managers = buildTrustManagers(ks);
         for (TrustManager m : managers) {
             if (m instanceof X509TrustManager) {
@@ -86,8 +91,7 @@ public class JdkSslSocketFactoryBuilder {
                 java.security.cert.Certificate[] certs = session.getPeerCertificates();
                 if (certs.length > 0 && certs[0] instanceof X509Certificate) {
                     X509Certificate cert = (X509Certificate) certs[0];
-                    String dn = cert.getSubjectX500Principal().getName();
-                    String cn = extractCn(dn);
+                    String cn = extractCn(cert.getSubjectX500Principal().getName());
                     boolean ok = cn != null && allowed.contains(cn);
                     LOG.debug("CN hostname check: host={}, cert-cn={}, allowed={}, result={}", hostname, cn, allowed, ok);
                     return ok;
@@ -99,11 +103,10 @@ public class JdkSslSocketFactoryBuilder {
         };
     }
 
-    private static String extractCn(String dn) {
-        for (String part : dn.split(",")) {
-            String trimmed = part.trim();
-            if (trimmed.startsWith("CN=")) {
-                return trimmed.substring(3);
+    private static String extractCn(String dn) throws InvalidNameException {
+        for (Rdn rdn : new LdapName(dn).getRdns()) {
+            if ("CN".equalsIgnoreCase(rdn.getType())) {
+                return String.valueOf(rdn.getValue());
             }
         }
         return null;
@@ -121,15 +124,24 @@ public class JdkSslSocketFactoryBuilder {
             URL keyStoreUrl, String keyStorePassword,
             URL trustStoreUrl, String trustStorePassword
     ) throws GeneralSecurityException, IOException {
+        return buildSslContext(keyStoreUrl, keyStorePassword, trustStoreUrl, trustStorePassword, DEFAULT_KEYSTORE_TYPE);
+    }
+
+    /** Same as above with an explicit keystore type (e.g. {@code PKCS12}, {@code JKS}) for both stores. */
+    public static SSLContext buildSslContext(
+            URL keyStoreUrl, String keyStorePassword,
+            URL trustStoreUrl, String trustStorePassword,
+            String keyStoreType
+    ) throws GeneralSecurityException, IOException {
         KeyManager[] keyManagers = null;
         if (keyStoreUrl != null) {
-            KeyStore ks = loadKeyStore(keyStoreUrl, keyStorePassword);
+            KeyStore ks = loadKeyStore(keyStoreUrl, keyStorePassword, keyStoreType);
             keyManagers = buildKeyManagers(ks, keyStorePassword);
         }
 
         TrustManager[] trustManagers = null;
         if (trustStoreUrl != null) {
-            KeyStore ts = loadKeyStore(trustStoreUrl, trustStorePassword);
+            KeyStore ts = loadKeyStore(trustStoreUrl, trustStorePassword, keyStoreType);
             trustManagers = buildTrustManagers(ts);
         }
 
@@ -139,9 +151,9 @@ public class JdkSslSocketFactoryBuilder {
         return ctx;
     }
 
-    private static KeyStore loadKeyStore(URL url, String password) throws GeneralSecurityException, IOException {
-        LOG.debug("Loading KeyStore from {}", url);
-        KeyStore ks = KeyStore.getInstance("JKS");
+    private static KeyStore loadKeyStore(URL url, String password, String type) throws GeneralSecurityException, IOException {
+        LOG.debug("Loading KeyStore from {} type={}", url, type);
+        KeyStore ks = KeyStore.getInstance(type);
         try (InputStream is = url.openStream()) {
             ks.load(is, password != null ? password.toCharArray() : null);
         }
