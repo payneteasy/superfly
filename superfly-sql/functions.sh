@@ -33,7 +33,7 @@ logWarn() {
 # Trap errors globally to handle them
 trap 'logError "Error occurred in ${BASH_SOURCE[0]} at line $LINENO"' ERR
 
-# Custom error handler without exiting the script
+# Aborts the calling migration script so that a failed step stops the chain
 die() {
     errorCode=$?
     errorMessage=$1
@@ -41,7 +41,7 @@ die() {
     if [ $errorCode != 0 ]
     then
         logError ".ERROR.: $errorCode - $errorMessage"
-        return $errorCode
+        exit $errorCode
     fi
 }
 
@@ -90,7 +90,9 @@ runScript() {
         expandedScript=$(mktemp)
         expandSourceCommands "$aScript" "$expandedScript"
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_USERNAME -p$SSO_DB_PASSWORD $SSO_DB_DATABASE --show-warnings < "$expandedScript" > "$aScriptLog"
+        rc=$?
         rm -f "$expandedScript"
+        (exit $rc)
     else
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_USERNAME -p$SSO_DB_PASSWORD $SSO_DB_DATABASE --show-warnings < $aScript > "$aScriptLog"
     fi
@@ -116,7 +118,9 @@ runScriptNoDb() {
         expandedScript=$(mktemp)
         expandSourceCommands "$aScript" "$expandedScript"
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_USERNAME -p$SSO_DB_PASSWORD --show-warnings < "$expandedScript" > "$aScriptLog"
+        rc=$?
         rm -f "$expandedScript"
+        (exit $rc)
     else
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_USERNAME -p$SSO_DB_PASSWORD --show-warnings < $aScript > "$aScriptLog"
     fi
@@ -142,7 +146,9 @@ runRoot() {
         expandedScript=$(mktemp)
         expandSourceCommands "$aScript" "$expandedScript"
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_ROOT -p$SSO_DB_ROOT_PASSWORD --show-warnings < "$expandedScript" > "$aScriptLog"
+        rc=$?
         rm -f "$expandedScript"
+        (exit $rc)
     else
         mysql --default-character-set=utf8mb4 --protocol=TCP --port $SSO_DB_PORT -h $SSO_DB_HOST -b -vv -u $SSO_DB_ROOT -p$SSO_DB_ROOT_PASSWORD --show-warnings < $aScript > "$aScriptLog"
     fi
