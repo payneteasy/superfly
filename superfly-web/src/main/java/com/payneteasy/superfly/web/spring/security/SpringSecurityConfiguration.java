@@ -9,6 +9,7 @@ import com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationPr
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
+import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
@@ -56,11 +57,14 @@ public class SpringSecurityConfiguration {
     private final SuperflyProperties    properties;
     private final LoggerSink            loggerSink;
     private final AuthenticationManager authenticationManager;
+    private final LocalSecurityService localSecurityService;
 
-    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager) {
+    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager,
+                                       LocalSecurityService localSecurityService) {
         this.properties = properties;
         this.loggerSink = loggerSink;
         this.authenticationManager = authenticationManager;
+        this.localSecurityService = localSecurityService;
     }
 
     private static SubsystemOriginCache.Urls subsystemUrls(ObjectProvider<SubsystemOriginCache> originCache) {
@@ -195,6 +199,7 @@ public class SpringSecurityConfiguration {
     @Bean
     public SuperflyInitOTPAuthenticationProcessingFilter initOtpAuthenticationProcessingFilter() {
         SuperflyInitOTPAuthenticationProcessingFilter filter = new SuperflyInitOTPAuthenticationProcessingFilter();
+        filter.setLocalSecurityService(localSecurityService);
         filter.setAuthenticationManager(authenticationManager);
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
         filter.setCsrfValidator(csrfValidator());
