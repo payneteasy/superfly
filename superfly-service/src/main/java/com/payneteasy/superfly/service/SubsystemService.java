@@ -7,6 +7,8 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 
 /**
  * Service for subsystems.
@@ -85,4 +87,10 @@ public interface SubsystemService {
      * @return main token for subsystem
      */
     String generateMainSubsystemToken();
+
+    /**
+     *
+     * @return key pair data for subsystem
+     */
+    KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm);
 }

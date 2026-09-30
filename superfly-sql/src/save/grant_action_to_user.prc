@@ -22,29 +22,35 @@ create procedure grant_action_to_user (i_subsystem_name varchar(32),
     -- remove old actions
     
     delete ura
-      from role_actions ra
+      from user_role_actions ura
              join
-                 user_role_actions ura
-               on ura.ract_ract_id = ra.ract_id
+               role_actions ra
+             on ra.ract_id = ura.ract_ract_id
              join
                actions a
              on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = v_ssys_id
-                and ta.action_name = i_action_name
-             join users u on u.user_id=ura.user_user_id 
-                and u.user_name = i_user_name     
+                and a.action_name = i_action_name
+             join users u on u.user_id = ura.user_user_id
+                and u.user_name = i_user_name
              ;
 
     insert into user_role_actions
           (
              user_user_id, ract_ract_id
           )
-    select u.user_id,ra.ract_id from role_actions ra
+    select u.user_id, ra.ract_id
+      from       users u
+               join
+                 user_roles ur
+               on ur.user_user_id = u.user_id
              join
-               actions a
-             on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = v_ssys_id
-                and ta.action_name = i_action_name
-             join users u on u.user_id=ura.user_user_id 
-                and u.user_name = i_user_name
+               role_actions ra
+             on ra.role_role_id = ur.role_role_id
+           join
+             actions a
+           on ra.actn_actn_id = a.actn_id and a.ssys_ssys_id = v_ssys_id
+              and a.action_name = i_action_name
+     where u.user_name = i_user_name
              ;
           
           

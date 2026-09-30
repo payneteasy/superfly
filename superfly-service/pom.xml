@@ -88,14 +88,9 @@
             <artifactId>aspectjweaver</artifactId>
         </dependency>
         <dependency>
-            <!--Justification: HTTP requests handling library. -->
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
+            <!--Justification: IHttpClient transport abstraction for delivering notification callbacks. -->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-api</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Velocity template engine support-->
@@ -125,6 +120,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: A high performance caching library for Java -->
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
     </dependencies>
 </project>

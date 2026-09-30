@@ -5,22 +5,23 @@ import java.util.List;
 import java.util.UUID;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
-import com.payneteasy.superfly.service.JavaMailSenderPool;
+import com.payneteasy.superfly.service.*;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import com.payneteasy.superfly.utils.RandomGUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
-import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.NotificationService;
-import com.payneteasy.superfly.service.SubsystemService;
 
 @Service
 @Transactional
@@ -32,6 +33,8 @@ public class SubsystemServiceImpl implements SubsystemService {
     private NotificationService notificationService;
     private LoggerSink loggerSink;
     private JavaMailSenderPool javaMailSenderPool;
+    private RemoteAuthCryptoService remoteAuthCryptoService;
+    private SubsystemOriginCache subsystemOriginCache;
 
     @Autowired
     public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -39,8 +42,18 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     @Autowired
+    public void setSubsystemOriginCache(SubsystemOriginCache subsystemOriginCache) {
+        this.subsystemOriginCache = subsystemOriginCache;
+    }
+
+    @Autowired
     public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
+    }
+
+    @Autowired
+    public void setRemoteAuthCryptoService(RemoteAuthCryptoService remoteAuthCryptoService) {
+        this.remoteAuthCryptoService = remoteAuthCryptoService;
     }
 
     @Autowired
@@ -56,6 +69,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     public RoutineResult createSubsystem(UISubsystem subsystem) {
         subsystem.setSubsystemToken(generateMainSubsystemToken());
         RoutineResult result = subsystemDao.createSubsystem(subsystem);
+        invalidateOriginCache();
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
         return result;
@@ -63,6 +77,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     public RoutineResult deleteSubsystem(Long subsystemId) {
         RoutineResult result = subsystemDao.deleteSubsystem(subsystemId);
+        invalidateOriginCache();
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
         }
@@ -77,6 +92,7 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     public RoutineResult updateSubsystem(UISubsystem subsystem) {
         RoutineResult result = subsystemDao.updateSubsystem(subsystem);
+        invalidateOriginCache();
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
         }
@@ -103,6 +119,23 @@ public class SubsystemServiceImpl implements SubsystemService {
                 subsystemIdentifier, generateUniqueSubsystemToken());
     }
 
+    // After commit: otherwise a concurrent reload could re-cache the pre-commit state for the whole TTL.
+    private void invalidateOriginCache() {
+        if (subsystemOriginCache == null) {
+            return;
+        }
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    subsystemOriginCache.invalidate();
+                }
+            });
+        } else {
+            subsystemOriginCache.invalidate();
+        }
+    }
+
     private String generateUniqueSubsystemToken() {
         return "ST-" + new RandomGUID().toString().replaceAll("-", "");
     }
@@ -110,5 +143,10 @@ public class SubsystemServiceImpl implements SubsystemService {
     @Override
     public String generateMainSubsystemToken() {
         return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
+        return remoteAuthCryptoService.generateKeyPair(algorithm);
     }
 }

@@ -1,8 +1,7 @@
 package com.payneteasy.superfly.web.security.securehandler;
 
 import java.nio.charset.Charset;
-
-import static org.apache.commons.ssl.Base64.decodeBase64;
+import java.util.Base64;
 
 public class BasicAuthorizationParser implements IAuthorizationParser {
 
@@ -18,7 +17,7 @@ public class BasicAuthorizationParser implements IAuthorizationParser {
 
         String base64 = tokenizer.next("base64");
 
-        Tokenizer userPassTokenizer = new Tokenizer(new String(decodeBase64(base64), Charset.defaultCharset()), ":");
+        Tokenizer userPassTokenizer = new Tokenizer(new String(Base64.getDecoder().decode(base64), Charset.defaultCharset()), ":");
         return new AuthorizationBearer(
                 userPassTokenizer.next("user")
                 , userPassTokenizer.next("password")

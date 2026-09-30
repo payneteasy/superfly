@@ -10,7 +10,10 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
                                               i_subsystem_token varchar(64),
                                               i_subsystem_url varchar(255),
                                               i_landing_url varchar(255),
-                                              i_login_form_css_url varchar(255)
+                                              i_login_form_css_url varchar(255),
+                                              i_private_key text,
+                                              i_public_key text,
+                                              i_encryption_algorithm varchar(16)
 )
  main_sql:
   begin
@@ -24,7 +27,11 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
            subsystem_token = i_subsystem_token,
            subsystem_url = i_subsystem_url,
            landing_url = i_landing_url,
-           login_form_css_url = i_login_form_css_url
+           login_form_css_url = i_login_form_css_url,
+           -- UI does not load the stored key (ui_get_subsystem), null means "keep", a value comes from key generation
+           private_key = coalesce(i_private_key, private_key),
+           public_key = i_public_key,
+           encryption_algorithm = i_encryption_algorithm
      where ssys_id = i_ssys_id;
 
     select 'OK' status, null error_message;

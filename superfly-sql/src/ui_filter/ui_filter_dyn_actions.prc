@@ -11,6 +11,10 @@ create procedure ui_filter_dyn_actions(i_ssys_list text,
     declare v_conditions   text default '';
 
     if i_ssys_list is not null then
+      if i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+        signal sqlstate '45000' set message_text = 'invalid subsystem list';
+      end if;
+
       set v_conditions   =
             concat(v_conditions, ' and a.ssys_ssys_id in (', i_ssys_list, ')');
     end if;
@@ -20,9 +24,9 @@ create procedure ui_filter_dyn_actions(i_ssys_list text,
                  '  from actions a, subsystems ss ',
                  ' where a.ssys_ssys_id = ss.ssys_id ',
                  v_conditions,
-                 '       and a.action_name like "',
-                 coalesce(i_action_name, ''),
-                 '%" ',
+                 '       and a.action_name like ',
+                 quote(concat(coalesce(i_action_name, ''), '%')),
+                 ' ',
                  'order by a.action_name ',
                  ' limit ',
                  i_start_from,

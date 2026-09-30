@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.notification.strategy;
 
-import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -19,19 +18,13 @@ public class SimpleSendStrategy extends AbstractHttpNotificationSendStrategy {
 
     public void send(final LogoutNotification notification)
             throws NotificationException {
-        doCall(notification.getCallbackUri(), Notifications.LOGOUT, new ParameterSetter() {
-            public void setParameters(PostMethod httpMethod) {
-                httpMethod.setParameter("superflyLogoutSessionIds",
-                        StringUtils.collectionToCommaDelimitedString(notification.getSessionIds()));
-            }
-        });
+        doCall(notification.getCallbackUri(), Notifications.LOGOUT, params ->
+                params.put("superflyLogoutSessionIds",
+                        StringUtils.collectionToCommaDelimitedString(notification.getSessionIds())));
     }
 
     public void send(final UsersChangedNotification notification)
             throws NotificationException {
-        doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, new ParameterSetter() {
-            public void setParameters(PostMethod httpMethod) {
-            }
-        });
+        doCall(notification.getCallbackUri(), Notifications.USERS_CHANGED, params -> { });
     }
 }

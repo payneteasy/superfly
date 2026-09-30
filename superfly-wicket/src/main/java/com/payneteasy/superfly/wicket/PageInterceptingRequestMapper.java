@@ -34,7 +34,13 @@ public class PageInterceptingRequestMapper implements IRequestMapper {
 
     @Override
     public int getCompatibilityScore(Request request) {
-        return delegate.getCompatibilityScore(request);
+        try {
+            return delegate.getCompatibilityScore(request);
+        } catch (RuntimeException e) {
+            // CryptoMapper может выбрасывать исключения при попытке расшифровать незашифрованные URL
+            // (например, статические ресурсы CSS, JS). В этом случае возвращаем 0 - низкий compatibility score
+            return 0;
+        }
     }
 
     @Override

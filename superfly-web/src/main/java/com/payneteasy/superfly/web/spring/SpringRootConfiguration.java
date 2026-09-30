@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         WebConfig.class,
         SpringSecurityConfiguration.class,
         AopConfig.class,
-        QuartzConfig.class,
+        TaskSchedulerConfig.class,
+        ScheduledTasksConfig.class,
 })
 @EnableTransactionManagement
 public class SpringRootConfiguration {

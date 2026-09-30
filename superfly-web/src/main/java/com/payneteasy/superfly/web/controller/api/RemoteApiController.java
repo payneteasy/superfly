@@ -52,6 +52,7 @@ public class RemoteApiController {
             bodyBuilder = ResponseEntity.accepted();
             result= ExceptionWrapper.from(e.getTargetException());
         } catch (Exception e) {
+            log.error("[FIX] Unhandled error in remoting for method={}: {}", methodName, e.getMessage(), e);
             bodyBuilder = ResponseEntity.internalServerError();
             result = ExceptionWrapper.from(e);
         }

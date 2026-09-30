@@ -6,6 +6,7 @@ import java.util.List;
 import com.payneteasy.superfly.model.ActionToSave;
 import com.payneteasy.superfly.model.ui.action.UIActionForFilter;
 import com.payneteasy.superfly.model.ui.action.UIActionForList;
+import com.payneteasy.superfly.model.ui.action.UIActionWithGroupForList;
 import com.payneteasy.superfly.utils.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,6 +65,42 @@ public class ActionDaoTest extends AbstractDaoTest {
         Assert.assertTrue("Must get some action", count > 0);
         actionDao.getActionCount("someActionName", "someActionDescription",
                 "1,2");
+    }
+
+    @Test
+    public void testGetActionsWithGroupIncludesActionWithoutGroup() {
+        List<UIActionWithGroupForList> actions = actionDao.getActionsWithGroup(0,
+                Integer.MAX_VALUE, 1, "asc", null, null, null);
+        boolean ungroupedFound = false;
+        for (UIActionWithGroupForList action : actions) {
+            if (action.getGroupName() == null) {
+                ungroupedFound = true;
+                break;
+            }
+        }
+        Assert.assertTrue("Actions not belonging to any group must be listed", ungroupedFound);
+    }
+
+    @Test
+    public void testGetActionsWithGroupCountMatchesList() {
+        List<UIActionWithGroupForList> actions = actionDao.getActionsWithGroup(0,
+                Integer.MAX_VALUE, 1, "asc", null, null, null);
+        Assert.assertEquals("Count must match the number of listed rows",
+                actions.size(), actionDao.getActionsWithGroupCount(null, null, null));
+
+        String namePart = actions.get(0).getName();
+        List<UIActionWithGroupForList> filtered = actionDao.getActionsWithGroup(0,
+                Integer.MAX_VALUE, 1, "asc", namePart, null, null);
+        Assert.assertEquals("Count must honour the action name filter",
+                filtered.size(), actionDao.getActionsWithGroupCount(namePart, null, null));
+    }
+
+    @Test
+    public void testActionNameFilterIsEscaped() {
+        Assert.assertEquals("Quote in a filter must not break the query", 0,
+                actionDao.getActionsWithGroupCount("O'Brien", null, null));
+        Assert.assertTrue("Quote in a filter must not break the query",
+                actionDao.getActionsWithGroup(0, 10, 1, "asc", "O'Brien", null, null).isEmpty());
     }
 
     @Test

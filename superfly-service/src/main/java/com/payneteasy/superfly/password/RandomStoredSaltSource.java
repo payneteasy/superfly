@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * (C) 2010
  * Skype: kuccyp
  */
-@OnPolicyCondition(Policy.PCIDSS)
+@OnPolicyCondition({Policy.NONE, Policy.PCIDSS})
 @Component
 public class RandomStoredSaltSource implements SaltSource {
 

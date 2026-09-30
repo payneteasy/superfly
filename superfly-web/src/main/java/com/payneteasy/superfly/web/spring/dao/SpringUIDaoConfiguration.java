@@ -110,6 +110,11 @@ public class SpringUIDaoConfiguration {
     }
 
     @Bean
+    public EventDao getEventDao() {
+        return createDao(EventDao.class);
+    }
+
+    @Bean
     public GroupDao getGroupDao() {
         return createDao(GroupDao.class);
     }

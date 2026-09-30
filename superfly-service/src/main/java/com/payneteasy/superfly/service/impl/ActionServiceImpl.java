@@ -39,6 +39,12 @@ public class ActionServiceImpl implements ActionService {
                 .collectionToCommaDelimitedString(subsystemIds));
     }
 
+    public long getActionsWithGroupCount(String actionName, String description,
+                                         List<Long> subsystemIds) {
+        return actionDao.getActionsWithGroupCount(actionName, description, StringUtils
+                .collectionToCommaDelimitedString(subsystemIds));
+    }
+
     public List<UIActionForList> getActions(long startFrom, long recordsCount,
                                             int orderFieldNumber, boolean asc, String actionNamePrefix,
                                             String description, List<Long> subsystemIds) {
@@ -56,8 +62,10 @@ public class ActionServiceImpl implements ActionService {
                         .collectionToCommaDelimitedString(subsystemIds));
     }
 
-    public List<UIActionForFilter> getActionForFilter() {
-        return actionDao.getActionsForFilter(null, null, 0, Integer.MAX_VALUE);
+    public List<UIActionForFilter> getActionForFilter(String actionNamePrefix,
+                                                     List<Long> subsystemIds, int recordsCount) {
+        return actionDao.getActionsForFilter(StringUtils
+                .collectionToCommaDelimitedString(subsystemIds), actionNamePrefix, 0, recordsCount);
     }
 
     public RoutineResult copyActionProperties(long actionId, long templateActionId,

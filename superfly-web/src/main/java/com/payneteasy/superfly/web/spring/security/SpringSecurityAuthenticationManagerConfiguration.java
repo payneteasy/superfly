@@ -9,10 +9,12 @@ import com.payneteasy.superfly.security.x509.X509PreAuthenticatedAuthenticationP
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.web.security.*;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,6 +28,7 @@ public class SpringSecurityAuthenticationManagerConfiguration {
     private final SuperflyProperties   properties;
     private final LocalSecurityService localSecurityService;
     private final UserDetailsService   userDetailsService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -36,7 +39,10 @@ public class SpringSecurityAuthenticationManagerConfiguration {
                 x509PreAuthenticatedAuthenticationProvider()
 
         );
-        return new ProviderManager(providers);
+        ProviderManager manager = new ProviderManager(providers);
+        // Без publisher'а ProviderManager молча глотает события — SecurityAuditApplicationListener не срабатывает.
+        manager.setAuthenticationEventPublisher(new DefaultAuthenticationEventPublisher(applicationEventPublisher));
+        return manager;
     }
 
     private AuthenticationProvider passwordAuthenticationProvider() {

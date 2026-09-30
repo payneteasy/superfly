@@ -86,6 +86,8 @@ public class UserDetailsPage extends BasePage {
         Link<Void> switchLockedStatusLink = new Link<Void>("switch-locked-status") {
             @Override
             public void onClick() {
+                PageParameters refreshParams = new PageParameters();
+                refreshParams.set("userId", String.valueOf(userId));
                 if (uiUserDetailsIModel.getObject().isAccountLocked()) {
                     String newPassword = userService.unlockUser(uiUserDetailsIModel.getObject().getId(),
                                                                 uiUserDetailsIModel.getObject().isAccountSuspended()
@@ -94,16 +96,17 @@ public class UserDetailsPage extends BasePage {
                     if (newPassword != null) {
                         message += "; temporary password is " + newPassword;
                     }
-                    info(message);
+                    getSession().info(message);
                 } else {
                     RoutineResult result = userService.lockUser(uiUserDetailsIModel.getObject().getId());
                     if (result.isOk()) {
-                        info("User locked: " + uiUserDetailsIModel.getObject()
-                                                                  .getUsername() + "; please be aware that some sessions could be expired");
+                        getSession().info("User locked: " + uiUserDetailsIModel.getObject().getUsername()
+                                + "; please be aware that some sessions could be expired");
                     } else {
-                        error("Error while trying to lock a user: " + result.getErrorMessage());
+                        getSession().error("Error while trying to lock a user: " + result.getErrorMessage());
                     }
                 }
+                setResponsePage(UserDetailsPage.class, refreshParams);
             }
         };
         switchLockedStatusLink.add(new AttributeAppender("class", new LoadableDetachableModel<String>() {

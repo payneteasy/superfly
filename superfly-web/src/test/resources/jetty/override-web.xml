@@ -21,4 +21,9 @@
         <param-name>logbackConfigLocation</param-name>
         <param-value>file:src/test/resources/logback-test.xml</param-value>
     </context-param>
+
+    <context-param>
+        <param-name>superfly-policy</param-name>
+        <param-value>none</param-value>
+    </context-param>
 </web-app>

@@ -3,6 +3,7 @@ package com.payneteasy.superfly.web.security.handler;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class JsonAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     private final Gson gson = new Gson();
@@ -24,7 +26,11 @@ public class JsonAuthenticationFailureHandler implements AuthenticationFailureHa
 
         Map<String, String> error = new HashMap<>();
         error.put("status", "error");
-        error.put("message", exception.getMessage());
+        // Exception messages can name the subsystem and tell "not found" from "no token" — keep them in
+        // the server log only, callers get the same text for every failure.
+        String reason = String.valueOf(exception.getMessage()).replaceAll("[\\r\\n\\t]", "_");
+        log.warn("Authentication failed for {}: {}", request.getRequestURI(), reason);
+        error.put("message", "Authentication failed");
 
         response.setHeader("Cache-Control", "no-store");
         response.setHeader("Pragma", "no-cache");

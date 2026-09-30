@@ -15,4 +15,5 @@ import java.io.Serializable;
 public class StickyFilters implements Serializable {
     private UISubsystemForFilter subsystem;
     private String               actionNameSubstring = "";
+    private String               roleNameSubstring   = "";
 }

@@ -28,7 +28,7 @@
         <dependency>
             <!--Justification: Spring Security integration for SuperFly authentication/authorization -->
             <groupId>com.payneteasy.superfly</groupId>
-            <artifactId>superfly-spring-security</artifactId>
+            <artifactId>superfly-spring-security-ee10</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Cryptography support for SuperFly, handling secure data operations -->
@@ -77,29 +77,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
-        <dependency>
-            <!--Justification: Quartz is a powerful and flexible job scheduling library, used for executing background tasks in Java applications -->
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-        </dependency>
-
-        <dependency>
-            <!--Justification: Required for XRemoting functionality-->
-            <groupId>com.googlecode.xremoting</groupId>
-            <artifactId>xremoting-core</artifactId>
-        </dependency>
-        <dependency>
-            <!--Justification: Provides XML serialization capabilities-->
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-        </dependency>
-
-        <dependency>
-            <!--Justification: Used for Hessian serialization-->
-            <groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-        </dependency>
-
         <!-- WICKET DEPENDENCIES -->
         <dependency>
             <!--Justification: Render html UI-->
@@ -116,6 +93,11 @@
             <!--Justification: Additional UI components for wicket framework-->
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Generates the Google Authenticator QR code locally (no third-party QR service) -->
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
             <!--Justification: Core Wicket testers for Unit Tests. -->
@@ -171,6 +153,12 @@
             <artifactId>commons-pool</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <!--Justification: Servlet API mocks for web context wiring tests -->
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <!--Justification: Logback implementation for SLF4J, provides logging capabilities -->
@@ -192,6 +180,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Jackson JSON processor -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
 
@@ -228,6 +221,17 @@
                 </excludes>
             </testResource>
         </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <!-- dev datasource (localhost:3344), used only by Start.java from src/main/webapp;
+                         in Docker the datasource comes from docker/jetty/ROOT.xml -->
+                    <packagingExcludes>WEB-INF/jetty-web.xml</packagingExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
         <finalName>superfly</finalName>
     </build>
 

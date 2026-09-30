@@ -17,12 +17,11 @@
             <artifactId>superfly-remote-api</artifactId>
         </dependency>
 
-        <!-- Access via Hessian protocol -->
+        <!-- JSON transport for the remote API -->
         <dependency>
-            <!--Justification: Used for Hessian serialization-->
-            <groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-            <optional>true</optional>
+            <!--Justification: JDK-based IHttpClient implementation used by ExternalFormSecurityFilter's JSON SSO client -->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-impl</artifactId>
         </dependency>
 
         <!-- Mustache template engine -->

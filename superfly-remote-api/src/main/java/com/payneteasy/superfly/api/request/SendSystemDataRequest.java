@@ -7,12 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.io.Serializable;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendSystemDataRequest {
+public class SendSystemDataRequest implements Serializable {
     private String                  subsystemIdentifier;
     private List<ActionDescription> actionDescriptions;
 }

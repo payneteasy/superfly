@@ -1,0 +1,44 @@
+# Version control
+.git
+.gitignore
+
+# Docker files themselves (docker/ is needed by the production stage)
+Dockerfile
+compose*.yml
+.dockerignore
+
+# Build output (rebuilt inside Docker)
+**/target/
+**/*.war
+**/*.jar
+!install/*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE and editor
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# AI Factory
+.ai-factory/
+.claude/
+AGENTS.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment files (never bake into image)
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+**/surefire-reports/
+**/failsafe-reports/

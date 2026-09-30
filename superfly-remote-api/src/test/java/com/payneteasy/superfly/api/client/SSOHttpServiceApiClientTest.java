@@ -42,88 +42,90 @@ public class SSOHttpServiceApiClientTest {
         httpClient = EasyMock.createMock(IHttpClient.class);
         serializationManager = new ApiSerializationManager();
 
-        HttpRequestParameters parameters = HttpRequestParameters.builder().build();
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(BASE_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
 
-        // Mock http client
-        client = new TestableHttpServiceApiClient(
-                parameters,
-                BASE_URL,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        // Inject mock transport directly via new DI constructor
+        client = new SSOHttpServiceApiClient(httpClient, config, serializationManager);
     }
 
     @Test
     public void testConstructorValidation() {
+        SSOClientConfig validConfig = SSOClientConfig.builder()
+                .baseUrl(BASE_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+
         // Valid arguments
-        new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                BASE_URL,
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        new SSOHttpServiceApiClient(httpClient, validConfig, serializationManager);
 
-        // Check for null and empty values
+        // null IHttpClient → NPE
         assertThrows(NullPointerException.class, () ->
-                new SSOHttpServiceApiClient(
-                        null,
-                        BASE_URL,
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                new SSOHttpServiceApiClient(null, validConfig, serializationManager)
         );
 
+        // null SSOClientConfig → NPE
         assertThrows(NullPointerException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        BASE_URL,
-                        null,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                new SSOHttpServiceApiClient(httpClient, null, serializationManager)
         );
 
+        // null ApiSerializationManager → NPE
+        assertThrows(NullPointerException.class, () ->
+                new SSOHttpServiceApiClient(httpClient, validConfig, null)
+        );
+
+        // SSOClientConfig validation: null baseUrl
         assertThrows(IllegalArgumentException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        null,
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                SSOClientConfig.builder()
+                        .baseUrl(null)
+                        .subsystemName(SUBSYSTEM_NAME)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
+        // SSOClientConfig validation: empty baseUrl
         assertThrows(IllegalArgumentException.class, () ->
-                new SSOHttpServiceApiClient(
-                        HttpRequestParameters.builder().build(),
-                        "",
-                        SUBSYSTEM_NAME,
-                        SUBSYSTEM_TOKEN,
-                        serializationManager
-                )
+                SSOClientConfig.builder()
+                        .baseUrl("")
+                        .subsystemName(SUBSYSTEM_NAME)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
-        // Check that URL without trailing / is handled correctly
-        SSOHttpServiceApiClient client1 = new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                "http://example.com/api",
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
+        // SSOClientConfig validation: null subsystemName
+        assertThrows(NullPointerException.class, () ->
+                SSOClientConfig.builder()
+                        .baseUrl(BASE_URL)
+                        .subsystemName(null)
+                        .defaultParameters(HttpRequestParameters.builder().build())
+                        .build()
         );
 
-        // Check that URL with trailing / is handled correctly
-        SSOHttpServiceApiClient client2 = new SSOHttpServiceApiClient(
-                HttpRequestParameters.builder().build(),
-                "http://example.com/api/",
-                SUBSYSTEM_NAME,
-                SUBSYSTEM_TOKEN,
-                serializationManager
-        );
+        // URL without trailing / handled correctly
+        SSOClientConfig cfg1 = SSOClientConfig.builder()
+                .baseUrl("https://example.com/api")
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        assertEquals("https://example.com/api", cfg1.getBaseUrl());
+
+        // URL with trailing / is trimmed
+        SSOClientConfig cfg2 = SSOClientConfig.builder()
+                .baseUrl("https://example.com/api/")
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+        assertEquals("https://example.com/api", cfg2.getBaseUrl());
     }
+
 
     @Test
     public void testAuthenticate_Success() throws SsoAuthException, HttpWriteException, HttpConnectException, HttpReadException {
@@ -538,6 +540,182 @@ public class SSOHttpServiceApiClientTest {
         }
     }
 
+    // ── new tests: per-endpoint timeouts, AutoCloseable, ExceptionWrapper for 4xx/5xx ──
+
+    @Test
+    public void testPerEndpointTimeoutOverride() throws Exception {
+        HttpRequestParameters defaultParams = HttpRequestParameters.builder()
+                .timeouts(new com.payneteasy.http.client.api.HttpTimeouts(5_000, 30_000)).build();
+        HttpRequestParameters eventsParams  = HttpRequestParameters.builder()
+                .timeouts(new com.payneteasy.http.client.api.HttpTimeouts(5_000, 90_000)).build();
+        HttpRequestParameters authParams    = HttpRequestParameters.builder()
+                .timeouts(new com.payneteasy.http.client.api.HttpTimeouts(5_000, 10_000)).build();
+
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(BASE_URL)
+                .subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(defaultParams)
+                .endpointParameter(Endpoint.GET_EVENTS,   eventsParams)
+                .endpointParameter(Endpoint.AUTHENTICATE, authParams)
+                .build();
+
+        SSOHttpServiceApiClient perEndpointClient =
+                new SSOHttpServiceApiClient(httpClient, config, serializationManager);
+
+        Capture<HttpRequestParameters> paramsCapture = newCapture();
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), capture(paramsCapture)))
+                .andReturn(createSuccessResponse("[]"));
+        replay(httpClient);
+
+        perEndpointClient.getEvents(com.payneteasy.superfly.api.request.GetEventsRequest.builder().build());
+
+        assertSame("GET_EVENTS must use eventsParams", eventsParams, paramsCapture.getValue());
+        verify(httpClient);
+
+        // Now AUTHENTICATE should use authParams
+        Capture<HttpRequestParameters> authCapture = newCapture();
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), capture(authCapture)))
+                .andReturn(createSuccessResponse(serializationManager.serialize(createTestSSOUser())));
+        replay(httpClient);
+
+        perEndpointClient.authenticate(new AuthenticateRequest("user", "pass"));
+
+        assertSame("AUTHENTICATE must use authParams", authParams, authCapture.getValue());
+        verify(httpClient);
+
+        // sendSystemData has no override → defaultParams
+        Capture<HttpRequestParameters> defaultCapture = newCapture();
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), capture(defaultCapture)))
+                .andReturn(createSuccessResponse("null"));
+        replay(httpClient);
+
+        perEndpointClient.sendSystemData(
+                com.payneteasy.superfly.api.request.SendSystemDataRequest.builder().build());
+
+        assertSame("SEND_SYSTEM_DATA must fall back to defaultParams", defaultParams, defaultCapture.getValue());
+        verify(httpClient);
+    }
+
+    @Test
+    public void testAutoCloseable_DelegatesToTransport() throws Exception {
+        CloseableHttpClient closeableTransport = createMock(CloseableHttpClient.class);
+        closeableTransport.close();
+        expectLastCall().once();
+        replay(closeableTransport);
+
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(BASE_URL).subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+
+        try (SSOHttpServiceApiClient c =
+                     new SSOHttpServiceApiClient(closeableTransport, config, serializationManager)) {
+            // use try-with-resources
+            assertNotNull(c);
+        }
+
+        verify(closeableTransport);
+    }
+
+    @Test
+    public void testAutoCloseable_NonCloseableTransport() throws Exception {
+        // httpClient mock is NOT AutoCloseable — close() should be a no-op
+        SSOClientConfig config = SSOClientConfig.builder()
+                .baseUrl(BASE_URL).subsystemName(SUBSYSTEM_NAME)
+                .subsystemToken(SUBSYSTEM_TOKEN)
+                .defaultParameters(HttpRequestParameters.builder().build())
+                .build();
+
+        try (SSOHttpServiceApiClient c =
+                     new SSOHttpServiceApiClient(httpClient, config, serializationManager)) {
+            assertNotNull(c);
+        }
+        // No verify needed — just ensure close() doesn't throw on non-AutoCloseable transport
+    }
+
+    @Test
+    public void testExceptionWrapperFor400() throws Exception {
+        // Server sends ExceptionWrapper with status 400 (real HTTP error semantics).
+        // Bug fix: previously the client threw generic SsoBadRequestException; now it
+        // recovers the typed UserExistsException.
+        ExceptionWrapper wrapper = new ExceptionWrapper(
+                "com.payneteasy.superfly.api.exceptions.UserExistsException",
+                "User foo already exists",
+                "UserExistsException: User foo already exists"
+        );
+        HttpResponse response = new HttpResponse(
+                400, "Bad Request",
+                List.of(new HttpHeader("Content-Type", ApiSerializer.CONTENT_TYPE_JSON)),
+                serializationManager.serialize(wrapper).getBytes(StandardCharsets.UTF_8)
+        );
+
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), anyObject(HttpRequestParameters.class)))
+                .andReturn(response);
+        replay(httpClient);
+
+        try {
+            client.registerUser(new UserRegisterRequest());
+            fail("Expected UserExistsException");
+        } catch (UserExistsException e) {
+            assertEquals("User foo already exists", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testExceptionWrapperFor500() throws Exception {
+        ExceptionWrapper wrapper = new ExceptionWrapper(
+                "com.payneteasy.superfly.api.exceptions.SsoSystemException",
+                "DB unavailable",
+                "SsoSystemException: DB unavailable"
+        );
+        HttpResponse response = new HttpResponse(
+                500, "Internal Server Error",
+                List.of(new HttpHeader("Content-Type", ApiSerializer.CONTENT_TYPE_JSON)),
+                serializationManager.serialize(wrapper).getBytes(StandardCharsets.UTF_8)
+        );
+
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), anyObject(HttpRequestParameters.class)))
+                .andReturn(response);
+        replay(httpClient);
+
+        try {
+            client.sendSystemData(
+                    com.payneteasy.superfly.api.request.SendSystemDataRequest.builder().build());
+            fail("Expected SsoSystemException (typed from wrapper, not generic SsoServerException)");
+        } catch (com.payneteasy.superfly.api.exceptions.SsoSystemException e) {
+            assertEquals("DB unavailable", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFallbackOn400WithoutWrapper() throws Exception {
+        // Plain-text body that is NOT a valid ExceptionWrapper JSON — fallback to status-based exception
+        HttpResponse response = createErrorResponse(400, "Bad Request from gateway");
+
+        reset(httpClient);
+        expect(httpClient.send(anyObject(HttpRequest.class), anyObject(HttpRequestParameters.class)))
+                .andReturn(response);
+        replay(httpClient);
+
+        try {
+            client.authenticate(new AuthenticateRequest("user", "pass"));
+            fail("Expected SsoBadRequestException (fallback)");
+        } catch (SsoBadRequestException e) {
+            assertTrue(e.getMessage().contains("400"));
+        }
+    }
+
+    /** Mock-friendly interface combining IHttpClient + AutoCloseable for AutoCloseable delegation tests. */
+    private interface CloseableHttpClient extends IHttpClient, AutoCloseable {
+    }
+
     // Helper methods
 
     private SSOUser createTestSSOUser() {
@@ -592,23 +770,6 @@ public class SSOHttpServiceApiClientTest {
             }
             // Reset the state of mocks after exceptions
             resetAll();
-        }
-    }
-
-    private class TestableHttpServiceApiClient extends SSOHttpServiceApiClient {
-        public TestableHttpServiceApiClient(
-                HttpRequestParameters httpRequestParameters,
-                String baseUrl,
-                String subsystemName,
-                String subsystemToken,
-                ApiSerializationManager serializationManager
-        ) {
-            super(httpRequestParameters, baseUrl, subsystemName, subsystemToken, serializationManager);
-        }
-
-        @Override
-        protected IHttpClient getHttpClient() {
-            return httpClient;
         }
     }
 

@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <artifactId>superfly-parent</artifactId>
+        <groupId>com.payneteasy.superfly</groupId>
+        <version>2.0-3-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>superfly-httpclient-hc5</artifactId>
+    <name>Superfly HttpClient HC5 Transport</name>
+    <description>Apache HttpClient 5 transport implementation (ApacheHC5HttpClient) with connection pooling,
+        per-request timeouts, SSL/mTLS support, and AutoCloseable lifecycle.
+        Consumers who need this transport must declare both this artifact and httpclient5 as dependencies.</description>
+    <dependencies>
+        <dependency>
+            <!--Justification: IHttpClient abstraction that ApacheHC5HttpClient implements -->
+            <groupId>com.payneteasy.http-client</groupId>
+            <artifactId>http-client-api</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Apache HttpClient 5 — the transport library this module wraps;
+                mandatory (not optional) because the sole purpose of this module is HC5 transport -->
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
+            <!--Justification: Logging API -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- junit and logback-classic are inherited from parent pom -->
+    </dependencies>
+</project>

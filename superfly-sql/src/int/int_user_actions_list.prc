@@ -13,6 +13,11 @@ create procedure int_user_actions_list(i_start_from int(10),
  main_sql:
   begin
     declare v_sql_core   text;
+
+    if i_ssys_list is not null and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid subsystem list';
+    end if;
+
     set v_sql_core   =
           concat('select u.user_id, u.user_name, ss.subsystem_name, a.actn_id, a.action_name, ',
                  '       if(ura.urac_id is null, "U", "M") mapping_status, ra.ract_id, r.role_id, ',
@@ -30,9 +35,9 @@ create procedure int_user_actions_list(i_start_from int(10),
                  '           join ',
                  '             actions a ',
                  '           on a.actn_id = ra.actn_actn_id ',
-                 '              and a.action_name like "%',
-                 coalesce(i_action_name, ''),
-                 '%" ',
+                 '              and a.action_name like ',
+                 quote(concat('%', coalesce(i_action_name, ''), '%')),
+                 ' ',
                  '         join ',
                  '           subsystems ss ',
                  '         on a.ssys_ssys_id = ss.ssys_id ',

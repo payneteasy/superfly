@@ -19,6 +19,9 @@ public class UISubsystem implements Serializable {
     private String subsystemUrl;
     private String landingUrl;
     private String loginFormCssUrl;
+    private String privateKey;
+    private String publicKey;
+    private String encryptionAlgorithm;
 
     @Column(name = "ssys_id")
     public Long getId() {
@@ -118,5 +121,32 @@ public class UISubsystem implements Serializable {
 
     public void setLoginFormCssUrl(String loginFormCssUrl) {
         this.loginFormCssUrl = loginFormCssUrl;
+    }
+
+    @Column(name = "private_key")
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    @Column(name = "public_key")
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    @Column(name = "encryption_algorithm")
+    public String getEncryptionAlgorithm() {
+        return encryptionAlgorithm;
+    }
+
+    public void setEncryptionAlgorithm(String encryptionAlgorithm) {
+        this.encryptionAlgorithm = encryptionAlgorithm;
     }
 }

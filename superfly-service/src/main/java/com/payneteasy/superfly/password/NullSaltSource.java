@@ -1,16 +1,13 @@
 package com.payneteasy.superfly.password;
 
-import com.payneteasy.superfly.spring.Policy;
-import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
-import org.springframework.stereotype.Component;
-
 /**
  * Always supplies null for salt. This leads to unsalted passwords.
  *
+ * <p>Not a bean: no policy uses unsalted passwords, both of them store a
+ * per-user salt through {@link RandomStoredSaltSource}. Kept for tests.
+ *
  * @author Roman Puchkovskiy
  */
-@OnPolicyCondition(Policy.NONE)
-@Component
 public class NullSaltSource implements SaltSource {
 
     public String getSalt(String username) {

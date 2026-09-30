@@ -12,8 +12,7 @@
             <secure>true</secure>
         </cookie-config>
     </session-config>
-
-    <!-- SPRING CONTEXT -->
+<!-- SPRING CONTEXT -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
@@ -116,6 +115,11 @@
     <listener>
         <listener-class>com.payneteasy.superfly.web.spring.CustomContextLoaderListener</listener-class>
     </listener>
+    <!-- Exposes the current request to RequestContextHolder before the security filter chain runs:
+         SecurityAuditApplicationListener takes the client IP from there. -->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
 
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
@@ -152,8 +156,40 @@
     </filter-mapping>
 
     <servlet>
+        <servlet-name>rest-api</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring/dispatcher-servlet.xml</param-value>
+        </init-param>
+        <!-- /sso/check/* is public (bearer check is done by RemoteAuthCheckController itself).
+             With the default detectAllHandlerMappings=true DispatcherServlet also picks up the root
+             context's handler mappings and would expose RemoteApiController (whole SSOService)
+             here without authentication. Only the "handlerMapping" bean of this servlet's own
+             context is used instead. -->
+        <init-param>
+            <param-name>detectAllHandlerMappings</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rest-api</servlet-name>
+        <url-pattern>/sso/check/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>remoting</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- Empty child context: request handlers (RemoteApiController) are inherited from the
+             root context (WebConfig @EnableWebMvc). The obsolete /WEB-INF/remoting-servlet.xml
+             (dead XML/Hessian exporters) has been removed, so an explicit empty contextConfigLocation
+             prevents DispatcherServlet from trying to load the missing default config. -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value></param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
@@ -186,7 +222,7 @@
         </init-param>
         <init-param>
             <param-name>ignorePaths</param-name>
-            <param-value>/remoting/,/remoting/sso.service/,/sso/,/management/version.txt</param-value>
+            <param-value>/remoting/,/remoting/sso.service/,/sso/,/management/version.txt,/sso/check/</param-value>
         </init-param>
     </filter>
 

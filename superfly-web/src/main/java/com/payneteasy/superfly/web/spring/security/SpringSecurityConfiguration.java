@@ -2,7 +2,6 @@ package com.payneteasy.superfly.web.spring.security;
 
 import com.payneteasy.superfly.client.ActionDescriptionCollector;
 import com.payneteasy.superfly.client.ScanningActionDescriptionCollector;
-import com.payneteasy.superfly.client.XmlActionDescriptionCollector;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.security.InsufficientAuthenticationHandlingFilter;
 import com.payneteasy.superfly.security.MultiStepLoginUrlAuthenticationEntryPoint;
@@ -10,18 +9,19 @@ import com.payneteasy.superfly.security.SuperflyUsernamePasswordAuthenticationPr
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
+import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
-import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.handler.JsonAuthenticationFailureHandler;
 import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
+import com.payneteasy.superfly.service.impl.SubsystemOriginCache;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.annotation.Secured;
@@ -43,7 +43,9 @@ import org.springframework.security.web.authentication.preauth.x509.X509Authenti
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import java.util.List;
 import java.util.Map;
@@ -55,21 +57,41 @@ public class SpringSecurityConfiguration {
     private final SuperflyProperties    properties;
     private final LoggerSink            loggerSink;
     private final AuthenticationManager authenticationManager;
-    private final SubsystemService      subsystemService;
+    private final LocalSecurityService localSecurityService;
 
-    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager, SubsystemService subsystemService) {
+    public SpringSecurityConfiguration(SuperflyProperties properties, LoggerSink loggerSink, AuthenticationManager authenticationManager,
+                                       LocalSecurityService localSecurityService) {
         this.properties = properties;
         this.loggerSink = loggerSink;
         this.authenticationManager = authenticationManager;
-        this.subsystemService = subsystemService;
+        this.localSecurityService = localSecurityService;
+    }
+
+    private static SubsystemOriginCache.Urls subsystemUrls(ObjectProvider<SubsystemOriginCache> originCache) {
+        SubsystemOriginCache cache = originCache.getIfAvailable();
+        return cache == null ? SubsystemOriginCache.Urls.EMPTY : cache.getUrls();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
+            .headers(headers -> headers
+                // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
+                // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
+                // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
+                .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
+            )
             .authorizeHttpRequests(
                     auth ->
                             auth
+                                    // rest-api servlet: only remote-auth endpoints (they check the
+                                    // subsystem bearer token themselves). Must precede /sso/** permitAll,
+                                    // otherwise anything mapped under /sso/check/ becomes public.
+                                    .requestMatchers(antPathRequestMatcher("/sso/check/check-password/**"),
+                                                     antPathRequestMatcher("/sso/check/check-otp/**"))
+                                    .permitAll()
+                                    .requestMatchers(antPathRequestMatcher("/sso/check/**"))
+                                    .denyAll()
                                     .requestMatchers(antPathRequestMatcher("/favicon.ico"),
                                                      antPathRequestMatcher("/css/**"),
                                                      antPathRequestMatcher("/login*"),
@@ -79,11 +101,6 @@ public class SpringSecurityConfiguration {
                                     .permitAll()
                                     .requestMatchers(antPathRequestMatcher("/remoting/sso.service/**"))
                                     .hasAuthority("ROLE_SUBSYSTEM")
-                                    .requestMatchers(
-                                            antPathRequestMatcher("/remoting/oauth2.hessian.service/**"),
-                                            antPathRequestMatcher("/remoting/basic.hessian.service/**")
-                                    )
-                                    .permitAll()
                                     .anyRequest()
                                     .hasAnyAuthority("ROLE_ADMIN", "ROLE_ACTION_TEMP_PASSWORD"))
             .exceptionHandling(httpSecurity ->
@@ -96,6 +113,9 @@ public class SpringSecurityConfiguration {
             .logout(logout -> logout
                     .logoutUrl("/j_spring_security_logout")
                     .logoutSuccessHandler(logoutSuccessHandler()))
+            // CSRF disabled here intentionally: state-changing REST endpoints use token-based auth
+            // (X-Subsystem-Token or Authorization: Bearer), not cookies. Wicket pages are protected by
+            // SameOriginResourceIsolationPolicy (BaseApplication); the login forms by CsrfValidator.
             .csrf(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
         ;
@@ -106,8 +126,18 @@ public class SpringSecurityConfiguration {
             .addFilterAt(passwordAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(initOtpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(otpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterAfter(insufficientAuthenticationHandlingFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
+        // Must run after ExceptionTranslationFilter (it turns the exception into the step-specific redirect)
+        // and before AuthorizationFilter. Public paths are skipped, as they were security="none" in 1.7.x.
+        http.addFilterBefore(new SkipMatchingRequestsFilter(
+                insufficientAuthenticationHandlingFilter(),
+                new OrRequestMatcher(
+                        antPathRequestMatcher("/favicon.ico"),
+                        antPathRequestMatcher("/css/**"),
+                        antPathRequestMatcher("/login*"),
+                        antPathRequestMatcher("/sso/**"),
+                        antPathRequestMatcher("/management/version.txt"))),
+                AuthorizationFilter.class);
 
         return http.build();
     }
@@ -141,8 +171,7 @@ public class SpringSecurityConfiguration {
     public SubsystemAuthenticationFilter subsystemAuthenticationFilter() {
         SubsystemAuthenticationFilter filter = new SubsystemAuthenticationFilter(
                 antPathRequestMatcher("/remoting/sso.service/**"),
-                authenticationManager,
-                subsystemService
+                authenticationManager
         );
         filter.setSuccessHandler((request, response, authentication) -> {});
         filter.setFailureHandler(new JsonAuthenticationFailureHandler());
@@ -170,6 +199,7 @@ public class SpringSecurityConfiguration {
     @Bean
     public SuperflyInitOTPAuthenticationProcessingFilter initOtpAuthenticationProcessingFilter() {
         SuperflyInitOTPAuthenticationProcessingFilter filter = new SuperflyInitOTPAuthenticationProcessingFilter();
+        filter.setLocalSecurityService(localSecurityService);
         filter.setAuthenticationManager(authenticationManager);
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
         filter.setCsrfValidator(csrfValidator());
@@ -224,10 +254,4 @@ public class SpringSecurityConfiguration {
     }
 
 
-    @Bean
-    public ActionDescriptionCollector xmlActionDescriptionCollector() {
-        XmlActionDescriptionCollector collector = new XmlActionDescriptionCollector();
-        collector.setResource(new ClassPathResource("actions.xml"));
-        return collector;
-    }
 }

@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.role;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.ui.role.UIRoleForFilter;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.service.RoleService;
@@ -17,6 +18,7 @@ import com.payneteasy.superfly.web.wicket.utils.ObjectHolder;
 import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import com.payneteasy.superfly.web.wicket.utils.WicketComponentHelper;
 import org.apache.wicket.Page;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
@@ -33,12 +35,15 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.Strings;
+
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.security.access.annotation.Secured;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +72,27 @@ public class ListRolesPage extends BasePage {
         subsystemDropdown.setNullValid(true);
         filtersForm.add(subsystemDropdown);
 
+        final AutoCompleteTextField<String> autoTextNameRole = new AutoCompleteTextField<String>("auto", new PropertyModel<String>(stickyFilters, "roleNameSubstring")) {
+            @Override
+            protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                    return Collections.<String>emptyList().iterator();
+                }
+                List<String> choices = new ArrayList<String>(10);
+                for (UIRoleForFilter role : roleService.getRolesForFilter()) {
+                    final String name = role.getRoleName();
+                    if (name.toUpperCase().startsWith(input.toUpperCase())) {
+                        choices.add(name);
+                        if (choices.size() == 10) {
+                            break;
+                        }
+                    }
+                }
+                return choices.iterator();
+            }
+        };
+        filtersForm.add(autoTextNameRole);
+
         final ObjectHolder<List<UIRoleForList>> rolesHolder = new ObjectHolder<List<UIRoleForList>>();
         final InitializingModel<Collection<UIRoleForList>> rolesCheckGroupModel = new InitializingModel<Collection<UIRoleForList>>() {
             @Override
@@ -92,7 +118,7 @@ public class ListRolesPage extends BasePage {
                     subsystemId.add(subsystem.getId());
                 }
                 List<UIRoleForList> roles = roleService.getRoles(first, count,
-                        getSortFieldIndex(), isAscending(), null,
+                        getSortFieldIndex(), isAscending(), stickyFilters.getRoleNameSubstring(),
                         subsystem == null ? null : subsystemId);
                 rolesHolder.setObject(roles);
                 rolesCheckGroupModel.clearInitialized();
@@ -105,7 +131,7 @@ public class ListRolesPage extends BasePage {
                 if (subsystem != null) {
                     subsystemId.add(subsystem.getId());
                 }
-                return roleService.getRoleCount(null,
+                return roleService.getRoleCount(stickyFilters.getRoleNameSubstring(),
                         subsystem == null ? null : subsystemId);
             }
 
