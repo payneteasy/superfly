@@ -33,6 +33,10 @@
         <property name="interface" value="com.payneteasy.superfly.dao.SubsystemDao"/>
     </bean>
 
+    <bean id="eventDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
+        <property name="interface" value="com.payneteasy.superfly.dao.EventDao"/>
+    </bean>
+
     <bean id="actionDao" class="com.googlecode.jdbcproc.daofactory.StoredProcedureDaoFactoryBean" parent="abstractDao">
         <property name="interface" value="com.payneteasy.superfly.dao.ActionDao"/>
     </bean>
