@@ -64,6 +64,7 @@ public class LabelDropDownChoiceRow<T> extends Panel {
                 return labelResourceKey;
             }
         };
+        dropDownChoice.setLabel(new ResourceModel(labelResourceKey));
         dropDownChoice.setNullValid(nullValid);
         dropDownChoice.setValidatorKeyPrefix(labelResourceKey);
         container.add(dropDownChoice);
