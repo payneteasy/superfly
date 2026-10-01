@@ -383,8 +383,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier) {
-        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs, subsystemIdentifier);
+    public List<SSOEvent> getEvents(Long lastEventId, long waitTimeMs, String subsystemIdentifier) {
+        List<Event> events = eventService.getEvents(lastEventId, waitTimeMs, subsystemIdentifier);
         if (events != null && !events.isEmpty()) {
             logger.info("getEvents call info={}", events);
             return events.stream()

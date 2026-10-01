@@ -178,9 +178,9 @@ public interface SSOService {
     void changeUserRole(ChangeUserRoleRequest request);
 
     /**
-     * Get events from lastEventTime.
+     * Get events with event id greater than lastEventId, ordered by event id.
      *
-     * @param request request containing lastEventTime and waitTimeMs
+     * @param request request containing lastEventId (null means from the start) and waitTimeMs
      */
     List<SSOEvent> getEvents(GetEventsRequest request);
 }

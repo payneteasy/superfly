@@ -292,7 +292,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public List<SSOEvent> getEvents(GetEventsRequest request) {
-        return internalSSOService.getEvents(request.getLastEventTime(), request.getWaitTimeMs(), obtainSubsystemIdentifier(null));
+        return internalSSOService.getEvents(request.getLastEventId(), request.getWaitTimeMs(), obtainSubsystemIdentifier(null));
     }
 
     protected String obtainSubsystemIdentifier(String systemIdentifier) {
