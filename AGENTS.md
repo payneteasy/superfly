@@ -12,7 +12,7 @@ EE8/EE10 (javax/jakarta servlet) клиентские библиотеки.
 ## Технологический стек
 
 - **Язык:** Java 21 (включая EE8-модули: `release` не понижается)
-- **Фреймворк:** Spring Framework 6.2.19 + Spring Security 6.4.13 (EE8-модули: Spring 5.3.39 / Spring Security 5.8.16, provided)
+- **Фреймворк:** Spring Framework 6.2.19 + Spring Security 6.5.11 (EE8-модули: Spring 5.3.39 / Spring Security 5.8.16, provided)
 - **Веб-UI:** Apache Wicket 10.9.1 (superfly-wicket-ee8 — Wicket 8.18.0, provided)
 - **База данных:** MySQL (stored procedures, jdbc-proc)
 - **Logging:** SLF4J 2.0 + Logback
@@ -70,8 +70,7 @@ superfly/
 │   ├── src/                       # Stored procedures
 │   └── mi/                        # Миграции: R<version>/<desc>.sql
 │
-├── superfly-integration-test/     # Интеграционные тесты (против реальной MySQL)
-└── superfly-demo/                 # Демо-приложение
+└── superfly-integration-test/     # Интеграционные тесты (против реальной MySQL)
 ```
 
 ## Ключевые точки входа
