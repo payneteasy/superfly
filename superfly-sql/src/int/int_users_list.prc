@@ -12,7 +12,7 @@ create procedure int_users_list(i_user_name varchar(32),
 
     if i_user_name is not null then
       set v_search_conditions   =
-            concat(" and u.user_name like '", i_user_name, "%' ");
+            concat(" and u.user_name like ", quote(concat(i_user_name, '%')), " ");
     end if;
 
     if i_role_id is not null then
