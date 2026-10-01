@@ -140,6 +140,25 @@ public class MfaLoginStepSecurityTest {
         verify(localSecurityService);
     }
 
+    @Test
+    public void otpInitStepWithoutPendingOtpRedirectsToLogin() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/j_superfly_otp_reset");
+        request.setServletPath("/j_superfly_otp_reset");
+        request.setParameter("j_key", "KEY");
+        request.setParameter("_csrf", "token");
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(
+                UsernamePasswordAuthenticationToken.authenticated(
+                        "admin", "n/a", AuthorityUtils.createAuthorityList("ROLE_ADMIN"))));
+        session.setAttribute(CsrfValidatorImpl.class.getName().concat(".CSRF_TOKEN"), "token");
+        request.setSession(session);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        securityFilterChain.doFilter(request, response, new MockFilterChain());
+
+        assertEquals(302, response.getStatus());
+        assertTrue(response.getRedirectedUrl(), response.getRedirectedUrl().contains("/login"));
+    }
+
     private static Authentication otpPending() {
         return new CompoundAuthentication(
                 new Authentication[]{new LocalNeedOTPToken("admin", OTPType.GOOGLE_AUTH)}, null);
