@@ -246,7 +246,6 @@ public class SpringSecurityConfiguration {
     public ActionDescriptionCollector scanningActionDescriptionCollector() {
         ScanningActionDescriptionCollector collector = new ScanningActionDescriptionCollector();
         collector.setBasePackages(new String[]{
-                "com.payneteasy.superfly.demo.web.wicket",
                 "com.payneteasy.superfly.web.wicket",
         });
         collector.setAnnotationClass(Secured.class);
