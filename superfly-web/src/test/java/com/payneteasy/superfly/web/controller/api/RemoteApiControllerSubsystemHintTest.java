@@ -93,6 +93,47 @@ public class RemoteApiControllerSubsystemHintTest {
         verify(internal);
     }
 
+    @Test
+    public void foreignSubsystemInExplicitRoleGrantIsRejected() throws Exception {
+        replay(internal);
+
+        MvcResult result = call("registerUser", registerJson(
+                "{\"detectSubsystemIdentifier\":false,\"subsystemIdentifier\":\"subsystem-b\",\"principalName\":\"r\"}"));
+
+        assertAuthError(result);
+        verify(internal);
+    }
+
+    @Test
+    public void ownSubsystemInExplicitRoleGrantIsAccepted() throws Exception {
+        expectRegisterUser();
+
+        assertEquals(200, call("registerUser", registerJson(
+                "{\"detectSubsystemIdentifier\":false,\"subsystemIdentifier\":\"subsystem-a\",\"principalName\":\"r\"}"))
+                .getResponse().getStatus());
+        verify(internal);
+    }
+
+    @Test
+    public void detectedSubsystemInRoleGrantIsAccepted() throws Exception {
+        expectRegisterUser();
+
+        assertEquals(200, call("registerUser", registerJson(
+                "{\"detectSubsystemIdentifier\":true,\"principalName\":\"r\"}"))
+                .getResponse().getStatus());
+        verify(internal);
+    }
+
+    private void expectRegisterUser() throws Exception {
+        internal.registerUser(anyObject(), anyObject(), anyObject(), eq("subsystem-a"), anyObject(),
+                anyObject(), anyObject(), anyObject(), anyObject(), anyObject(), anyObject(), anyObject());
+        replay(internal);
+    }
+
+    private static String registerJson(String grant) {
+        return "{\"username\":\"u\",\"password\":\"p\",\"roleGrants\":[" + grant + "]}";
+    }
+
     private MvcResult call(String method, String json) throws Exception {
         return mvc.perform(post("/sso.service/" + method)
                 .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
