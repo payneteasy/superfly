@@ -91,5 +91,6 @@ public class SuperflyOTPAuthenticationProcessingFilterTest extends
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
+        expect(request.getHeader("Referer")).andReturn(null).anyTimes();
     }
 }
