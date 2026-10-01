@@ -23,7 +23,7 @@ import java.util.Objects;
  *
  * <pre>{@code
  * SSOClientConfig config = SSOClientConfig.builder()
- *     .baseUrl("https://superfly.example.com/sso")
+ *     .baseUrl("https://superfly.example.com/remoting/sso.service")
  *     .subsystemName("paynet-ui")
  *     .subsystemToken(token)
  *     .defaultParameters(HttpRequestParameters.builder()
