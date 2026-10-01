@@ -10,6 +10,9 @@
     <logger name="com.googlecode.jdbcproc" level="WARN"/>
     <!-- Wicket logs model contents at DEBUG -->
     <logger name="org.apache.wicket" level="WARN"/>
+    <!-- CryptoMapper logs a stack trace for every unencrypted URL (favicon.ico etc.); it returns null and the
+         request is mapped as is, so the only error it reports is this expected one -->
+    <logger name="org.apache.wicket.core.request.mapper.CryptoMapper" level="OFF"/>
     <logger name="org.eclipse.jetty" level="INFO"/>
 
     <root level="INFO">
