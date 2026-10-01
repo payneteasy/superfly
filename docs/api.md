@@ -32,7 +32,8 @@ Superfly предоставляет два типа API. Формат везде
 Authorization: Bearer {subsystem_token}
 ```
 
-Любой другой путь под `/sso/check/` отвечает `404` (`type: NOT_FOUND`, см. [Ошибки](#ошибки)).
+Неполный или неизвестный путь под `/sso/check/check-password/` и `/sso/check/check-otp/` отвечает `404` (`type: NOT_FOUND`, см. [Ошибки](#ошибки)).
+Любой другой путь под `/sso/check/` закрыт Spring Security (`denyAll`): без сессии — редирект на `/login`, с сессией — `403`.
 
 ---
 
@@ -472,7 +473,7 @@ Content-Type: application/json
 | `BAD_REQUEST` | 400 | невалидный JSON, не заполнены поля, логин в пути и теле не совпадает, ошибка расшифровки (в т.ч. по лимиту) |
 | `BAD_USER_OR_PASSWORD_OR_OTP` | 400 | неверный логин/пароль, неверная или просроченная сессия OTP |
 | `USER_SHOULD_CHANGE_PASSWORD` | 400 | у пользователя временный пароль |
-| `NOT_FOUND` | 404 | неизвестный путь под `/sso/check/` (`title: Not found`, `detail: Unknown endpoint`) |
+| `NOT_FOUND` | 404 | неполный/неизвестный путь под `/sso/check/check-password/` или `/sso/check/check-otp/` (`title: Not found`, `detail: Unknown endpoint`) |
 | `INTERNAL_ERROR` | 500 | внутренняя ошибка |
 
 Ошибки отдаются в JSON без заголовка `Accept`, с `Accept: */*` или `application/json`.
