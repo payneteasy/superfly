@@ -8,7 +8,7 @@ import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
 import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
-import com.payneteasy.superfly.utils.RandomGUID;
+import com.payneteasy.superfly.utils.SecureTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +137,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     private String generateUniqueSubsystemToken() {
-        return "ST-" + new RandomGUID().toString().replaceAll("-", "");
+        return SecureTokens.generate("ST-");
     }
 
     @Override

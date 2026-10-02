@@ -8,7 +8,7 @@ import com.payneteasy.superfly.notification.LogoutNotification;
 import com.payneteasy.superfly.notification.Notifier;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SessionService;
-import com.payneteasy.superfly.utils.RandomGUID;
+import com.payneteasy.superfly.utils.SecureTokens;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +113,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private String generateUniqueSSOSessionToken() {
-        return "SSO-" + new RandomGUID().toString().replaceAll("-", "");
+        return SecureTokens.generate("SSO-");
     }
 
     @Override
