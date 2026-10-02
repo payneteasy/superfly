@@ -158,6 +158,34 @@ protected void init() {
 </bean>
 ```
 
+## Subsystem isolation (2.0)
+
+Методы `SSOService`, работающие с пользователем по имени, ограничены подсистемой вызывающего
+(определяется по токену подсистемы): `checkOtp`, `hasOtpMasterKey`, `updateUserOtpType`,
+`changeTempPassword`, `getUserDescription`, `resetGoogleAuthMasterKey`,
+`updateUserIsOtpOptionalValue`, `updateUserDescription`, `resetPassword`, `completeUser`,
+`getUserStatuses`. Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
+иначе ответ такой же, как для несуществующего пользователя.
+
+- Пользователи с ролью в подсистеме `superfly` (админка) недоступны через RPC всегда, даже если
+  у них есть роль и в подсистеме вызывающего. Учётки админки и подсистем должны быть раздельными.
+- `getUserStatuses` без списка имён (`null`) возвращает пустой список; имена с запятой игнорируются.
+- `changeTempPassword` меняет пароль только пока он временный (`is_password_temp='Y'`).
+- `resetPassword` проверяет новый пароль по password policy.
+
+Перед выкаткой найдите учётки с ролями и в `superfly`, и в других подсистемах: через RPC они
+перестанут быть доступны.
+
+```sql
+select u.user_name, group_concat(distinct s.subsystem_name)
+  from users u
+  join user_roles ur on ur.user_user_id = u.user_id
+  join roles r on r.role_id = ur.role_role_id
+  join subsystems s on s.ssys_id = r.ssys_ssys_id
+ group by u.user_id
+having sum(s.subsystem_name = 'superfly') > 0 and count(distinct s.subsystem_name) > 1;
+```
+
 ## Миграция между EE8 и EE10
 
 Подробности в [руководстве по миграции](migration-client-ee8-ee10.md).

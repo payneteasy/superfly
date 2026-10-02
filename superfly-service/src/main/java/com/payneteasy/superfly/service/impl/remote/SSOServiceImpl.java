@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -285,6 +286,8 @@ public class SSOServiceImpl implements SSOService {
         List<String> userNames = request.getUserNames() == null
                 ? Collections.emptyList()
                 : request.getUserNames().stream()
+                        // the DAO splits the argument by commas, so such a name could address another user
+                        .filter(name -> name != null && !name.contains(","))
                         .filter(name -> isUserAccessible("getUserStatuses", name))
                         .collect(Collectors.toList());
         List<UserWithStatus> daoUsers;
@@ -298,6 +301,9 @@ public class SSOServiceImpl implements SSOService {
 
         List<UserStatus> result = new ArrayList<>(daoUsers.size());
         for (UserWithStatus daoUser : daoUsers) {
+            if (userNames.stream().noneMatch(name -> name.equalsIgnoreCase(daoUser.getUserName()))) {
+                continue;
+            }
             UserStatus user = new UserStatus();
             user.setUsername(daoUser.getUserName());
             user.setAccountLocked(daoUser.isAccountLocked());
@@ -383,7 +389,8 @@ public class SSOServiceImpl implements SSOService {
         if (request.isOtpOptional() && (code == null || code.trim().isEmpty())) {
             return true;
         }
-        if (request.getOtpType() != OTPType.GOOGLE_AUTH) {
+        // the real path fails on a missing type with the same NPE
+        if (Objects.requireNonNull(request.getOtpType()) != OTPType.GOOGLE_AUTH) {
             return true;
         }
         if (code != null && code.matches("^[0-9]{6}$")) {

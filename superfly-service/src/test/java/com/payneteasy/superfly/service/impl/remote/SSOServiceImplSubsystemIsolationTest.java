@@ -464,6 +464,40 @@ public class SSOServiceImplSubsystemIsolationTest {
         verifyAll();
     }
 
+    @Test
+    public void getUserStatusesNameWithCommaNeverReachesDao() {
+        // "x,admin" is a legitimate-looking login of the caller's own user, but the DAO would split it
+        expect(internal.userHasRolesInSubsystem("own", LOCAL)).andReturn(false);
+        expect(internal.userHasRolesInSubsystem("own", CALLER)).andReturn(true);
+        expect(internal.getUserStatuses("own")).andReturn(Collections.emptyList());
+        replayAll();
+        assertTrue(ssoService.getUserStatuses(new GetUserStatusesRequest(Arrays.asList("x,admin", "own"))).isEmpty());
+        verifyAll();
+    }
+
+    @Test
+    public void getUserStatusesDropsRowsOfUsersThatDidNotPassTheGuard() {
+        expect(internal.userHasRolesInSubsystem("own", LOCAL)).andReturn(false);
+        expect(internal.userHasRolesInSubsystem("own", CALLER)).andReturn(true);
+        UserWithStatus own = new UserWithStatus();
+        own.setUserName("OWN");
+        UserWithStatus foreign = new UserWithStatus();
+        foreign.setUserName("admin");
+        expect(internal.getUserStatuses("own")).andReturn(Arrays.asList(own, foreign));
+        replayAll();
+        List<UserStatus> result = ssoService.getUserStatuses(new GetUserStatusesRequest(Collections.singletonList("own")));
+        assertEquals(1, result.size());
+        assertEquals("OWN", result.get(0).getUsername());
+        verifyAll();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void checkOtpForeignUserWithoutOtpTypeFailsLikeUnknownUser() throws Exception {
+        expectForeign();
+        replayAll();
+        ssoService.checkOtp(new CheckOtpRequest(USER, "123456", null, false));
+    }
+
     // no subsystem in the security context
 
     @Test
