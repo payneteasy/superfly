@@ -5,6 +5,7 @@ import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
 import com.payneteasy.superfly.web.mvc.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
@@ -113,6 +114,7 @@ public class RemoteAuthCheckController {
 
         return ResponseEntity.status(status)
                 .header("Content-Language", "en")
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(error);
     }
 

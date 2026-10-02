@@ -17,7 +17,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.sql.DataSource;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
 
 public class EventServiceImplTest {
 
-    private static final Date LAST = new Date(0);
+    private static final Long LAST = 0L;
 
     private static EventDao dao(java.util.function.Supplier<List<Event>> supplier) {
         return (EventDao) Proxy.newProxyInstance(EventDao.class.getClassLoader(), new Class<?>[]{EventDao.class},
@@ -39,6 +38,39 @@ public class EventServiceImplTest {
         service.clock = time::get;
         service.sleeper = time::addAndGet;
         return service;
+    }
+
+    @Test
+    public void lastEventIdIsReadForTheGivenSubsystem() {
+        java.util.List<Object[]> calls = new java.util.ArrayList<>();
+        EventDao dao = (EventDao) Proxy.newProxyInstance(EventDao.class.getClassLoader(), new Class<?>[]{EventDao.class},
+                (p, m, a) -> {
+                    calls.add(a);
+                    return 42L;
+                });
+
+        assertEquals(42L, service(dao, new AtomicLong()).getLastEventId("s"));
+        assertEquals(1, calls.size());
+        assertEquals("s", calls.get(0)[0]);
+    }
+
+    @Test
+    public void cursorAndSubsystemAreForwardedToDaoOnEveryPoll() {
+        java.util.List<Object[]> calls = new java.util.ArrayList<>();
+        EventDao dao = (EventDao) Proxy.newProxyInstance(EventDao.class.getClassLoader(), new Class<?>[]{EventDao.class},
+                (p, m, a) -> {
+                    calls.add(a);
+                    return List.of();
+                });
+        EventServiceImpl service = service(dao, new AtomicLong());
+
+        service.getEvents(42L, 1000, "s");
+
+        assertTrue(calls.size() > 1);
+        for (Object[] args : calls) {
+            assertEquals(42L, args[0]);
+            assertEquals("s", args[2]);
+        }
     }
 
     @After

@@ -85,5 +85,6 @@ public class SuperflySSOAuthenticationProcessingFilterTest extends
         expect(request.getSession()).andReturn(session).anyTimes();
         expect(request.getRemoteAddr()).andReturn("192.168.0.4").anyTimes();
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
+        expect(request.getHeader("Referer")).andReturn(null).anyTimes();
     }
 }

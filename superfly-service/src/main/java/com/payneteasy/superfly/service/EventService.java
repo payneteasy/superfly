@@ -2,7 +2,6 @@ package com.payneteasy.superfly.service;
 
 import com.payneteasy.superfly.model.Event;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,5 +9,7 @@ import java.util.List;
  * 
  */
 public interface EventService {
-    List<Event> getEvents(Date lastEventTime, long waitTime, String subsystemName);
+    List<Event> getEvents(Long lastEventId, long waitTime, String subsystemName);
+
+    long getLastEventId(String subsystemName);
 }

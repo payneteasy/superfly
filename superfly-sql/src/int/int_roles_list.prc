@@ -8,9 +8,13 @@ create procedure int_roles_list(i_role_name varchar(32),
   begin
     declare v_search_conditions   text default '';
 
+    if i_ssys_list is not null and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid subsystem list';
+    end if;
+
     if i_role_name is not null then
       set v_search_conditions   =
-            concat(" and r.role_name like '", i_role_name, "%' ");
+            concat(" and r.role_name like ", quote(concat(i_role_name, '%')), " ");
     end if;
 
     if i_ssys_list is not null then

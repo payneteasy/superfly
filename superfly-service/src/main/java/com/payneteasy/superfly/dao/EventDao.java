@@ -3,7 +3,6 @@ package com.payneteasy.superfly.dao;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.Event;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,6 +11,9 @@ import java.util.List;
 public interface EventDao {
 
     @AStoredProcedure(name = "ui_get_events")
-    List<Event> getEvents(Date lastEventTime, int limit, String subsystemName);
+    List<Event> getEvents(Long lastEventId, int limit, String subsystemName);
+
+    @AStoredProcedure(name = "ui_get_last_event_id")
+    long getLastEventId(String subsystemName);
     
 }

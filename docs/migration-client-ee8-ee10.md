@@ -27,6 +27,10 @@
 6. **Фасады удалены:** `superfly-client` → `superfly-client-ee10` (Jakarta) или `superfly-client-ee8` (javax); `superfly-spring-security` → `superfly-spring-security-ee10`.
 7. **Remote-auth (`check-password`/`check-otp`):** новые ключи подсистем — `RSA_OAEP`, а на ошибки расшифровки действует лимит 20 в минуту на подсистему. Коды и формат ответов прежние; подробности и примеры шифрования — в [API Reference](api.md#шифрование).
 8. **Long-poll `getEvents`:** `waitTimeMs` ограничен сервером 75 секундами.
+9. **Курсор `getEvents` (без обратной совместимости):** `GetEventsRequest.lastEventTime` (`Date`) заменён на `lastEventId` (`Long`), builder `lastEventTime(Date)` → `lastEventId(Long)`, JSON-поле `"lastEventTime"` → `"lastEventId"` (число). `null` — с начала. Сервер отдаёт события с `eventId > lastEventId` по возрастанию `eventId`; следующий запрос делайте с максимальным `SSOEvent.eventId` из последнего ответа. Обновляйте клиент и сервер одновременно.
+10. **Проверка подсистемы:** подсистема не может указать чужой `subsystemIdentifier`/`subsystemHint`/`GetEventsRequest.subsystemName`/`roleGrants[].subsystemIdentifier` — `202` + `SsoAuthException` ([подробнее](api.md#подмена-подсистемы)). `GetEventsRequest.subsystemName` теперь учитывается.
+11. **Remote-auth:** неполный путь вроде `POST /sso/check/check-password` даёт `404` (`type: NOT_FOUND`) вместо `500`, ошибки без `Accept` или с `*/*` теперь JSON (раньше XML).
+12. **Старт `getEvents` с хвоста:** новый метод `SSOService.getLastEventId()` (`Long`, эндпоинт `getLastEventId`) — максимальный `eventId` событий вызывающей подсистемы, `0` без событий. Клиенты, которые раньше стартовали с `lastEventTime = now()`, теперь стартуют с `lastEventId = getLastEventId()`; `null` переиграет всю историю. Реализации `SSOService` вне superfly (моки, обёртки) должны добавить метод.
 
 ## Обновление
 
@@ -39,11 +43,12 @@
    version_from=R1.7.4 bash all_mi.sh
    ```
 
-   Скрипты подключаются переменными `SSO_DB_*` (см. [Установка и запуск](getting-started.md#обновление-существующей-базы)). Миграции теперь прерываются на первой ошибке — не игнорируйте ненулевой код возврата. Хранимые процедуры переустанавливаются отдельно (`superfly-sql/src/all-proc.sh`).
+   Скрипты подключаются переменными `SSO_DB_*` (см. [Установка и запуск](getting-started.md#обновление-существующей-базы)). Миграции теперь прерываются на первой ошибке — не игнорируйте ненулевой код возврата. Хранимые процедуры переустанавливаются отдельно (`superfly-sql/src/all-proc.sh`); после смены курсора `getEvents` это обязательно — сигнатура `ui_get_events` теперь `(i_last_event_id bigint, i_limit int, i_subsystem_name varchar(32))`.
 2. **Пароли.** При обновлении с 2.0-1/2.0-2 под политикой `none` сбросьте пароли пользователей: хеширование с солью (`users.salt`) под `none` восстановлено, а в 2.0-1/2.0-2 пароли под `none` могли записываться без соли — такие хеши могут не пройти проверку. Под политикой `pcidss` (значение в `web.xml` по умолчанию) ничего делать не нужно.
 3. **События.** События без подсистемы больше не отдаются клиентам, запрашивающим события по имени подсистемы. `PASSWORD_RESET` теперь пишется отдельной записью на каждую подсистему, в которой у пользователя есть роли.
 4. **Remote-auth.** Существующие подсистемы остаются на `RSA` (PKCS#1). Чтобы перейти на OAEP — перегенерируйте ключ на странице редактирования подсистемы и переведите клиента на OAEP ([как шифровать](api.md#шифрование)).
-5. **CSP.** Origin `landingUrl`/`subsystemUrl` всех подсистем добавляются в `form-action`, а `loginFormCssUrl` — в `style-src`. Список обновляется в течение 5 минут или сразу после правки подсистемы в админке.
+5. **Зависимости.** Spring Security EE10-стека обновлён 6.4.13 → 6.5.11 (EE8 остаётся на 5.8.16), BouncyCastle (`bcprov`, `bcutil`, `bcpkix`) выровнен на 1.85.
+6. **CSP.** Origin `landingUrl`/`subsystemUrl` всех подсистем добавляются в `form-action`, а `loginFormCssUrl` — в `style-src`. Список обновляется в течение 5 минут или сразу после правки подсистемы в админке.
 
 ## Выбор артефакта
 
@@ -324,7 +329,7 @@ Spring Security 5.8.x, Wicket 8 + встроенный старый jQuery) на
 транзитивно). Остаточные находки OWASP по самим provided-либам подавлены **узкими version-pinned
 suppressions** (`src/main/dependency-check/suppressions.xml`) с обоснованием «provided, не
 отгружается транзитивно, не рантайм EE10-сервера». Пины строго привязаны к 5.x/Wicket-8, поэтому
-открытые находки по in-line EE10-стеку (Spring 6 / Spring Security 6.4.x) не маскируются.
+открытые находки по in-line EE10-стеку (Spring 6 / Spring Security 6.5.x) не маскируются.
 
 ## Итог
 

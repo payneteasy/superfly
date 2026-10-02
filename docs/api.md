@@ -32,7 +32,8 @@ Superfly предоставляет два типа API. Формат везде
 Authorization: Bearer {subsystem_token}
 ```
 
-Любой другой путь под `/sso/check/` закрыт.
+Неполный или неизвестный путь под `/sso/check/check-password/` и `/sso/check/check-otp/` отвечает `404` (`type: NOT_FOUND`, см. [Ошибки](#ошибки)).
+Любой другой путь под `/sso/check/` закрыт Spring Security (`denyAll`): без сессии — редирект на `/login`, с сессией — `403`.
 
 ---
 
@@ -52,6 +53,14 @@ Authorization: Bearer {subsystem_token}
   "message": "User 'john' not found",
   "detailMessage": "com.payneteasy.superfly.api.UserNotFoundException: User 'john' not found" }
 ```
+
+### Подмена подсистемы
+
+Если вызывающий — подсистема (`ROLE_SUBSYSTEM`), то `subsystemIdentifier` (в т.ч. в `authRequestInfo`), `subsystemHint`,
+`GetEventsRequest.subsystemName` и `roleGrants[].subsystemIdentifier` (при `detectSubsystemIdentifier = false`)
+должны быть `null` или совпадать с её именем. Иначе ответ `202` с `ExceptionWrapper`
+`com.payneteasy.superfly.api.exceptions.SsoAuthException` (`Subsystem identifier does not match the authenticated subsystem`),
+на сервере пишется WARN. Для локального UI ограничения нет.
 
 ---
 
@@ -336,13 +345,17 @@ Authorization: Bearer {subsystem_token}
 
 #### `getEvents`
 
-Long-polling для получения событий. Подсистема определяется по аутентификации запроса.
+Long-polling для получения событий. Подсистема определяется по аутентификации запроса; `subsystemName` в теле должен быть `null` или совпадать
+с именем аутентифицированной подсистемы (см. [Подмена подсистемы](#подмена-подсистемы)).
+Возвращаются события с `eventId` больше `lastEventId`, в порядке возрастания `eventId`; `lastEventId = null` — с начала.
+Для следующего запроса передайте максимальный `eventId` из последнего ответа (`eventTime` курсором быть не может).
+Чтобы при старте не переигрывать историю, начните с курсора из [`getLastEventId`](#getlasteventid).
 `waitTimeMs` ограничен сервером 75 секундами — socket timeout клиента должен быть больше.
 События без подсистемы клиентам не отдаются.
 
 **Request:**
 ```json
-{ "lastEventTime": "2025-01-01T00:00:00+0300", "waitTimeMs": 30000 }
+{ "lastEventId": 41, "waitTimeMs": 30000 }
 ```
 
 **Response:** `List<SSOEvent>`
@@ -358,6 +371,18 @@ Long-polling для получения событий. Подсистема оп
 ```
 
 `PASSWORD_RESET` пишется отдельной записью на каждую подсистему, в которой у пользователя есть роли.
+
+---
+
+#### `getLastEventId`
+
+Возвращает максимальный `eventId` событий вызывающей подсистемы (подсистема — по аутентификации запроса); `0`, если событий нет.
+События других подсистем не учитываются. Используется как стартовый `lastEventId` для `getEvents`, когда история не нужна:
+события, созданные после вызова, будут получены.
+
+**Request:** тело `null` (аргументов нет)
+
+**Response:** `Long`, например `42`
 
 ---
 
@@ -461,7 +486,10 @@ Content-Type: application/json
 | `BAD_REQUEST` | 400 | невалидный JSON, не заполнены поля, логин в пути и теле не совпадает, ошибка расшифровки (в т.ч. по лимиту) |
 | `BAD_USER_OR_PASSWORD_OR_OTP` | 400 | неверный логин/пароль, неверная или просроченная сессия OTP |
 | `USER_SHOULD_CHANGE_PASSWORD` | 400 | у пользователя временный пароль |
+| `NOT_FOUND` | 404 | неполный/неизвестный путь под `/sso/check/check-password/` или `/sso/check/check-otp/` (`title: Not found`, `detail: Unknown endpoint`) |
 | `INTERNAL_ERROR` | 500 | внутренняя ошибка |
+
+Ошибки отдаются в JSON без заголовка `Accept`, с `Accept: */*` или `application/json`.
 
 ---
 

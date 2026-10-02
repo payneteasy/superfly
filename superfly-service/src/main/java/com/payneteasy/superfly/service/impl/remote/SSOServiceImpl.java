@@ -99,6 +99,7 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void registerUser(UserRegisterRequest registerRequest)
             throws UserExistsException, PolicyValidationException, BadPublicKeyException, MessageSendException {
+        checkRoleGrantSubsystems(registerRequest.getRoleGrants());
         internalSSOService.registerUser(registerRequest.getUsername(),
                                         registerRequest.getPassword(),
                                         registerRequest.getEmail(),
@@ -292,7 +293,28 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public List<SSOEvent> getEvents(GetEventsRequest request) {
-        return internalSSOService.getEvents(request.getLastEventTime(), request.getWaitTimeMs(), obtainSubsystemIdentifier(null));
+        return internalSSOService.getEvents(request.getLastEventId(), request.getWaitTimeMs(),
+                obtainSubsystemIdentifier(request.getSubsystemName()));
+    }
+
+    @Override
+    public Long getLastEventId() {
+        return internalSSOService.getLastEventId(obtainSubsystemIdentifier(null));
+    }
+
+    /**
+     * Explicit subsystem identifiers inside role grants bypass the hint, so they must pass the
+     * same check; the obtainer throws if the caller is a subsystem and the identifier is foreign.
+     */
+    private void checkRoleGrantSubsystems(RoleGrantSpecification[] roleGrants) {
+        if (roleGrants == null) {
+            return;
+        }
+        for (RoleGrantSpecification grant : roleGrants) {
+            if (grant != null && !grant.isDetectSubsystemIdentifier() && grant.getSubsystemIdentifier() != null) {
+                obtainSubsystemIdentifier(grant.getSubsystemIdentifier());
+            }
+        }
     }
 
     protected String obtainSubsystemIdentifier(String systemIdentifier) {

@@ -720,6 +720,21 @@
             </dependency>
 
             <dependency>
+                <!--Justification: transitive of bcpg; kept at the bcprov version to avoid duplicate classes
+                    (e.g. IANAObjectIdentifiers in bcprov and bcutil) in the WAR -->
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
+                <!--Justification: transitive of bcpg; kept at the bcprov version -->
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
@@ -1082,7 +1097,7 @@
         <httpclient5.version>5.4.4</httpclient5.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring.version>6.2.19</spring.version>
-        <spring.security.version>6.4.13</spring.security.version>
+        <spring.security.version>6.5.11</spring.security.version>
         <spring5.version>5.3.39</spring5.version>
         <spring-security5.version>5.8.16</spring-security5.version>
         <aspectj.version>1.6.5</aspectj.version>

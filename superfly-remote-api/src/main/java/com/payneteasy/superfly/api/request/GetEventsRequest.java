@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.io.Serializable;
 
 @Data
@@ -13,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetEventsRequest implements Serializable {
-    private Date lastEventTime;
+    private Long lastEventId;
     private long waitTimeMs;
     private String subsystemName;
 }

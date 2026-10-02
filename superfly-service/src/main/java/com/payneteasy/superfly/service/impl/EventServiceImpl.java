@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.function.LongSupplier;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,8 +52,8 @@ public class EventServiceImpl implements EventService, DisposableBean {
     // long-polling: a transaction held while sleeping would pin a REPEATABLE READ snapshot
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public List<Event> getEvents(Date lastEventTime, long waitTimeMs, String subsystemName) {
-        List<Event> events = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
+    public List<Event> getEvents(Long lastEventId, long waitTimeMs, String subsystemName) {
+        List<Event> events = eventDao.getEvents(lastEventId, EVENTS_LIMIT, subsystemName);
         List<Event> result = (events != null ? new ArrayList<>(events) : new ArrayList<>());
         if (result.isEmpty()) {
             long now = clock.getAsLong();
@@ -66,7 +65,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
                     Thread.currentThread().interrupt();
                     break;
                 }
-                final List<Event> newEvents = eventDao.getEvents(lastEventTime, EVENTS_LIMIT, subsystemName);
+                final List<Event> newEvents = eventDao.getEvents(lastEventId, EVENTS_LIMIT, subsystemName);
 
                 if (newEvents != null && !newEvents.isEmpty()) {
                     result.addAll(newEvents);
@@ -76,5 +75,10 @@ public class EventServiceImpl implements EventService, DisposableBean {
             }
         }
         return result;
+    }
+
+    @Override
+    public long getLastEventId(String subsystemName) {
+        return eventDao.getLastEventId(subsystemName);
     }
 }

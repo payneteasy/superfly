@@ -32,7 +32,8 @@ public enum Endpoint {
     TOUCH_SESSIONS                    ("/touchSessions"),
     COMPLETE_USER                     ("/completeUser"),
     CHANGE_USER_ROLE                  ("/changeUserRole"),
-    GET_EVENTS                        ("/getEvents");
+    GET_EVENTS                        ("/getEvents"),
+    GET_LAST_EVENT_ID                 ("/getLastEventId");
 
     private final String path;
 
