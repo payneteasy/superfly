@@ -4,7 +4,6 @@ import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.GetEventsRequest;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
-import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.*;
@@ -48,7 +47,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     private       RegisterUserStrategy registerUserStrategy;
     private       PublicKeyCrypto      publicKeyCrypto;
     private       HOTPService          hotpService;
-    private       UserDao              userDao;
     private final Set<String>          notSavedActions = Collections.singleton("action_temp_password");
 
     private AbstractPolicyValidation<PasswordCheckContext> policyValidation;
@@ -56,11 +54,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Autowired
     public void setPolicyValidation(AbstractPolicyValidation<PasswordCheckContext> policyValidation) {
         this.policyValidation = policyValidation;
-    }
-
-    @Autowired
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 
     @Autowired
@@ -384,7 +377,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public boolean userHasRolesInSubsystem(String username, String subsystemIdentifier) {
-        return "Y".equals(userDao.userHasRolesInSubsystem(username, subsystemIdentifier));
+        return userService.userHasRolesInSubsystem(username, subsystemIdentifier);
     }
 
     @Override

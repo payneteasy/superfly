@@ -368,6 +368,8 @@ public interface UserService {
 
     String getOtpMasterKeyByUsername(String username);
 
+    boolean userHasRolesInSubsystem(String username, String subsystemName);
+
     String getUserSalt(String userName);
 
     void updateUserSalt(String username, String salt);

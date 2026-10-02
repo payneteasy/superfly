@@ -9,6 +9,7 @@ import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -37,12 +38,9 @@ import java.util.stream.Collectors;
 public class SSOServiceImpl implements SSOService {
     private static final Logger logger = LoggerFactory.getLogger(SSOServiceImpl.class);
 
-    /**
-     * Users with a role in this subsystem (local admin UI) are never reachable through RPC.
-     * Keep in sync with LocalSecurityServiceImpl#localSubsystemName.
-     */
+    /** Users with a role in this subsystem (local admin UI) are never reachable through RPC. */
     @Setter
-    private String localSubsystemName = "superfly";
+    private String localSubsystemName = LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME;
     @Setter
     @Autowired(required = false)
     private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();

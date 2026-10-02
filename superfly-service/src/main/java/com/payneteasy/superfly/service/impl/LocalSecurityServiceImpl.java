@@ -25,11 +25,13 @@ import java.util.Collections;
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
 
+    public static final String DEFAULT_LOCAL_SUBSYSTEM_NAME = "superfly";
+
     private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
 
     private UserService         userService;
     @Setter
-    private String              localSubsystemName = "superfly";
+    private String              localSubsystemName = DEFAULT_LOCAL_SUBSYSTEM_NAME;
     @Setter
     private String              localRoleName      = "admin";
     private LoggerSink          loggerSink;
