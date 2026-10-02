@@ -91,6 +91,19 @@ public class EventDaoTest extends AbstractDaoTest {
         assertTrue(eventDao.getEvents(last, 10, SUBSYSTEM_A).isEmpty());
     }
 
+    @Test
+    public void testLastEventIdIsMaxOfOwnSubsystemOnly() {
+        assertEquals(idsA.get(idsA.size() - 1).longValue(), eventDao.getLastEventId(SUBSYSTEM_A));
+        // b1 is older than a3..a5: the global max must not leak into B's tail
+        assertEquals(idsB.get(0).longValue(), eventDao.getLastEventId(SUBSYSTEM_B));
+    }
+
+    @Test
+    public void testLastEventIdIsZeroWithoutEvents() {
+        assertEquals(0L, eventDao.getLastEventId("event-dao-test-unknown"));
+        assertEquals(0L, eventDao.getLastEventId(null));
+    }
+
     private static List<Long> ids(List<Event> events) {
         return events.stream().map(Event::getEventId).collect(Collectors.toList());
     }

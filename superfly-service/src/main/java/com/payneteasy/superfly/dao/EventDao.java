@@ -12,5 +12,8 @@ public interface EventDao {
 
     @AStoredProcedure(name = "ui_get_events")
     List<Event> getEvents(Long lastEventId, int limit, String subsystemName);
+
+    @AStoredProcedure(name = "ui_get_last_event_id")
+    long getLastEventId(String subsystemName);
     
 }

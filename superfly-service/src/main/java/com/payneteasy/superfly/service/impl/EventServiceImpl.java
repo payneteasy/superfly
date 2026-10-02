@@ -76,4 +76,9 @@ public class EventServiceImpl implements EventService, DisposableBean {
         }
         return result;
     }
+
+    @Override
+    public long getLastEventId(String subsystemName) {
+        return eventDao.getLastEventId(subsystemName);
+    }
 }

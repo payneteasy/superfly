@@ -41,6 +41,20 @@ public class EventServiceImplTest {
     }
 
     @Test
+    public void lastEventIdIsReadForTheGivenSubsystem() {
+        java.util.List<Object[]> calls = new java.util.ArrayList<>();
+        EventDao dao = (EventDao) Proxy.newProxyInstance(EventDao.class.getClassLoader(), new Class<?>[]{EventDao.class},
+                (p, m, a) -> {
+                    calls.add(a);
+                    return 42L;
+                });
+
+        assertEquals(42L, service(dao, new AtomicLong()).getLastEventId("s"));
+        assertEquals(1, calls.size());
+        assertEquals("s", calls.get(0)[0]);
+    }
+
+    @Test
     public void cursorAndSubsystemAreForwardedToDaoOnEveryPoll() {
         java.util.List<Object[]> calls = new java.util.ArrayList<>();
         EventDao dao = (EventDao) Proxy.newProxyInstance(EventDao.class.getClassLoader(), new Class<?>[]{EventDao.class},

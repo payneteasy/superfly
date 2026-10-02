@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface EventService {
     List<Event> getEvents(Long lastEventId, long waitTime, String subsystemName);
+
+    long getLastEventId(String subsystemName);
 }

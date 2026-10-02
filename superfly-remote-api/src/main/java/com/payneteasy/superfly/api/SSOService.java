@@ -183,4 +183,12 @@ public interface SSOService {
      * @param request request containing lastEventId (null means from the start) and waitTimeMs
      */
     List<SSOEvent> getEvents(GetEventsRequest request);
+
+    /**
+     * Get the id of the latest event of the calling subsystem, to start {@link #getEvents} from the tail
+     * without replaying the history.
+     *
+     * @return max event id of the calling subsystem, 0 if it has no events
+     */
+    Long getLastEventId();
 }

@@ -124,6 +124,18 @@ public class RemoteApiControllerSubsystemHintTest {
         verify(internal);
     }
 
+    @Test
+    public void lastEventIdIsTakenForTheAuthenticatedSubsystem() throws Exception {
+        expect(internal.getLastEventId("subsystem-a")).andReturn(42L);
+        replay(internal);
+
+        MvcResult result = call("getLastEventId", "null");
+
+        assertEquals(200, result.getResponse().getStatus());
+        assertEquals("42", result.getResponse().getContentAsString());
+        verify(internal);
+    }
+
     private void expectRegisterUser() throws Exception {
         internal.registerUser(anyObject(), anyObject(), anyObject(), eq("subsystem-a"), anyObject(),
                 anyObject(), anyObject(), anyObject(), anyObject(), anyObject(), anyObject(), anyObject());

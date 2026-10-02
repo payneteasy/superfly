@@ -297,6 +297,11 @@ public class SSOServiceImpl implements SSOService {
                 obtainSubsystemIdentifier(request.getSubsystemName()));
     }
 
+    @Override
+    public Long getLastEventId() {
+        return internalSSOService.getLastEventId(obtainSubsystemIdentifier(null));
+    }
+
     /**
      * Explicit subsystem identifiers inside role grants bypass the hint, so they must pass the
      * same check; the obtainer throws if the caller is a subsystem and the identifier is foreign.

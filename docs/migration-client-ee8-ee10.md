@@ -30,6 +30,7 @@
 9. **Курсор `getEvents` (без обратной совместимости):** `GetEventsRequest.lastEventTime` (`Date`) заменён на `lastEventId` (`Long`), builder `lastEventTime(Date)` → `lastEventId(Long)`, JSON-поле `"lastEventTime"` → `"lastEventId"` (число). `null` — с начала. Сервер отдаёт события с `eventId > lastEventId` по возрастанию `eventId`; следующий запрос делайте с максимальным `SSOEvent.eventId` из последнего ответа. Обновляйте клиент и сервер одновременно.
 10. **Проверка подсистемы:** подсистема не может указать чужой `subsystemIdentifier`/`subsystemHint`/`GetEventsRequest.subsystemName`/`roleGrants[].subsystemIdentifier` — `202` + `SsoAuthException` ([подробнее](api.md#подмена-подсистемы)). `GetEventsRequest.subsystemName` теперь учитывается.
 11. **Remote-auth:** неполный путь вроде `POST /sso/check/check-password` даёт `404` (`type: NOT_FOUND`) вместо `500`, ошибки без `Accept` или с `*/*` теперь JSON (раньше XML).
+12. **Старт `getEvents` с хвоста:** новый метод `SSOService.getLastEventId()` (`Long`, эндпоинт `getLastEventId`) — максимальный `eventId` событий вызывающей подсистемы, `0` без событий. Клиенты, которые раньше стартовали с `lastEventTime = now()`, теперь стартуют с `lastEventId = getLastEventId()`; `null` переиграет всю историю. Реализации `SSOService` вне superfly (моки, обёртки) должны добавить метод.
 
 ## Обновление
 

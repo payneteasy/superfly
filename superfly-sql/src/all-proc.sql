@@ -224,6 +224,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_events.prc
 
+\. ui_get/ui_get_last_event_id.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc

@@ -179,4 +179,6 @@ public interface InternalSSOService {
     boolean hasOtpMasterKey(String username);
 
     List<SSOEvent> getEvents(Long lastEventId, long waitTimeMs, String subsystemIdentifier);
+
+    long getLastEventId(String subsystemIdentifier);
 }

@@ -393,4 +393,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         }
         return List.of();
     }
+
+    @Override
+    public long getLastEventId(String subsystemIdentifier) {
+        return eventService.getLastEventId(subsystemIdentifier);
+    }
 }
