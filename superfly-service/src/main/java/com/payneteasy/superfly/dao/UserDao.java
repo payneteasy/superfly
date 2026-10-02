@@ -449,6 +449,12 @@ public interface UserDao {
     @AStoredProcedure(name = "get_user_statuses")
     List<UserWithStatus> getUserStatuses(String userNames);
 
+    /**
+     * @return Y if the user has at least one role in the subsystem, N otherwise
+     */
+    @AStoredProcedure(name = "int_user_has_roles_in_subsystem")
+    String userHasRolesInSubsystem(String username, String subsystemName);
+
     @AStoredProcedure(name = "get_google_auth_master_key_by_user_name")
     String getGoogleAuthMasterKeyByUsername(String username);
 

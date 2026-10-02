@@ -11,8 +11,11 @@ import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of SSOService.
@@ -31,6 +35,14 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SSOServiceImpl implements SSOService {
+    private static final Logger logger = LoggerFactory.getLogger(SSOServiceImpl.class);
+
+    /**
+     * Users with a role in this subsystem (local admin UI) are never reachable through RPC.
+     * Keep in sync with LocalSecurityServiceImpl#localSubsystemName.
+     */
+    @Setter
+    private String localSubsystemName = "superfly";
     @Setter
     @Autowired(required = false)
     private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();
@@ -56,11 +68,17 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException {
+        if (!isUserAccessible("checkOtp", request.getUserName())) {
+            return checkOtpForUnknownUser(request);
+        }
         return internalSSOService.checkOtp(request.getOtpType(), request.isOtpOptional(), request.getUserName(),  request.getCode());
     }
 
     @Override
     public boolean hasOtpMasterKey(HasOtpMasterKeyRequest request) {
+        if (!isUserAccessible("hasOtpMasterKey", request.getUsername())) {
+            return false;
+        }
         return internalSSOService.hasOtpMasterKey(request.getUsername());
     }
 
@@ -117,11 +135,18 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void updateUserOtpType(UpdateUserOtpTypeRequest request) {
+        if (!isUserAccessible("updateUserOtpType", request.getUsername())) {
+            return;
+        }
         internalSSOService.updateUserOtpType(request.getUsername(), request.getOtpType());
     }
 
     @Override
     public void changeTempPassword(ChangeTempPasswordRequest request) throws PolicyValidationException {
+        if (!isUserAccessible("changeTempPassword", request.getUsername())) {
+            internalSSOService.validatePasswordPolicy(null, request.getNewPassword());
+            return;
+        }
         internalSSOService.changeTempPassword(request.getUsername(), request.getNewPassword());
     }
 
@@ -130,6 +155,9 @@ public class SSOServiceImpl implements SSOService {
      */
     @Override
     public UserDescription getUserDescription(GetUserDescriptionRequest request) {
+        if (!isUserAccessible("getUserDescription", request.getUsername())) {
+            return null;
+        }
         UserForDescription user = internalSSOService.getUserDescription(request.getUsername());
         if (user == null) {
             return null;
@@ -153,6 +181,10 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request)
             throws UserNotFoundException, SsoDecryptException {
+        if (!isUserAccessible("resetGoogleAuthMasterKey", request.getUsername())) {
+            // an unknown user gets a fresh key that is persisted nowhere
+            return new GoogleAuthenticator().createCredentials().getKey();
+        }
         String subsystemIdentifier = obtainSubsystemIdentifier(null);
         return hotpService.resetGoogleAuthMasterKey(subsystemIdentifier, request.getUsername());
     }
@@ -168,6 +200,9 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void updateUserIsOtpOptionalValue(UpdateUserIsOtpOptionalValueRequest request) {
+        if (!isUserAccessible("updateUserIsOtpOptionalValue", request.getUsername())) {
+            return;
+        }
         internalSSOService.updateUserIsOtpOptionalValue(
                 request.getUsername(),
                 request.isOtpOptional()
@@ -180,6 +215,9 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void updateUserDescription(UpdateUserDescriptionRequest request)
             throws UserNotFoundException, BadPublicKeyException {
+        if (!isUserAccessible("updateUserDescription", request.getUserDescription().getUsername())) {
+            throw new UserNotFoundException(request.getUserDescription().getUsername());
+        }
         UserForDescription userForDescription = internalSSOService.getUserDescription(
                 request.getUserDescription().getUsername()
         );
@@ -202,10 +240,16 @@ public class SSOServiceImpl implements SSOService {
     private void doResetPassword(String username,
                                  String newPassword,
                                  boolean sendPasswordByEmail
-    ) throws UserNotFoundException {
+    ) throws UserNotFoundException, PolicyValidationException {
+        if (!isUserAccessible("resetPassword", username)) {
+            throw new UserNotFoundException(username);
+        }
         UserForDescription user = internalSSOService.getUserDescription(username);
         if (user == null) {
             throw new UserNotFoundException(username);
+        }
+        if (newPassword != null) {
+            internalSSOService.validatePasswordPolicy(username, newPassword);
         }
         resetPasswordStrategy.resetPassword(user.getUserId(), username, newPassword);
         if (sendPasswordByEmail && user.getPublicKey() != null) {
@@ -242,14 +286,18 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public List<UserStatus> getUserStatuses(GetUserStatusesRequest request) {
+        // null means "everyone" for the DAO, which would expose foreign users: an explicit list is required
+        List<String> userNames = request.getUserNames() == null
+                ? Collections.emptyList()
+                : request.getUserNames().stream()
+                        .filter(name -> isUserAccessible("getUserStatuses", name))
+                        .collect(Collectors.toList());
         List<UserWithStatus> daoUsers;
-        if (request.getUserNames() == null) {
-            daoUsers = internalSSOService.getUserStatuses(null);
-        } else if (request.getUserNames().isEmpty()) {
+        if (userNames.isEmpty()) {
             daoUsers = Collections.emptyList();
         } else {
             daoUsers = internalSSOService.getUserStatuses(
-                    StringUtils.collectionToCommaDelimitedString(request.getUserNames())
+                    StringUtils.collectionToCommaDelimitedString(userNames)
             );
         }
 
@@ -279,6 +327,9 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void completeUser(CompleteUserRequest request) {
+        if (!isUserAccessible("completeUser", request.getUsername())) {
+            return;
+        }
         internalSSOService.completeUser(request.getUsername());
     }
 
@@ -300,6 +351,49 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public Long getLastEventId() {
         return internalSSOService.getLastEventId(obtainSubsystemIdentifier(null));
+    }
+
+    /**
+     * A subsystem may only touch users that have a role in it, and never the users of the local
+     * (admin UI) subsystem. A denial must look like "no such user" to the caller, so callers
+     * mimic the unknown-user behaviour of their method.
+     */
+    private boolean isUserAccessible(String method, String username) {
+        String subsystem = obtainSubsystemIdentifier(null);
+        if (subsystem == null || username == null) {
+            logDenied(method, subsystem, username);
+            return false;
+        }
+        if (internalSSOService.userHasRolesInSubsystem(username, localSubsystemName)
+                || !internalSSOService.userHasRolesInSubsystem(username, subsystem)) {
+            logDenied(method, subsystem, username);
+            return false;
+        }
+        return true;
+    }
+
+    private void logDenied(String method, String subsystem, String username) {
+        logger.warn("Subsystem {} was denied {} on user {}", sanitize(subsystem), method, sanitize(username));
+    }
+
+    // values come from the request body: strip line breaks to prevent log injection
+    private static String sanitize(String value) {
+        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
+    }
+
+    /** What the underlying service does for a user that does not exist. */
+    private boolean checkOtpForUnknownUser(CheckOtpRequest request) throws SsoDecryptException {
+        String code = request.getCode();
+        if (request.isOtpOptional() && (code == null || code.trim().isEmpty())) {
+            return true;
+        }
+        if (request.getOtpType() != OTPType.GOOGLE_AUTH) {
+            return true;
+        }
+        if (code != null && code.matches("^[0-9]{6}$")) {
+            throw new SsoDecryptException("GA master key for " + request.getUserName() + " is null");
+        }
+        return false;
     }
 
     /**

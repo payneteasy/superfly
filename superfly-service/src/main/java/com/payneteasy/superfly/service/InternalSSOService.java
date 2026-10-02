@@ -178,6 +178,19 @@ public interface InternalSSOService {
 
     boolean hasOtpMasterKey(String username);
 
+    /**
+     * @return true if the user has at least one role in the subsystem
+     */
+    boolean userHasRolesInSubsystem(String username, String subsystemIdentifier);
+
+    /**
+     * Validates a new password against the password policy.
+     *
+     * @param username user whose password history is taken into account;
+     *                 null means a user without any history
+     */
+    void validatePasswordPolicy(String username, String password) throws PolicyValidationException;
+
     List<SSOEvent> getEvents(Long lastEventId, long waitTimeMs, String subsystemIdentifier);
 
     long getLastEventId(String subsystemIdentifier);
