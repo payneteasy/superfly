@@ -94,7 +94,8 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         
         loginData.setOtpTypeCode(userDescription.getOtpTypeCode());
         loginData.setOtpOptional(userDescription.isOtpOptional());
-        
+        loginData.setGoogleAuthSetupRequired(false);
+
         OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
             case GOOGLE_AUTH:
@@ -102,6 +103,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
                 } else if (!StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
+                    loginData.setGoogleAuthSetupRequired(true);
                     getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 } else {
                     getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
