@@ -3,6 +3,9 @@ package com.payneteasy.superfly.crypto;
 import com.payneteasy.superfly.crypto.exception.DecryptException;
 import com.payneteasy.superfly.crypto.exception.EncryptException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -27,11 +30,37 @@ public class CryptoServiceImpl implements CryptoService {
 
     private static final String PLACEHOLDER_PREFIX = "GOOGLE_AUTH_OTP_";
 
+    // The values the legacy deployments shipped with; used only to read legacy ciphertexts, never to encrypt
+    private static final String LEGACY_DEFAULT_SECRET = PLACEHOLDER_PREFIX + "SECRET";
+    private static final String LEGACY_DEFAULT_SALT   = PLACEHOLDER_PREFIX + "SALT";
+
+    private static final Logger log = LoggerFactory.getLogger(CryptoServiceImpl.class);
+
     private final SecureRandom random = new SecureRandom();
     private final SecretKey    secretKey;
+    private final SecretKey    legacyKey;
 
     public CryptoServiceImpl(String cryptoSecret, String cryptoSalt) {
+        this(cryptoSecret, cryptoSalt, false);
+    }
+
+    /**
+     * @param legacyDefaultKey if true, legacy (non-"v2:") ciphertexts are decrypted with the key derived from
+     *                         the old default placeholders instead of the configured one
+     */
+    public CryptoServiceImpl(String cryptoSecret, String cryptoSalt, boolean legacyDefaultKey) {
         this.secretKey = deriveKey(cryptoSecret, cryptoSalt);
+        if (legacyDefaultKey) {
+            log.warn("legacy OTP keys are decrypted with the old default key, re-encryption pending");
+            this.legacyKey = deriveKey(LEGACY_DEFAULT_SECRET, LEGACY_DEFAULT_SALT);
+        } else {
+            this.legacyKey = secretKey;
+        }
+    }
+
+    @Override
+    public boolean isLegacy(String ciphertext) {
+        return !ciphertext.startsWith(VERSION_PREFIX);
     }
 
     /**
@@ -89,7 +118,7 @@ public class CryptoServiceImpl implements CryptoService {
 
     private String decryptLegacy(String strToDecrypt) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
+        cipher.init(Cipher.DECRYPT_MODE, legacyKey, new IvParameterSpec(new byte[16]));
         return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)), StandardCharsets.UTF_8);
     }
 

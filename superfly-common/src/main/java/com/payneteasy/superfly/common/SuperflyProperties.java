@@ -14,6 +14,7 @@ public class SuperflyProperties {
     String  policyName;
     String  cryptoSecret;
     String  cryptoSalt;
+    Boolean cryptoLegacyDefaultKey;
     Long    maxLoginsFailed;
     Boolean csrfLoginValidatorEnable;
     Boolean enableMultiFactorAuth;

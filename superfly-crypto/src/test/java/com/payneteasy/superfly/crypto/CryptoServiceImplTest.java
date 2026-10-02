@@ -15,6 +15,9 @@ public class CryptoServiceImplTest {
     // produced by the pre-GCM implementation (AES-CBC, zero IV) with SECRET/SALT/PLAIN
     private static final String LEGACY_CIPHERTEXT = "I/67rO8JQdPA4g30y8I7Qy05tbazsiaxSOmgzemj6oE=";
 
+    // the same plaintext encrypted by the old code with the shipped GOOGLE_AUTH_OTP_* placeholders
+    private static final String LEGACY_DEFAULT_KEY_CIPHERTEXT = "+F3VZLjrLFVhBWUl1n3oD38ASE8MC5RF/cobqJmOTyM=";
+
     private final CryptoServiceImpl service = new CryptoServiceImpl(SECRET, SALT);
 
     @Test
@@ -49,6 +52,40 @@ public class CryptoServiceImplTest {
     @Test
     public void legacyCiphertextIsStillDecrypted() throws Exception {
         assertEquals(PLAIN, service.decrypt(LEGACY_CIPHERTEXT));
+    }
+
+    @Test
+    public void legacyDefaultKeyFlagDecryptsPlaceholderEncryptedCiphertext() throws Exception {
+        CryptoServiceImpl migrating = new CryptoServiceImpl(SECRET, SALT, true);
+        assertEquals(PLAIN, migrating.decrypt(LEGACY_DEFAULT_KEY_CIPHERTEXT));
+    }
+
+    @Test
+    public void placeholderEncryptedCiphertextIsNotReadWithoutFlag() {
+        try {
+            assertNotEquals(PLAIN, service.decrypt(LEGACY_DEFAULT_KEY_CIPHERTEXT));
+        } catch (DecryptException expected) {
+            // wrong key: padding check failed
+        }
+    }
+
+    @Test
+    public void flagDoesNotAffectV2AndRealKeyLegacy() throws Exception {
+        CryptoServiceImpl migrating = new CryptoServiceImpl(SECRET, SALT, true);
+        assertEquals(PLAIN, migrating.decrypt(service.encrypt(PLAIN)));
+        assertEquals(PLAIN, service.decrypt(migrating.encrypt(PLAIN)));
+        // legacy ciphertext made with the real key is read with the default key under the flag: no guessing
+        try {
+            assertNotEquals(PLAIN, migrating.decrypt(LEGACY_CIPHERTEXT));
+        } catch (DecryptException expected) {
+            // wrong key
+        }
+    }
+
+    @Test
+    public void isLegacyDistinguishesFormats() throws Exception {
+        assertTrue(service.isLegacy(LEGACY_CIPHERTEXT));
+        assertFalse(service.isLegacy(service.encrypt(PLAIN)));
     }
 
     @Test

@@ -30,7 +30,8 @@ public class SpringServiceConfiguration {
         );
         return new CryptoServiceImpl(
                 properties.cryptoSecret(),
-                properties.cryptoSalt()
+                properties.cryptoSalt(),
+                Boolean.TRUE.equals(properties.cryptoLegacyDefaultKey())
         );
     }
 

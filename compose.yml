@@ -22,9 +22,10 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_TIMEZONE: ${DB_TIMEZONE:-UTC}
       JETTY_PORT: "8080"
-      # OTP master key encryption; required, the app refuses to start without them
-      SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:?set SUPERFLY_CRYPTO_SECRET}
-      SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:?set SUPERFLY_CRYPTO_SALT}
+      # OTP master key encryption; the app refuses to start when empty (compose.production.yml enforces them)
+      SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:-}
+      SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:-}
+      SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY: ${SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY:-false}
     depends_on:
       mysql:
         condition: service_healthy
