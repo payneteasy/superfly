@@ -299,6 +299,7 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_update_user_is_otp_optional_value.sql
 
 \. int/int_has_actions.prc
+\. int/int_user_has_roles_in_subsystem.prc
 \. get/get_valid_sso_session.sql
 \. get/get_user_login_status.sql
 \. get/exchange_subsystem_token.sql

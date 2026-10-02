@@ -12,8 +12,13 @@ main_sql:
     update users u 
        set u.user_password = i_user_password, 
            u.is_password_temp = 'N' 
-           where u.user_name = i_user_name;
+           where u.user_name = i_user_name and u.is_password_temp = 'Y';
 
+    -- only a temporary password may be replaced this way; anything else behaves like an unknown user
+    if row_count() = 0 then
+      select 'OK' status, null error_message;
+      leave main_sql;
+    end if;
 
     if i_user_password is not null then 
 
