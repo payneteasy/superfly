@@ -74,11 +74,17 @@ public class SpringAppPropertiesConfiguration {
     }
 
     private String cryptoSecret() {
-        return parameterResolver.getParameter("superfly-cryptoSecret", "none");
+        return envOrParameter("SUPERFLY_CRYPTO_SECRET", "superfly-cryptoSecret");
     }
 
     private String cryptoSalt() {
-        return parameterResolver.getParameter("superfly-cryptoSalt", "none");
+        return envOrParameter("SUPERFLY_CRYPTO_SALT", "superfly-cryptoSalt");
+    }
+
+    // No default: a missing value must fail the start (see SpringServiceConfiguration#cryptoService)
+    private String envOrParameter(String envName, String paramName) {
+        String fromEnv = System.getenv(envName);
+        return fromEnv != null && !fromEnv.isBlank() ? fromEnv : parameterResolver.getParameter(paramName, null);
     }
 
     private OTPType forceMultiFactorAuthMethod() {
