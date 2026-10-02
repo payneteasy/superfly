@@ -9,14 +9,15 @@ import com.payneteasy.superfly.crypto.exception.EncryptException;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
-import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
-import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
 @Transactional
@@ -49,11 +50,21 @@ public class HOTPServiceImpl implements HOTPService {
 
     @Override
     public String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName) {
-        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(
-                issuer,
-                accountName,
-                new GoogleAuthenticatorKey.Builder(secretKey).build()
-        );
+        // Built locally: GoogleAuthenticatorQRGenerator.getOtpAuthURL sends the secret to api.qrserver.com
+        boolean hasIssuer = issuer != null && !issuer.isEmpty();
+        StringBuilder uri = new StringBuilder("otpauth://totp/");
+        if (hasIssuer) {
+            uri.append(encode(issuer)).append(':');
+        }
+        uri.append(encode(accountName)).append("?secret=").append(encode(secretKey));
+        if (hasIssuer) {
+            uri.append("&issuer=").append(encode(issuer));
+        }
+        return uri.toString();
+    }
+
+    private static String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     @Override
