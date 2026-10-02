@@ -38,9 +38,6 @@ import java.util.stream.Collectors;
 public class SSOServiceImpl implements SSOService {
     private static final Logger logger = LoggerFactory.getLogger(SSOServiceImpl.class);
 
-    /** Users with a role in this subsystem (local admin UI) are never reachable through RPC. */
-    @Setter
-    private String localSubsystemName = LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME;
     @Setter
     @Autowired(required = false)
     private SubsystemIdentifierObtainer subsystemIdentifierObtainer = new AuthRequestInfoObtainer();
@@ -352,6 +349,7 @@ public class SSOServiceImpl implements SSOService {
     }
 
     /**
+     * Users with a role in the local (admin UI) subsystem are never reachable through RPC.
      * A subsystem may only touch users that have a role in it, and never the users of the local
      * (admin UI) subsystem. A denial must look like "no such user" to the caller, so callers
      * mimic the unknown-user behaviour of their method.
@@ -362,7 +360,7 @@ public class SSOServiceImpl implements SSOService {
             logDenied(method, subsystem, username);
             return false;
         }
-        if (internalSSOService.userHasRolesInSubsystem(username, localSubsystemName)
+        if (internalSSOService.userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
                 || !internalSSOService.userHasRolesInSubsystem(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
