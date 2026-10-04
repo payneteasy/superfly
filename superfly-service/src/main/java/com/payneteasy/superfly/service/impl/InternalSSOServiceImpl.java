@@ -366,7 +366,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public void touchSessions(List<Long> sessionIds, String subsystemIdentifier) {
         if (sessionIds != null && !sessionIds.isEmpty() && subsystemIdentifier != null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Touching sessions " + sessionIds);
+                logger.debug("Touching {} sessions for subsystem {}", sessionIds.size(), subsystemIdentifier);
             }
             sessionService.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds), subsystemIdentifier);
         }

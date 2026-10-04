@@ -141,7 +141,7 @@ public class SSOUtils {
         String ssoSessionId = getSsoSessionIdFromCookie(request);
         
         if (StringUtils.hasText(ssoSessionId)) {
-            logger.debug("Clearing SSO session after failed authentication: {}", ssoSessionId);
+            logger.debug("Clearing SSO session after failed authentication");
             sessionService.deleteSSOSession(ssoSessionId);
         }
         
