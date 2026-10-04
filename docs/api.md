@@ -24,6 +24,8 @@ Superfly предоставляет два типа API. Формат везде
 
 Токен подсистемы (`subsystemToken`) задаётся при регистрации подсистемы в UI.
 
+RPC stateless: сессия (`JSESSIONID`) не создаётся, заголовки нужны в каждом запросе; повтор с cookie без `X-Subsystem-*` не проходит.
+
 ### Remote-auth (`/sso/check/**`)
 
 Путь доступен без сессии, токен проверяет сам контроллер. Обязателен заголовок:
@@ -43,16 +45,32 @@ Authorization: Bearer {subsystem_token}
 Имена методов и типы запросов соответствуют интерфейсу `SSOService` из `superfly-remote-api`;
 поля тела — поля классов `com.payneteasy.superfly.api.request.*`. Даты — `yyyy-MM-dd'T'HH:mm:ssZ`.
 
+**Accept:** ответ всегда `application/json`. Отсутствующий заголовок, `*/*`, `application/*` и списки, в которых
+есть JSON, принимаются. Иначе (например `text/xml`) — `406` с пустым телом; проверка идёт до вызова метода,
+побочных эффектов нет.
+
 **Статусы ответа:** `200` — успех; `202` — метод бросил исключение (тело — `ExceptionWrapper`);
+`406` — неподдерживаемый `Accept`;
 `500` — сбой самого вызова (неизвестный метод, невалидное тело), тело тоже `ExceptionWrapper`.
 Клиент `SSOHttpServiceApiClient` разбирает `ExceptionWrapper` при любом статусе, кроме `200`.
 
-**Обработка ошибок** — тело `ExceptionWrapper`:
+**Обработка ошибок** — тело `ExceptionWrapper`. Класс и сообщение отдаются только для исключений контракта
+(`UserExistsException`, `PolicyValidationException`, `BadPublicKeyException`, `MessageSendException`,
+`UserNotFoundException`, `SsoDecryptException`, `SsoAuthException`, `SsoUserException`, `SsoSystemException`,
+`SsoDataException`); `detailMessage` всегда `null`:
 ```json
 { "exceptionClass": "com.payneteasy.superfly.api.UserNotFoundException",
   "message": "User 'john' not found",
-  "detailMessage": "com.payneteasy.superfly.api.UserNotFoundException: User 'john' not found" }
+  "detailMessage": null }
 ```
+Любая другая ошибка (SQL/DAO, NPE, невалидный JSON, неизвестный метод) приходит обезличенной; `errorId` — UUID,
+под которым исключение записано в серверный лог:
+```json
+{ "exceptionClass": "com.payneteasy.superfly.api.exceptions.SsoServerException",
+  "message": "Internal server error, errorId: 3f0c1c8e-7a52-4b1e-9d0e-5a2f6f3d9c11",
+  "detailMessage": null }
+```
+Исключения вне RPC-контроллера (`GlobalExceptionHandler`) — `500`, `{"error": "Internal server error", "errorId": "<uuid>"}`.
 
 ### Подмена подсистемы
 

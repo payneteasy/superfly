@@ -38,6 +38,17 @@ public class ExceptionSerializationHelper {
     }
 
     /**
+     * Tells whether the exception is part of the API contract, i.e. clients can recreate it
+     * and its class and message are safe to send over the wire.
+     *
+     * @param exceptionClass exception class
+     * @return true if the class is registered
+     */
+    public static boolean isRegistered(Class<? extends Throwable> exceptionClass) {
+        return EXCEPTION_CLASSES.get(exceptionClass.getName()) == exceptionClass;
+    }
+
+    /**
      * Creates an exception based on ExceptionWrapper.
      *
      * @param wrapper ExceptionWrapper object
