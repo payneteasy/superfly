@@ -93,6 +93,30 @@ public class AuditEventsTest {
     }
 
     @Test
+    public void ipv6AddressReachesDaoUntruncated() {
+        String ipv6 = "2001:db8:85a3::8a2e:370:7334";
+        EasyMock.expect(userDao.authenticate("bob", "p", "l", "billing", ipv6, "info")).andReturn(new AuthSession("bob"));
+        EasyMock.replay(userDao);
+
+        userService.authenticate("bob", "p", "l", "billing", ipv6, "info");
+
+        EasyMock.verify(userDao);
+    }
+
+    @Test
+    public void userRolesChangeListsRoleIds() {
+        userService.setNotificationService(TrivialProxyFactory.createProxy(com.payneteasy.superfly.service.NotificationService.class));
+        EasyMock.expect(userDao.changeUserRoles(5L, "1,2", "3", "1")).andReturn(RoutineResult.okResult());
+        EasyMock.replay(userDao);
+
+        userService.changeUserRoles(5L, java.util.Arrays.asList(1L, 2L), java.util.Arrays.asList(3L),
+                java.util.Arrays.asList(1L));
+
+        assertEquals("user:admin, event:CHANGE_USER_ROLES, resource:5, result:success, "
+                + "details:added=1,2, removed=3, grantActions=1, ip:" + IP, onlyMessage());
+    }
+
+    @Test
     public void remoteChangeUserRole() {
         EasyMock.expect(userDao.changeUserRole("bob", "ROLE_B", "billing")).andReturn(RoutineResult.okResult());
         EasyMock.replay(userDao);

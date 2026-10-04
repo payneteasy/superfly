@@ -207,7 +207,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
     public void testChangeUserRoles() throws Exception {
         userDao.changeUserRoles(anyLong(), anyObject(String.class), anyObject(String.class), anyObject(String.class));
         EasyMock.expectLastCall().andReturn(okResult());
-        loggerSink.info(anyObject(Logger.class), eq("CHANGE_USER_ROLES"), eq(true), eq("1"));
+        loggerSink.info(anyObject(Logger.class), eq("CHANGE_USER_ROLES"), eq(true), eq("1"),
+                eq("added=, removed=, grantActions="));
         EasyMock.replay(loggerSink, userDao);
 
         userService.changeUserRoles(1L, Collections.<Long>emptyList(), Collections.<Long>emptyList(), Collections.<Long>emptyList());
@@ -219,7 +220,8 @@ public class UserServiceLoggingTest extends AbstractServiceLoggingTest {
     public void testChangeUserRolesFail() throws Exception {
         userDao.changeUserRoles(anyLong(), anyObject(String.class), anyObject(String.class), anyObject(String.class));
         EasyMock.expectLastCall().andReturn(failureResult());
-        loggerSink.info(anyObject(Logger.class), eq("CHANGE_USER_ROLES"), eq(false), eq("1"));
+        loggerSink.info(anyObject(Logger.class), eq("CHANGE_USER_ROLES"), eq(false), eq("1"),
+                eq("added=, removed=, grantActions="));
         EasyMock.replay(loggerSink, userDao);
 
         userService.changeUserRoles(1L, Collections.<Long>emptyList(), Collections.<Long>emptyList(), Collections.<Long>emptyList());

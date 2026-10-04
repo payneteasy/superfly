@@ -298,14 +298,15 @@ public class UserServiceImpl implements UserService {
             rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
             rolesToGrantActionsIds.retainAll(rolesToAddIds);
         }
-        RoutineResult result = userDao.changeUserRoles(userId,
-                StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
-                StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
-                StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
+        String added = StringUtils.collectionToCommaDelimitedString(rolesToAddIds);
+        String removed = StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds);
+        String grantActions = StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds);
+        RoutineResult result = userDao.changeUserRoles(userId, added, removed, grantActions);
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
         }
-        loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
+        loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId),
+                "added=" + added + ", removed=" + removed + ", grantActions=" + grantActions);
         return result;
     }
 
@@ -558,9 +559,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName, String ipAddress, String sessionInfo) {
-        if (ipAddress != null && ipAddress.length() > 15) {
-            ipAddress = ipAddress.substring(0, 15);
-        }
         return userDao.authenticate(username,password,legacyPassword,subsystemName,ipAddress,sessionInfo);
     }
 
