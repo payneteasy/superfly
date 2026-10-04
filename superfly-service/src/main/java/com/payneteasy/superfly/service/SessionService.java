@@ -116,5 +116,5 @@ public interface SessionService {
      */
     void deleteSSOSession(String ssoSessionIdentifier);
 
-    void touchSessions(String sessionIds);
+    void touchSessions(String sessionIds, String subsystemIdentifier);
 }

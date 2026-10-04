@@ -157,8 +157,9 @@ public interface InternalSSOService {
      * is touched too.
      *
      * @param sessionIds    IDs of sessions to touch
+     * @param subsystemIdentifier    subsystem of the caller; only its sessions are touched, null touches nothing
      */
-    void touchSessions(List<Long> sessionIds);
+    void touchSessions(List<Long> sessionIds, String subsystemIdentifier);
 
     /**
      * Makes a user complete.

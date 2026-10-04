@@ -132,8 +132,8 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void touchSessions(String sessionIds) {
-        sessionDao.touchSessions(sessionIds);
+    public void touchSessions(String sessionIds, String subsystemIdentifier) {
+        sessionDao.touchSessions(sessionIds, subsystemIdentifier);
     }
 
 }

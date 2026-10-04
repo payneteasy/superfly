@@ -266,20 +266,20 @@ public class InternalSSOServiceImplTest {
 
     @Test
     public void testTouchSessions() {
-        sessionService.touchSessions("1,2,3");
+        sessionService.touchSessions("1,2,3", "subsystem");
         expectLastCall();
         replay(sessionService);
-        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L), "subsystem");
         verify(sessionService);
 
         reset(sessionService);
         replay(sessionService);
-        internalSSOService.touchSessions(Collections.<Long>emptyList());
+        internalSSOService.touchSessions(Collections.<Long>emptyList(), "subsystem");
         verify(sessionService);
 
         reset(sessionService);
         replay(sessionService);
-        internalSSOService.touchSessions(null);
+        internalSSOService.touchSessions(null, "subsystem");
         verify(sessionService);
     }
 

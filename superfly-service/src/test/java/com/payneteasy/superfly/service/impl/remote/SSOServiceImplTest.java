@@ -73,7 +73,8 @@ public class SSOServiceImplTest {
 
     @Test
     public void testTouchSessions() {
-        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L), "caller");
         expectLastCall();
         replay(internalSSOService);
         ssoService.touchSessions(

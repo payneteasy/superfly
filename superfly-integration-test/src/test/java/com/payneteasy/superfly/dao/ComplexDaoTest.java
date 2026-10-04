@@ -128,7 +128,7 @@ public class ComplexDaoTest extends AbstractDaoTest {
         // token must be destroyed after it has been exchanged
         Assert.assertNull(userDao.exchangeSubsystemToken("beef", subsystem.getName()));
 
-        sessionDao.touchSessions("1,2,3,4,5,6,7,8,9,10");
+        sessionDao.touchSessions("1,2,3,4,5,6,7,8,9,10", subsystem.getName());
 
         sessionDao.deleteSSOSession(ssoSession.getIdentifier());
     }

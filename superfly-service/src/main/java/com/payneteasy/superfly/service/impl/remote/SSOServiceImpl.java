@@ -328,7 +328,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void touchSessions(TouchSessionsRequest request) {
-        internalSSOService.touchSessions(request.getSessionIds());
+        internalSSOService.touchSessions(request.getSessionIds(), obtainSubsystemIdentifier(null));
     }
 
     @Override
