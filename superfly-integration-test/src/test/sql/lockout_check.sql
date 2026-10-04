@@ -29,6 +29,21 @@ call login_locked('lockcheck-otp', 3, 'HOTP');
 call lockcheck_assert((select is_account_locked = 'Y' from users where user_name = 'lockcheck-otp'),
                       'account must be locked after max OTP failures');
 
+-- manual unlock must zero the OTP counter, otherwise the next failure re-locks at once
+call ui_unlock_user((select user_id from users where user_name = 'lockcheck-otp'));
+call lockcheck_assert((select is_account_locked = 'N' and hotp_logins_failed = 0 and logins_failed is null
+                         from users where user_name = 'lockcheck-otp'),
+                      'ui_unlock_user must zero hotp_logins_failed');
+call increment_hotp_logins_failed('lockcheck-otp');
+call login_locked('lockcheck-otp', 3, 'HOTP');
+call lockcheck_assert((select is_account_locked = 'N' from users where user_name = 'lockcheck-otp'),
+                      'one OTP failure after unlock must not lock');
+update users set is_account_locked = 'Y', is_account_suspended = 'Y', hotp_logins_failed = 3 where user_name = 'lockcheck-otp';
+call ui_unlock_suspended_user((select user_id from users where user_name = 'lockcheck-otp'), 'tmp-hash');
+call lockcheck_assert((select is_account_locked = 'N' and hotp_logins_failed = 0
+                         from users where user_name = 'lockcheck-otp'),
+                      'ui_unlock_suspended_user must zero hotp_logins_failed');
+
 -- explicit reset with a password unlocks and zeroes (not NULLs) the OTP counter
 call reset_password((select user_id from users where user_name = 'lockcheck-manual'), 'new-hash');
 call lockcheck_assert((select is_account_locked = 'N' and hotp_logins_failed = 0 and logins_failed is null
