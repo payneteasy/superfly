@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 @OnPolicyCondition(Policy.PCIDSS)
 public class PCIDSSPasswordPolicyValidation extends AbstractPolicyValidation<PasswordCheckContext>{
-    private final static int MIN_LEN=7;
+    private final static int MIN_LEN=12;
     private final static int HISTORY_DEPTH=4;
 
     @Override
