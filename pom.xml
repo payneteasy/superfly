@@ -738,7 +738,14 @@
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
-                <version>1.84</version>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
+                <!--Justification: transitive of velocity-engine-core; pinned to get the ClassUtils.getClass() StackOverflow fix (3.18.0) -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.18.0</version>
             </dependency>
 
 
