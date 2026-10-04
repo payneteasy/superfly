@@ -17,6 +17,8 @@ import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcess
 import com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.handler.JsonAuthenticationFailureHandler;
 import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
+import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
+import com.payneteasy.superfly.web.security.ratelimit.LoginRateLimitFilter;
 import com.payneteasy.superfly.service.impl.SubsystemOriginCache;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +42,7 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -149,6 +152,7 @@ public class SpringSecurityConfiguration {
 
         // Добавляем кастомные фильтры
         http.addFilterAt(x509AuthenticationFilter(), X509AuthenticationFilter.class)
+            .addFilterAfter(loginRateLimitFilter(), X509AuthenticationFilter.class)
             .addFilterBefore(subsystemAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAt(passwordAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(initOtpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -206,10 +210,25 @@ public class SpringSecurityConfiguration {
     }
 
     @Bean
+    public LoginAttemptLimiter loginAttemptLimiter() {
+        Integer ipLimit = properties.loginIpLimit();
+        return LoginAttemptLimiter.install(ipLimit == null ? LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP : ipLimit);
+    }
+
+    @Bean
+    public LoginRateLimitFilter loginRateLimitFilter() {
+        return new LoginRateLimitFilter(loginAttemptLimiter());
+    }
+
+    private static AuthenticationFailureHandler loginFailureHandler() {
+        return LoginRateLimitFilter.recordingFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+    }
+
+    @Bean
     public SuperflyUsernamePasswordAuthenticationProcessingFilter passwordAuthenticationProcessingFilter() {
         SuperflyUsernamePasswordAuthenticationProcessingFilter filter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
         changeSessionIdOnLogin(filter);
         return filter;
@@ -219,7 +238,7 @@ public class SpringSecurityConfiguration {
     public SuperflyLocalOTPAuthenticationProcessingFilter otpAuthenticationProcessingFilter() {
         SuperflyLocalOTPAuthenticationProcessingFilter filter = new SuperflyLocalOTPAuthenticationProcessingFilter();
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
         changeSessionIdOnLogin(filter);
         return filter;
@@ -230,7 +249,7 @@ public class SpringSecurityConfiguration {
         SuperflyInitOTPAuthenticationProcessingFilter filter = new SuperflyInitOTPAuthenticationProcessingFilter();
         filter.setLocalSecurityService(localSecurityService);
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
         changeSessionIdOnLogin(filter);
         return filter;
