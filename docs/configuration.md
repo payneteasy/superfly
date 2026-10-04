@@ -149,6 +149,19 @@ HOTP-провайдер настраивается через `superfly-spi`. Р
 Origin из `landingUrl` и `subsystemUrl` всех подсистем добавляются в директиву `form-action`, а `loginFormCssUrl` — в `style-src`.
 Список кэшируется на 5 минут и сбрасывается сразу при правке подсистемы в админке. После сбоя загрузки (БД недоступна) в течение 10 секунд отдаётся базовая политика без обращений к БД.
 
+## Reverse proxy и cookie
+
+Docker-образ предполагает TLS-терминирующий прокси (nginx и т. п.) перед Jetty. В образ включён модуль Jetty `forwarded`
+(`ForwardedRequestCustomizer`): схема, хост и IP клиента берутся из `Forwarded` / `X-Forwarded-Proto` / `X-Forwarded-For` / `X-Forwarded-Host`.
+Нужно, чтобы от прокси приходили `Host`, `X-Forwarded-Proto: https` и `X-Forwarded-For`; тогда `request.isSecure()` верен
+и заголовок HSTS выставляется (Spring Security пишет его только для secure-запросов).
+
+- Jetty не умеет ограничивать доверенные адреса прокси: заголовки принимаются от любого клиента. Порт 8080 должен быть доступен
+  только прокси (в `compose.production.yml` порты не публикуются); при прямом доступе IP клиента (аудит, блокировки) подделывается.
+- `SSOSESSIONID` всегда отдаётся с `Secure`, `HttpOnly`, `SameSite=Lax`; `JSESSIONID` — `Secure`, `HttpOnly` (web.xml), без `;jsessionid=` в URL.
+  Флага для отключения нет: браузеры принимают `Secure`-cookie на `http://localhost`, так что локальный запуск (`./dev-env.sh app`)
+  работает; доступ по `http://<не-localhost>` без TLS работать не будет.
+
 ## Переменные окружения
 
 Подключение к БД в Docker-образе задаётся `DB_*` и `JETTY_PORT` (см. выше). Остальные параметры — через XML-конфиги Jetty и Spring.
