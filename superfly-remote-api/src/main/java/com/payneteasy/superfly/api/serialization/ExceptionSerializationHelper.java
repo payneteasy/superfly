@@ -26,6 +26,7 @@ public class ExceptionSerializationHelper {
         registerExceptionClass(SsoUserException.class);
         registerExceptionClass(SsoSystemException.class);
         registerExceptionClass(SsoDataException.class);
+        registerExceptionClass(SsoServerException.class);
     }
 
     /**

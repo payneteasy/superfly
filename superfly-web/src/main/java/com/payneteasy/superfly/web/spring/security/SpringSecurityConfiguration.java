@@ -39,7 +39,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -89,7 +92,9 @@ public class SpringSecurityConfiguration {
     public SecurityFilterChain remotingSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher(antPathRequestMatcher("/remoting/sso.service/**"))
             .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_SUBSYSTEM"))
-            .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(authenticationEntryPoint()))
+            // RPC clients get a status, not a redirect to the login form.
+            .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .securityContext(securityContext ->
                     securityContext.securityContextRepository(new RequestAttributeSecurityContextRepository()))
@@ -110,6 +115,8 @@ public class SpringSecurityConfiguration {
                 // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
                 // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
                 .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
+                // Keeps SSO tokens and target URLs out of Referer on outgoing navigation.
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
             )
             .authorizeHttpRequests(
                     auth ->
