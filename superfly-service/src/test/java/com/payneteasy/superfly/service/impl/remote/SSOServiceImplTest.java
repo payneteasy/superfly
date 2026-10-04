@@ -53,10 +53,11 @@ public class SSOServiceImplTest {
 
     @Test
     public void testExchangeSubsystemToken() {
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
         SSOUser user = new SSOUser("pete", Collections.singletonMap(
                 new SSORole("test-role"), new SSOAction[]{new SSOAction("test-action", false)}
         ), null);
-        expect(internalSSOService.exchangeSubsystemToken("token"))
+        expect(internalSSOService.exchangeSubsystemToken("token", "caller"))
                 .andReturn(user);
         replay(internalSSOService);
 

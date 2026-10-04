@@ -145,10 +145,11 @@ public interface InternalSSOService {
      * be used for exchanging.
      *
      * @param subsystemToken    subsystem token
+     * @param callerSubsystem  subsystem of the caller; the token is valid only for it
      * @return SSOUser or null if token does not exist, expired or
      * already used
      */
-    SSOUser exchangeSubsystemToken(String subsystemToken);
+    SSOUser exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     /**
      * Touches sessions: that is, updates their access time to avoid

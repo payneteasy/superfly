@@ -241,11 +241,11 @@ public class InternalSSOServiceImplTest {
     public void testExchangeSubsystemTokenSuccess() {
         AuthSession session = new AuthSession("pete", 1L);
         session.setRoles(Collections.singletonList(new AuthRole("test-role")));
-        expect(userService.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token", "caller"))
                 .andReturn(session);
         replay(userService);
 
-        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
+        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token", "caller");
         assertNotNull(user);
         assertEquals("pete", user.getName());
         assertEquals("1", user.getSessionId());
@@ -255,11 +255,11 @@ public class InternalSSOServiceImplTest {
 
     @Test
     public void testExchangeSubsystemTokenNullResult() {
-        expect(userService.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token", "caller"))
                 .andReturn(null);
         replay(userService);
 
-        assertNull(internalSSOService.exchangeSubsystemToken("valid-token"));
+        assertNull(internalSSOService.exchangeSubsystemToken("valid-token", "caller"));
 
         verify(userService);
     }

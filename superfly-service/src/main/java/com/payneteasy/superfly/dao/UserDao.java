@@ -493,11 +493,12 @@ public interface UserDao {
      * be used for exchanging.
      *
      * @param subsystemToken subsystem token
+     * @param callerSubsystem  subsystem of the caller; the token is valid only for it
      * @return SSOUser or null if token does not exist, expired or
      * already used
      */
     @AStoredProcedure(name = "exchange_subsystem_token")
-    AuthSession exchangeSubsystemToken(String subsystemToken);
+    AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     /**
      * Makes a user complete.

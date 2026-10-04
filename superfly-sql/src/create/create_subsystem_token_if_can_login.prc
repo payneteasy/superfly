@@ -11,13 +11,16 @@ create procedure create_subsystem_token_if_can_login(
     declare v_user_id       int(10);
     declare v_ssys_id       int(10);
 
-    select ssos_id, user_user_id
+    select ss.ssos_id, ss.user_user_id
       into v_sso_sess_id, v_user_id
-      from sso_sessions
-      where ssos_id = i_sso_sess_id;
+      from sso_sessions ss
+        join users u on u.user_id = ss.user_user_id
+      where ss.ssos_id = i_sso_sess_id
+        and coalesce(u.is_account_locked, 'N') = 'N'
+        and u.is_account_suspended = 'N';
 
     if v_sso_sess_id is null then
-      -- no such SSO session - return
+      -- no such SSO session or the user is locked - return
       select null from dual where false;
       leave main_sql;
     end if;

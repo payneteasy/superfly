@@ -318,7 +318,12 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public SSOUser exchangeSubsystemToken(ExchangeSubsystemTokenRequest request) {
-        return internalSSOService.exchangeSubsystemToken(request.getSubsystemToken());
+        // the token is bound to the calling subsystem; a caller without one cannot exchange anything
+        String callerSubsystem = obtainSubsystemIdentifier(null);
+        if (callerSubsystem == null) {
+            return null;
+        }
+        return internalSSOService.exchangeSubsystemToken(request.getSubsystemToken(), callerSubsystem);
     }
 
     @Override

@@ -549,8 +549,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthSession exchangeSubsystemToken(String subsystemToken) {
-        return userDao.exchangeSubsystemToken(subsystemToken);
+    public AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem) {
+        return userDao.exchangeSubsystemToken(subsystemToken, callerSubsystem);
     }
 
     @Override

@@ -343,9 +343,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public SSOUser exchangeSubsystemToken(String subsystemToken) {
+    public SSOUser exchangeSubsystemToken(String subsystemToken, String callerSubsystem) {
         SSOUser     ssoUser;
-        AuthSession session = userService.exchangeSubsystemToken(subsystemToken);
+        AuthSession session = userService.exchangeSubsystemToken(subsystemToken, callerSubsystem);
         boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
         if (ok) {

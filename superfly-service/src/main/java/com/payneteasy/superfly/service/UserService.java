@@ -398,7 +398,7 @@ public interface UserService {
 
     RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames);
 
-    AuthSession exchangeSubsystemToken(String subsystemToken);
+    AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     List<UserWithStatus> getUserStatuses(String userNames);
 
