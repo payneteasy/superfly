@@ -2,7 +2,9 @@
 <configuration>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %msg%n</pattern>
+            <!-- user input (usernames, hints) reaches log messages: CR/LF/TAB are replaced so that it cannot forge a
+                 record. The stack trace is left as is: it is multi-line by nature and is printed after the message -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{40} - %replace(%msg){'[\r\n\t]+', '_'}%n</pattern>
         </encoder>
     </appender>
 

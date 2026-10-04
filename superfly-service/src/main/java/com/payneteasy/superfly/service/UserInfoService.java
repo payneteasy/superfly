@@ -12,4 +12,13 @@ public interface UserInfoService {
      * @return current user name
      */
     String getUsername();
+
+    /**
+     * Returns address of the client of the current request.
+     *
+     * @return client IP, or null if there is no current request
+     */
+    default String getRemoteAddress() {
+        return null;
+    }
 }
