@@ -12,6 +12,7 @@ import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.spisupport.HOTPService;
@@ -372,6 +373,19 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public boolean hasOtpMasterKey(String username) {
         return userService.getOtpMasterKeyByUsername(username) != null;
+    }
+
+    @Override
+    public boolean userHasRolesInSubsystem(String username, String subsystemIdentifier) {
+        return userService.userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    @Override
+    public void validatePasswordPolicy(String username, String password) throws PolicyValidationException {
+        List<PasswordSaltPair> history = username == null
+                ? Collections.emptyList()
+                : userService.getUserPasswordHistoryAndCurrentPassword(username);
+        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, history));
     }
 
     private EventService eventService;

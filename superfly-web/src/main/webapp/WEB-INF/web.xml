@@ -99,15 +99,9 @@
            <param-value>30</param-value>
     </context-param>
 
-    <context-param>
-        <param-name>superfly-cryptoSecret</param-name>
-        <param-value>GOOGLE_AUTH_OTP_SECRET</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>superfly-cryptoSalt</param-name>
-        <param-value>GOOGLE_AUTH_OTP_SALT</param-value>
-    </context-param>
+    <!-- superfly-cryptoSecret / superfly-cryptoSalt have no defaults: set SUPERFLY_CRYPTO_SECRET and
+         SUPERFLY_CRYPTO_SALT in the environment (or the system properties / context params of the same
+         names as a fallback); the application refuses to start without them. -->
 
     <listener>
         <listener-class>ch.qos.logback.classic.servlet.LogbackServletContextListener</listener-class>

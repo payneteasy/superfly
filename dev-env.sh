@@ -159,6 +159,11 @@ SQL
 
 cmd_app() {
     echo "Starting on http://localhost:8085/superfly/ — login admin / 123admin123"
+    if [ -z "${SUPERFLY_CRYPTO_SECRET:-}" ] || [ -z "${SUPERFLY_CRYPTO_SALT:-}" ]; then
+        echo "WARNING: dev dummy crypto key (SUPERFLY_CRYPTO_SECRET/SALT not set) — never use outside local dev"
+        export SUPERFLY_CRYPTO_SECRET="dev-dummy-secret"
+        export SUPERFLY_CRYPTO_SALT="dev-dummy-salt"
+    fi
     cd "$ROOT_DIR/superfly-web"
     ../mvnw test-compile org.codehaus.mojo:exec-maven-plugin:3.1.0:java \
         -Dexec.mainClass=com.payneteasy.superfly.Start \

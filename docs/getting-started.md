@@ -72,10 +72,12 @@ docker build --target production -t superfly-app .
 docker run -d -p 8080:8080 \
   -e DB_HOST=db.example.com -e DB_PORT=3306 -e DB_NAME=sso \
   -e DB_USER=sso -e DB_PASSWORD -e DB_TIMEZONE=UTC \
+  -e SUPERFLY_CRYPTO_SECRET -e SUPERFLY_CRYPTO_SALT \
   superfly-app
 ```
 
 Параметры `DB_*` читаются из окружения (`docker/jetty/ROOT.xml`), порт Jetty — `JETTY_PORT` (по умолчанию 8080).
+`SUPERFLY_CRYPTO_SECRET` и `SUPERFLY_CRYPTO_SALT` обязательны (ключ шифрования OTP, см. [Конфигурацию](configuration.md#ключ-шифрования-otp-master-key)): без них приложение не стартует.
 `-e DB_PASSWORD` без значения берёт пароль из окружения хоста, чтобы он не попадал в историю команд.
 
 `compose.yml` поднимает приложение и MySQL 5.7 (`.env` создаётся из `.env.example`; `DB_PASSWORD` и

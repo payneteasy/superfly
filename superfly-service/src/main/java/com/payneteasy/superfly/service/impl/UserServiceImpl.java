@@ -451,6 +451,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean userHasRolesInSubsystem(String username, String subsystemName) {
+        return "Y".equals(userDao.userHasRolesInSubsystem(username, subsystemName));
+    }
+
+    @Override
     public String getOtpMasterKeyByUsername(String username) {
         return userDao.getGoogleAuthMasterKeyByUsername(username);
     }

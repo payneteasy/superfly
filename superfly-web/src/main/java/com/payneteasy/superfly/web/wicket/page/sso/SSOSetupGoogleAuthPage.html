@@ -16,6 +16,10 @@
     <h2>Generate key for Google Auth</h2>
     <form action="#" wicket:id="form">
         <div wicket:id="otp"></div>
+        <div class="superfly-form-row">
+            <label class="superfly-form-label" for="hotp">One-time password value</label>
+            <input class="superfly-form-input-text" id="hotp" wicket:id="code" type="text" autocomplete="off"/>
+        </div>
         <div class="superfly-reason" wicket:id="message">[error message]</div>
         <input wicket:id="_csrf" type="hidden" name="_csrf"/>
         <div class="superfly-button-row">

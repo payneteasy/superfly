@@ -30,6 +30,9 @@ services:
           pids: 256
         reservations:
           memory: 512M
+    environment:
+      SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:?set SUPERFLY_CRYPTO_SECRET}
+      SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:?set SUPERFLY_CRYPTO_SALT}
     restart: unless-stopped
     logging: *prod-logging
     # backend is internal (no host access), so the app also joins frontend,
