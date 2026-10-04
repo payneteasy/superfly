@@ -1102,7 +1102,7 @@
         <spring-security5.version>5.8.16</spring-security5.version>
         <aspectj.version>1.6.5</aspectj.version>
 
-        <wicket.version>10.9.1</wicket.version>
+        <wicket.version>10.11.0</wicket.version>
         <wicket8.version>8.18.0</wicket8.version>
         <jetty.version>12.0.36</jetty.version>
 
