@@ -8,12 +8,16 @@ import com.payneteasy.superfly.service.SubsystemService;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
  * @author rpuch
  */
 public class SSOLoginPage extends BaseSSOPage {
+    private static final Logger logger = LoggerFactory.getLogger(SSOLoginPage.class);
+
     @SpringBean
     private SubsystemService subsystemService;
     @SpringBean
@@ -34,7 +38,7 @@ public class SSOLoginPage extends BaseSSOPage {
         }
 
         if (ok) {
-            targetUrl = sanitizeTargetUrl(targetUrl);
+            targetUrl = ensureSameOriginPath(sanitizeTargetUrl(targetUrl));
 
             SSOLoginData loginData = new SSOLoginData(subsystemIdentifier, targetUrl);
             SSOUtils.saveLoginData(this, loginData);
@@ -52,8 +56,8 @@ public class SSOLoginPage extends BaseSSOPage {
                         SSOUtils.redirectToSubsystem(this, loginData, token);
                     } else {
                         // can't login: just display an error
-                        String reason = String.format("No subsystem token for sso_session_id '%s' and subsystemIdentifier = '%s', ssoSession = %s"
-                                , ssoSessionId, subsystemIdentifier, ssoSession);
+                        String reason = String.format("No subsystem token for subsystemIdentifier = '%s', ssoSession id = %s"
+                                , subsystemIdentifier, ssoSession.getId());
                         SSOUtils.redirectToCantLoginErrorPage(this, loginData, reason);
                     }
                     needToLogin = false;
@@ -62,6 +66,11 @@ public class SSOLoginPage extends BaseSSOPage {
 
             if (needToLogin) {
                 UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemIdentifier);
+                if (subsystem == null) {
+                    logger.warn("Login attempt for unknown subsystem '{}'", subsystemIdentifier);
+                    SSOUtils.redirectToLoginErrorPage(this, new Model<String>("Can't login"));
+                    return;
+                }
                 loginData.setSubsystemTitle(subsystem.getTitle());
                 loginData.setSubsystemUrl(subsystem.getSubsystemUrl());
                 getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
@@ -86,6 +95,22 @@ public class SSOLoginPage extends BaseSSOPage {
             // no protocol, so just returning url ensuring it is absolute
             return targetUrl.startsWith("/") ? targetUrl : "/" + targetUrl;
         }
+    }
+
+    /**
+     * Keeps only a same-origin path: browsers strip tabs/newlines and treat a backslash as a slash,
+     * so "//evil", "/\\evil" and "/&lt;tab&gt;/evil" would all become a protocol-relative URL.
+     */
+    private static String ensureSameOriginPath(String path) {
+        for (int i = 0; i < path.length(); i++) {
+            if (path.charAt(i) < ' ') {
+                return "/";
+            }
+        }
+        if (path.length() > 1 && (path.charAt(1) == '/' || path.charAt(1) == '\\')) {
+            return "/";
+        }
+        return path;
     }
 
 }
