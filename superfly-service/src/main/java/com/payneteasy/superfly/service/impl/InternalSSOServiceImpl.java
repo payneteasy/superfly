@@ -9,6 +9,7 @@ import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
@@ -129,8 +130,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                                 String sessionInfo) {
         SSOUser ssoUser;
         String  salt = saltSource.getSalt(username);
-        AuthSession session = userService.authenticate(username, passwordEncoder.encode(password, salt),
-                legacyPasswordEncoder.encode(password, salt),
+        // null password is an ordinary failed attempt, not an exception
+        AuthSession session = userService.authenticate(username,
+                password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
+                password == null ? null : legacyPasswordEncoder.encode(password, salt),
                 subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);

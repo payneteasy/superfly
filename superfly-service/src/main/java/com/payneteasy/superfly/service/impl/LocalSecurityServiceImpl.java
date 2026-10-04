@@ -9,6 +9,7 @@ import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
@@ -59,9 +60,11 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     }
 
     public String[] authenticate(String username, String password) {
-        String encPassword = userPasswordEncoder.encode(password, username);
+        // null password is an ordinary failed attempt, not an exception
+        String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
+                : userPasswordEncoder.encode(password, username);
         AuthSession session = userService.authenticate(username, encPassword,
-                userPasswordEncoder.encodeLegacy(password, username),
+                password == null ? null : userPasswordEncoder.encodeLegacy(password, username),
                 localSubsystemName, null, null);
         AuthRole role = null;
         if (session != null) {

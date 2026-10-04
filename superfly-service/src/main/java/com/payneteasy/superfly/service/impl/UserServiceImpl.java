@@ -18,6 +18,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.*;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
@@ -161,7 +162,10 @@ public class UserServiceImpl implements UserService {
             UIUser userForDao) {
         BeanUtils.copyProperties(user, userForDao);
         userForDao.setSalt(saltSource.getSalt(user.getUsername()));
-        userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
+        // null means "password is not changed" (e.g. updateUser from the admin UI)
+        if (user.getPassword() != null) {
+            userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
+        }
     }
 
     @Override
@@ -410,9 +414,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
         String salt = saltSource.getSalt(username);
+        // null password is an ordinary failed attempt, not an exception
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
-                userDao.getUserLoginStatus(username, passwordEncoder.encode(password, salt),
-                        legacyPasswordEncoder.encode(password, salt), subsystemIdentifier));
+                userDao.getUserLoginStatus(username,
+                        password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
+                        password == null ? null : legacyPasswordEncoder.encode(password, salt), subsystemIdentifier));
         if (result == UserLoginStatus.FAILED) {
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         }

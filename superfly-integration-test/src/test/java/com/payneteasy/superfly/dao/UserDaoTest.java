@@ -118,7 +118,7 @@ public class UserDaoTest extends AbstractDaoTest {
 
     @Test
     public void testAuthenticate() {
-        AuthSession session = userDao.authenticate("user-1", "abc",
+        AuthSession session = userDao.authenticate("user-1", "abc", null,
                 subsystem.getName(), null, null);
         assertNotNull("Must authenticate successfully", session);
     }
@@ -358,12 +358,37 @@ public class UserDaoTest extends AbstractDaoTest {
     @Test
     public void testGetUserLoginStatus() {
         String status;
-        status = userDao.getUserLoginStatus("user-1", "abc",
+        status = userDao.getUserLoginStatus("user-1", "abc", null,
                 subsystem.getName());
         assertEquals("Y", status);
-        status = userDao.getUserLoginStatus("user-1", "abcd",
+        status = userDao.getUserLoginStatus("user-1", "abcd", null,
                 subsystem.getName());
         assertEquals("N", status);
+    }
+
+    @Test
+    public void testLegacyHashIsReplacedOnSuccessfulLogin() {
+        UIUserForCreate legacyUser = new UIUserForCreate();
+        legacyUser.setUsername("user-legacy-hash");
+        legacyUser.setPassword("legacy-hash");
+        legacyUser.setEmail("email-legacy");
+        legacyUser.setName("user-legacy");
+        legacyUser.setSurname("user-legacy");
+        legacyUser.setSecretQuestion("");
+        legacyUser.setSecretAnswer("");
+        legacyUser.setHotpSalt("DEADBEEF");
+        userDao.createUser(legacyUser);
+
+        // wrong new hash and wrong legacy hash: failure, stored hash is untouched
+        assertEquals("N", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", "wrong",
+                subsystem.getName()));
+        // stored value is a "legacy" hash: login by it is accepted and the stored value becomes the new one
+        assertEquals("Y", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", "legacy-hash",
+                subsystem.getName()));
+        assertEquals("Y", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", null,
+                subsystem.getName()));
+        assertEquals("N", userDao.getUserLoginStatus("user-legacy-hash", "legacy-hash", null,
+                subsystem.getName()));
     }
 
     @Test

@@ -26,6 +26,8 @@ import java.security.MessageDigest;
 public class Pbkdf2PasswordEncoder implements PasswordEncoder {
     public static final String PREFIX     = "pbkdf2-sha256$";
     public static final int    ITERATIONS = 600_000;
+    /** Never equals a stored hash (no valid hash contains '!'); sent to SQL for a null password. */
+    public static final String NEVER_MATCHING_HASH = "!";
 
     private static final int KEY_BITS       = 256;
     private static final int MAX_ITERATIONS = 10_000_000;

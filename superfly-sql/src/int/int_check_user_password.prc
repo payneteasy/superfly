@@ -9,16 +9,14 @@ create function int_check_user_password(
 ) returns int(10) language sql not deterministic
  main_sql:
   begin
-    declare v_user_id       int(10);
-    declare v_matched_new   int(1);
+    declare v_user_id   int(10);
 
-    set v_user_id       = null;
-    set v_matched_new   = null;
+    set v_user_id   = null;
 
     -- i_legacy_password is the old SHA-256 hash: a match on it means the stored hash
     -- is rehashed to i_user_password below (only on success)
-    select user_id, (u.user_password = i_user_password)
-      into v_user_id, v_matched_new
+    select user_id
+      into v_user_id
       from users u
      where     u.user_name = i_user_name
            and (   u.user_password = i_user_password
@@ -42,7 +40,7 @@ create function int_check_user_password(
     else
       update users u
          set u.last_login_date = now(), u.logins_failed = null, u.completed = 'Y',
-             u.user_password = case when v_matched_new = 1 then u.user_password else i_user_password end
+             u.user_password = case when u.user_password = i_legacy_password then i_user_password else u.user_password end
        where u.user_name = i_user_name
              and coalesce(u.is_account_locked, 'N') = 'N';
     end if;
