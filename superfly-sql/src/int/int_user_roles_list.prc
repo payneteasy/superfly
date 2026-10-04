@@ -15,7 +15,7 @@ create procedure int_user_roles_list(i_start_from int(10),
       set i_order_type = 'asc';
     end if;
 
-    if i_ssys_list is not null and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+    if i_ssys_list is not null and i_ssys_list <> '' and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
       signal sqlstate '45000' set message_text = 'invalid subsystem list';
     end if;
 
