@@ -15,11 +15,13 @@ import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.util.tester.FormTester;
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -194,6 +196,9 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
     public void testSetupSavesKeyWithValidCode() throws Exception {
         expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
         hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        // records the confirmation code's step (anti-replay), strict order: after the key is saved
+        Capture<String> recordedCode = newCapture();
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), capture(recordedCode))).andReturn(true);
         replay(userService, hotpService, csrfValidator, subsystemService);
 
         SSOLoginData loginData = loginData(true);
@@ -201,11 +206,13 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
         tester.startPage(SSOSetupGoogleAuthPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue("code", validCode());
+        String code = validCode();
+        form.setValue("code", code);
         form.submit();
 
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         assertFalse(loginData.isGoogleAuthSetupRequired());
+        assertEquals(code, recordedCode.getValue());
         verify(hotpService);
     }
 

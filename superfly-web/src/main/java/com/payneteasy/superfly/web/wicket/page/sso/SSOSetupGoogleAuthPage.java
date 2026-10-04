@@ -81,6 +81,9 @@ public class SSOSetupGoogleAuthPage extends BaseSSOPage {
         }
         try {
             hotpService.persistOtpKey(OTPType.GOOGLE_AUTH, loginData.getUsername(), secret);
+            // The confirmation code was already checked against the secret above; this call only records its
+            // time step so that a peeked code cannot be replayed as the login OTP. Its result is irrelevant.
+            hotpService.validateGoogleTimePassword(loginData.getUsername(), code);
         } catch (SsoDecryptException e) {
             showError("Please try again");
             return;
