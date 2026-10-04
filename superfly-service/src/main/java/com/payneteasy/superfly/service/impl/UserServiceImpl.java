@@ -35,7 +35,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -61,6 +63,7 @@ public class UserServiceImpl implements UserService {
     private HOTPService hotpService;
     private CreateUserStrategy createUserStrategy;
     private LockoutStrategy lockoutStrategy;
+    private UserService self;
 
 
     @Autowired
@@ -102,6 +105,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
         this.hotpSaltGenerator = hotpSaltGenerator;
+    }
+
+    // the transactional proxy of this bean: calls through `this` would bypass it
+    @Autowired
+    @Lazy
+    public void setSelf(UserService self) {
+        this.self = self;
     }
 
     @Autowired
@@ -366,9 +376,12 @@ public class UserServiceImpl implements UserService {
         policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
     }
 
+    // no transaction around the loop: each user is processed in its own transaction through the proxy,
+    // so the event of one user is committed at once, not at the end of the whole batch
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void expirePasswords(int days) {
-        accountPolicy.expirePasswordsIfNeeded(days, this);
+        accountPolicy.expirePasswordsIfNeeded(days, self);
     }
 
     @Override
@@ -400,9 +413,11 @@ public class UserServiceImpl implements UserService {
         loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
     }
 
+    // see expirePasswords
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void suspendUsers(int days) {
-        accountPolicy.suspendUsersIfNeeded(days, this);
+        accountPolicy.suspendUsersIfNeeded(days, self);
     }
 
     @Override
