@@ -99,14 +99,16 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
             case GOOGLE_AUTH:
-                if (userDescription.isOtpOptional()) {
+                // a configured key makes OTP mandatory even for an "optional" user
+                boolean hasKey = StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()));
+                if (hasKey) {
+                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                } else if (userDescription.isOtpOptional()) {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
-                } else if (!StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
+                } else {
                     loginData.setGoogleAuthSetupRequired(true);
                     getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
-                } else {
-                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
                 }
                 break;
             case NONE:

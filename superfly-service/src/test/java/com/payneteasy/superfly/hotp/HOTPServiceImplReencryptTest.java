@@ -89,6 +89,7 @@ public class HOTPServiceImplReencryptTest {
         String legacy = legacyEncrypt(otpSecret);
         Capture<String> saved = Capture.newInstance();
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(legacy);
+        EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         userService.persistOtpMasterKeyIfUnchanged(EasyMock.eq(USER), EasyMock.eq(legacy), EasyMock.capture(saved));
         EasyMock.replay(userService);
 
@@ -113,6 +114,7 @@ public class HOTPServiceImplReencryptTest {
     @Test
     public void v2KeyIsNotResaved() throws Exception {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(crypto.encrypt(otpSecret));
+        EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         EasyMock.replay(userService);
 
         assertTrue(service.validateGoogleTimePassword(USER, validCode()));
@@ -123,6 +125,7 @@ public class HOTPServiceImplReencryptTest {
     @Test
     public void persistFailureDoesNotBreakValidation() throws Exception {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(legacyEncrypt(otpSecret));
+        EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         userService.persistOtpMasterKeyIfUnchanged(EasyMock.eq(USER), EasyMock.anyString(), EasyMock.anyString());
         EasyMock.expectLastCall().andThrow(new RuntimeException("db down"));
         EasyMock.replay(userService);
@@ -138,6 +141,7 @@ public class HOTPServiceImplReencryptTest {
         AtomicBoolean afterBody = new AtomicBoolean();
         AtomicBoolean ownTransaction = new AtomicBoolean();
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(legacyEncrypt(otpSecret));
+        EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         userService.persistOtpMasterKeyIfUnchanged(EasyMock.eq(USER), EasyMock.anyString(), EasyMock.anyString());
         EasyMock.expectLastCall().andAnswer(() -> {
             afterBody.set(outerBodyDone.get());
@@ -163,6 +167,7 @@ public class HOTPServiceImplReencryptTest {
     @Test
     public void persistFailureDoesNotMarkCallerTransactionRollbackOnly() throws Exception {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(legacyEncrypt(otpSecret));
+        EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         userService.persistOtpMasterKeyIfUnchanged(EasyMock.eq(USER), EasyMock.anyString(), EasyMock.anyString());
         EasyMock.expectLastCall().andThrow(new RuntimeException("db down"));
         EasyMock.replay(userService);

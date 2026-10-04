@@ -465,6 +465,12 @@ public interface UserDao {
     @AStoredProcedure(name = "save_google_auth_master_key_if_unchanged")
     void persistGoogleAuthMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
 
+    /**
+     * @return the number of rows updated: 1 if the step is above the last used one, 0 otherwise
+     */
+    @AStoredProcedure(name = "save_otp_last_used_step")
+    int saveOtpLastUsedStep(String username, long step);
+
     @AStoredProcedure(name = "update_user_otp_type")
     void updateUserOtpType(String username, String otpType);
 
