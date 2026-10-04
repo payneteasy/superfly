@@ -84,7 +84,20 @@ public class HOTPServiceImpl implements HOTPService {
         } catch (DecryptException e) {
             throw new SsoDecryptException("decrypt error", e);
         }
-        return googleAuthenticator.get().authorize(masterKey, verificationCode);
+        boolean authorized = googleAuthenticator.get().authorize(masterKey, verificationCode);
+        if (authorized && cryptoService.isLegacy(masterKeyEncrypt)) {
+            reencryptLegacyKey(username, masterKey);
+        }
+        return authorized;
+    }
+
+    // Only after a valid code: CBC has no MAC, so a wrong legacy key may yield garbage that must not be re-saved
+    private void reencryptLegacyKey(String username, String masterKey) {
+        try {
+            userService.persistOtpMasterKeyForUsername(username, cryptoService.encrypt(masterKey));
+        } catch (Exception e) {
+            logger.warn("Could not re-encrypt legacy OTP master key for user {}: {}", username, e.getClass().getSimpleName());
+        }
     }
 
     @Override

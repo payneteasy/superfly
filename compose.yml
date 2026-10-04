@@ -25,7 +25,7 @@ services:
       # OTP master key encryption; the app refuses to start when empty (compose.production.yml enforces them)
       SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:-}
       SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:-}
-      SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY: ${SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY:-false}
+      SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY: ${SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY:-}
     depends_on:
       mysql:
         condition: service_healthy
