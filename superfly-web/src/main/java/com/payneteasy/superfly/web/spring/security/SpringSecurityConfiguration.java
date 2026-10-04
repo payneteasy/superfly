@@ -30,10 +30,13 @@ import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -72,7 +75,29 @@ public class SpringSecurityConfiguration {
         return cache == null ? SubsystemOriginCache.Urls.EMPTY : cache.getUrls();
     }
 
+    /**
+     * Subsystem RPC is authenticated by X-Subsystem-* headers on every request. It must not create an
+     * HttpSession: otherwise the returned JSESSIONID would keep ROLE_SUBSYSTEM without the headers.
+     */
     @Bean
+    @Order(1)
+    public SecurityFilterChain remotingSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher(antPathRequestMatcher("/remoting/sso.service/**"))
+            .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_SUBSYSTEM"))
+            .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(authenticationEntryPoint()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .securityContext(securityContext ->
+                    securityContext.securityContextRepository(new RequestAttributeSecurityContextRepository()))
+            // Token-based auth, no cookies: see the note on the main chain.
+            .csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .addFilterAt(x509AuthenticationFilter(), X509AuthenticationFilter.class)
+            .addFilterBefore(subsystemAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
             .headers(headers -> headers
