@@ -359,10 +359,10 @@ public class UserDaoTest extends AbstractDaoTest {
     public void testGetUserLoginStatus() {
         String status;
         status = userDao.getUserLoginStatus("user-1", "abc", null,
-                subsystem.getName());
+                subsystem.getName(), null);
         assertEquals("Y", status);
         status = userDao.getUserLoginStatus("user-1", "abcd", null,
-                subsystem.getName());
+                subsystem.getName(), null);
         assertEquals("N", status);
     }
 
@@ -381,14 +381,14 @@ public class UserDaoTest extends AbstractDaoTest {
 
         // wrong new hash and wrong legacy hash: failure, stored hash is untouched
         assertEquals("N", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", "wrong",
-                subsystem.getName()));
+                subsystem.getName(), null));
         // stored value is a "legacy" hash: login by it is accepted and the stored value becomes the new one
         assertEquals("Y", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", "legacy-hash",
-                subsystem.getName()));
+                subsystem.getName(), null));
         assertEquals("Y", userDao.getUserLoginStatus("user-legacy-hash", "pbkdf2-sha256$600000$new", null,
-                subsystem.getName()));
+                subsystem.getName(), null));
         assertEquals("N", userDao.getUserLoginStatus("user-legacy-hash", "legacy-hash", null,
-                subsystem.getName()));
+                subsystem.getName(), null));
     }
 
     @Test

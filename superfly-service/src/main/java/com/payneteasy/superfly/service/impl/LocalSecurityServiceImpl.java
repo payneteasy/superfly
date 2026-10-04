@@ -12,6 +12,7 @@ import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserInfoService;
 import com.payneteasy.superfly.service.UserService;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     private LoggerSink          loggerSink;
     private UserPasswordEncoder userPasswordEncoder;
     private LockoutStrategy     lockoutStrategy;
+    private UserInfoService     userInfoService;
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -59,13 +61,18 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         this.lockoutStrategy = lockoutStrategy;
     }
 
+    @Autowired
+    public void setUserInfoService(UserInfoService userInfoService) {
+        this.userInfoService = userInfoService;
+    }
+
     public String[] authenticate(String username, String password) {
         // null password is an ordinary failed attempt, not an exception
         String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
                 : userPasswordEncoder.encode(password, username);
         AuthSession session = userService.authenticate(username, encPassword,
                 password == null ? null : userPasswordEncoder.encodeLegacy(password, username),
-                localSubsystemName, null, null);
+                localSubsystemName, userInfoService == null ? null : userInfoService.getRemoteAddress(), null);
         AuthRole role = null;
         if (session != null) {
             if (session.getRoles().size() == 1 && session.getRoles().getFirst().getRoleName() == null) {

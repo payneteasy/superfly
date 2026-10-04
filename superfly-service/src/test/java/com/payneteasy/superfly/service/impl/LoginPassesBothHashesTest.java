@@ -116,8 +116,9 @@ public class LoginPassesBothHashesTest {
         service.setLegacyPasswordEncoder(new MessageDigestPasswordEncoder());
         service.setSaltSource(new ConstantSaltSource("salt"));
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(com.payneteasy.superfly.lockout.LockoutStrategy.class));
+        service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
         EasyMock.expect(userDao.getUserLoginStatus(eq("user"), eq(Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH),
-                EasyMock.isNull(String.class), eq("subsystem"))).andReturn("N");
+                EasyMock.isNull(String.class), eq("subsystem"), EasyMock.isNull(String.class))).andReturn("N");
         EasyMock.replay(userDao);
 
         service.checkUserCanLoginWithThisPassword("user", null, "subsystem");

@@ -491,7 +491,7 @@ public interface UserDao {
      * @return user login status
      */
     @AStoredProcedure(name = "get_user_login_status")
-    String getUserLoginStatus(String username, String password, String legacyPassword, String subsystemIdentifier);
+    String getUserLoginStatus(String username, String password, String legacyPassword, String subsystemIdentifier, String ipAddress);
 
     /**
      * Exchanges subsystem token to SSOUser. After this operation

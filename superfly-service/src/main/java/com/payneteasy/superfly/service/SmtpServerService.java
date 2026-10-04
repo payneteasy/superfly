@@ -26,4 +26,9 @@ public interface SmtpServerService {
     RoutineResult deleteSmtpServer(long id);
 
     List<UISmtpServerForFilter> getSmtpServersForFilter();
+
+    /**
+     * Audits that the password of a server was shown to the current user.
+     */
+    void logPasswordViewed(String serverName);
 }
