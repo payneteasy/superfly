@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.web.security.securehandler;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SubsystemService;
 import org.slf4j.Logger;
@@ -74,7 +76,7 @@ public class SecuredHttpRequestHandler implements HttpRequestHandler {
             throw new AuthorizationException("There are no token for {}", aBearer.subsystem);
         }
 
-        if(!expectedToken.equals(aBearer.token)) {
+        if(aBearer.token == null || !MessageDigest.isEqual(expectedToken.getBytes(StandardCharsets.UTF_8), aBearer.token.getBytes(StandardCharsets.UTF_8))) {
             throw new AuthorizationException("Wrong access token for {}", aBearer.subsystem);
         }
     }
