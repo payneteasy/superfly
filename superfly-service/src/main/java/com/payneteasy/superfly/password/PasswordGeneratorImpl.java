@@ -34,7 +34,7 @@ public class PasswordGeneratorImpl implements PasswordGenerator {
 
     @Override
     public String generate() {
-        return new org.passay.PasswordGenerator().generatePassword(8, RULES);
+        return new org.passay.PasswordGenerator().generatePassword(12, RULES);
     }
 
 }

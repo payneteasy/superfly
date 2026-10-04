@@ -34,7 +34,7 @@ public class PasswordPolicyTest {
             assertEquals(e.getCode(),PolicyValidationException.SHORT_PASSWORD);
         }
 
-        password=new PasswordCheckContext("1234567");
+        password=new PasswordCheckContext("123456789012");
 
         // validate simple password
         try{
@@ -47,7 +47,7 @@ public class PasswordPolicyTest {
         boolean throwsException=false;
 
         // validate normal password
-        password=new PasswordCheckContext("#asdfBsdf74");
+        password=new PasswordCheckContext("#asdfBsdf74x");
         try{
             validation.validate(password);
         } catch (PolicyValidationException e){

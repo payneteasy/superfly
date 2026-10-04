@@ -3,7 +3,7 @@ delimiter $$
 create procedure increment_hotp_logins_failed(i_user_name varchar(32))
 main_sql:
   begin
-    update users set hotp_logins_failed = hotp_logins_failed + 1 where user_name = i_user_name;
+    update users set hotp_logins_failed = coalesce(hotp_logins_failed, 0) + 1 where user_name = i_user_name;
     select 'OK' status, null error_message;
   end
 $$

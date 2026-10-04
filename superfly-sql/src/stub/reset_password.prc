@@ -21,14 +21,21 @@ main_sql:
           from users where user_id=i_user_id;
 
 
-    update users u 
-      set 
-           u.user_password = coalesce(i_user_password,user_password), 
-           u.is_password_temp = 'Y',
-	       u.is_account_locked = 'N',
-           u.logins_failed = null,
-           u.hotp_logins_failed = null
-           where u.user_id = i_user_id;
+    -- expiry (null password) only marks the password as temporary: it must neither unlock
+    -- an account locked for brute force nor clear its failure counters
+    if i_user_password is null then
+      update users u
+         set u.is_password_temp = 'Y'
+       where u.user_id = i_user_id;
+    else
+      update users u
+         set u.user_password = i_user_password,
+             u.is_password_temp = 'Y',
+             u.is_account_locked = 'N',
+             u.logins_failed = null,
+             u.hotp_logins_failed = 0
+       where u.user_id = i_user_id;
+    end if;
 
     open cur;
     read_loop: loop
