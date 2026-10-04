@@ -10,6 +10,9 @@ create procedure ui_get_events(i_last_event_id bigint, i_limit int, i_subsystem_
       from events e
           inner join event_types et on et.event_type_id = e.event_type_id
      where e.event_id > coalesce(i_last_event_id, 0)
+       -- stability horizon: an event inserted by a still-open transaction gets its id before commit,
+       -- so a younger committed event must not move the client's cursor past it
+       and e.event_time < now() - interval 5 second
        and (
              i_subsystem_name is null
              or e.subsystem_id = (select ssys_id from subsystems where subsystem_name = i_subsystem_name limit 1)
