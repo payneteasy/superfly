@@ -347,7 +347,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         SSOUser     ssoUser;
         AuthSession session = userService.exchangeSubsystemToken(subsystemToken, callerSubsystem);
         boolean     ok      = session != null && session.getSessionId() != null;
-        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
+        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: ***");
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
