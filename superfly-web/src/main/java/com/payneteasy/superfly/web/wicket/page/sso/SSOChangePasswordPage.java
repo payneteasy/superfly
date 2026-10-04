@@ -55,9 +55,11 @@ public class SSOChangePasswordPage extends BaseSSOPage {
                     loginData.setGoogleAuthSetupRequired(false);
                 }
 
-                if (OTPType.GOOGLE_AUTH.equals(user.getOtpType()) && !user.isOtpOptional()) {
+                boolean hasKey = OTPType.GOOGLE_AUTH.equals(user.getOtpType())
+                        && StringUtils.hasLength(userService.getOtpMasterKeyByUsername(username));
+                if (OTPType.GOOGLE_AUTH.equals(user.getOtpType()) && (hasKey || !user.isOtpOptional())) {
                     // an existing key must never be replaced without passing OTP
-                    if (StringUtils.hasLength(userService.getOtpMasterKeyByUsername(username))) {
+                    if (hasKey) {
                         getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
                     } else {
                         if (loginData != null) {

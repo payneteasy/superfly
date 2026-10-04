@@ -289,6 +289,7 @@ create table mysql_routines_return_arguments (
 \. get/get_google_auth_master_key_by_user_name.sql
 \. save/save_google_auth_master_key.prc
 \. save/save_google_auth_master_key_if_unchanged.prc
+\. save/save_otp_last_used_step.prc
 
 \. ui_get/ui_get_smtp_servers_list.prc
 \. ui_get/ui_get_smtp_server.prc

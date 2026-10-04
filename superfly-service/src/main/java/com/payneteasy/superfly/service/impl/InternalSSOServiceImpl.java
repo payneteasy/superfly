@@ -149,7 +149,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
-        if (isOtpOptional && (code == null || code.trim().isEmpty())) {
+        // isOtpOptional comes from the caller; a configured key makes OTP mandatory anyway
+        if (isOtpOptional && (code == null || code.trim().isEmpty()) && !hasOtpMasterKey(username)) {
             return true;
         }
         return authenticateByOtpType(otpType, username, code);
@@ -187,7 +188,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.emptyMap());
         ssoUser.setSessionId(String.valueOf(session.getSessionId()));
         ssoUser.setOtpType(session.otpType());
-        ssoUser.setOtpOptional(session.isOtpOptional());
+        // effective flag: clients decide whether to ask for a code from it, and a configured key makes OTP mandatory
+        ssoUser.setOtpOptional(session.isOtpOptional()
+                && !(session.otpType() == OTPType.GOOGLE_AUTH && hasOtpMasterKey(session.getUsername())));
         return ssoUser;
     }
 
