@@ -33,6 +33,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
         service.setLocalRoleName("local");
         UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
         userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        userPasswordEncoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         userPasswordEncoder.setSaltSource(new NullSaltSource());
         service.setUserPasswordEncoder(userPasswordEncoder);
         service.setLockoutStrategy(new NoneLockoutStrategy());
@@ -43,7 +44,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
     public void testAuthenticateUser() throws Exception {
         final AuthRole role = new AuthRole();
         role.setRoleName("local");
-        EasyMock.expect(userService.authenticate(eq("username"), eq("password"),
+        EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                         .andReturn(new AuthSession("username", 1L){{setRoles(Collections.singletonList(role));}});
         loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(true), eq("username"));
@@ -56,7 +57,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 
     @Test
     public void testAuthenticateUserFailNotNull() throws Exception {
-        EasyMock.expect(userService.authenticate(eq("username"), eq("password"),
+        EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                         .andReturn(new AuthSession("username"));
         loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));
@@ -69,7 +70,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 
     @Test
     public void testAuthenticateUserFailWithNull() throws Exception {
-           EasyMock.expect(userService.authenticate(eq("username"), eq("password"),
+           EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                    anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                            .andReturn(null);
            loggerSink.info(anyObject(Logger.class), eq("LOCAL_LOGIN"), eq(false), eq("username"));

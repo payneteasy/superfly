@@ -3,6 +3,7 @@ delimiter $$
 create function int_check_user_password(
         i_user_name         varchar(32),
         i_user_password     text,
+        i_legacy_password   text,
         i_ip_address        varchar(64),
         i_session_info      text
 ) returns int(10) language sql not deterministic
@@ -12,11 +13,14 @@ create function int_check_user_password(
 
     set v_user_id   = null;
 
+    -- i_legacy_password is the old SHA-256 hash: a match on it means the stored hash
+    -- is rehashed to i_user_password below (only on success)
     select user_id
       into v_user_id
       from users u
      where     u.user_name = i_user_name
-           and u.user_password = i_user_password
+           and (   u.user_password = i_user_password
+                or (i_legacy_password is not null and u.user_password = i_legacy_password))
            and coalesce(u.is_account_locked, 'N') = 'N';
 
     if v_user_id is null then
@@ -35,7 +39,8 @@ create function int_check_user_password(
       values (i_user_name, now(), i_ip_address, i_session_info);
     else
       update users u
-         set u.last_login_date = now(), u.logins_failed = null, u.completed = 'Y'
+         set u.last_login_date = now(), u.logins_failed = null, u.completed = 'Y',
+             u.user_password = case when u.user_password = i_legacy_password then i_user_password else u.user_password end
        where u.user_name = i_user_name
              and coalesce(u.is_account_locked, 'N') = 'N';
     end if;
