@@ -366,6 +366,11 @@ public interface UserService {
 
     void persistOtpMasterKeyForUsername(String username, String masterKey);
 
+    /**
+     * Compare-and-set: replaces the stored master key only if it still equals oldMasterKey.
+     */
+    void persistOtpMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
+
     String getOtpMasterKeyByUsername(String username);
 
     boolean userHasRolesInSubsystem(String username, String subsystemName);

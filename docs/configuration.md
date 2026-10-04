@@ -36,6 +36,9 @@ Master key TOTP хранится в БД зашифрованным (AES-256-GCM
 
 Если на инсталляции ключ не задавался (использовались `GOOGLE_AUTH_OTP_SECRET`/`GOOGLE_AUTH_OTP_SALT`):
 
+0. Сначала накатите миграцию `superfly-sql/mi/R1.7.5` (расширяет `users.master_key` до `varchar(128)`: шифротекст `v2:`
+   занимает 83 символа) и переустановите процедуры (`superfly-sql/src/all-proc.sh`), только потом выкатывайте образ.
+   Без миграции запись нового ключа (в том числе перешифровка и `resetGoogleAuthMasterKey`) падает.
 1. Задайте настоящие `SUPERFLY_CRYPTO_SECRET` и `SUPERFLY_CRYPTO_SALT`.
 2. Установите `SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY=true`: старые шифротексты читаются прежним дефолтным ключом
    (в лог пишется предупреждение), новые шифруются настоящим.

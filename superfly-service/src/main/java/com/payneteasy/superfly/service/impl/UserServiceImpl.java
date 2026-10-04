@@ -451,6 +451,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void persistOtpMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey) {
+        userDao.persistGoogleAuthMasterKeyIfUnchanged(username, oldMasterKey, newMasterKey);
+    }
+
+    @Override
     public boolean userHasRolesInSubsystem(String username, String subsystemName) {
         return "Y".equals(userDao.userHasRolesInSubsystem(username, subsystemName));
     }

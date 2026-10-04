@@ -461,6 +461,9 @@ public interface UserDao {
     @AStoredProcedure(name = "save_google_auth_master_key")
     void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
 
+    @AStoredProcedure(name = "save_google_auth_master_key_if_unchanged")
+    void persistGoogleAuthMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
+
     @AStoredProcedure(name = "update_user_otp_type")
     void updateUserOtpType(String username, String otpType);
 

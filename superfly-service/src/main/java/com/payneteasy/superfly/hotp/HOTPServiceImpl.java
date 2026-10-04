@@ -14,7 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +36,12 @@ public class HOTPServiceImpl implements HOTPService {
 
     private UserService userService;
     private CryptoService cryptoService;
+    private PlatformTransactionManager transactionManager;
+
+    @Autowired
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -86,17 +98,40 @@ public class HOTPServiceImpl implements HOTPService {
         }
         boolean authorized = googleAuthenticator.get().authorize(masterKey, verificationCode);
         if (authorized && cryptoService.isLegacy(masterKeyEncrypt)) {
-            reencryptLegacyKey(username, masterKey);
+            reencryptLegacyKey(username, masterKeyEncrypt, masterKey);
         }
         return authorized;
     }
 
-    // Only after a valid code: CBC has no MAC, so a wrong legacy key may yield garbage that must not be re-saved
-    private void reencryptLegacyKey(String username, String masterKey) {
+    // Only after a valid code: CBC has no MAC, so a wrong legacy key may yield garbage that must not be re-saved.
+    // The write runs in its own transaction after the caller's one has committed: a failure inside the caller's
+    // transaction would mark it rollback-only and fail the login, and an inner transaction started before the
+    // commit could wait for a row lock held by the caller.
+    private void reencryptLegacyKey(String username, String legacyCiphertext, String masterKey) {
+        String encrypted;
         try {
-            userService.persistOtpMasterKeyForUsername(username, cryptoService.encrypt(masterKey));
-        } catch (Exception e) {
+            encrypted = cryptoService.encrypt(masterKey);
+        } catch (EncryptException e) {
             logger.warn("Could not re-encrypt legacy OTP master key for user {}: {}", username, e.getClass().getSimpleName());
+            return;
+        }
+        Runnable save = () -> {
+            try {
+                TransactionTemplate template = new TransactionTemplate(transactionManager, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+                template.executeWithoutResult(status -> userService.persistOtpMasterKeyIfUnchanged(username, legacyCiphertext, encrypted));
+            } catch (Exception e) {
+                logger.warn("Could not save re-encrypted OTP master key for user {}: {}", username, e.getClass().getSimpleName());
+            }
+        };
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    save.run();
+                }
+            });
+        } else {
+            save.run();
         }
     }
 
