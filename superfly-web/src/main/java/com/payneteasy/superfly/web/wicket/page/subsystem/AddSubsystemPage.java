@@ -76,7 +76,7 @@ public class AddSubsystemPage extends BasePage {
 
         LabelTextFieldRow<String> loginFormCssUrlRow = new LabelTextFieldRow<>(subsystem, "loginFormCssUrl",
                 "subsystem.add.loginFormCssUrl");
-        loginFormCssUrlRow.getTextField().add(urlValidator);
+        loginFormCssUrlRow.getTextField().add(new UrlValidator(new String[]{"https"}));
         form.add(loginFormCssUrlRow);
 
         form.add(new LabelCheckBoxRow("allowListUsers", subsystem, "subsystem.add.allow-list-users"));
