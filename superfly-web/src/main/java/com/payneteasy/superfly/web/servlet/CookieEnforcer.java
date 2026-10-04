@@ -24,14 +24,16 @@ public class CookieEnforcer implements Filter {
     }
 
     @Override
-    public void doFilter(final ServletRequest req, ServletResponse resp,
+    public void doFilter(ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) resp;
         HttpServletResponse wrappedResponse = new HttpServletResponseWrapper(response) {
             @Override
             public void addCookie(Cookie cookie) {
                 Cookie clone = (Cookie) cookie.clone();
-                if (enforceSecure && req.isSecure()) {
+                // Not conditional on req.isSecure(): TLS is terminated by a proxy, so Jetty sees plain http.
+                // Browsers accept Secure cookies on http://localhost, so local runs keep working.
+                if (enforceSecure) {
                     clone.setSecure(true);
                 }
                 if (enforceHttpOnly) {

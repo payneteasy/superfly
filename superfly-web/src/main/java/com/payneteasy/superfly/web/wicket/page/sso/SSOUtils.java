@@ -108,9 +108,7 @@ public class SSOUtils {
         }
 
         SSOSession ssoSession = sessionService.createSSOSession(username);
-        Cookie cookie = new Cookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, ssoSession.getIdentifier());
-        cookie.setMaxAge(SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE);
-        cookie.setPath(getApplicationRootPath(page));
+        Cookie cookie = newSsoSessionCookie(ssoSession.getIdentifier(), SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE, page);
         ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
 
         SubsystemTokenData token = subsystemService.issueSubsystemTokenIfCanLogin(
@@ -148,13 +146,23 @@ public class SSOUtils {
         }
         
         // Clear cookie by setting maxAge to 0
-        Cookie cookie = new Cookie(SSO_SESSION_ID_COOKIE_NAME, "");
-        cookie.setMaxAge(0);
-        cookie.setPath(getApplicationRootPath(page));
+        Cookie cookie = newSsoSessionCookie("", 0, page);
         ((WebResponse) RequestCycle.get().getResponse()).addCookie(cookie);
         
         // Clear username from login data
         anonymizeLoginData(page);
+    }
+
+    // Lax, not Strict: the cookie must be sent when a subsystem redirects the browser here (top-level GET).
+    // Secure is set unconditionally for the same reason as in CookieEnforcer.
+    private static Cookie newSsoSessionCookie(String value, int maxAge, SessionAccessorPage page) {
+        Cookie cookie = new Cookie(SSO_SESSION_ID_COOKIE_NAME, value);
+        cookie.setMaxAge(maxAge);
+        cookie.setPath(getApplicationRootPath(page));
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setAttribute("SameSite", "Lax");
+        return cookie;
     }
 
     private static String getApplicationRootPath(SessionAccessorPage page) {

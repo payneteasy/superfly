@@ -39,7 +39,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
@@ -209,6 +211,7 @@ public class SpringSecurityConfiguration {
         filter.setAuthenticationManager(authenticationManager);
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
     }
 
@@ -218,6 +221,7 @@ public class SpringSecurityConfiguration {
         filter.setAuthenticationManager(authenticationManager);
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
     }
 
@@ -228,7 +232,17 @@ public class SpringSecurityConfiguration {
         filter.setAuthenticationManager(authenticationManager);
         filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
+    }
+
+    /**
+     * The filters are wired by hand, so Spring Security does not give them a session fixation strategy
+     * (the default does nothing). The id is changed on every step; session attributes, including the
+     * login CSRF token, are kept.
+     */
+    private static void changeSessionIdOnLogin(AbstractAuthenticationProcessingFilter filter) {
+        filter.setSessionAuthenticationStrategy(new ChangeSessionIdAuthenticationStrategy());
     }
 
     @Bean

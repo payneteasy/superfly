@@ -11,6 +11,8 @@
             <http-only>true</http-only>
             <secure>true</secure>
         </cookie-config>
+        <!-- no ;jsessionid= in URLs: a session id from a link must not be accepted (session fixation) -->
+        <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 <!-- SPRING CONTEXT -->
     <context-param>
