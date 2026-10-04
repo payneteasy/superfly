@@ -1,6 +1,10 @@
 package com.payneteasy.superfly.password;
 
+import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.conditional.OnPolicyCondition;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -16,6 +20,9 @@ import java.security.MessageDigest;
  * Unlike {@link AbstractPasswordEncoder}, null or empty salt is rejected: there
  * is no meaningful way to fall back to an unsalted password hash.
  */
+@Component
+@Primary
+@OnPolicyCondition({Policy.NONE, Policy.PCIDSS})
 public class Pbkdf2PasswordEncoder implements PasswordEncoder {
     public static final String PREFIX     = "pbkdf2-sha256$";
     public static final int    ITERATIONS = 600_000;

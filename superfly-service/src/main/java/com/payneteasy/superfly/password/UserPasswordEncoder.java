@@ -23,4 +23,14 @@ public interface UserPasswordEncoder {
      * @return encoded password
      */
     String encode(String plaintextPassword, long userId);
+
+    /**
+     * Encodes a password for the given user with the legacy (pre-PBKDF2) algorithm.
+     * Only for matching hashes which are not rehashed yet.
+     *
+     * @param plaintextPassword    password to encode
+     * @param username            name of the user
+     * @return legacy-encoded password
+     */
+    String encodeLegacy(String plaintextPassword, String username);
 }

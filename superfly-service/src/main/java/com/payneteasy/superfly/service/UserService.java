@@ -378,8 +378,8 @@ public interface UserService {
 
     void updateUserSaltByUserId(long userId, String salt);
 
-    AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
-                             String sessionInfo);
+    AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName,
+                             String ipAddress, String sessionInfo);
 
     AuthSession pseudoAuthenticate(String username, String subsystemName);
 

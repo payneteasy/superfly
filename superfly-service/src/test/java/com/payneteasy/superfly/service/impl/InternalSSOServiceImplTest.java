@@ -61,6 +61,7 @@ public class InternalSSOServiceImplTest {
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userService));
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         service.setHotpService(hotpService);
+        service.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         service.setSaltSource(new ConstantSaltSource("abc"));
         internalSSOService = service;
     }
@@ -69,7 +70,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new NullSaltSource());
-        userService.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);
@@ -81,7 +82,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
-        userService.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass{salt}"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);

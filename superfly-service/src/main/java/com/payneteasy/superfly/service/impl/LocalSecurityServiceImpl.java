@@ -61,6 +61,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     public String[] authenticate(String username, String password) {
         String encPassword = userPasswordEncoder.encode(password, username);
         AuthSession session = userService.authenticate(username, encPassword,
+                userPasswordEncoder.encodeLegacy(password, username),
                 localSubsystemName, null, null);
         AuthRole role = null;
         if (session != null) {

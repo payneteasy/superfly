@@ -3,6 +3,7 @@ delimiter $$
 create procedure get_user_login_status(
         i_user_name varchar(32),
         i_user_password text,
+        i_legacy_password text,
         i_subsystem_name varchar(32)
 )
  main_sql:
@@ -13,7 +14,7 @@ create procedure get_user_login_status(
     declare v_result    varchar(1);
 
      -- TODO: user IP, session info
-    set v_user_id = int_check_user_password(i_user_name, i_user_password, null, null);
+    set v_user_id = int_check_user_password(i_user_name, i_user_password, i_legacy_password, null, null);
     if v_user_id is null then
         commit; -- to save unauthorized_access INSERT
         set v_result = 'N';

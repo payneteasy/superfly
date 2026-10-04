@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -51,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private NotificationService notificationService;
     private LoggerSink loggerSink;
     private PasswordEncoder passwordEncoder;
+    private PasswordEncoder legacyPasswordEncoder;
     private SaltSource saltSource;
     private IPolicyValidation<PasswordCheckContext> policyValidation;
     private SaltGenerator hotpSaltGenerator;
@@ -83,6 +85,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    @Qualifier("messageDigestPasswordEncoder")
+    public void setLegacyPasswordEncoder(PasswordEncoder legacyPasswordEncoder) {
+        this.legacyPasswordEncoder = legacyPasswordEncoder;
     }
 
     @Autowired
@@ -351,7 +359,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void validatePassword(String username,String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
     }
 
     @Override
@@ -401,9 +409,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
-        String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        String salt = saltSource.getSalt(username);
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
-                userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));
+                userDao.getUserLoginStatus(username, passwordEncoder.encode(password, salt),
+                        legacyPasswordEncoder.encode(password, salt), subsystemIdentifier));
         if (result == UserLoginStatus.FAILED) {
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         }
@@ -491,11 +500,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthSession authenticate(String username, String password, String subsystemName, String ipAddress, String sessionInfo) {
+    public AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName, String ipAddress, String sessionInfo) {
         if (ipAddress != null && ipAddress.length() > 15) {
             ipAddress = ipAddress.substring(0, 15);
         }
-        return userDao.authenticate(username,password,subsystemName,ipAddress,sessionInfo);
+        return userDao.authenticate(username,password,legacyPassword,subsystemName,ipAddress,sessionInfo);
     }
 
     @Override

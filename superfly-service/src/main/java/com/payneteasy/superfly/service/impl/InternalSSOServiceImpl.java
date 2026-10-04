@@ -22,6 +22,7 @@ import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     private       NotificationService  notificationService;
     private       LoggerSink           loggerSink;
     private       PasswordEncoder      passwordEncoder;
+    private       PasswordEncoder      legacyPasswordEncoder;
     private       SaltSource           saltSource;
     private       SaltGenerator        hotpSaltGenerator;
     private       LockoutStrategy      lockoutStrategy;
@@ -87,6 +89,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Autowired
+    @Qualifier("messageDigestPasswordEncoder")
+    public void setLegacyPasswordEncoder(PasswordEncoder legacyPasswordEncoder) {
+        this.legacyPasswordEncoder = legacyPasswordEncoder;
+    }
+
+    @Autowired
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }
@@ -120,8 +128,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
-        String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-        AuthSession session = userService.authenticate(username, encPassword,
+        String  salt = saltSource.getSalt(username);
+        AuthSession session = userService.authenticate(username, passwordEncoder.encode(password, salt),
+                legacyPasswordEncoder.encode(password, salt),
                 subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
@@ -242,7 +251,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setOtpTypeCode(otpType.code());
 
         // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(username)));
 
         validatePublicKey(publicKey);
@@ -311,7 +320,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public void changeTempPassword(String userName, String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(userName)));
         userService.changeTempPassword(userName, password);
     }
@@ -385,7 +394,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         List<PasswordSaltPair> history = username == null
                 ? Collections.emptyList()
                 : userService.getUserPasswordHistoryAndCurrentPassword(username);
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, history));
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, history));
     }
 
     private EventService eventService;

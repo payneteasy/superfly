@@ -20,14 +20,15 @@ public interface UserDao {
      *
      * @param username      username to use
      * @param password      password to use
+     * @param legacyPassword same password hashed with the legacy algorithm; on match the stored hash is replaced with {@code password}
      * @param subsystemName name of the subsystem used to authenticate
      * @param ipAddress     IP address of the user who logs in
      * @param sessionInfo   session info
      * @return session
      */
     @AStoredProcedure(name = "authenticate")
-    AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
-            String sessionInfo);
+    AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName,
+            String ipAddress, String sessionInfo);
 
     /**
      * Returns user's role and action as if he was successfully authenticated.
@@ -476,11 +477,12 @@ public interface UserDao {
      *
      * @param username            name of the user
      * @param password            hashed password
+     * @param legacyPassword      same password hashed with the legacy algorithm
      * @param subsystemIdentifier subsystem identifier
      * @return user login status
      */
     @AStoredProcedure(name = "get_user_login_status")
-    String getUserLoginStatus(String username, String password, String subsystemIdentifier);
+    String getUserLoginStatus(String username, String password, String legacyPassword, String subsystemIdentifier);
 
     /**
      * Exchanges subsystem token to SSOUser. After this operation
