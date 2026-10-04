@@ -45,7 +45,7 @@ public class SecuredHttpRequestHandler implements HttpRequestHandler {
         try {
             AuthorizationBearer bearer = parser.parse(authorization);
             checkCredentials(bearer);
-            LOG.debug("{}: OK - {} - {}", id, authorization, bearer);
+            LOG.debug("{}: OK - subsystem {}", id, bearer.subsystem);
 
             getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bearer.subsystem, null));
             try {
