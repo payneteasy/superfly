@@ -12,7 +12,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.HexFormat;
-import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,14 +99,18 @@ public class LoginAttemptLimiter {
     /**
      * Approximates the case- and accent-insensitive DB collation (utf8_general_ci), so that "Admin ", "ädmin" and
      * "admin" share a counter and the username cannot be varied to dodge the pair limit; blank means no username.
+     * Characters without a decomposition are folded per code point through upper case, as general_ci does:
+     * dotless "ı" and long "ſ" become "i"/"s"; "ß" equals "s" there, so it is mapped explicitly.
      */
     public static String normalizeUsername(String username) {
         if (username == null) {
             return null;
         }
-        String normalized = DIACRITICS.matcher(Normalizer.normalize(username.trim(), Normalizer.Form.NFD))
-                .replaceAll("").toLowerCase(Locale.ROOT);
-        return normalized.isEmpty() ? null : normalized;
+        String stripped = DIACRITICS.matcher(Normalizer.normalize(username.trim(), Normalizer.Form.NFD)).replaceAll("");
+        StringBuilder folded = new StringBuilder(stripped.length());
+        stripped.codePoints().forEach(cp -> folded.appendCodePoint(
+                cp == 'ß' ? 's' : Character.toLowerCase(Character.toUpperCase(cp))));
+        return folded.length() == 0 ? null : folded.toString();
     }
 
     private static String fingerprint(String username) {

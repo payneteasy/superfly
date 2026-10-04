@@ -70,6 +70,10 @@ public class LoginAttemptLimiterTest {
         assertEquals("alice", LoginAttemptLimiter.normalizeUsername("  Alice "));
         assertEquals("admin", LoginAttemptLimiter.normalizeUsername("ädmin"));
         assertEquals("admin", LoginAttemptLimiter.normalizeUsername("ADMIN "));
+        // utf8_general_ci treats dotless i as I, long s as S and sharp s as s
+        assertEquals("admin", LoginAttemptLimiter.normalizeUsername("admın"));
+        assertEquals("sam", LoginAttemptLimiter.normalizeUsername("ſam"));
+        assertEquals("adsmin", LoginAttemptLimiter.normalizeUsername("adßmin"));
         assertNull(LoginAttemptLimiter.normalizeUsername("   "));
         assertNull(LoginAttemptLimiter.normalizeUsername(null));
     }
