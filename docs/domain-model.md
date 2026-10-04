@@ -55,7 +55,7 @@ Subsystem (подсистема)
 | `salt` | String | Соль для хэширования пароля |
 | `publicKey` | String | Публичный ключ пользователя |
 | `otpType` | OTPType | Тип двухфакторной аутентификации |
-| `isOtpOptional` | boolean | Можно ли пропустить OTP |
+| `isOtpOptional` | boolean | Можно ли пропустить OTP. Для новых пользователей по умолчанию `N`; если настроен ключ Google Authenticator, код обязателен независимо от флага |
 
 ### Статус пользователя (в UIUserForList)
 

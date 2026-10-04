@@ -486,6 +486,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean markOtpStepUsed(String username, long step) {
+        return userDao.saveOtpLastUsedStep(username, step) > 0;
+    }
+
+    @Override
     public boolean userHasRolesInSubsystem(String username, String subsystemName) {
         return "Y".equals(userDao.userHasRolesInSubsystem(username, subsystemName));
     }

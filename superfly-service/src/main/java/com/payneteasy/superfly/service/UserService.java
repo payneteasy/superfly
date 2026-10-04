@@ -371,6 +371,13 @@ public interface UserService {
      */
     void persistOtpMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
 
+    /**
+     * Atomically records the TOTP time step of an accepted code.
+     *
+     * @return false if the step is not above the last recorded one (the code was already used)
+     */
+    boolean markOtpStepUsed(String username, long step);
+
     String getOtpMasterKeyByUsername(String username);
 
     boolean userHasRolesInSubsystem(String username, String subsystemName);
