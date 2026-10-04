@@ -151,13 +151,17 @@ Origin из `landingUrl` и `subsystemUrl` всех подсистем доба�
 
 ## Reverse proxy и cookie
 
-Docker-образ предполагает TLS-терминирующий прокси (nginx и т. п.) перед Jetty. В образ включён модуль Jetty `forwarded`
-(`ForwardedRequestCustomizer`): схема, хост и IP клиента берутся из `Forwarded` / `X-Forwarded-Proto` / `X-Forwarded-For` / `X-Forwarded-Host`.
-Нужно, чтобы от прокси приходили `Host`, `X-Forwarded-Proto: https` и `X-Forwarded-For`; тогда `request.isSecure()` верен
-и заголовок HSTS выставляется (Spring Security пишет его только для secure-запросов).
+Docker-образ предполагает TLS-терминирующий прокси (nginx и т. п.) перед Jetty. Модуль Jetty `forwarded` (`ForwardedRequestCustomizer`)
+**по умолчанию выключен** и включается переменной окружения `JETTY_TRUST_FORWARDED=true` (`docker/jetty/entrypoint.sh`). Тогда схема, хост
+и IP клиента берутся из `Forwarded` / `X-Forwarded-Proto` / `X-Forwarded-For` / `X-Forwarded-Host`: прокси должен слать `Host`,
+`X-Forwarded-Proto: https` и `X-Forwarded-For`, после чего `request.isSecure()` верен и заголовок HSTS выставляется
+(Spring Security пишет его только для secure-запросов).
 
-- Jetty не умеет ограничивать доверенные адреса прокси: заголовки принимаются от любого клиента. Порт 8080 должен быть доступен
-  только прокси (в `compose.production.yml` порты не публикуются); при прямом доступе IP клиента (аудит, блокировки) подделывается.
+- Jetty не умеет ограничивать доверенные адреса прокси: заголовки принимаются от любого клиента. Включайте флаг **только когда порт 8080
+  доступен исключительно доверенному прокси** (ограничьте на уровне сети или публикуйте порт на `127.0.0.1`). `compose.yml` по умолчанию
+  публикует `${APP_PORT:-8080}` на всех интерфейсах, и `compose.production.yml` это не меняет; при прямом доступе и включённом флаге
+  IP клиента (аудит, remote-auth, блокировки) и `isSecure` подделываются.
+- Без флага за прокси `getRemoteAddr()` — IP прокси, а `isSecure()`/HSTS по заголовкам не определяются. Cookie при этом всё равно Secure.
 - `SSOSESSIONID` всегда отдаётся с `Secure`, `HttpOnly`, `SameSite=Lax`; `JSESSIONID` — `Secure`, `HttpOnly` (web.xml), без `;jsessionid=` в URL.
   Флага для отключения нет: браузеры принимают `Secure`-cookie на `http://localhost`, так что локальный запуск (`./dev-env.sh app`)
   работает; доступ по `http://<не-localhost>` без TLS работать не будет.

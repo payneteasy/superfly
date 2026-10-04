@@ -76,7 +76,7 @@ RUN apk add --no-cache curl gettext && \
 RUN mkdir -p ${JETTY_BASE}/webapps ${JETTY_BASE}/lib/ext && \
     cd ${JETTY_BASE} && \
     java -jar ${JETTY_HOME}/start.jar \
-      --add-modules=server,http,ee10-deploy,ee10-webapp,ee10-annotations,ee10-plus,ee10-jndi,ext,logging-jetty,forwarded
+      --add-modules=server,http,ee10-deploy,ee10-webapp,ee10-annotations,ee10-plus,ee10-jndi,ext,logging-jetty
 
 # Copy WAR and extra JARs
 COPY --from=builder /build/superfly-web/target/superfly.war ${JETTY_BASE}/webapps/ROOT.war
