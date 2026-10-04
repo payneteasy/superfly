@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page;
 
+import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
 import com.payneteasy.superfly.web.wicket.page.sso.Tester;
 import org.apache.wicket.Component;
 import org.apache.wicket.application.IComponentInstantiationListener;
@@ -24,6 +25,8 @@ public abstract class AbstractPageTest {
 
     @Before
     public void initPageTest() {
+        // the limiter is a static singleton shared with Wicket SSO pages: do not leak failures between tests
+        LoginAttemptLimiter.install(LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP);
         tester = new Tester();
         tester.getApplication().getComponentInstantiationListeners().add(new TestInjector());
     }
