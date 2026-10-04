@@ -11,6 +11,14 @@ create procedure int_user_roles_list(i_start_from int(10),
  main_sql:
   begin
     declare v_sql_core   text;
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
+    if i_ssys_list is not null and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid subsystem list';
+    end if;
+
     set v_sql_core   =
           concat('select u.user_id, u.user_name, ss.subsystem_name, r.role_id, r.role_name, if(ur.urol_id is null, "U", "M") mapping_status ',
                  '  from       users u ',

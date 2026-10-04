@@ -19,6 +19,10 @@ create procedure ui_get_actions_list(i_start_from int(10),
          );
 
 
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
     set v_sql_core   =
           concat('select a.actn_id, a.action_name, ',
                  '       a.action_description, ',

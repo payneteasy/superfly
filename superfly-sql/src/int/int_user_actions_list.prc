@@ -18,6 +18,10 @@ create procedure int_user_actions_list(i_start_from int(10),
       signal sqlstate '45000' set message_text = 'invalid subsystem list';
     end if;
 
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
     set v_sql_core   =
           concat('select u.user_id, u.user_name, ss.subsystem_name, a.actn_id, a.action_name, ',
                  '       if(ura.urac_id is null, "U", "M") mapping_status, ra.ract_id, r.role_id, ',
