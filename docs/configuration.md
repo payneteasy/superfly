@@ -167,6 +167,7 @@ user:admin, event:CHANGE_USER_OTP_OPTIONAL, resource:bob, result:success, detail
 
 | Событие | Когда |
 |---------|-------|
+| `CHANGE_USER_ROLES` | Выдача/снятие ролей в UI (`details`: `added=`, `removed=`, `grantActions=` — списки id ролей) |
 | `SSO_PASSWORD_LOGIN` | Шаг пароля SSO-входа (`details`: подсистема, `tempPassword=true` — вход с временным паролем) |
 | `REMOTE_CHANGE_USER_ROLE` | `changeUserRole` через remote API (`details`: роль и подсистема) |
 | `CHANGE_USER_OTP_OPTIONAL` | Включение/отключение обязательности MFA (`details`: `otpOptional=true/false`) |
@@ -179,8 +180,9 @@ user:admin, event:CHANGE_USER_OTP_OPTIONAL, resource:bob, result:success, detail
 
 IP неудачных попыток входа дополнительно сохраняется в `unauthorised_access.ip_address` (вход в админку и шаг пароля SSO).
 
-**Выкатка.** Изменились хранимые процедуры `get_user_login_status` (новый параметр `i_ip_address`) и `login_locked`
-(в `error_message` возвращается `ACCOUNT_LOCKED`, если вызов заблокировал учётную запись): процедуры (`all-proc.sh`) и
+**Выкатка.** Изменились хранимые процедуры `get_user_login_status` (`get/get_user_login_status.sql`, новый параметр `i_ip_address`)
+и `login_locked` (файл `stub/lockout_conditionnally.prc`; в `error_message` возвращается `ACCOUNT_LOCKED`, если вызов
+заблокировал учётную запись): процедуры (`all-proc.sh`) и
 WAR нужно выкатывать одновременно.
 
 **Log injection.** В `docker/jetty/logback.xml` сообщение выводится как `%replace(%msg){'[\r\n\t]+', '_'}`, чтобы
