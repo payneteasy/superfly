@@ -15,7 +15,7 @@ public class LoginAttemptLimiterTest {
 
     private final AtomicLong          nanos   = new AtomicLong();
     private final Ticker              ticker  = nanos::get;
-    private final LoginAttemptLimiter limiter = new LoginAttemptLimiter(ticker);
+    private final LoginAttemptLimiter limiter = new LoginAttemptLimiter(LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP, ticker);
 
     @Test
     public void pairIsBlockedBeforeIp() {
@@ -30,7 +30,7 @@ public class LoginAttemptLimiterTest {
 
     @Test
     public void ipIsBlockedAfterSprayingManyUsernames() {
-        for (int i = 0; i < LoginAttemptLimiter.MAX_FAILURES_PER_IP; i++) {
+        for (int i = 0; i < LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP; i++) {
             limiter.recordFailure("password", "1.1.1.1", "user" + i);
         }
         assertTrue(limiter.isBlocked("password", "1.1.1.1", "brand-new-user"));
@@ -57,7 +57,7 @@ public class LoginAttemptLimiterTest {
 
     @Test
     public void windowExpires() {
-        for (int i = 0; i < LoginAttemptLimiter.MAX_FAILURES_PER_IP; i++) {
+        for (int i = 0; i < LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP; i++) {
             limiter.recordFailure("password", "1.1.1.1", "alice");
         }
         assertTrue(limiter.isBlocked("password", "1.1.1.1", "alice"));
@@ -68,7 +68,22 @@ public class LoginAttemptLimiterTest {
     @Test
     public void usernameIsNormalized() {
         assertEquals("alice", LoginAttemptLimiter.normalizeUsername("  Alice "));
+        assertEquals("admin", LoginAttemptLimiter.normalizeUsername("ädmin"));
+        assertEquals("admin", LoginAttemptLimiter.normalizeUsername("ADMIN "));
         assertNull(LoginAttemptLimiter.normalizeUsername("   "));
         assertNull(LoginAttemptLimiter.normalizeUsername(null));
+    }
+
+    @Test
+    public void zeroDisablesIpLimitButNotPairLimit() {
+        LoginAttemptLimiter noIpLimit = new LoginAttemptLimiter(0);
+        for (int i = 0; i < 100; i++) {
+            noIpLimit.recordFailure("password", "1.1.1.1", "user" + i);
+        }
+        assertFalse(noIpLimit.isBlocked("password", "1.1.1.1", "fresh"));
+        for (int i = 0; i < LoginAttemptLimiter.MAX_FAILURES_PER_IP_USER; i++) {
+            noIpLimit.recordFailure("password", "1.1.1.1", "alice");
+        }
+        assertTrue(noIpLimit.isBlocked("password", "1.1.1.1", "alice"));
     }
 }

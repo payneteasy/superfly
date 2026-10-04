@@ -68,9 +68,15 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
+        if (isLoginBlocked("password", loginBean.getUsername())) {
+            errorMessageModel.setObject("Too many failed login attempts. Try again later.");
+            errorMessageLabel.setVisible(true);
+            return;
+        }
         UserLoginStatus loginStatus = userService.checkUserCanLoginWithThisPassword(
                 loginBean.getUsername(), loginBean.getPassword(),
                 loginData.getSubsystemIdentifier());
+        recordLoginResult("password", loginBean.getUsername(), loginStatus != UserLoginStatus.FAILED);
         switch (loginStatus) {
             case SUCCESS:
                 onPasswordChecked(loginBean, loginData);

@@ -61,8 +61,14 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
+        if (isLoginBlocked("otp", loginData.getUsername())) {
+            errorMessageModel.setObject("Too many failed login attempts. Try again later.");
+            errorMessageLabel.setVisible(true);
+            return;
+        }
         boolean ok = internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH,
                 loginData.getUsername(), loginBean.getHotp());
+        recordLoginResult("otp", loginData.getUsername(), ok);
         if (ok) {
             onHOTPChecked(loginData);
         } else {

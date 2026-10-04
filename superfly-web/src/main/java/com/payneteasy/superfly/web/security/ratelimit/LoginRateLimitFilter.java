@@ -5,8 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,10 +13,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,8 +26,6 @@ import java.util.Map;
  * a trusted subsystem and its address is not the end user's) are intentionally not covered.
  */
 public class LoginRateLimitFilter extends OncePerRequestFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginRateLimitFilter.class);
 
     private static final String FAILED_ATTRIBUTE = LoginRateLimitFilter.class.getName() + ".FAILED";
 
@@ -70,9 +62,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
         String ip       = request.getRemoteAddr();
         String username = LoginAttemptLimiter.normalizeUsername(usernameOf(request, step));
 
-        if (limiter.isBlocked(step, ip, username)) {
-            // Username is PII: only a short hash is logged, enough to correlate attempts.
-            logger.warn("Login rate limit exceeded: step={}, ip={}, user#={}", step, ip, fingerprint(username));
+        if (limiter.checkBlocked(step, ip, username)) {
             response.setStatus(429);
             response.setHeader("Retry-After", String.valueOf(LoginAttemptLimiter.windowSeconds()));
             response.setContentType("text/plain;charset=UTF-8");
@@ -108,17 +98,5 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
             authentication = compound.getFirstReadyAuthentication();
         }
         return authentication == null ? null : authentication.getName();
-    }
-
-    private static String fingerprint(String username) {
-        if (username == null) {
-            return "-";
-        }
-        try {
-            byte[] hash = MessageDigest.getInstance("SHA-256").digest(username.getBytes(StandardCharsets.UTF_8));
-            return HexFormat.of().formatHex(hash, 0, 4);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }

@@ -211,7 +211,8 @@ public class SpringSecurityConfiguration {
 
     @Bean
     public LoginAttemptLimiter loginAttemptLimiter() {
-        return new LoginAttemptLimiter();
+        Integer ipLimit = properties.loginIpLimit();
+        return LoginAttemptLimiter.install(ipLimit == null ? LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP : ipLimit);
     }
 
     @Bean

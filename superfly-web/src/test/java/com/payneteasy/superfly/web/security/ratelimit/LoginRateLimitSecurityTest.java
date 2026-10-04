@@ -79,7 +79,7 @@ public class LoginRateLimitSecurityTest {
 
     @Test
     public void ipIsThrottledAcrossUsernamesWithoutReachingService() throws Exception {
-        for (int i = 0; i < LoginAttemptLimiter.MAX_FAILURES_PER_IP; i++) {
+        for (int i = 0; i < LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP; i++) {
             assertEquals(302, login("10.0.0.1", "user" + i, "bad").getStatus());
         }
         int callsBefore = authenticateCalls.get();

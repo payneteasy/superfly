@@ -4,7 +4,16 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
+import java.util.HexFormat;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,19 +26,38 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class LoginAttemptLimiter {
 
-    static final int  MAX_FAILURES_PER_IP      = 20;
+    private static final Logger logger = LoggerFactory.getLogger(LoginAttemptLimiter.class);
+
+    public static final int DEFAULT_MAX_FAILURES_PER_IP = 20;
     static final int  MAX_FAILURES_PER_IP_USER = 5;
     static final long WINDOW_MINUTES           = 5;
     // Bounds memory; when full, the least recently used counters are evicted first.
     static final long MAX_ENTRIES              = 100_000;
 
+    private static final Pattern DIACRITICS = Pattern.compile("\\p{M}+");
+
+    // Wicket SSO pages and the security filter must share one instance; the pages are not wired by Spring in tests.
+    private static volatile LoginAttemptLimiter shared = new LoginAttemptLimiter(DEFAULT_MAX_FAILURES_PER_IP);
+
+    private final int                          maxFailuresPerIp;
     private final Cache<String, AtomicInteger> failures;
 
-    public LoginAttemptLimiter() {
-        this(Ticker.systemTicker());
+    /** Replaces the shared instance (also drops all counters). @param maxFailuresPerIp 0 disables the IP limit. */
+    public static LoginAttemptLimiter install(int maxFailuresPerIp) {
+        shared = new LoginAttemptLimiter(maxFailuresPerIp);
+        return shared;
     }
 
-    LoginAttemptLimiter(Ticker ticker) {
+    public static LoginAttemptLimiter shared() {
+        return shared;
+    }
+
+    public LoginAttemptLimiter(int maxFailuresPerIp) {
+        this(maxFailuresPerIp, Ticker.systemTicker());
+    }
+
+    LoginAttemptLimiter(int maxFailuresPerIp, Ticker ticker) {
+        this.maxFailuresPerIp = maxFailuresPerIp;
         failures = Caffeine.newBuilder()
                 .ticker(ticker)
                 .expireAfterWrite(WINDOW_MINUTES, TimeUnit.MINUTES)
@@ -41,8 +69,17 @@ public class LoginAttemptLimiter {
         return TimeUnit.MINUTES.toSeconds(WINDOW_MINUTES);
     }
 
+    /** Same as {@link #isBlocked}, plus a WARN; username is PII, so only a short hash of it is logged. */
+    public boolean checkBlocked(String step, String ip, String username) {
+        boolean blocked = isBlocked(step, ip, username);
+        if (blocked) {
+            logger.warn("Login rate limit exceeded: step={}, ip={}, user#={}", step, ip, fingerprint(username));
+        }
+        return blocked;
+    }
+
     public boolean isBlocked(String step, String ip, String username) {
-        return count(ipKey(step, ip)) >= MAX_FAILURES_PER_IP
+        return (maxFailuresPerIp > 0 && count(ipKey(step, ip)) >= maxFailuresPerIp)
                 || (username != null && count(pairKey(step, ip, username)) >= MAX_FAILURES_PER_IP_USER);
     }
 
@@ -60,13 +97,29 @@ public class LoginAttemptLimiter {
         }
     }
 
-    /** Lowercase and trim, so that "Admin " and "admin" share a counter; blank means no username. */
+    /**
+     * Approximates the case- and accent-insensitive DB collation (utf8_general_ci), so that "Admin ", "ädmin" and
+     * "admin" share a counter and the username cannot be varied to dodge the pair limit; blank means no username.
+     */
     public static String normalizeUsername(String username) {
         if (username == null) {
             return null;
         }
-        String normalized = username.trim().toLowerCase(Locale.ROOT);
+        String normalized = DIACRITICS.matcher(Normalizer.normalize(username.trim(), Normalizer.Form.NFD))
+                .replaceAll("").toLowerCase(Locale.ROOT);
         return normalized.isEmpty() ? null : normalized;
+    }
+
+    private static String fingerprint(String username) {
+        if (username == null) {
+            return "-";
+        }
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(username.getBytes(StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash, 0, 4);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private int count(String key) {
