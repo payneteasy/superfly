@@ -186,6 +186,14 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
+    public CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException {
+        if (!isUserAccessible("confirmOtpMasterKey", request.getUsername())) {
+            return new CheckOtpResult(CheckOtpResult.Status.INVALID);
+        }
+        return new CheckOtpResult(internalSSOService.confirmOtpMasterKey(request.getUsername(), request.getCode()));
+    }
+
+    @Override
     public String getUrlToGoogleAuthQrCode(GetGoogleAuthQrCodeRequest request) {
         return hotpService.getUrlToGoogleAuthQrCode(
                 request.getSecretKey(),

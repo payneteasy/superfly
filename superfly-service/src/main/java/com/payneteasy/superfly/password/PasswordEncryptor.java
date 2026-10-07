@@ -179,6 +179,11 @@ public class PasswordEncryptor {
             }
 
             @Override
+            public CheckOtpResult.Status confirmGoogleAuthMasterKey(String username, String password) {
+                return CheckOtpResult.Status.INVALID;
+            }
+
+            @Override
             public void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException {
 
             }

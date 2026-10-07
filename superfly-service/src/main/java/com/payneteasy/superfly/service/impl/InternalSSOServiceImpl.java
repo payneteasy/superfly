@@ -315,11 +315,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                     : CheckOtpResult.Status.SUCCESS;
             if (status != CheckOtpResult.Status.SUCCESS) {
                 logger.warn("OTP check failed {}: {}", username, status);
-                userService.incrementHOTPLoginsFailed(username);
-                lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-                if (isAccountLocked(username)) {
-                    status = CheckOtpResult.Status.LOCKED;
-                }
+                status = countFailedOtpAttempt(username, status);
             } else {
                 userService.clearHOTPLoginsFailed(username);
             }
@@ -327,6 +323,32 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
         loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
         return status;
+    }
+
+    @Override
+    public CheckOtpResult.Status confirmOtpMasterKey(String username, String code) {
+        CheckOtpResult.Status status;
+        if (isAccountLocked(username)) {
+            logger.warn("OTP key confirmation of locked account {}", username);
+            status = CheckOtpResult.Status.LOCKED;
+        } else {
+            status = hotpService.confirmGoogleAuthMasterKey(username, code);
+            // otherwise confirmation attempts would guess codes past the OTP lockout limit
+            if (status != CheckOtpResult.Status.SUCCESS) {
+                logger.warn("OTP key confirmation failed {}: {}", username, status);
+                status = countFailedOtpAttempt(username, status);
+            }
+        }
+
+        loggerSink.info(logger, "REMOTE_OTP_KEY_CONFIRM", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+        return status;
+    }
+
+    /** @return {@link CheckOtpResult.Status#LOCKED} if this attempt locked the account, the given status otherwise */
+    private CheckOtpResult.Status countFailedOtpAttempt(String username, CheckOtpResult.Status status) {
+        userService.incrementHOTPLoginsFailed(username);
+        lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        return isAccountLocked(username) ? CheckOtpResult.Status.LOCKED : status;
     }
 
     private boolean isAccountLocked(String username) {

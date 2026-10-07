@@ -112,6 +112,17 @@ public interface InternalSSOService {
     CheckOtpResult.Status authenticateByOtpType(OTPType otp, String username, String key) throws SsoDecryptException;
 
     /**
+     * Confirms the pending Google Authenticator master key with a code from it; on success the pending key
+     * becomes the active one. A failed confirmation counts as a failed OTP attempt.
+     *
+     * @param username username
+     * @param code     code generated from the pending key
+     * @return {@link CheckOtpResult.Status#LOCKED} without checking the code if the account is locked or got
+     * locked by this failed attempt, otherwise the result of the code check against the pending key
+     */
+    CheckOtpResult.Status confirmOtpMasterKey(String username, String code) throws SsoDecryptException;
+
+    /**
      *
      * @param userName user name
      * @param password password

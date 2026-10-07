@@ -271,6 +271,36 @@ public class SSOServiceImplSubsystemIsolationTest {
         verifyAll();
     }
 
+    // confirmOtpMasterKey
+
+    @Test
+    public void confirmOtpMasterKeyForeignUserIsInvalid() throws Exception {
+        expectForeign();
+        replayAll();
+        assertEquals(CheckOtpResult.Status.INVALID,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
+        verifyAll();
+    }
+
+    @Test
+    public void confirmOtpMasterKeyLocalUserIsInvalid() throws Exception {
+        expectLocalUser();
+        replayAll();
+        assertEquals(CheckOtpResult.Status.INVALID,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
+        verifyAll();
+    }
+
+    @Test
+    public void confirmOtpMasterKeyOwnUserIsDelegated() throws Exception {
+        expectOwn();
+        expect(internal.confirmOtpMasterKey(USER, "123456")).andReturn(CheckOtpResult.Status.LOCKED);
+        replayAll();
+        assertEquals(CheckOtpResult.Status.LOCKED,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
+        verifyAll();
+    }
+
     // updateUserIsOtpOptionalValue
 
     @Test

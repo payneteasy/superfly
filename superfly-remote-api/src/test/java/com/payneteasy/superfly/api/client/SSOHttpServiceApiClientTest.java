@@ -8,6 +8,7 @@ import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.AuthenticateRequest;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
+import com.payneteasy.superfly.api.request.ConfirmOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.request.HasOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
 import com.payneteasy.superfly.api.serialization.ApiSerializer;
@@ -215,6 +216,32 @@ public class SSOHttpServiceApiClientTest {
             assertEquals(status, client.checkOtp(request).getStatus());
             verify(httpClient);
         }
+    }
+
+    @Test
+    public void confirmOtpMasterKeySendsUsernameAndCodeAndReadsTheStatus() throws Exception {
+        Capture<HttpRequest> requestCapture = newCapture();
+        expect(httpClient.send(capture(requestCapture), anyObject(HttpRequestParameters.class)))
+                .andReturn(createSuccessResponse("{\"status\":\"CLOCK_SKEW\"}"));
+        replay(httpClient);
+
+        CheckOtpResult result = client.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest("username", "123456"));
+
+        assertEquals(CheckOtpResult.Status.CLOCK_SKEW, result.getStatus());
+        verify(httpClient);
+        HttpRequest capturedRequest = requestCapture.getValue();
+        assertEquals(BASE_URL + "/confirmOtpMasterKey", capturedRequest.getUrl());
+        // the server deserializes the body into the request type of the SSOService method of the same name
+        ConfirmOtpMasterKeyRequest sent = (ConfirmOtpMasterKeyRequest) serializationManager.deserialize(
+                new String(capturedRequest.getBody(), StandardCharsets.UTF_8), ConfirmOtpMasterKeyRequest.class,
+                serializationManager.getDefaultContentType());
+        assertEquals(new ConfirmOtpMasterKeyRequest("username", "123456"), sent);
+    }
+
+    @Test
+    public void confirmOtpMasterKeyEndpointMatchesTheServiceMethod() throws Exception {
+        // the server maps /<path> to the SSOService method of that name
+        SSOService.class.getMethod(Endpoint.CONFIRM_OTP_MASTER_KEY.path().substring(1), ConfirmOtpMasterKeyRequest.class);
     }
 
     @Test

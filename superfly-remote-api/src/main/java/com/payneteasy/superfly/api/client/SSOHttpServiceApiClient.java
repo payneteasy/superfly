@@ -41,6 +41,7 @@ import com.payneteasy.superfly.api.request.ChangeTempPasswordRequest;
 import com.payneteasy.superfly.api.request.ChangeUserRoleRequest;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.api.request.CompleteUserRequest;
+import com.payneteasy.superfly.api.request.ConfirmOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.api.request.GetEventsRequest;
 import com.payneteasy.superfly.api.request.GetGoogleAuthQrCodeRequest;
@@ -188,6 +189,11 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
     public String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request)
             throws UserNotFoundException, SsoDecryptException {
         return invoke(Endpoint.RESET_GOOGLE_AUTH_MASTER_KEY, request, String.class);
+    }
+
+    @Override
+    public CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException {
+        return invoke(Endpoint.CONFIRM_OTP_MASTER_KEY, request, CheckOtpResult.class);
     }
 
     @Override

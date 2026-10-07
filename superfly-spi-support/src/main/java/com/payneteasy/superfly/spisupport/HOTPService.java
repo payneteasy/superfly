@@ -12,7 +12,8 @@ import com.payneteasy.superfly.api.UserNotFoundException;
  */
 public interface HOTPService {
     /**
-     * Reset Master Key
+     * Reset Master Key: the new key is stored as pending, the active key keeps working until the new one is
+     * confirmed with {@link #confirmGoogleAuthMasterKey(String, String)}. A repeated call replaces the pending key.
      *
      * @param subsystemIdentifier identifier of subsystem
      *                            which smtp server to user when sending message
@@ -43,6 +44,17 @@ public interface HOTPService {
      * {@link CheckOtpResult.Status#ALREADY_USED} or {@link CheckOtpResult.Status#CLOCK_SKEW}
      */
     CheckOtpResult.Status validateGoogleTimePassword(String username, String password) throws SsoDecryptException;
+
+    /**
+     * Checks a Google Authenticator code against the pending master key; on success the pending key becomes the
+     * active one and the time step of the code is marked as used.
+     *
+     * @param username name of the user
+     * @param password the code
+     * @return {@link CheckOtpResult.Status#SUCCESS}, {@link CheckOtpResult.Status#INVALID} (also when there is no
+     * pending key or it was replaced meanwhile) or {@link CheckOtpResult.Status#CLOCK_SKEW}
+     */
+    CheckOtpResult.Status confirmGoogleAuthMasterKey(String username, String password) throws SsoDecryptException;
 
     void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException;
 

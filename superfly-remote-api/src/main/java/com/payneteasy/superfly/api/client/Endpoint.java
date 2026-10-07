@@ -23,6 +23,7 @@ public enum Endpoint {
     CHANGE_TEMP_PASSWORD              ("/changeTempPassword"),
     GET_USER_DESCRIPTION              ("/getUserDescription"),
     RESET_GOOGLE_AUTH_MASTER_KEY      ("/resetGoogleAuthMasterKey"),
+    CONFIRM_OTP_MASTER_KEY            ("/confirmOtpMasterKey"),
     GET_URL_TO_GOOGLE_AUTH_QR_CODE    ("/getUrlToGoogleAuthQrCode"),
     UPDATE_USER_IS_OTP_OPTIONAL_VALUE ("/updateUserIsOtpOptionalValue"),
     UPDATE_USER_DESCRIPTION           ("/updateUserDescription"),

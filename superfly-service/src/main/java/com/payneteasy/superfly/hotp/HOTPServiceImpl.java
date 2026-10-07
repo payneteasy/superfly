@@ -66,7 +66,7 @@ public class HOTPServiceImpl implements HOTPService {
     @Override
     public String resetGoogleAuthMasterKey(String subsystemIdentifier, String username) throws UserNotFoundException, SsoDecryptException {
         String key = googleAuthenticator.get().createCredentials().getKey();
-        encryptAndPersistMasterKey(OTPType.GOOGLE_AUTH, key, username);
+        userService.persistOtpPendingMasterKey(username, encrypt(key));
         return key;
     }
 
@@ -91,7 +91,7 @@ public class HOTPServiceImpl implements HOTPService {
 
     @Override
     public CheckOtpResult.Status validateGoogleTimePassword(String username, String password) throws SsoDecryptException {
-        if (password == null || !password.matches("^[0-9]{6}$")) {
+        if (!isWellFormed(password)) {
             return CheckOtpResult.Status.INVALID;
         }
         int verificationCode = Integer.parseInt(password);
@@ -100,20 +100,10 @@ public class HOTPServiceImpl implements HOTPService {
             logger.error("GA master key for " + username + " is null");
             throw new SsoDecryptException("GA master key for " + username + " is null");
         }
-        String masterKey;
-        try {
-            masterKey = cryptoService.decrypt(masterKeyEncrypt);
-        } catch (DecryptException e) {
-            throw new SsoDecryptException("decrypt error", e);
-        }
+        String masterKey = decrypt(masterKeyEncrypt);
         long matchedStep = findMatchedStep(masterKey, verificationCode, WINDOW_SIZE);
         if (matchedStep < 0) {
-            // the step is not stored: once the clock catches up, the same code is accepted
-            if (findMatchedStep(masterKey, verificationCode, CLOCK_SKEW_WINDOW_SIZE) >= 0) {
-                logger.warn("OTP code of user {} is outside the accepted window: clock skew", username);
-                return CheckOtpResult.Status.CLOCK_SKEW;
-            }
-            return CheckOtpResult.Status.INVALID;
+            return statusOfUnmatchedCode(username, masterKey, verificationCode);
         }
         // the step is stored atomically: a code that was already used (also by a concurrent request) is rejected
         if (!userService.markOtpStepUsed(username, matchedStep)) {
@@ -124,6 +114,53 @@ public class HOTPServiceImpl implements HOTPService {
             reencryptLegacyKey(username, masterKeyEncrypt, masterKey);
         }
         return CheckOtpResult.Status.SUCCESS;
+    }
+
+    @Override
+    public CheckOtpResult.Status confirmGoogleAuthMasterKey(String username, String password) throws SsoDecryptException {
+        if (!isWellFormed(password)) {
+            return CheckOtpResult.Status.INVALID;
+        }
+        int verificationCode = Integer.parseInt(password);
+        String pendingKeyEncrypt = userService.getOtpPendingMasterKeyByUsername(username);
+        if (pendingKeyEncrypt == null) {
+            logger.warn("No pending OTP master key to confirm for user {}", username);
+            return CheckOtpResult.Status.INVALID;
+        }
+        String pendingKey = decrypt(pendingKeyEncrypt);
+        long matchedStep = findMatchedStep(pendingKey, verificationCode, WINDOW_SIZE);
+        if (matchedStep < 0) {
+            return statusOfUnmatchedCode(username, pendingKey, verificationCode);
+        }
+        if (!userService.confirmOtpPendingMasterKey(username, pendingKeyEncrypt)) {
+            logger.warn("Pending OTP master key of user {} was replaced while it was being confirmed", username);
+            return CheckOtpResult.Status.INVALID;
+        }
+        // the confirmation code must not be accepted once more at login; false means a code of the old key has
+        // already used this or a later step, which rejects this code as well
+        userService.markOtpStepUsed(username, matchedStep);
+        return CheckOtpResult.Status.SUCCESS;
+    }
+
+    private static boolean isWellFormed(String password) {
+        return password != null && password.matches("^[0-9]{6}$");
+    }
+
+    private String decrypt(String encrypted) throws SsoDecryptException {
+        try {
+            return cryptoService.decrypt(encrypted);
+        } catch (DecryptException e) {
+            throw new SsoDecryptException("decrypt error", e);
+        }
+    }
+
+    private CheckOtpResult.Status statusOfUnmatchedCode(String username, String masterKey, int verificationCode) {
+        // the step is not stored: once the clock catches up, the same code is accepted
+        if (findMatchedStep(masterKey, verificationCode, CLOCK_SKEW_WINDOW_SIZE) >= 0) {
+            logger.warn("OTP code of user {} is outside the accepted window: clock skew", username);
+            return CheckOtpResult.Status.CLOCK_SKEW;
+        }
+        return CheckOtpResult.Status.INVALID;
     }
 
     /** @return the time step of the code within the window around now, or -1 if the code matches none */
@@ -192,17 +229,19 @@ public class HOTPServiceImpl implements HOTPService {
     private void encryptAndPersistMasterKey(OTPType otpType, String key, String username) throws SsoDecryptException {
         switch (otpType) {
             case GOOGLE_AUTH:
-                String encryptKey = null;
-                try {
-                    encryptKey = cryptoService.encrypt(key);
-                } catch (EncryptException e) {
-                    throw new SsoDecryptException("encrypt error", e);
-                }
-                userService.persistOtpMasterKeyForUsername(username, encryptKey);
+                userService.persistOtpMasterKeyForUsername(username, encrypt(key));
                 break;
             case NONE:
             default:
                 break;
+        }
+    }
+
+    private String encrypt(String key) throws SsoDecryptException {
+        try {
+            return cryptoService.encrypt(key);
+        } catch (EncryptException e) {
+            throw new SsoDecryptException("encrypt error", e);
         }
     }
 

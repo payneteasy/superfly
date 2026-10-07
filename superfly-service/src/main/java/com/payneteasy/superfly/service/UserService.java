@@ -380,6 +380,20 @@ public interface UserService {
 
     String getOtpMasterKeyByUsername(String username);
 
+    /**
+     * Stores a master key that is not used for login until it is confirmed; the active key is left as it is.
+     */
+    void persistOtpPendingMasterKey(String username, String pendingMasterKey);
+
+    String getOtpPendingMasterKeyByUsername(String username);
+
+    /**
+     * Compare-and-set: makes the pending master key the active one only if it still equals pendingMasterKey.
+     *
+     * @return false if the pending key has been replaced or removed meanwhile
+     */
+    boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey);
+
     boolean userHasRolesInSubsystem(String username, String subsystemName);
 
     String getUserSalt(String userName);
