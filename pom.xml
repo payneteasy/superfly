@@ -669,13 +669,12 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- JETTY DEPENDENCIES FOR TESTING -->
+            <!-- JETTY DEPENDENCIES (embedded server of superfly-web) -->
             <dependency>
-                <!--Justification: Jetty server for testing purposes -->
+                <!--Justification: Embedded Jetty server -->
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
                 <exclusions>
                     <exclusion>
                         <groupId>org.eclipse.jetty.orbit</groupId>
@@ -688,28 +687,24 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-plus</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!--Justification: Jetty web application support. -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-webapp</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <!-- Justification: Provides JNDI support for Jetty in Jakarta EE 10 environments -->
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-jndi</artifactId>
                 <version>${jetty.version}</version>
-                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -864,8 +859,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

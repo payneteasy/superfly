@@ -19,7 +19,7 @@ CONTAINER=superfly-mysql-dev
 NETWORK=superfly-dev-net
 IMAGE=mysql:5.7
 ROOT_PASSWORD=charpa
-# must match the port in superfly-web/src/main/webapp/WEB-INF/jetty-web.xml
+# the app gets it as DB_PORT (see cmd_app)
 HOST_PORT=3344
 
 ROOT_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -164,10 +164,19 @@ cmd_app() {
         export SUPERFLY_CRYPTO_SECRET="dev-dummy-secret"
         export SUPERFLY_CRYPTO_SALT="dev-dummy-salt"
     fi
+    # datasource of the embedded server (SuperflyServer) comes from the environment, the same way as in Docker
+    export DB_HOST=127.0.0.1
+    export DB_PORT=$HOST_PORT
+    export DB_NAME=$SSO_DB_DATABASE
+    export DB_USER=$SSO_DB_USERNAME
+    export DB_PASSWORD=$SSO_DB_PASSWORD
+    export DB_TIMEZONE=Europe/Moscow
+    export JETTY_PORT=8085
+    export JETTY_CONTEXT=/superfly
     cd "$ROOT_DIR/superfly-web"
-    ../mvnw test-compile org.codehaus.mojo:exec-maven-plugin:3.1.0:java \
-        -Dexec.mainClass=com.payneteasy.superfly.Start \
-        -Dexec.classpathScope=test
+    ../mvnw process-classes org.codehaus.mojo:exec-maven-plugin:3.1.0:java \
+        -Dexec.mainClass=com.payneteasy.superfly.web.StartSuperfly \
+        -Dlogback.configurationFile="$ROOT_DIR/docker/jetty/logback.xml"
 }
 
 cmd_sql() {

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 1: Build WAR and collect runtime JARs
+# Stage 1: Build the executable (shaded) JAR
 # ─────────────────────────────────────────────────────────────────────────────
 FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 WORKDIR /build
@@ -37,83 +37,32 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 COPY . .
 
-# Build WAR (skip tests; tests require a live MySQL)
+# Build the executable JAR with Jetty, the MySQL driver and the connection pool inside
+# (skip tests; tests require a live MySQL)
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw -B -DskipTests -pl superfly-web -am package
 
-# Download JARs that are test-scoped but required at Jetty runtime
-RUN --mount=type=cache,target=/root/.m2 \
-    ./mvnw -B dependency:copy \
-      -Dartifact=com.mysql:mysql-connector-j:8.2.0:jar \
-      -DoutputDirectory=/build/jetty-lib && \
-    ./mvnw -B dependency:copy \
-      -Dartifact=org.apache.commons:commons-dbcp2:2.13.0:jar \
-      -DoutputDirectory=/build/jetty-lib && \
-    ./mvnw -B dependency:copy \
-      -Dartifact=org.apache.commons:commons-pool2:2.12.0:jar \
-      -DoutputDirectory=/build/jetty-lib && \
-    ./mvnw -B dependency:copy \
-      -Dartifact=commons-logging:commons-logging:1.3.5:jar \
-      -DoutputDirectory=/build/jetty-lib
-
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 2: Production image — Jetty 12 + WAR + JNDI datasource from env vars
+# Stage 2: Production image — embedded Jetty 12; JNDI datasource built from env vars
 # ─────────────────────────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-alpine AS production
 
-ARG JETTY_VERSION=12.0.36
-ENV JETTY_HOME=/opt/jetty
-ENV JETTY_BASE=/var/lib/jetty
 ENV JETTY_PORT=8080
-
-# Install Jetty standalone
-RUN apk add --no-cache curl gettext && \
-    curl -fsSL "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-home/${JETTY_VERSION}/jetty-home-${JETTY_VERSION}.tar.gz" \
-    | tar xz -C /opt && \
-    mv /opt/jetty-home-${JETTY_VERSION} ${JETTY_HOME}
-
-# Set up Jetty base with required modules
-RUN mkdir -p ${JETTY_BASE}/webapps ${JETTY_BASE}/lib/ext && \
-    cd ${JETTY_BASE} && \
-    java -jar ${JETTY_HOME}/start.jar \
-      --add-modules=server,http,ee10-deploy,ee10-webapp,ee10-annotations,ee10-plus,ee10-jndi,ext,logging-jetty
-
-# Copy WAR and extra JARs
-COPY --from=builder /build/superfly-web/target/superfly.war ${JETTY_BASE}/webapps/ROOT.war
-COPY --from=builder /build/jetty-lib/ ${JETTY_BASE}/lib/ext/
-
-# Copy context descriptor and entrypoint
-COPY docker/jetty/ROOT.xml ${JETTY_BASE}/webapps/ROOT.xml
-# logback.xml inside the WAR sits in WEB-INF/, not on the classpath, so without
-# this file logback falls back to root DEBUG and logs stored procedure arguments
-COPY docker/jetty/logback.xml ${JETTY_BASE}/etc/logback.xml
-# web.xml has no resource-ref, and Jetty binds a webapp-scoped Resource to
-# java:comp/env only when one is declared
-# (kept out of webapps/: every .xml there is deployed as a context descriptor)
-COPY <<'EOF' ${JETTY_BASE}/etc/override-web.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
-    <resource-ref>
-        <res-ref-name>jdbc/superfly</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-</web-app>
-EOF
-COPY docker/jetty/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_TIMEZONE and the other JETTY_* settings are read
+# from the environment by SuperflyServer (not from command-line properties: the JVM and Jetty echo
+# arguments, which would print the password). logback.xml keeps stored procedure
+# arguments out of the log (the default logback config is root DEBUG).
 
 # Non-root user
-RUN addgroup -S jetty && adduser -S jetty -G jetty && \
-    chown -R jetty:jetty ${JETTY_BASE}
-USER jetty
-# start.jar takes jetty.base from the working directory
-WORKDIR ${JETTY_BASE}
+RUN addgroup -S superfly && adduser -S superfly -G superfly
+WORKDIR /app
+COPY --from=builder --chown=superfly:superfly /build/superfly-web/target/superfly.jar /app/superfly.jar
+COPY docker/jetty/logback.xml /app/logback.xml
+USER superfly
 
 EXPOSE ${JETTY_PORT}
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD wget -qO- http://localhost:${JETTY_PORT}/ >/dev/null 2>&1 || exit 1
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["java", "-Dlogback.configurationFile=/var/lib/jetty/etc/logback.xml", "-jar", "/opt/jetty/start.jar"]
+ENTRYPOINT ["java", "-Dlogback.configurationFile=/app/logback.xml", "-jar", "/app/superfly.jar"]

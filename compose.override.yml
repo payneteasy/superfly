@@ -1,6 +1,6 @@
 # Development overrides — auto-loaded by docker compose.
-# The app itself is run from the IDE or with ./dev-env.sh app (Start.java with
-# src/main/webapp); this file only publishes MySQL to the host.
+# The app itself is run from the IDE or with ./dev-env.sh app (StartSuperfly,
+# the same embedded server as in the image); this file only publishes MySQL to the host.
 
 services:
   mysql:
