@@ -18,7 +18,8 @@ public class ProbeServlet extends HttpServlet {
             BasicDataSource dataSource = (BasicDataSource) new InitialContext().lookup("java:comp/env/jdbc/superfly");
             resp.setContentType("text/plain");
             resp.getWriter().print("scheme=" + req.getScheme() + "\nds-url=" + dataSource.getUrl()
-                    + "\nds-user=" + dataSource.getUserName());
+                    + "\nds-user=" + dataSource.getUserName()
+                    + "\nconfiguration=" + getServletContext().getInitParameter("configuration"));
         } catch (NamingException e) {
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.toString());
         }

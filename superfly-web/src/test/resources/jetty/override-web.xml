@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <!-- local runs over plain http (./dev-env.sh app): production web.xml marks the session cookie Secure,
+         which Safari does not keep on http://localhost -->
+    <session-config>
+        <cookie-config>
+            <http-only>true</http-only>
+            <secure>false</secure>
+        </cookie-config>
+    </session-config>
+    <context-param>
+        <param-name>configuration</param-name>
+        <param-value>development</param-value>
+    </context-param>
+    <context-param>
+        <param-name>superfly-policy</param-name>
+        <param-value>none</param-value>
+    </context-param>
+</web-app>

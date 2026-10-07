@@ -86,6 +86,17 @@ public class StartSuperflyServerTest {
     }
 
     @Test
+    public void devJettyXmlAddsOverrideDescriptor() throws Exception {
+        HttpResponse<String> plain = get(startServer(Map.of()), Map.of());
+        assertTrue(plain.body(), plain.body().contains("configuration=null"));
+        server.stop();
+
+        HttpResponse<String> dev = get(startServer(Map.of(
+                "JETTY_XML_CONFIG_FILE_PATH", "src/test/resources/jetty/dev-jetty.xml")), Map.of());
+        assertTrue(dev.body(), dev.body().contains("configuration=development"));
+    }
+
+    @Test
     public void forwardedCustomizerIsAddedOnlyByFlag() {
         SuperflyServer superflyServer = new SuperflyServer(null);
 

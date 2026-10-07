@@ -173,10 +173,11 @@ cmd_app() {
     export DB_TIMEZONE=Europe/Moscow
     export JETTY_PORT=8085
     export JETTY_CONTEXT=/superfly
+    # development configuration, no pcidss policy, non-Secure session cookie on plain http
+    export JETTY_XML_CONFIG_FILE_PATH=src/test/resources/jetty/dev-jetty.xml
     cd "$ROOT_DIR/superfly-web"
     ../mvnw process-classes org.codehaus.mojo:exec-maven-plugin:3.1.0:java \
-        -Dexec.mainClass=com.payneteasy.superfly.web.StartSuperfly \
-        -Dlogback.configurationFile="$ROOT_DIR/docker/jetty/logback.xml"
+        -Dexec.mainClass=com.payneteasy.superfly.web.StartSuperfly
 }
 
 cmd_sql() {

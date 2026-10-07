@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "https://jetty.org/configure_12_0.dtd">
+<!-- Dev only, passed by ./dev-env.sh as JETTY_XML_CONFIG_FILE_PATH (relative to superfly-web/) -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <Ref refid="wac">
+        <Call name="addOverrideDescriptor">
+            <Arg>src/test/resources/jetty/override-web.xml</Arg>
+        </Call>
+    </Ref>
+</Configure>
