@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.hotp;
 
 import com.payneteasy.superfly.api.CheckOtpResult.Status;
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.service.impl.InternalSSOServiceImpl;
@@ -73,6 +74,13 @@ public class HOTPServiceImplPendingKeyTest {
                             return pending;
                         case "persistOtpPendingMasterKey":
                             row.pendingMasterKey = (String) args[1];
+                            return null;
+                        case "persistOtpMasterKeyForUsername":
+                            // save_google_auth_master_key: admin reset (null) and a newly set up key
+                            row.masterKey = (String) args[1];
+                            row.pendingMasterKey = null;
+                            return null;
+                        case "updateUserOtpType":
                             return null;
                         case "confirmOtpPendingMasterKey":
                             if (row.pendingMasterKey == null || !row.pendingMasterKey.equals(args[1])) {
@@ -240,5 +248,33 @@ public class HOTPServiceImplPendingKeyTest {
 
         assertFalse(internal.hasOtpMasterKey(USER));
         assertNotNull(row.pendingMasterKey);
+    }
+
+    @Test
+    public void adminResetOutdatesThePendingKey() throws Exception {
+        String pendingSecret = service.resetGoogleAuthMasterKey("subsystem", USER);
+        assumeUniqueInSkewWindow(pendingSecret, STEP);
+
+        // the "reset OTP" link of the user details page
+        userService.persistOtpMasterKeyForUsername(USER, null);
+
+        assertEquals(Status.INVALID, service.confirmGoogleAuthMasterKey(USER, codeOf(pendingSecret, STEP)));
+        assertNull(row.masterKey);
+        assertNull(row.lastUsedStep);
+    }
+
+    @Test
+    public void keySetUpOnTheSsoPageOutdatesThePendingKey() throws Exception {
+        String pendingSecret = service.resetGoogleAuthMasterKey("subsystem", USER);
+        String setUpSecret = service.getGoogleAuthenticator().get().createCredentials().getKey();
+        assumeDifferentCodes(pendingSecret, setUpSecret);
+        assumeUniqueInSkewWindow(pendingSecret, STEP);
+
+        // SSOSetupGoogleAuthPage and the init-OTP filter store the key they have checked this way
+        service.persistOtpKey(OTPType.GOOGLE_AUTH, USER, setUpSecret);
+
+        assertEquals(Status.INVALID, service.confirmGoogleAuthMasterKey(USER, codeOf(pendingSecret, STEP)));
+        assertEquals(setUpSecret, decrypt(row.masterKey));
+        assertNull(row.pendingMasterKey);
     }
 }

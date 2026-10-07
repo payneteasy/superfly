@@ -459,6 +459,9 @@ public interface UserDao {
     @AStoredProcedure(name = "get_google_auth_master_key_by_user_name")
     String getGoogleAuthMasterKeyByUsername(String username);
 
+    /**
+     * Sets the active master key (null resets it) and drops the pending one in the same update.
+     */
     @AStoredProcedure(name = "save_google_auth_master_key")
     void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
 

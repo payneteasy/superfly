@@ -364,6 +364,9 @@ public interface UserService {
 
     RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType);
 
+    /**
+     * Sets the active master key (null resets it) and drops the pending one, which this key makes outdated.
+     */
     void persistOtpMasterKeyForUsername(String username, String masterKey);
 
     /**

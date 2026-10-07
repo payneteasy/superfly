@@ -167,6 +167,46 @@ public class OtpPendingMasterKeyProcedureTest {
         assertNull(pendingKey());
     }
 
+    @Test
+    public void adminResetDropsThePendingKey() throws Exception {
+        call("save_otp_pending_master_key", "v2:pending");
+
+        call("save_google_auth_master_key", null);
+
+        assertNull(column("master_key"));
+        assertNull(pendingKey());
+        assertEquals(0, confirm("v2:pending", 100));
+        assertNull(column("master_key"));
+    }
+
+    @Test
+    public void newActiveKeyDropsThePendingKey() throws Exception {
+        call("save_otp_pending_master_key", "v2:pending");
+
+        // what the SSO setup page and the init-OTP filter store
+        call("save_google_auth_master_key", "v2:set-up");
+
+        assertEquals("v2:set-up", column("master_key"));
+        assertNull(pendingKey());
+        assertEquals(0, confirm("v2:pending", 100));
+        assertEquals("v2:set-up", column("master_key"));
+    }
+
+    @Test
+    public void reencryptionOfTheActiveKeyKeepsThePendingKey() throws Exception {
+        call("save_otp_pending_master_key", "v2:pending");
+
+        try (CallableStatement cs = conn.prepareCall("{call save_google_auth_master_key_if_unchanged(?,?,?)}")) {
+            cs.setString(1, USER);
+            cs.setString(2, "v2:active");
+            cs.setString(3, "v2:reencrypted");
+            cs.execute();
+        }
+
+        assertEquals("v2:reencrypted", column("master_key"));
+        assertEquals("v2:pending", pendingKey());
+    }
+
     private void call(String procedure, String key) throws Exception {
         try (CallableStatement cs = conn.prepareCall("{call " + procedure + "(?,?)}")) {
             cs.setString(1, USER);
