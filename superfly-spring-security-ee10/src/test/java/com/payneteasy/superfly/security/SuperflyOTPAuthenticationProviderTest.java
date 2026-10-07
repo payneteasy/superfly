@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.SSOService;
+import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.security.authentication.CheckOTPToken;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.SSOUserTransportAuthenticationToken;
@@ -71,6 +73,39 @@ public class SuperflyOTPAuthenticationProviderTest extends
             fail();
         } catch (BadOTPValueException e) {
             // expected
+        }
+    }
+
+    @Test
+    public void testFailureCarriesCheckStatus() {
+        for (CheckOtpResult.Status status : CheckOtpResult.Status.values()) {
+            if (status == CheckOtpResult.Status.SUCCESS) {
+                continue;
+            }
+            SSOService ssoService = EasyMock.createMock(SSOService.class);
+            EasyMock.expect(ssoService.checkOtp(EasyMock.anyObject(CheckOtpRequest.class)))
+                    .andReturn(new CheckOtpResult(status));
+            EasyMock.replay(ssoService);
+            SuperflyOTPAuthenticationProvider p = new SuperflyOTPAuthenticationProvider();
+            p.setSsoService(ssoService);
+            try {
+                p.authenticate(new CheckOTPToken(createSSOUser(1), "123456"));
+                fail(status.name());
+            } catch (BadOTPValueException e) {
+                assertEquals(status, e.getStatus());
+                assertEquals("Invalid OTP secret", e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void testNullCredentialsHasNoStatus() {
+        try {
+            provider.authenticate(createBeforeHotpAuth());
+            fail();
+        } catch (BadOTPValueException e) {
+            assertNull(e.getStatus());
+            assertEquals("Null OTP secret", e.getMessage());
         }
     }
 

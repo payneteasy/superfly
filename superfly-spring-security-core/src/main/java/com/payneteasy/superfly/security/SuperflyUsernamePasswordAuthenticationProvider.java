@@ -159,14 +159,15 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
 
             if (receivedSecondFactory && otpType != OTPType.NONE) {
                 log.debug("User <{}> has otp type <{}> and is optional, second factory provided", ssoUserName, otpType);
-                if (ssoService.checkOtp(new CheckOtpRequest(ssoUser, authRequest.getSecondFactory())).getStatus()
-                        == CheckOtpResult.Status.SUCCESS) {
+                CheckOtpResult.Status otpStatus =
+                        ssoService.checkOtp(new CheckOtpRequest(ssoUser, authRequest.getSecondFactory())).getStatus();
+                if (otpStatus == CheckOtpResult.Status.SUCCESS) {
                     return createAuthentication(ssoUser);
                 } else {
                     log.debug("User <{}> has otp type <{}> and is optional, but no second factory provided",
                               ssoUserName, otpType
                     );
-                    throw new BadOTPValueException("Otp check failed!");
+                    throw new BadOTPValueException("Otp check failed!", otpStatus);
                 }
             }
 

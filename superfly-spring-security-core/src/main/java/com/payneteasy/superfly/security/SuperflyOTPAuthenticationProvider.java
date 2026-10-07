@@ -38,19 +38,19 @@ public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider
             if (authRequest.getCredentials() == null) {
                 throw new BadOTPValueException("Null OTP secret");
             }
-            boolean ok;
+            CheckOtpResult.Status status;
             try {
-                ok = ssoService.checkOtp(
+                status = ssoService.checkOtp(
                         new CheckOtpRequest(
                                 authRequest.getSsoUser(),
                                 authRequest.getCredentials().toString()
                         )
-                ).getStatus() == CheckOtpResult.Status.SUCCESS;
+                ).getStatus();
             } catch (SsoDecryptException e) {
                 throw new BadOTPValueException(e.getMessage());
             }
-            if (!ok) {
-                throw new BadOTPValueException("Invalid OTP secret");
+            if (status != CheckOtpResult.Status.SUCCESS) {
+                throw new BadOTPValueException("Invalid OTP secret", status);
             }
             result = createAuthentication(authRequest.getSsoUser());
         }
