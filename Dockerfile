@@ -50,14 +50,13 @@ FROM eclipse-temurin:21-jre-alpine AS production
 ENV JETTY_PORT=8080
 # DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_TIMEZONE and the other JETTY_* settings are read
 # from the environment by SuperflyServer (not from command-line properties: the JVM and Jetty echo
-# arguments, which would print the password). logback.xml keeps stored procedure
-# arguments out of the log (the default logback config is root DEBUG).
+# arguments, which would print the password). The logback.xml packed into the JAR keeps
+# stored procedure arguments out of the log.
 
 # Non-root user
 RUN addgroup -S superfly && adduser -S superfly -G superfly
 WORKDIR /app
 COPY --from=builder --chown=superfly:superfly /build/superfly-web/target/superfly.jar /app/superfly.jar
-COPY docker/jetty/logback.xml /app/logback.xml
 USER superfly
 
 EXPOSE ${JETTY_PORT}
@@ -65,4 +64,4 @@ EXPOSE ${JETTY_PORT}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD wget -qO- http://localhost:${JETTY_PORT}/ >/dev/null 2>&1 || exit 1
 
-ENTRYPOINT ["java", "-Dlogback.configurationFile=/app/logback.xml", "-jar", "/app/superfly.jar"]
+ENTRYPOINT ["java", "-jar", "/app/superfly.jar"]
