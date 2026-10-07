@@ -132,13 +132,11 @@ public class HOTPServiceImpl implements HOTPService {
         if (matchedStep < 0) {
             return statusOfUnmatchedCode(username, pendingKey, verificationCode);
         }
-        if (!userService.confirmOtpPendingMasterKey(username, pendingKeyEncrypt)) {
+        // the step is stored by the same update: the confirmation code must not be accepted once more at login
+        if (!userService.confirmOtpPendingMasterKey(username, pendingKeyEncrypt, matchedStep)) {
             logger.warn("Pending OTP master key of user {} was replaced while it was being confirmed", username);
             return CheckOtpResult.Status.INVALID;
         }
-        // the confirmation code must not be accepted once more at login; false means a code of the old key has
-        // already used this or a later step, which rejects this code as well
-        userService.markOtpStepUsed(username, matchedStep);
         return CheckOtpResult.Status.SUCCESS;
     }
 

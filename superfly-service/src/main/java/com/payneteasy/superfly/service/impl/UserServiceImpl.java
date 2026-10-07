@@ -540,8 +540,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey) {
-        boolean confirmed = userDao.confirmOtpPendingMasterKey(username, pendingMasterKey) > 0;
+    public boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step) {
+        boolean confirmed = userDao.confirmOtpPendingMasterKey(username, pendingMasterKey, step) > 0;
         loggerSink.info(logger, "CONFIRM_OTP_MASTER_KEY", confirmed, username);
         return confirmed;
     }

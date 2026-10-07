@@ -106,10 +106,33 @@ public class OtpPendingMasterKeyProcedureTest {
     public void confirmationMovesThePendingKeyToTheActiveOne() throws Exception {
         call("save_otp_pending_master_key", "v2:pending");
 
-        assertEquals(1, confirm("v2:pending"));
+        assertEquals(1, confirm("v2:pending", 100));
 
         assertEquals("v2:pending", column("master_key"));
         assertNull(pendingKey());
+        assertEquals("100", column("otp_last_used_step"));
+    }
+
+    @Test
+    public void confirmationRaisesTheLastUsedStepToTheCodeStep() throws Exception {
+        call("save_otp_last_used_step", 90);
+        call("save_otp_pending_master_key", "v2:pending");
+
+        assertEquals(1, confirm("v2:pending", 100));
+
+        assertEquals("100", column("otp_last_used_step"));
+    }
+
+    @Test
+    public void confirmationNeverLowersTheLastUsedStep() throws Exception {
+        // a code of the old key has already used a later step
+        call("save_otp_last_used_step", 200);
+        call("save_otp_pending_master_key", "v2:pending");
+
+        assertEquals(1, confirm("v2:pending", 100));
+
+        assertEquals("v2:pending", column("master_key"));
+        assertEquals("200", column("otp_last_used_step"));
     }
 
     @Test
@@ -118,17 +141,18 @@ public class OtpPendingMasterKeyProcedureTest {
         // a concurrent reset between reading the pending key and confirming it
         call("save_otp_pending_master_key", "v2:concurrent");
 
-        assertEquals(0, confirm("v2:read-by-confirmation"));
+        assertEquals(0, confirm("v2:read-by-confirmation", 100));
 
         assertEquals("v2:active", column("master_key"));
         assertEquals("v2:concurrent", pendingKey());
+        assertNull(column("otp_last_used_step"));
     }
 
     @Test
     public void confirmationComparesTheKeyCaseSensitively() throws Exception {
         call("save_otp_pending_master_key", "v2:Pending");
 
-        assertEquals(0, confirm("v2:pending"));
+        assertEquals(0, confirm("v2:pending", 100));
 
         assertEquals("v2:active", column("master_key"));
         assertEquals("v2:Pending", pendingKey());
@@ -136,8 +160,8 @@ public class OtpPendingMasterKeyProcedureTest {
 
     @Test
     public void confirmationWithoutPendingKeyChangesNothing() throws Exception {
-        assertEquals(0, confirm("v2:active"));
-        assertEquals(0, confirm(null));
+        assertEquals(0, confirm("v2:active", 100));
+        assertEquals(0, confirm(null, 100));
 
         assertEquals("v2:active", column("master_key"));
         assertNull(pendingKey());
@@ -151,14 +175,23 @@ public class OtpPendingMasterKeyProcedureTest {
         }
     }
 
-    private int confirm(String pendingKey) throws Exception {
-        try (CallableStatement cs = conn.prepareCall("{call confirm_otp_pending_master_key(?,?)}")) {
+    private int confirm(String pendingKey, long step) throws Exception {
+        try (CallableStatement cs = conn.prepareCall("{call confirm_otp_pending_master_key(?,?,?)}")) {
             cs.setString(1, USER);
             cs.setString(2, pendingKey);
+            cs.setLong(3, step);
             try (ResultSet rs = cs.executeQuery()) {
                 assertTrue(rs.next());
                 return rs.getInt("updated_count");
             }
+        }
+    }
+
+    private void call(String procedure, long step) throws Exception {
+        try (CallableStatement cs = conn.prepareCall("{call " + procedure + "(?,?)}")) {
+            cs.setString(1, USER);
+            cs.setLong(2, step);
+            cs.execute();
         }
     }
 

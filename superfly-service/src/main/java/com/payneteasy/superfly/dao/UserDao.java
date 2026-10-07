@@ -478,12 +478,13 @@ public interface UserDao {
     void persistOtpPendingMasterKey(String username, String pendingMasterKey);
 
     /**
-     * Makes the pending master key the active one, only if the pending key still equals pendingMasterKey.
+     * Makes the pending master key the active one, only if the pending key still equals pendingMasterKey, and
+     * raises the last used TOTP step to step in the same update.
      *
      * @return the number of rows updated: 1 if the key was moved, 0 otherwise
      */
     @AStoredProcedure(name = "confirm_otp_pending_master_key")
-    int confirmOtpPendingMasterKey(String username, String pendingMasterKey);
+    int confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step);
 
     @AStoredProcedure(name = "update_user_otp_type")
     void updateUserOtpType(String username, String otpType);

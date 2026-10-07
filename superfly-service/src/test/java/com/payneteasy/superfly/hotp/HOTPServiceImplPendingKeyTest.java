@@ -40,6 +40,8 @@ public class HOTPServiceImplPendingKeyTest {
         String masterKey;
         String pendingMasterKey;
         Long lastUsedStep;
+        // the confirmation must store its step in the CAS update itself, not in a separate call
+        int separateStepMarks;
         // runs right after the pending key has been read: lets a test slip in a concurrent reset
         Runnable afterPendingRead = () -> { };
     }
@@ -78,8 +80,11 @@ public class HOTPServiceImplPendingKeyTest {
                             }
                             row.masterKey = row.pendingMasterKey;
                             row.pendingMasterKey = null;
+                            long confirmedStep = (Long) args[2];
+                            row.lastUsedStep = row.lastUsedStep == null ? confirmedStep : Math.max(row.lastUsedStep, confirmedStep);
                             return true;
                         case "markOtpStepUsed":
+                            row.separateStepMarks++;
                             long step = (Long) args[1];
                             if (row.lastUsedStep != null && row.lastUsedStep >= step) {
                                 return false;
@@ -152,6 +157,8 @@ public class HOTPServiceImplPendingKeyTest {
 
         assertEquals(pendingCiphertext, row.masterKey);
         assertNull(row.pendingMasterKey);
+        assertEquals(Long.valueOf(STEP), row.lastUsedStep);
+        assertEquals(0, row.separateStepMarks);
         // the confirmation code is used up, the old key is gone, the next code of the new key logs in
         assertEquals(Status.ALREADY_USED, service.validateGoogleTimePassword(USER, codeOf(newSecret, STEP)));
         assertEquals(Status.INVALID, service.validateGoogleTimePassword(USER, codeOf(activeSecret, STEP + 1)));

@@ -388,11 +388,12 @@ public interface UserService {
     String getOtpPendingMasterKeyByUsername(String username);
 
     /**
-     * Compare-and-set: makes the pending master key the active one only if it still equals pendingMasterKey.
+     * Compare-and-set: makes the pending master key the active one only if it still equals pendingMasterKey; the
+     * same update records step as used (the last used step is never lowered).
      *
      * @return false if the pending key has been replaced or removed meanwhile
      */
-    boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey);
+    boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step);
 
     boolean userHasRolesInSubsystem(String username, String subsystemName);
 
