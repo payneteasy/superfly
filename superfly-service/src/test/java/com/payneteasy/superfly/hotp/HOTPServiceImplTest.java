@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.crypto.exception.EncryptException;
@@ -50,17 +51,17 @@ public class HOTPServiceImplTest {
                 service.getGoogleAuthenticator().get().getTotpPassword(credentials.getKey())
         );
 
-        boolean valid = service.validateGoogleTimePassword(USERNAME, totpPassword);
+        CheckOtpResult.Status valid = service.validateGoogleTimePassword(USERNAME, totpPassword);
 
-        Assert.assertTrue( "Not valid code", valid);
+        Assert.assertEquals( "Not valid code", CheckOtpResult.Status.SUCCESS, valid);
     }
 
     @Test
     public void testUnValidateGoogleTimePassword() throws SsoDecryptException {
         String totpPassword = "123123";
 
-        boolean valid = service.validateGoogleTimePassword(USERNAME, totpPassword);
+        CheckOtpResult.Status valid = service.validateGoogleTimePassword(USERNAME, totpPassword);
 
-        Assert.assertFalse( "Valid code", valid);
+        Assert.assertNotEquals( "Valid code", CheckOtpResult.Status.SUCCESS, valid);
     }
 }

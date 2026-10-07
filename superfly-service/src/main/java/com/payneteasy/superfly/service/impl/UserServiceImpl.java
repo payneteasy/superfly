@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
@@ -654,7 +655,7 @@ public class UserServiceImpl implements UserService {
         switch (userForDescription.getOtpType()) {
             case GOOGLE_AUTH:
                 try {
-                    ok = hotpService.validateGoogleTimePassword(username, otp);
+                    ok = hotpService.validateGoogleTimePassword(username, otp) == CheckOtpResult.Status.SUCCESS;
                 } catch (SsoDecryptException e) {
                     logger.warn("Can't decrypt secret key for {}", username);
                 }

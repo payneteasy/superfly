@@ -12,6 +12,7 @@ import com.payneteasy.http.client.api.IHttpClient;
 import com.payneteasy.http.client.api.exceptions.HttpConnectException;
 import com.payneteasy.http.client.api.exceptions.HttpReadException;
 import com.payneteasy.http.client.api.exceptions.HttpWriteException;
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.SSOEvent;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
@@ -138,8 +139,8 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
     }
 
     @Override
-    public boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException {
-        return invoke(Endpoint.CHECK_OTP, request, Boolean.class);
+    public CheckOtpResult checkOtp(CheckOtpRequest request) throws SsoDecryptException {
+        return invoke(Endpoint.CHECK_OTP, request, CheckOtpResult.class);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -38,6 +39,8 @@ public class HOTPServiceImpl implements HOTPService {
     // defaults of GoogleAuthenticator (it exposes no getters for its config): 30 s steps, window of 3 steps
     private static final long TIME_STEP_MILLIS = 30_000L;
     private static final int WINDOW_SIZE = 3;
+    // a code this close to now but outside WINDOW_SIZE is never accepted, it is only reported as clock skew
+    private static final int CLOCK_SKEW_WINDOW_SIZE = 7;
 
     private LongSupplier clock = System::currentTimeMillis;
 
@@ -87,9 +90,9 @@ public class HOTPServiceImpl implements HOTPService {
     }
 
     @Override
-    public boolean validateGoogleTimePassword(String username, String password) throws SsoDecryptException {
+    public CheckOtpResult.Status validateGoogleTimePassword(String username, String password) throws SsoDecryptException {
         if (password == null || !password.matches("^[0-9]{6}$")) {
-            return false;
+            return CheckOtpResult.Status.INVALID;
         }
         int verificationCode = Integer.parseInt(password);
         String masterKeyEncrypt = userService.getOtpMasterKeyByUsername(username);
@@ -103,23 +106,31 @@ public class HOTPServiceImpl implements HOTPService {
         } catch (DecryptException e) {
             throw new SsoDecryptException("decrypt error", e);
         }
-        long matchedStep = findMatchedStep(masterKey, verificationCode);
-        // the step is stored atomically: a code that was already used (also by a concurrent request) is rejected
-        boolean authorized = matchedStep >= 0 && userService.markOtpStepUsed(username, matchedStep);
-        if (matchedStep >= 0 && !authorized) {
-            logger.warn("Replayed OTP code for user {}", username);
+        long matchedStep = findMatchedStep(masterKey, verificationCode, WINDOW_SIZE);
+        if (matchedStep < 0) {
+            // the step is not stored: once the clock catches up, the same code is accepted
+            if (findMatchedStep(masterKey, verificationCode, CLOCK_SKEW_WINDOW_SIZE) >= 0) {
+                logger.warn("OTP code of user {} is outside the accepted window: clock skew", username);
+                return CheckOtpResult.Status.CLOCK_SKEW;
+            }
+            return CheckOtpResult.Status.INVALID;
         }
-        if (authorized && cryptoService.isLegacy(masterKeyEncrypt)) {
+        // the step is stored atomically: a code that was already used (also by a concurrent request) is rejected
+        if (!userService.markOtpStepUsed(username, matchedStep)) {
+            logger.warn("Replayed OTP code for user {}", username);
+            return CheckOtpResult.Status.ALREADY_USED;
+        }
+        if (cryptoService.isLegacy(masterKeyEncrypt)) {
             reencryptLegacyKey(username, masterKeyEncrypt, masterKey);
         }
-        return authorized;
+        return CheckOtpResult.Status.SUCCESS;
     }
 
     /** @return the time step of the code within the window around now, or -1 if the code matches none */
-    private long findMatchedStep(String masterKey, int verificationCode) {
+    private long findMatchedStep(String masterKey, int verificationCode, int windowSize) {
         long currentStep = clock.getAsLong() / TIME_STEP_MILLIS;
         long matched = -1;
-        for (int i = -((WINDOW_SIZE - 1) / 2); i <= WINDOW_SIZE / 2; i++) {
+        for (int i = -((windowSize - 1) / 2); i <= windowSize / 2; i++) {
             long step = currentStep + i;
             if (googleAuthenticator.get().getTotpPassword(masterKey, step * TIME_STEP_MILLIS) == verificationCode) {
                 matched = step;

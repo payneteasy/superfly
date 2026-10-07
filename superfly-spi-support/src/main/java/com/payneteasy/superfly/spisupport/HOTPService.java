@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.spisupport;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -33,7 +34,15 @@ public interface HOTPService {
      */
     String getUrlToGoogleAuthQrCode(String secretKey, String issuer, String accountName);
 
-    boolean validateGoogleTimePassword(String username, String password) throws SsoDecryptException;
+    /**
+     * Checks a Google Authenticator code and marks its time step as used on success.
+     *
+     * @param username name of the user
+     * @param password the code
+     * @return {@link CheckOtpResult.Status#SUCCESS}, {@link CheckOtpResult.Status#INVALID},
+     * {@link CheckOtpResult.Status#ALREADY_USED} or {@link CheckOtpResult.Status#CLOCK_SKEW}
+     */
+    CheckOtpResult.Status validateGoogleTimePassword(String username, String password) throws SsoDecryptException;
 
     void persistOtpKey(OTPType otpType, String username, String key) throws SsoDecryptException;
 

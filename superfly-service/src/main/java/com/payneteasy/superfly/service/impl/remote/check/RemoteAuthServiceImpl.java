@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl.remote.check;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -127,8 +128,9 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         }
 
         // 4. Verify OTP
-        boolean otpValid = internalSSOService.authenticateByOtpType(session.otpType, username, otp);
-        if (!otpValid) {
+        // every failure reason maps to the same answer: the remote-auth contract does not expose them
+        CheckOtpResult.Status otpStatus = internalSSOService.authenticateByOtpType(session.otpType, username, otp);
+        if (otpStatus != CheckOtpResult.Status.SUCCESS) {
             returnAfterFailedAttempt(sessionToken, session);
             return "BAD_USER_OR_PASSWORD_OR_OTP";
         }

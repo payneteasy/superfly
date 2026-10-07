@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.service.UserService;
 import org.easymock.EasyMock;
@@ -8,8 +9,8 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class HOTPServiceImplReplayTest {
 
@@ -51,7 +52,7 @@ public class HOTPServiceImplReplayTest {
         expectKeyLookupAndMark(STEP, true);
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
 
         EasyMock.verify(userService);
     }
@@ -62,8 +63,8 @@ public class HOTPServiceImplReplayTest {
         expectKeyLookupAndMark(STEP, false);
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
-        assertFalse(service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
 
         EasyMock.verify(userService);
     }
@@ -74,9 +75,9 @@ public class HOTPServiceImplReplayTest {
         expectKeyLookupAndMark(STEP + 1, true);
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP)));
         clock.addAndGet(STEP_MILLIS);
-        assertTrue(service.validateGoogleTimePassword(USER, codeOfStep(STEP + 1)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP + 1)));
 
         EasyMock.verify(userService);
     }
@@ -86,7 +87,7 @@ public class HOTPServiceImplReplayTest {
         expectKeyLookupAndMark(STEP - 1, true);
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, codeOfStep(STEP - 1)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP - 1)));
 
         EasyMock.verify(userService);
     }
@@ -96,7 +97,7 @@ public class HOTPServiceImplReplayTest {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(encryptedKey);
         EasyMock.replay(userService);
 
-        assertFalse(service.validateGoogleTimePassword(USER, codeOfStep(STEP + 5)));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, codeOfStep(STEP + 5)));
 
         EasyMock.verify(userService);
     }

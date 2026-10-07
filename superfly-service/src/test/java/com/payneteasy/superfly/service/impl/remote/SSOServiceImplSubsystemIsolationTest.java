@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -80,7 +81,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpForeignUserBehavesLikeUnknownUser() throws Exception {
         expectForeign();
         replayAll();
-        assertFalse(ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
@@ -101,16 +102,16 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpLocalUserIsDenied() throws Exception {
         expectLocalUser();
         replayAll();
-        assertFalse(ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
     @Test
     public void checkOtpOwnUserIsDelegated() throws Exception {
         expectOwn();
-        expect(internal.checkOtp(OTPType.GOOGLE_AUTH, false, USER, "123456")).andReturn(true);
+        expect(internal.checkOtp(OTPType.GOOGLE_AUTH, false, USER, "123456")).andReturn(CheckOtpResult.Status.SUCCESS);
         replayAll();
-        assertTrue(ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 

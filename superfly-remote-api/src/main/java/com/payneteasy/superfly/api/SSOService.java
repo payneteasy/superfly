@@ -24,7 +24,14 @@ public interface SSOService {
      */
     SSOUser authenticate(AuthenticateRequest authenticate);
 
-    boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException;
+    /**
+     * Checks a one-time password of a user.
+     *
+     * @param request check OTP request containing username, code, OTP type and optionality
+     * @return result with the check status; {@link CheckOtpResult.Status#INVALID} for an unknown user
+     * @since 2.0
+     */
+    CheckOtpResult checkOtp(CheckOtpRequest request) throws SsoDecryptException;
 
     boolean hasOtpMasterKey(HasOtpMasterKeyRequest request);
 

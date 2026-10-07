@@ -183,21 +183,38 @@ public class SSOHttpServiceApiClientTest {
         Capture<HttpRequest> requestCapture = newCapture();
 
         // Success response
-        HttpResponse response = createSuccessResponse("true");
+        HttpResponse response = createSuccessResponse("{\"status\":\"SUCCESS\"}");
         expect(httpClient.send(capture(requestCapture), anyObject(HttpRequestParameters.class)))
                 .andReturn(response);
         replay(httpClient);
 
         // Call the method under test
-        boolean result = client.checkOtp(request);
+        CheckOtpResult result = client.checkOtp(request);
 
         // Verify the result
-        assertTrue(result);
+        assertEquals(CheckOtpResult.Status.SUCCESS, result.getStatus());
 
         // Verify that the HTTP request was correctly formed
         verify(httpClient);
         HttpRequest capturedRequest = requestCapture.getValue();
         assertEquals(BASE_URL + "/checkOtp", capturedRequest.getUrl());
+    }
+
+    @Test
+    public void checkOtpResultStatusSurvivesJsonRoundTrip() throws Exception {
+        CheckOtpRequest request = new CheckOtpRequest(createTestSSOUser(), "123456");
+        for (CheckOtpResult.Status status : CheckOtpResult.Status.values()) {
+            String json = serializationManager.serialize(new CheckOtpResult(status));
+            assertEquals("{\"status\":\"" + status.name() + "\"}", json);
+
+            resetAll();
+            expect(httpClient.send(anyObject(HttpRequest.class), anyObject(HttpRequestParameters.class)))
+                    .andReturn(createSuccessResponse(json));
+            replay(httpClient);
+
+            assertEquals(status, client.checkOtp(request).getStatus());
+            verify(httpClient);
+        }
     }
 
     @Test

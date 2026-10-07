@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
@@ -44,7 +45,7 @@ public class SuperflyOTPAuthenticationProvider implements AuthenticationProvider
                                 authRequest.getSsoUser(),
                                 authRequest.getCredentials().toString()
                         )
-                );
+                ).getStatus() == CheckOtpResult.Status.SUCCESS;
             } catch (SsoDecryptException e) {
                 throw new BadOTPValueException(e.getMessage());
             }

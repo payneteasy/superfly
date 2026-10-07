@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -198,7 +199,7 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
         hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
         // records the confirmation code's step (anti-replay), strict order: after the key is saved
         Capture<String> recordedCode = newCapture();
-        expect(hotpService.validateGoogleTimePassword(eq("known-user"), capture(recordedCode))).andReturn(true);
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), capture(recordedCode))).andReturn(CheckOtpResult.Status.SUCCESS);
         replay(userService, hotpService, csrfValidator, subsystemService);
 
         SSOLoginData loginData = loginData(true);
