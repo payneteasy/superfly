@@ -336,8 +336,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             status = hotpService.confirmGoogleAuthMasterKey(username, code);
             // otherwise confirmation attempts would guess codes past the OTP lockout limit
             if (status != CheckOtpResult.Status.SUCCESS) {
-                logger.warn("OTP key confirmation failed {}: {}", username, status);
                 status = countFailedOtpAttempt(username, status);
+                logger.warn("OTP key confirmation failed {}: {}", username, status);
             }
         }
 

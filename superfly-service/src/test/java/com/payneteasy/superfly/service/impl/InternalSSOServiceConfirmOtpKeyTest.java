@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.service.impl;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.payneteasy.superfly.api.CheckOtpResult.Status;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.LockoutType;
@@ -9,10 +12,13 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,6 +35,8 @@ public class InternalSSOServiceConfirmOtpKeyTest {
     private HOTPService hotpService;
     private LockoutStrategy lockoutStrategy;
     private InternalSSOServiceImpl service;
+    private final Logger serviceLogger = (Logger) LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+    private final ListAppender<ILoggingEvent> appender = new ListAppender<>();
 
     @Before
     public void setUp() {
@@ -40,6 +48,13 @@ public class InternalSSOServiceConfirmOtpKeyTest {
         service.setHotpService(hotpService);
         service.setLockoutStrategy(lockoutStrategy);
         service.setLoggerSink(EasyMock.createNiceMock(LoggerSink.class));
+        appender.start();
+        serviceLogger.addAppender(appender);
+    }
+
+    @After
+    public void tearDown() {
+        serviceLogger.detachAppender(appender);
     }
 
     private void expectLockLookup(boolean locked) {
@@ -131,5 +146,20 @@ public class InternalSSOServiceConfirmOtpKeyTest {
         assertEquals(Status.INVALID, service.confirmOtpMasterKey(USER, CODE));
 
         verifyAll();
+    }
+
+    @Test
+    public void failureLogCarriesTheStatusAfterTheLockout() {
+        expectLockLookup(false);
+        EasyMock.expect(hotpService.confirmGoogleAuthMasterKey(USER, CODE)).andReturn(Status.INVALID);
+        userService.incrementHOTPLoginsFailed(USER);
+        lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
+        expectLockLookup(true);
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.confirmOtpMasterKey(USER, CODE));
+
+        assertEquals(Collections.singletonList("OTP key confirmation failed user: LOCKED"),
+                appender.list.stream().map(ILoggingEvent::getFormattedMessage).collect(Collectors.toList()));
     }
 }
