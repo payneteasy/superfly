@@ -67,6 +67,26 @@ chmod +x release.sh
 (если `autoPublish=true`). Иначе — перейдите на [Central Portal](https://central.sonatype.com/)
 и завершите публикацию вручную.
 
+## Заметки к релизу 2.0
+
+**Артефакт.** WAR больше нет: `superfly-web` собирает исполняемый `superfly-web/target/superfly.jar` (shaded, ~70 МБ) со встроенным
+Jetty; запуск — `java -jar` с переменными окружения (см. [Конфигурацию](configuration.md#база-данных)). `release:perform`
+публикует этот shaded-артефакт `superfly-web` в Maven Central.
+
+**База данных.** Перед выкаткой приложения:
+
+1. Миграция `superfly-sql/mi/R1.7.8` — колонка `users.otp_pending_master_key`.
+2. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
+   `save_otp_pending_master_key`, `confirm_otp_pending_master_key`; изменена `get_user_password_history_and_current_password`
+   (собственные пароли пользователя, от новых к старым).
+
+**API.** `SSOService.checkOtp` возвращает `CheckOtpResult` вместо `boolean`, HTTP-тело — `{"status":"..."}`; добавлен
+`confirmOtpMasterKey`; `resetGoogleAuthMasterKey` теперь сохраняет pending-ключ (см. [API](api.md#checkotp)).
+Клиентов и сервер обновляйте вместе.
+
+**SPI.** В `HOTPService` (`superfly-spi-support`) добавлен метод `confirmGoogleAuthMasterKey`, а `validateGoogleTimePassword`
+возвращает `CheckOtpResult.Status`: сторонние реализации не скомпилируются без доработки.
+
 ## Устранение неполадок
 
 | Проблема | Решение |

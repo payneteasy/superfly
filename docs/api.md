@@ -150,7 +150,23 @@ Authorization: Bearer {subsystem_token}
 { "userName": "john", "code": "123456", "otpType": "GOOGLE_AUTH", "isOtpOptional": false }
 ```
 
-**Response:** `boolean` — `true` если код верный
+**Response:** `CheckOtpResult` — в HTTP-теле `{ "status": "SUCCESS" }`.
+
+> **Несовместимо со старыми клиентами.** Раньше метод возвращал `boolean` (тело `true`/`false`); теперь — объект
+> `CheckOtpResult`. Клиент (`SSOHttpServiceApiClient` и собственные реализации) и сервер обновляйте вместе.
+> `/sso/check/check-otp` (remote-auth) не изменился.
+
+| `status` | Значение |
+|----------|---------|
+| `SUCCESS` | Код верный; шаг времени сохранён, повторно этот код не пройдёт |
+| `INVALID` | Неверный или некорректный (не 6 цифр) код; также неизвестный пользователь и пользователь, недоступный вызывающей подсистеме |
+| `ALREADY_USED` | Код этого шага (или более позднего) уже использован |
+| `CLOCK_SKEW` | Код относится к шагам ±2..±3 (по 30 с) от текущего — часы устройства расходятся с сервером. Код не принят и не сохранён; после синхронизации часов тот же код пройдёт |
+| `LOCKED` | Учётная запись заблокирована, код не проверялся; блокировка бессрочная (до разблокировки администратором), времени до снятия нет. Тот же статус получает попытка, которая сама привела к блокировке |
+
+Принимается код текущего шага и ±1 шаг, каждый код — один раз. Каждая неудача (`INVALID`, `CLOCK_SKEW`, `ALREADY_USED`) —
+неудачная OTP-попытка: счётчик растёт до порога `superfly-max-otp-failed` (см. [Конфигурацию](configuration.md#hotp--двухфакторная-аутентификация)).
+Подробные статусы стоит показывать пользователю только после успешного шага пароля.
 
 **Исключения:** `SsoDecryptException`
 
@@ -162,7 +178,8 @@ Authorization: Bearer {subsystem_token}
 
 **Request:** `{ "username": "john" }`
 
-**Response:** `boolean`
+**Response:** `boolean` — `true` только если есть **активный** ключ. Ключ, выданный `resetGoogleAuthMasterKey` и ещё не
+подтверждённый (pending), не учитывается.
 
 ---
 
@@ -322,13 +339,39 @@ Authorization: Bearer {subsystem_token}
 
 #### `resetGoogleAuthMasterKey`
 
-Сбрасывает и перегенерирует мастер-ключ Google Authenticator.
+Генерирует новый мастер-ключ Google Authenticator и сохраняет его как **pending** (`users.otp_pending_master_key`).
+Активный ключ не меняется: вход продолжает работать по старому, пока новый не подтверждён через `confirmOtpMasterKey`.
+Повторный вызов перезаписывает pending-ключ.
 
 **Request:** `{ "username": "john" }`
 
-**Response:** `String` — новый мастер-ключ
+**Response:** `String` — новый (pending) мастер-ключ
 
 **Исключения:** `UserNotFoundException`, `SsoDecryptException`
+
+---
+
+#### `confirmOtpMasterKey`
+
+Подтверждает pending-ключ, выданный `resetGoogleAuthMasterKey`, кодом, сгенерированным из него. При успехе pending-ключ
+становится активным.
+
+**Request:** `{ "username": "john", "code": "123456" }`
+
+**Response:** `CheckOtpResult`
+
+| `status` | Значение |
+|----------|---------|
+| `SUCCESS` | Ключ активирован. Код подтверждения помечен использованным: тем же кодом войти нельзя (`ALREADY_USED`) |
+| `INVALID` | Неверный код; нет pending-ключа; неизвестный пользователь; pending-ключ заменён конкурентным `resetGoogleAuthMasterKey` |
+| `CLOCK_SKEW` | Код вне окна ±1 шаг, но близко к нему; pending-ключ сохраняется |
+| `ALREADY_USED` | Код этого шага уже использован |
+| `LOCKED` | Учётная запись заблокирована (в том числе этой попыткой) |
+
+Каждая неудача — неудачная OTP-попытка (общий счётчик и порог `superfly-max-otp-failed`). Повторный `confirmOtpMasterKey`
+после успеха — тоже неудача (pending-ключа уже нет → `INVALID`), поэтому клиент должен защититься от двойного сабмита формы.
+
+**Исключения:** `SsoDecryptException`
 
 ---
 

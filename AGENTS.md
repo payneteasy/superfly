@@ -78,8 +78,9 @@ superfly/
 | Файл | Назначение |
 |------|-----------|
 | `pom.xml` | Корневой POM, версии зависимостей (`spring.version`, `wicket.version` и др.) |
-| `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml` | Конфигурация Jetty |
-| `superfly-web/src/main/resources/jetty-env.conf` | Переменные окружения Jetty |
+| `superfly-web/src/main/java/com/payneteasy/superfly/web/StartSuperfly.java` | Точка входа `superfly.jar` (встроенный Jetty) |
+| `superfly-web/src/main/java/com/payneteasy/superfly/web/IStartSuperflyConfig.java` | Переменные окружения: `DB_*`, `JETTY_*` |
+| `superfly-web/src/main/resources/logback.xml` | Logback внутри JAR |
 | `superfly-service/src/main/java/.../spring/` | Spring Application Context конфигурации |
 | `superfly-sql/mi/` | SQL-миграции базы данных |
 | `.github/workflows/maven.yml` | CI pipeline |
@@ -111,12 +112,10 @@ superfly/
 
 | Файл | Назначение |
 |------|-----------|
-| `Dockerfile` | Multi-stage: builder → production (Jetty 12 ee10, JRE 21); стадии development нет |
+| `Dockerfile` | Multi-stage: builder → production (`superfly.jar` со встроенным Jetty 12 ee10, JRE 21); стадии development нет |
 | `compose.yml` | База: app + MySQL 5.7 |
 | `compose.override.yml` | Dev-оверрайд: публикует MySQL на 127.0.0.1 (приложение — `./dev-env.sh app`) |
 | `compose.production.yml` | Hardened production: read_only, cap_drop, resource limits |
-| `docker/jetty/ROOT.xml` | Jetty context descriptor с JNDI datasource (env vars) |
-| `docker/jetty/entrypoint.sh` | Передаёт в Jetty только порт; `DB_*` читаются из окружения в `ROOT.xml` |
 | `.env.example` | Шаблон переменных окружения |
 
 ## Правила для агентов
