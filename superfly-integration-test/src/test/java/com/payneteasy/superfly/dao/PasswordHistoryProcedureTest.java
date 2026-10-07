@@ -106,6 +106,45 @@ public class PasswordHistoryProcedureTest {
         assertFalse("temporary password is not the user's own one", ctx.isPasswordExist("T6", HISTORY_DEPTH));
     }
 
+    @Test
+    public void rehashedCurrentPasswordIsNotCountedTwice() throws Exception {
+        // what int_check_user_password does at login: users gets the new hash, user_history keeps the legacy one
+        try (Statement st = conn.createStatement()) {
+            st.executeUpdate("update users set user_password = 'rehashed(P5)' where user_name = '" + USER + "'");
+        }
+        List<PasswordSaltPair> history = history();
+        PasswordCheckContext ctx = new PasswordCheckContext("x", ENCODER, history);
+
+        // the current password is listed once (the fake encoder cannot match the rehashed value, a real one does)
+        assertEquals("rehashed(P5)", history.get(0).getPassword());
+        assertEquals(stored("P4"), history.get(1).getPassword());
+        for (String own : new String[]{"P4", "P3", "P2", "P1"}) {
+            assertTrue(own + " must be rejected", ctx.isPasswordExist(own, HISTORY_DEPTH));
+        }
+    }
+
+    @Test
+    public void windowCoversFourPreviousPasswordsAndNotTheFifth() throws Exception {
+        reset("TP6");
+        changeTemp("P6");
+        PasswordCheckContext ctx = new PasswordCheckContext("x", ENCODER, history());
+
+        for (String own : new String[]{"P6", "P5", "P4", "P3", "P2"}) {
+            assertTrue(own + " must be rejected", ctx.isPasswordExist(own, HISTORY_DEPTH));
+        }
+        assertFalse("fifth previous password is out of the window", ctx.isPasswordExist("P1", HISTORY_DEPTH));
+    }
+
+    @Test
+    public void resetToTheSamePasswordKeepsItsHistoryRow() throws Exception {
+        reset("P5");
+        PasswordCheckContext ctx = new PasswordCheckContext("x", ENCODER, history());
+
+        for (String own : new String[]{"P5", "P4", "P3", "P2"}) {
+            assertTrue(own + " must be rejected", ctx.isPasswordExist(own, HISTORY_DEPTH));
+        }
+    }
+
     private static String stored(String plain) {
         return ENCODER.encode(plain, "salt");
     }
