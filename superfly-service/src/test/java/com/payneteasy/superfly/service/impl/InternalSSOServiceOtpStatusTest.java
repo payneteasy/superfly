@@ -1,5 +1,8 @@
 package com.payneteasy.superfly.service.impl;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.payneteasy.superfly.api.CheckOtpResult.Status;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -10,8 +13,10 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +35,8 @@ public class InternalSSOServiceOtpStatusTest {
     private HOTPService hotpService;
     private LockoutStrategy lockoutStrategy;
     private InternalSSOServiceImpl service;
+    private final Logger serviceLogger = (Logger) LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+    private final ListAppender<ILoggingEvent> appender = new ListAppender<>();
 
     @Before
     public void setUp() {
@@ -41,6 +48,13 @@ public class InternalSSOServiceOtpStatusTest {
         service.setHotpService(hotpService);
         service.setLockoutStrategy(lockoutStrategy);
         service.setLoggerSink(EasyMock.createNiceMock(LoggerSink.class));
+        appender.start();
+        serviceLogger.addAppender(appender);
+    }
+
+    @After
+    public void tearDown() {
+        serviceLogger.detachAppender(appender);
     }
 
     private static List<UserWithStatus> statuses(String username, boolean locked) {
@@ -190,5 +204,17 @@ public class InternalSSOServiceOtpStatusTest {
         assertEquals(Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
 
         verifyAll();
+    }
+    @Test
+    public void failureLogCarriesTheStatusAfterTheLockout() {
+        expectLockLookup(USER, USER, false);
+        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.INVALID);
+        expectFailedAttempt(true);
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, CODE));
+
+        assertEquals(Collections.singletonList("OTP check failed user: LOCKED"),
+                appender.list.stream().map(ILoggingEvent::getFormattedMessage).collect(java.util.stream.Collectors.toList()));
     }
 }

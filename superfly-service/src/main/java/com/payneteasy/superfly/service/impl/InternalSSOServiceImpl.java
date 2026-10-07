@@ -314,8 +314,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                     ? hotpService.validateGoogleTimePassword(username, code)
                     : CheckOtpResult.Status.SUCCESS;
             if (status != CheckOtpResult.Status.SUCCESS) {
-                logger.warn("OTP check failed {}: {}", username, status);
+                // logged after the count: the attempt may have locked the account, and the result is then LOCKED
                 status = countFailedOtpAttempt(username, status);
+                logger.warn("OTP check failed {}: {}", username, status);
             } else {
                 userService.clearHOTPLoginsFailed(username);
             }
