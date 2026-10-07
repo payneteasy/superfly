@@ -330,14 +330,21 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     private boolean isAccountLocked(String username) {
-        // an empty list means "all users" to the procedure
         if (username == null || username.isEmpty()) {
             return false;
         }
-        // the procedure matches a comma-delimited list, so only the row of this very user counts
-        List<UserWithStatus> statuses = userService.getUserStatuses(username);
+        // The key lookup finds the user with "=", which ignores trailing spaces and compares by collation, while
+        // get_user_statuses matches the list with instr: take the stored name from a lookup with the same "=".
+        UserForDescription user = userService.getUserForDescription(username);
+        String storedName = user == null ? null : user.getUsername();
+        // an empty list means "all users" to the procedure
+        if (storedName == null || storedName.isEmpty()) {
+            return false;
+        }
+        // the procedure splits its argument on commas, so only the row of this very user counts
+        List<UserWithStatus> statuses = userService.getUserStatuses(storedName);
         return statuses != null && statuses.stream()
-                .anyMatch(user -> username.equalsIgnoreCase(user.getUserName()) && user.isAccountLocked());
+                .anyMatch(status -> storedName.equals(status.getUserName()) && status.isAccountLocked());
     }
 
     protected SSOUserWithActions convertToSSOUser(UserWithActions user) {

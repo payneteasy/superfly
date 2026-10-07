@@ -5,6 +5,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.UserWithStatus;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
@@ -49,6 +50,18 @@ public class InternalSSOServiceOtpStatusTest {
         return Collections.singletonList(user);
     }
 
+    private static UserForDescription stored(String username) {
+        UserForDescription user = new UserForDescription();
+        user.setUsername(username);
+        return user;
+    }
+
+    /** The lock lookup resolves the stored name first, like the key lookup does. */
+    private void expectLockLookup(String requested, String storedName, boolean locked) {
+        EasyMock.expect(userService.getUserForDescription(requested)).andReturn(stored(storedName));
+        EasyMock.expect(userService.getUserStatuses(storedName)).andReturn(statuses(storedName, locked));
+    }
+
     private void replayAll() {
         EasyMock.replay(userService, hotpService, lockoutStrategy);
     }
@@ -60,12 +73,13 @@ public class InternalSSOServiceOtpStatusTest {
     private void expectFailedAttempt(boolean lockedAfterwards) {
         userService.incrementHOTPLoginsFailed(USER);
         lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, lockedAfterwards));
+        expectLockLookup(USER, USER, lockedAfterwards);
     }
 
     @Test
     public void lockedAccountIsLockedWithoutCheckingTheCode() {
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, true)).times(2);
+        expectLockLookup(USER, USER, true);
+        expectLockLookup(USER, USER, true);
         // hotpService and lockoutStrategy have no expectations, the failure counter is not touched
         replayAll();
 
@@ -77,7 +91,7 @@ public class InternalSSOServiceOtpStatusTest {
 
     @Test
     public void successClearsFailures() {
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, false));
+        expectLockLookup(USER, USER, false);
         EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.SUCCESS);
         userService.clearHOTPLoginsFailed(USER);
         replayAll();
@@ -103,7 +117,7 @@ public class InternalSSOServiceOtpStatusTest {
     }
 
     private void assertFailedAttemptKeepsStatus(Status status) {
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, false));
+        expectLockLookup(USER, USER, false);
         EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(status);
         expectFailedAttempt(false);
         replayAll();
@@ -115,7 +129,7 @@ public class InternalSSOServiceOtpStatusTest {
 
     @Test
     public void attemptThatLocksTheAccountIsLocked() {
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, false));
+        expectLockLookup(USER, USER, false);
         EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.CLOCK_SKEW);
         expectFailedAttempt(true);
         replayAll();
@@ -127,7 +141,7 @@ public class InternalSSOServiceOtpStatusTest {
 
     @Test
     public void unknownUserIsNeverLocked() {
-        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(Collections.emptyList()).times(2);
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(null).times(2);
         EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.INVALID);
         userService.incrementHOTPLoginsFailed(USER);
         lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
@@ -142,12 +156,28 @@ public class InternalSSOServiceOtpStatusTest {
     public void lockOfAnotherUserMatchedByTheProcedureIsIgnored() {
         // get_user_statuses splits its argument on commas, so "a,user" also returns the row of "a"
         String username = "a," + USER;
+        EasyMock.expect(userService.getUserForDescription(username)).andReturn(stored(username));
         EasyMock.expect(userService.getUserStatuses(username)).andReturn(statuses("a", true));
         EasyMock.expect(hotpService.validateGoogleTimePassword(username, CODE)).andReturn(Status.SUCCESS);
         userService.clearHOTPLoginsFailed(username);
         replayAll();
 
         assertEquals(Status.SUCCESS, service.authenticateByOtpType(OTPType.GOOGLE_AUTH, username, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void lockedAccountRequestedWithTrailingSpaceIsLocked() {
+        // "user " finds the key of "user" (PAD SPACE), so it must find the lock of "user" too
+        String requested = USER + " ";
+        EasyMock.expect(userService.getUserForDescription(requested)).andReturn(stored(USER));
+        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, true));
+        EasyMock.expect(userService.getUserStatuses(requested)).andReturn(Collections.emptyList()).anyTimes();
+        // hotpService and lockoutStrategy have no expectations
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.authenticateByOtpType(OTPType.GOOGLE_AUTH, requested, CODE));
 
         verifyAll();
     }

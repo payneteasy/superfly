@@ -81,7 +81,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpForeignUserBehavesLikeUnknownUser() throws Exception {
         expectForeign();
         replayAll();
-        assertNotEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
+        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
@@ -102,7 +102,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpLocalUserIsDenied() throws Exception {
         expectLocalUser();
         replayAll();
-        assertNotEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
+        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
