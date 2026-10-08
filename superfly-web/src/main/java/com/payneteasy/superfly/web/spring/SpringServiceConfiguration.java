@@ -24,9 +24,14 @@ public class SpringServiceConfiguration {
 
     @Bean
     public CryptoService cryptoService() {
+        CryptoServiceImpl.requireConfigured(
+                "SUPERFLY_CRYPTO_SECRET", properties.cryptoSecret(),
+                "SUPERFLY_CRYPTO_SALT", properties.cryptoSalt()
+        );
         return new CryptoServiceImpl(
                 properties.cryptoSecret(),
-                properties.cryptoSalt()
+                properties.cryptoSalt(),
+                Boolean.TRUE.equals(properties.cryptoLegacyDefaultKey())
         );
     }
 

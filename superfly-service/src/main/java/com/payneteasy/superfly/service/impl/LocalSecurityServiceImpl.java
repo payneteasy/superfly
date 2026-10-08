@@ -9,8 +9,10 @@ import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.UserPasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserInfoService;
 import com.payneteasy.superfly.service.UserService;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -25,16 +27,19 @@ import java.util.Collections;
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
 
+    public static final String DEFAULT_LOCAL_SUBSYSTEM_NAME = "superfly";
+
     private static final Logger logger = LoggerFactory.getLogger(LocalSecurityServiceImpl.class);
 
     private UserService         userService;
     @Setter
-    private String              localSubsystemName = "superfly";
+    private String              localSubsystemName = DEFAULT_LOCAL_SUBSYSTEM_NAME;
     @Setter
     private String              localRoleName      = "admin";
     private LoggerSink          loggerSink;
     private UserPasswordEncoder userPasswordEncoder;
     private LockoutStrategy     lockoutStrategy;
+    private UserInfoService     userInfoService;
 
     @Autowired
     public void setUserService(UserService userService) {
@@ -56,10 +61,18 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         this.lockoutStrategy = lockoutStrategy;
     }
 
+    @Autowired
+    public void setUserInfoService(UserInfoService userInfoService) {
+        this.userInfoService = userInfoService;
+    }
+
     public String[] authenticate(String username, String password) {
-        String encPassword = userPasswordEncoder.encode(password, username);
+        // null password is an ordinary failed attempt, not an exception
+        String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
+                : userPasswordEncoder.encode(password, username);
         AuthSession session = userService.authenticate(username, encPassword,
-                localSubsystemName, null, null);
+                password == null ? null : userPasswordEncoder.encodeLegacy(password, username),
+                localSubsystemName, userInfoService == null ? null : userInfoService.getRemoteAddress(), null);
         AuthRole role = null;
         if (session != null) {
             if (session.getRoles().size() == 1 && session.getRoles().getFirst().getRoleName() == null) {

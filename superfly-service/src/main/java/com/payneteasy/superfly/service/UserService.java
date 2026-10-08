@@ -366,7 +366,21 @@ public interface UserService {
 
     void persistOtpMasterKeyForUsername(String username, String masterKey);
 
+    /**
+     * Compare-and-set: replaces the stored master key only if it still equals oldMasterKey.
+     */
+    void persistOtpMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
+
+    /**
+     * Atomically records the TOTP time step of an accepted code.
+     *
+     * @return false if the step is not above the last recorded one (the code was already used)
+     */
+    boolean markOtpStepUsed(String username, long step);
+
     String getOtpMasterKeyByUsername(String username);
+
+    boolean userHasRolesInSubsystem(String username, String subsystemName);
 
     String getUserSalt(String userName);
 
@@ -376,8 +390,8 @@ public interface UserService {
 
     void updateUserSaltByUserId(long userId, String salt);
 
-    AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
-                             String sessionInfo);
+    AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName,
+                             String ipAddress, String sessionInfo);
 
     AuthSession pseudoAuthenticate(String username, String subsystemName);
 
@@ -391,7 +405,7 @@ public interface UserService {
 
     RoutineResult grantRolesToUser(long userId, String subsystemName, String principalNames);
 
-    AuthSession exchangeSubsystemToken(String subsystemToken);
+    AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     List<UserWithStatus> getUserStatuses(String userNames);
 

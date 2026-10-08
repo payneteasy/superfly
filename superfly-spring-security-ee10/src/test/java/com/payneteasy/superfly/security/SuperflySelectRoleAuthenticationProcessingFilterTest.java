@@ -69,6 +69,7 @@ public class SuperflySelectRoleAuthenticationProcessingFilterTest extends
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
+        expect(request.getHeader("Referer")).andReturn(null).anyTimes();
         expect(session.getAttribute(anyObject(String.class))).andReturn(createSSOUserWithOneRole()).anyTimes();
         session.removeAttribute(anyObject(String.class));
         expectLastCall().anyTimes();

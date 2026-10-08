@@ -9,6 +9,7 @@ import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPanel;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.util.StringUtils;
 
 /**
  * Page used to change a password.
@@ -51,10 +52,21 @@ public class SSOChangePasswordPage extends BaseSSOPage {
                     loginData.setUsername(username);
                     loginData.setOtpTypeCode(user.getOtpTypeCode());
                     loginData.setOtpOptional(user.isOtpOptional());
+                    loginData.setGoogleAuthSetupRequired(false);
                 }
 
-                if (OTPType.GOOGLE_AUTH.equals(user.getOtpType()) && !user.isOtpOptional()) {
-                    getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
+                boolean hasKey = OTPType.GOOGLE_AUTH.equals(user.getOtpType())
+                        && StringUtils.hasLength(userService.getOtpMasterKeyByUsername(username));
+                if (OTPType.GOOGLE_AUTH.equals(user.getOtpType()) && (hasKey || !user.isOtpOptional())) {
+                    // an existing key must never be replaced without passing OTP
+                    if (hasKey) {
+                        getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                    } else {
+                        if (loginData != null) {
+                            loginData.setGoogleAuthSetupRequired(true);
+                        }
+                        getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
+                    }
                 } else {
                     SSOUtils.onSuccessfulLogin(username,
                             SSOChangePasswordPage.this,

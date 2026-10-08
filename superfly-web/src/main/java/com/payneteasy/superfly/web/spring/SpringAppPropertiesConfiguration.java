@@ -33,10 +33,12 @@ public class SpringAppPropertiesConfiguration {
                 .policyName(policyName)
                 .cryptoSecret(cryptoSecret())
                 .cryptoSalt(cryptoSalt())
+                .cryptoLegacyDefaultKey(cryptoLegacyDefaultKey())
                 .maxLoginsFailed(maxLoginsFailed())
                 .csrfLoginValidatorEnable(csrfLoginValidatorEnable())
                 .enableMultiFactorAuth(enableMultiFactorAuth())
-                .forceMultiFactorAuthMethod(forceMultiFactorAuthMethod());
+                .forceMultiFactorAuthMethod(forceMultiFactorAuthMethod())
+                .loginIpLimit(loginIpLimit());
     }
 
     private String superflyVersion() {
@@ -74,11 +76,27 @@ public class SpringAppPropertiesConfiguration {
     }
 
     private String cryptoSecret() {
-        return parameterResolver.getParameter("superfly-cryptoSecret", "none");
+        return envOrParameter("SUPERFLY_CRYPTO_SECRET", "superfly-cryptoSecret");
     }
 
     private String cryptoSalt() {
-        return parameterResolver.getParameter("superfly-cryptoSalt", "none");
+        return envOrParameter("SUPERFLY_CRYPTO_SALT", "superfly-cryptoSalt");
+    }
+
+    private boolean cryptoLegacyDefaultKey() {
+        return Boolean.parseBoolean(envOrParameter("SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY", "superfly-cryptoLegacyDefaultKey"));
+    }
+
+    // No default for the key material: a missing value must fail the start (see SpringServiceConfiguration#cryptoService)
+    private String envOrParameter(String envName, String paramName) {
+        String fromEnv = System.getenv(envName);
+        return fromEnv != null && !fromEnv.isBlank() ? fromEnv : parameterResolver.getParameter(paramName, null);
+    }
+
+    // Failed logins per IP per window; 0 disables the IP limit (the IP + username limit stays)
+    private int loginIpLimit() {
+        String value = envOrParameter("SUPERFLY_LOGIN_IP_LIMIT", "superfly-loginIpLimit");
+        return value == null ? 20 : Integer.parseInt(value.trim());
     }
 
     private OTPType forceMultiFactorAuthMethod() {

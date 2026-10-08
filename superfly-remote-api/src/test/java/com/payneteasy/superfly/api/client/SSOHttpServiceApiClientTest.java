@@ -201,6 +201,21 @@ public class SSOHttpServiceApiClientTest {
     }
 
     @Test
+    public void testGetLastEventId_Success() throws Exception {
+        Capture<HttpRequest> requestCapture = newCapture();
+        expect(httpClient.send(capture(requestCapture), anyObject(HttpRequestParameters.class)))
+                .andReturn(createSuccessResponse("9007199254740993"));
+        replay(httpClient);
+
+        assertEquals(Long.valueOf(9_007_199_254_740_993L), client.getLastEventId());
+
+        verify(httpClient);
+        HttpRequest capturedRequest = requestCapture.getValue();
+        assertEquals(BASE_URL + "/getLastEventId", capturedRequest.getUrl());
+        assertEquals("null", new String(capturedRequest.getBody(), java.nio.charset.StandardCharsets.UTF_8));
+    }
+
+    @Test
     public void testHasOtpMasterKey_Success() throws SsoAuthException, HttpWriteException, HttpConnectException, HttpReadException {
         // Prepare test data
         HasOtpMasterKeyRequest request = new HasOtpMasterKeyRequest("username");

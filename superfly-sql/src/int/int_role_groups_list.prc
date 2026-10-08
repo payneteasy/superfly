@@ -10,6 +10,10 @@ create procedure int_role_groups_list(i_start_from int(10),
  main_sql:
   begin
     declare v_sql_core   text;
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
     set v_sql_core   =
           concat('select r.role_id, r.role_name, ss.subsystem_name, g.grop_id, g.group_name, if(rg.rlgp_id is null, "U", "M") mapping_status ',
                  '  from         roles r ',

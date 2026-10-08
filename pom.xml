@@ -720,10 +720,32 @@
             </dependency>
 
             <dependency>
+                <!--Justification: transitive of bcpg; kept at the bcprov version to avoid duplicate classes
+                    (e.g. IANAObjectIdentifiers in bcprov and bcutil) in the WAR -->
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcutil-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
+                <!--Justification: transitive of bcpg; kept at the bcprov version -->
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk18on</artifactId>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
                 <!--Justification: Bouncy Castle API for cryptography functions -->
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpg-jdk18on</artifactId>
-                <version>1.84</version>
+                <version>1.85</version>
+            </dependency>
+
+            <dependency>
+                <!--Justification: transitive of velocity-engine-core; pinned to get the ClassUtils.getClass() StackOverflow fix (3.18.0) -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.18.0</version>
             </dependency>
 
 
@@ -1079,15 +1101,15 @@
 
     <properties>
         <jdbcproc.version>1.1-25</jdbcproc.version>
-        <httpclient5.version>5.4.4</httpclient5.version>
+        <httpclient5.version>5.6.4</httpclient5.version>
         <slf4j.version>2.0.17</slf4j.version>
         <spring.version>6.2.19</spring.version>
-        <spring.security.version>6.4.13</spring.security.version>
+        <spring.security.version>6.5.11</spring.security.version>
         <spring5.version>5.3.39</spring5.version>
         <spring-security5.version>5.8.16</spring-security5.version>
         <aspectj.version>1.6.5</aspectj.version>
 
-        <wicket.version>10.9.1</wicket.version>
+        <wicket.version>10.11.0</wicket.version>
         <wicket8.version>8.18.0</wicket8.version>
         <jetty.version>12.0.36</jetty.version>
 
@@ -1097,7 +1119,7 @@
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
 
-        <jackson.version>2.19.2</jackson.version>
+        <jackson.version>2.21.7</jackson.version>
 
         <java.version>21</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>

@@ -18,6 +18,7 @@ import com.payneteasy.superfly.model.ui.action.UIActionForCheckboxForUser;
 import com.payneteasy.superfly.model.ui.role.UIRoleForCheckbox;
 import com.payneteasy.superfly.model.ui.user.*;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.IPolicyValidation;
 import com.payneteasy.superfly.policy.account.AccountPolicy;
@@ -26,6 +27,7 @@ import com.payneteasy.superfly.policy.password.PasswordCheckContext;
 import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.UserInfoService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spisupport.SaltGenerator;
@@ -33,7 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -47,10 +52,14 @@ public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    // error_message of login_locked when the call actually locked the account
+    private static final String LOCKED_MARKER = "ACCOUNT_LOCKED";
+
     private UserDao userDao;
     private NotificationService notificationService;
     private LoggerSink loggerSink;
     private PasswordEncoder passwordEncoder;
+    private PasswordEncoder legacyPasswordEncoder;
     private SaltSource saltSource;
     private IPolicyValidation<PasswordCheckContext> policyValidation;
     private SaltGenerator hotpSaltGenerator;
@@ -58,6 +67,8 @@ public class UserServiceImpl implements UserService {
     private HOTPService hotpService;
     private CreateUserStrategy createUserStrategy;
     private LockoutStrategy lockoutStrategy;
+    private UserService self;
+    private UserInfoService userInfoService;
 
 
     @Autowired
@@ -81,8 +92,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Autowired
+    public void setUserInfoService(UserInfoService userInfoService) {
+        this.userInfoService = userInfoService;
+    }
+
+    @Autowired
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    @Qualifier("messageDigestPasswordEncoder")
+    public void setLegacyPasswordEncoder(PasswordEncoder legacyPasswordEncoder) {
+        this.legacyPasswordEncoder = legacyPasswordEncoder;
     }
 
     @Autowired
@@ -93,6 +115,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public void setHotpSaltGenerator(SaltGenerator hotpSaltGenerator) {
         this.hotpSaltGenerator = hotpSaltGenerator;
+    }
+
+    // the transactional proxy of this bean: calls through `this` would bypass it
+    @Autowired
+    @Lazy
+    public void setSelf(UserService self) {
+        this.self = self;
     }
 
     @Autowired
@@ -153,7 +182,10 @@ public class UserServiceImpl implements UserService {
             UIUser userForDao) {
         BeanUtils.copyProperties(user, userForDao);
         userForDao.setSalt(saltSource.getSalt(user.getUsername()));
-        userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
+        // null means "password is not changed" (e.g. updateUser from the admin UI)
+        if (user.getPassword() != null) {
+            userForDao.setPassword(passwordEncoder.encode(user.getPassword(),userForDao.getSalt()));
+        }
     }
 
     @Override
@@ -266,14 +298,15 @@ public class UserServiceImpl implements UserService {
             rolesToGrantActionsIds = new HashSet<Long>(rolesToGrantActionsIds);
             rolesToGrantActionsIds.retainAll(rolesToAddIds);
         }
-        RoutineResult result = userDao.changeUserRoles(userId,
-                StringUtils.collectionToCommaDelimitedString(rolesToAddIds),
-                StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds),
-                StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds));
+        String added = StringUtils.collectionToCommaDelimitedString(rolesToAddIds);
+        String removed = StringUtils.collectionToCommaDelimitedString(rolesToRemoveIds);
+        String grantActions = StringUtils.collectionToCommaDelimitedString(rolesToGrantActionsIds);
+        RoutineResult result = userDao.changeUserRoles(userId, added, removed, grantActions);
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
         }
-        loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId));
+        loggerSink.info(logger, "CHANGE_USER_ROLES", result.isOk(), String.valueOf(userId),
+                "added=" + added + ", removed=" + removed + ", grantActions=" + grantActions);
         return result;
     }
 
@@ -351,12 +384,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void validatePassword(String username,String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userDao.getUserPasswordHistoryAndCurrentPassword(username)));
     }
 
+    // no transaction around the loop: each user is processed in its own transaction through the proxy,
+    // so the event of one user is committed at once, not at the end of the whole batch
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void expirePasswords(int days) {
-        accountPolicy.expirePasswordsIfNeeded(days, this);
+        accountPolicy.expirePasswordsIfNeeded(days, self);
     }
 
     @Override
@@ -388,9 +424,11 @@ public class UserServiceImpl implements UserService {
         loggerSink.info(logger, "SUSPEND_USER", result.isOk(), String.valueOf(userId));
     }
 
+    // see expirePasswords
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void suspendUsers(int days) {
-        accountPolicy.suspendUsersIfNeeded(days, this);
+        accountPolicy.suspendUsersIfNeeded(days, self);
     }
 
     @Override
@@ -401,13 +439,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
-        String encodedPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
+        String salt = saltSource.getSalt(username);
+        // null password is an ordinary failed attempt, not an exception
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
-                userDao.getUserLoginStatus(username, encodedPassword, subsystemIdentifier));
+                userDao.getUserLoginStatus(username,
+                        password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
+                        password == null ? null : legacyPasswordEncoder.encode(password, salt), subsystemIdentifier,
+                        remoteAddress()));
+        loggerSink.info(logger, "SSO_PASSWORD_LOGIN", result != UserLoginStatus.FAILED, username,
+                "subsystem=" + subsystemIdentifier + (result == UserLoginStatus.TEMP_PASSWORD ? ", tempPassword=true" : ""));
         if (result == UserLoginStatus.FAILED) {
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         }
         return result;
+    }
+
+    // request threads only: scheduled jobs have no client
+    private String remoteAddress() {
+        return userInfoService == null ? null : userInfoService.getRemoteAddress();
     }
 
     @Override
@@ -427,7 +476,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoutineResult unlockSuspendedUser(long userId, String newPassword) {
-        return userDao.unlockSuspendedUser(userId,newPassword);
+        RoutineResult result = userDao.unlockSuspendedUser(userId,newPassword);
+        loggerSink.info(logger, "UNLOCK_SUSPENDED_USER", result.isOk(), String.valueOf(userId));
+        return result;
     }
 
     @Override
@@ -442,12 +493,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType) {
-        return userDao.lockoutConditionnally(userName,maxLoginsFailed,lockoutType);
+        RoutineResult result = userDao.lockoutConditionnally(userName,maxLoginsFailed,lockoutType);
+        if (LOCKED_MARKER.equals(result.getErrorMessage())) {
+            // the caller is the failed login itself, so the actor is the system
+            loggerSink.info(logger, "AUTO_LOCK_USER", true, userName, "reason=" + lockoutType + ", maxLoginsFailed=" + maxLoginsFailed);
+        }
+        return result;
     }
 
     @Override
     public void persistOtpMasterKeyForUsername(String username, String masterKey) {
         userDao.persistGoogleAuthMasterKeyForUsername(username,masterKey);
+        loggerSink.info(logger, "PERSIST_OTP_MASTER_KEY", true, username);
+    }
+
+    @Override
+    public void persistOtpMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey) {
+        userDao.persistGoogleAuthMasterKeyIfUnchanged(username, oldMasterKey, newMasterKey);
+    }
+
+    @Override
+    public boolean markOtpStepUsed(String username, long step) {
+        return userDao.saveOtpLastUsedStep(username, step) > 0;
+    }
+
+    @Override
+    public boolean userHasRolesInSubsystem(String username, String subsystemName) {
+        return "Y".equals(userDao.userHasRolesInSubsystem(username, subsystemName));
     }
 
     @Override
@@ -486,11 +558,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthSession authenticate(String username, String password, String subsystemName, String ipAddress, String sessionInfo) {
-        if (ipAddress != null && ipAddress.length() > 15) {
-            ipAddress = ipAddress.substring(0, 15);
-        }
-        return userDao.authenticate(username,password,subsystemName,ipAddress,sessionInfo);
+    public AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName, String ipAddress, String sessionInfo) {
+        return userDao.authenticate(username,password,legacyPassword,subsystemName,ipAddress,sessionInfo);
     }
 
     @Override
@@ -500,7 +569,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RoutineResult changeUserRole(String username, String newRole, String subsystemName) {
-        return userDao.changeUserRole(username,newRole,subsystemName);
+        RoutineResult result = userDao.changeUserRole(username,newRole,subsystemName);
+        loggerSink.info(logger, "REMOTE_CHANGE_USER_ROLE", result.isOk(), username,
+                "role=" + newRole + ", subsystem=" + subsystemName);
+        return result;
     }
 
     @Override
@@ -524,8 +596,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthSession exchangeSubsystemToken(String subsystemToken) {
-        return userDao.exchangeSubsystemToken(subsystemToken);
+    public AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem) {
+        return userDao.exchangeSubsystemToken(subsystemToken, callerSubsystem);
     }
 
     @Override
@@ -541,6 +613,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserForDescription(UserForDescription user) {
         userDao.updateUserForDescription(user);
+        loggerSink.info(logger, "UPDATE_USER_DESCRIPTION", true, user.getUsername());
     }
 
     @Override
@@ -557,11 +630,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserOtpType(String username, String otpType) {
         userDao.updateUserOtpType(username,otpType);
+        loggerSink.info(logger, "CHANGE_USER_OTP_TYPE", true, username, "otpType=" + otpType);
     }
 
     @Override
     public void updateUserIsOtpOptionalValue(String username, boolean isOtpOptional) {
         userDao.updateUserIsOtpOptionalValue(username,isOtpOptional);
+        loggerSink.info(logger, "CHANGE_USER_OTP_OPTIONAL", true, username, "otpOptional=" + isOtpOptional);
     }
 
     @Override

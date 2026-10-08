@@ -4,7 +4,7 @@ create procedure ui_unlock_user(i_user_id int(10))
  main_sql:
   begin
     update users
-       set is_account_locked    = "N", logins_failed=null
+       set is_account_locked    = "N", logins_failed=null, hotp_logins_failed=0
      where user_id = i_user_id;
 
     select 'OK' status, null error_message;

@@ -42,6 +42,7 @@ public class UserServiceImplTest {
         MessageDigestPasswordEncoder encoder = new MessageDigestPasswordEncoder();
         encoder.setAlgorithm("sha1");
         userService.setPasswordEncoder(encoder);
+        userService.setLegacyPasswordEncoder(new MessageDigestPasswordEncoder());
         userService.setSaltSource(new ConstantSaltSource("c3pio"));
         userService.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         userService.setHotpService(TrivialProxyFactory.createProxy(HOTPService.class));
@@ -129,7 +130,7 @@ public class UserServiceImplTest {
     @Test
     public void testGetUserLoginStatusSuccess() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
-        EasyMock.expect(userDao.getUserLoginStatus("pete", "password{c3pio}", "subsystem"))
+        EasyMock.expect(userDao.getUserLoginStatus("pete", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("Y");
         EasyMock.replay(userDao);
 
@@ -143,7 +144,7 @@ public class UserServiceImplTest {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
         TestLockoutStrategy testLockoutStrategy = new TestLockoutStrategy();
         userService.setLockoutStrategy(testLockoutStrategy);
-        EasyMock.expect(userDao.getUserLoginStatus("stranger", "password{c3pio}", "subsystem"))
+        EasyMock.expect(userDao.getUserLoginStatus("stranger", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("N");
         EasyMock.replay(userDao);
 
@@ -157,7 +158,7 @@ public class UserServiceImplTest {
     @Test
     public void testGetUserLoginStatusTemp() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
-        EasyMock.expect(userDao.getUserLoginStatus("old-pete", "password{c3pio}", "subsystem"))
+        EasyMock.expect(userDao.getUserLoginStatus("old-pete", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("T");
         EasyMock.replay(userDao);
 

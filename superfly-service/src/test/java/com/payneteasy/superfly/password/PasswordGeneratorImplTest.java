@@ -8,7 +8,7 @@ public class PasswordGeneratorImplTest {
     public void test() {
         PasswordGeneratorImpl generator = new PasswordGeneratorImpl();
         for (int i = 0; i < 100; i++) {
-            Assert.assertEquals(8, generator.generate().length());
+            Assert.assertEquals(12, generator.generate().length());
         }
     }
 }

@@ -20,14 +20,15 @@ public interface UserDao {
      *
      * @param username      username to use
      * @param password      password to use
+     * @param legacyPassword same password hashed with the legacy algorithm; on match the stored hash is replaced with {@code password}
      * @param subsystemName name of the subsystem used to authenticate
      * @param ipAddress     IP address of the user who logs in
      * @param sessionInfo   session info
      * @return session
      */
     @AStoredProcedure(name = "authenticate")
-    AuthSession authenticate(String username, String password, String subsystemName, String ipAddress,
-            String sessionInfo);
+    AuthSession authenticate(String username, String password, String legacyPassword, String subsystemName,
+            String ipAddress, String sessionInfo);
 
     /**
      * Returns user's role and action as if he was successfully authenticated.
@@ -449,11 +450,26 @@ public interface UserDao {
     @AStoredProcedure(name = "get_user_statuses")
     List<UserWithStatus> getUserStatuses(String userNames);
 
+    /**
+     * @return Y if the user has at least one role in the subsystem, N otherwise
+     */
+    @AStoredProcedure(name = "int_user_has_roles_in_subsystem")
+    String userHasRolesInSubsystem(String username, String subsystemName);
+
     @AStoredProcedure(name = "get_google_auth_master_key_by_user_name")
     String getGoogleAuthMasterKeyByUsername(String username);
 
     @AStoredProcedure(name = "save_google_auth_master_key")
     void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
+
+    @AStoredProcedure(name = "save_google_auth_master_key_if_unchanged")
+    void persistGoogleAuthMasterKeyIfUnchanged(String username, String oldMasterKey, String newMasterKey);
+
+    /**
+     * @return the number of rows updated: 1 if the step is above the last used one, 0 otherwise
+     */
+    @AStoredProcedure(name = "save_otp_last_used_step")
+    int saveOtpLastUsedStep(String username, long step);
 
     @AStoredProcedure(name = "update_user_otp_type")
     void updateUserOtpType(String username, String otpType);
@@ -470,11 +486,12 @@ public interface UserDao {
      *
      * @param username            name of the user
      * @param password            hashed password
+     * @param legacyPassword      same password hashed with the legacy algorithm
      * @param subsystemIdentifier subsystem identifier
      * @return user login status
      */
     @AStoredProcedure(name = "get_user_login_status")
-    String getUserLoginStatus(String username, String password, String subsystemIdentifier);
+    String getUserLoginStatus(String username, String password, String legacyPassword, String subsystemIdentifier, String ipAddress);
 
     /**
      * Exchanges subsystem token to SSOUser. After this operation
@@ -482,11 +499,12 @@ public interface UserDao {
      * be used for exchanging.
      *
      * @param subsystemToken subsystem token
+     * @param callerSubsystem  subsystem of the caller; the token is valid only for it
      * @return SSOUser or null if token does not exist, expired or
      * already used
      */
     @AStoredProcedure(name = "exchange_subsystem_token")
-    AuthSession exchangeSubsystemToken(String subsystemToken);
+    AuthSession exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     /**
      * Makes a user complete.

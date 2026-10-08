@@ -22,6 +22,14 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_TIMEZONE: ${DB_TIMEZONE:-UTC}
       JETTY_PORT: "8080"
+      # OTP master key encryption; the app refuses to start when empty (compose.production.yml enforces them)
+      SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:-}
+      SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:-}
+      SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY: ${SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY:-}
+      # behind a proxy: true, and only the proxy may reach the port (see docs/configuration.md)
+      JETTY_TRUST_FORWARDED: ${JETTY_TRUST_FORWARDED:-false}
+      # failed logins per IP per 5 minutes; empty means 20, 0 disables the IP limit
+      SUPERFLY_LOGIN_IP_LIMIT: ${SUPERFLY_LOGIN_IP_LIMIT:-}
     depends_on:
       mysql:
         condition: service_healthy

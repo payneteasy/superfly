@@ -158,8 +158,9 @@ public class UserDetailsPage extends BasePage {
                 final PageParameters actionsParameters = new PageParameters();
                 actionsParameters.set("userId", String.valueOf(userId));
 
-                final UISubsystem subsystem = subsystemService.getSubsystemByName(rfc);
-                actionsParameters.set("subId", String.valueOf(subsystem.getId()));
+                final UISubsystem subsystem   = subsystemService.getSubsystemByName(rfc);
+                final Long        subsystemId = subsystem.getId();
+                actionsParameters.set("subId", String.valueOf(subsystemId));
                 item.add(new BookmarkablePageLink<Page>("add-role", ChangeUserRolesPage.class, actionsParameters));
 
                 List<UIRoleWithActions> roles = sort.getRoles(rfc);
@@ -170,7 +171,7 @@ public class UserDetailsPage extends BasePage {
                         final UIRoleWithActions role   = listItem.getModelObject();
                         PageParameters          params = new PageParameters();
                         params.set("userId", String.valueOf(userId));
-                        params.set("subId", String.valueOf(subsystem.getId()));
+                        params.set("subId", String.valueOf(subsystemId));
                         params.set("roleId", String.valueOf(role.getId()));
                         listItem.add(new BookmarkablePageLink<ChangeUserGrantActionsPage>("grant-user-action",
                                                                                           ChangeUserGrantActionsPage.class,

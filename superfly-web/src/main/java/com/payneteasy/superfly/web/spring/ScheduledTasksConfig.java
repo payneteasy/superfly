@@ -31,7 +31,7 @@ public class ScheduledTasksConfig {
     private static final int EXPIRED_SESSION_AGE_SECONDS = 86_400;
     private static final int PASSWORD_EXPIRY_DAYS        = 90;
     private static final int SUSPEND_USERS_DAYS          = 90;
-    private static final int EXPIRED_TOKEN_AGE_SECONDS   = 5;
+    private static final int EXPIRED_TOKEN_AGE_SECONDS   = 60;
 
     private final SessionService sessionService;
     private final UserService    userService;

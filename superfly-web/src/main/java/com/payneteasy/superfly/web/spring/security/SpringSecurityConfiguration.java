@@ -17,6 +17,8 @@ import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcess
 import com.payneteasy.superfly.web.security.SuperflyLocalOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.security.handler.JsonAuthenticationFailureHandler;
 import com.payneteasy.superfly.web.security.logout.SuperflyLogoutSuccessHandler;
+import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
+import com.payneteasy.superfly.web.security.ratelimit.LoginRateLimitFilter;
 import com.payneteasy.superfly.service.impl.SubsystemOriginCache;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -30,13 +32,22 @@ import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.preauth.x509.X509AuthenticationFilter;
@@ -72,7 +83,31 @@ public class SpringSecurityConfiguration {
         return cache == null ? SubsystemOriginCache.Urls.EMPTY : cache.getUrls();
     }
 
+    /**
+     * Subsystem RPC is authenticated by X-Subsystem-* headers on every request. It must not create an
+     * HttpSession: otherwise the returned JSESSIONID would keep ROLE_SUBSYSTEM without the headers.
+     */
     @Bean
+    @Order(1)
+    public SecurityFilterChain remotingSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher(antPathRequestMatcher("/remoting/sso.service/**"))
+            .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_SUBSYSTEM"))
+            // RPC clients get a status, not a redirect to the login form.
+            .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .securityContext(securityContext ->
+                    securityContext.securityContextRepository(new RequestAttributeSecurityContextRepository()))
+            // Token-based auth, no cookies: see the note on the main chain.
+            .csrf(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .addFilterAt(x509AuthenticationFilter(), X509AuthenticationFilter.class)
+            .addFilterBefore(subsystemAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
             .headers(headers -> headers
@@ -80,6 +115,8 @@ public class SpringSecurityConfiguration {
                 // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
                 // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
                 .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
+                // Keeps SSO tokens and target URLs out of Referer on outgoing navigation.
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
             )
             .authorizeHttpRequests(
                     auth ->
@@ -122,6 +159,7 @@ public class SpringSecurityConfiguration {
 
         // Добавляем кастомные фильтры
         http.addFilterAt(x509AuthenticationFilter(), X509AuthenticationFilter.class)
+            .addFilterAfter(loginRateLimitFilter(), X509AuthenticationFilter.class)
             .addFilterBefore(subsystemAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAt(passwordAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(initOtpAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -179,11 +217,27 @@ public class SpringSecurityConfiguration {
     }
 
     @Bean
+    public LoginAttemptLimiter loginAttemptLimiter() {
+        Integer ipLimit = properties.loginIpLimit();
+        return LoginAttemptLimiter.install(ipLimit == null ? LoginAttemptLimiter.DEFAULT_MAX_FAILURES_PER_IP : ipLimit);
+    }
+
+    @Bean
+    public LoginRateLimitFilter loginRateLimitFilter() {
+        return new LoginRateLimitFilter(loginAttemptLimiter());
+    }
+
+    private static AuthenticationFailureHandler loginFailureHandler() {
+        return LoginRateLimitFilter.recordingFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+    }
+
+    @Bean
     public SuperflyUsernamePasswordAuthenticationProcessingFilter passwordAuthenticationProcessingFilter() {
         SuperflyUsernamePasswordAuthenticationProcessingFilter filter = new SuperflyUsernamePasswordAuthenticationProcessingFilter();
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
     }
 
@@ -191,8 +245,9 @@ public class SpringSecurityConfiguration {
     public SuperflyLocalOTPAuthenticationProcessingFilter otpAuthenticationProcessingFilter() {
         SuperflyLocalOTPAuthenticationProcessingFilter filter = new SuperflyLocalOTPAuthenticationProcessingFilter();
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
     }
 
@@ -201,9 +256,19 @@ public class SpringSecurityConfiguration {
         SuperflyInitOTPAuthenticationProcessingFilter filter = new SuperflyInitOTPAuthenticationProcessingFilter();
         filter.setLocalSecurityService(localSecurityService);
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler("/login"));
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setCsrfValidator(csrfValidator());
+        changeSessionIdOnLogin(filter);
         return filter;
+    }
+
+    /**
+     * The filters are wired by hand, so Spring Security does not give them a session fixation strategy
+     * (the default does nothing). The id is changed on every step; session attributes, including the
+     * login CSRF token, are kept.
+     */
+    private static void changeSessionIdOnLogin(AbstractAuthenticationProcessingFilter filter) {
+        filter.setSessionAuthenticationStrategy(new ChangeSessionIdAuthenticationStrategy());
     }
 
     @Bean
@@ -246,7 +311,6 @@ public class SpringSecurityConfiguration {
     public ActionDescriptionCollector scanningActionDescriptionCollector() {
         ScanningActionDescriptionCollector collector = new ScanningActionDescriptionCollector();
         collector.setBasePackages(new String[]{
-                "com.payneteasy.superfly.demo.web.wicket",
                 "com.payneteasy.superfly.web.wicket",
         });
         collector.setAnnotationClass(Secured.class);

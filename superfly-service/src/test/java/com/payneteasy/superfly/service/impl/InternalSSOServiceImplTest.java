@@ -61,6 +61,7 @@ public class InternalSSOServiceImplTest {
         service.setRegisterUserStrategy(new NoneRegisterUserStrategy(userService));
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         service.setHotpService(hotpService);
+        service.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         service.setSaltSource(new ConstantSaltSource("abc"));
         internalSSOService = service;
     }
@@ -69,7 +70,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new NullSaltSource());
-        userService.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);
@@ -81,7 +82,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
-        userService.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
+        userService.authenticate(eq("user"), eq("pass{salt}"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);
@@ -240,11 +241,11 @@ public class InternalSSOServiceImplTest {
     public void testExchangeSubsystemTokenSuccess() {
         AuthSession session = new AuthSession("pete", 1L);
         session.setRoles(Collections.singletonList(new AuthRole("test-role")));
-        expect(userService.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token", "caller"))
                 .andReturn(session);
         replay(userService);
 
-        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token");
+        SSOUser user = internalSSOService.exchangeSubsystemToken("valid-token", "caller");
         assertNotNull(user);
         assertEquals("pete", user.getName());
         assertEquals("1", user.getSessionId());
@@ -254,31 +255,31 @@ public class InternalSSOServiceImplTest {
 
     @Test
     public void testExchangeSubsystemTokenNullResult() {
-        expect(userService.exchangeSubsystemToken("valid-token"))
+        expect(userService.exchangeSubsystemToken("valid-token", "caller"))
                 .andReturn(null);
         replay(userService);
 
-        assertNull(internalSSOService.exchangeSubsystemToken("valid-token"));
+        assertNull(internalSSOService.exchangeSubsystemToken("valid-token", "caller"));
 
         verify(userService);
     }
 
     @Test
     public void testTouchSessions() {
-        sessionService.touchSessions("1,2,3");
+        sessionService.touchSessions("1,2,3", "subsystem");
         expectLastCall();
         replay(sessionService);
-        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L), "subsystem");
         verify(sessionService);
 
         reset(sessionService);
         replay(sessionService);
-        internalSSOService.touchSessions(Collections.<Long>emptyList());
+        internalSSOService.touchSessions(Collections.<Long>emptyList(), "subsystem");
         verify(sessionService);
 
         reset(sessionService);
         replay(sessionService);
-        internalSSOService.touchSessions(null);
+        internalSSOService.touchSessions(null, "subsystem");
         verify(sessionService);
     }
 

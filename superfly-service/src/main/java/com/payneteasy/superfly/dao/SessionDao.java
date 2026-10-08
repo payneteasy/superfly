@@ -78,9 +78,10 @@ public interface SessionDao {
      * is touched too.
      *
      * @param sessionIds    IDs of sessions to touch (comma-separated list)
+     * @param subsystemName name of the subsystem whose sessions may be touched
      */
     @AStoredProcedure(name = "touch_sessions")
-    void touchSessions(String sessionIds);
+    void touchSessions(String sessionIds, String subsystemName);
 
     /**
      * Deletes SSO sessions which have been inactive for the

@@ -36,6 +36,7 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
         add(new AjaxLink<Void>("password") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                smtpServerService.logPasswordViewed(server.getName());
                 modalDialog
                         //.setInitialHeight(40)
                         .setContent(new Label(ModalDialog.CONTENT_ID, server.getPassword()));

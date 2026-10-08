@@ -224,6 +224,8 @@ create table mysql_routines_return_arguments (
 
 \. ui_get/ui_get_events.prc
 
+\. ui_get/ui_get_last_event_id.prc
+
 \. ui_update/ui_lock_user.prc
 
 \. ui_update/ui_unlock_user.prc
@@ -286,6 +288,8 @@ create table mysql_routines_return_arguments (
 
 \. get/get_google_auth_master_key_by_user_name.sql
 \. save/save_google_auth_master_key.prc
+\. save/save_google_auth_master_key_if_unchanged.prc
+\. save/save_otp_last_used_step.prc
 
 \. ui_get/ui_get_smtp_servers_list.prc
 \. ui_get/ui_get_smtp_server.prc
@@ -297,6 +301,7 @@ create table mysql_routines_return_arguments (
 \. ui_update/ui_update_user_is_otp_optional_value.sql
 
 \. int/int_has_actions.prc
+\. int/int_user_has_roles_in_subsystem.prc
 \. get/get_valid_sso_session.sql
 \. get/get_user_login_status.sql
 \. get/exchange_subsystem_token.sql

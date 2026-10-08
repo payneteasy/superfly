@@ -46,7 +46,12 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends AbstractSingl
         }
 
         CompoundAuthentication result            = getCompoundAuthenticationOrNewOne(authentication);
-        LocalNeedOTPToken      localNeedOTPToken = (LocalNeedOTPToken) extractLatestAuthOrSimpleAuth(authentication);
+        Authentication         latest            = extractLatestAuthOrSimpleAuth(authentication);
+
+        if (latest != null && !(latest instanceof LocalNeedOTPToken)) {
+            throw new BadCredentialsException("OTP initialization is not pending");
+        }
+        LocalNeedOTPToken localNeedOTPToken = (LocalNeedOTPToken) latest;
 
         if (localNeedOTPToken != null) {
             String otpKey   = obtainOtpKey(request);

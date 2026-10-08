@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.UUID;
 
 /**
@@ -64,7 +66,7 @@ public class CsrfValidatorImpl implements CsrfValidator {
                             "but also by the browser itself if it's not allowed to set cookies.\n");
         }
 
-        if (!csrf.equals(token)) {
+        if (!MessageDigest.isEqual(csrf.getBytes(StandardCharsets.UTF_8), token.getBytes(StandardCharsets.UTF_8))) {
             logger.error("CSRF is invalid: token from request does not match the session token");
             throw new CsrfLoginTokenException("Invalid CSRF token.",
                     "Invalid login token. This can be caused if you trying to login with multiple browser tabs.");

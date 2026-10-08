@@ -68,9 +68,15 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
     }
 
     private void doOnSubmit(LoginBean loginBean, SSOLoginData loginData) {
+        if (isLoginBlocked("password", loginBean.getUsername())) {
+            errorMessageModel.setObject("Too many failed login attempts. Try again later.");
+            errorMessageLabel.setVisible(true);
+            return;
+        }
         UserLoginStatus loginStatus = userService.checkUserCanLoginWithThisPassword(
                 loginBean.getUsername(), loginBean.getPassword(),
                 loginData.getSubsystemIdentifier());
+        recordLoginResult("password", loginBean.getUsername(), loginStatus != UserLoginStatus.FAILED);
         switch (loginStatus) {
             case SUCCESS:
                 onPasswordChecked(loginBean, loginData);
@@ -94,17 +100,21 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         
         loginData.setOtpTypeCode(userDescription.getOtpTypeCode());
         loginData.setOtpOptional(userDescription.isOtpOptional());
-        
+        loginData.setGoogleAuthSetupRequired(false);
+
         OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
             case GOOGLE_AUTH:
-                if (userDescription.isOtpOptional()) {
+                // a configured key makes OTP mandatory even for an "optional" user
+                boolean hasKey = StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()));
+                if (hasKey) {
+                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                } else if (userDescription.isOtpOptional()) {
                     SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
-                } else if (!StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginBean.getUsername()))) {
-                    getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 } else {
-                    getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+                    loginData.setGoogleAuthSetupRequired(true);
+                    getRequestCycle().setResponsePage(new SSOSetupGoogleAuthPage());
                 }
                 break;
             case NONE:

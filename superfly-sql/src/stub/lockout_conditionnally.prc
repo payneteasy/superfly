@@ -6,9 +6,11 @@ main_sql:
     declare v_user_id int(10);
     declare v_logins_failed int(10);
     declare v_is_account_locked varchar(1);
+    declare v_locked_now varchar(20);
     set v_user_id = null;
     set v_logins_failed = null;
     set v_is_account_locked = 'N';
+    set v_locked_now = null;
     
      select user_id, is_account_locked,
      	case
@@ -17,9 +19,11 @@ main_sql:
      		else 0 end
      into v_user_id, v_is_account_locked, v_logins_failed from users u where u.user_name = i_user_name;
       if v_user_id is not null and v_is_account_locked <> 'Y' and coalesce(v_logins_failed,0) >= i_max_logins_failed
-            then call ui_lock_user(v_user_id);
+            then
+            call ui_lock_user(v_user_id);
+            set v_locked_now = 'ACCOUNT_LOCKED'; -- lets the service audit the automatic lock
       end if;
-    select 'OK' status, null error_message;
+    select 'OK' status, v_locked_now error_message;
   end
 $$
 delimiter ;

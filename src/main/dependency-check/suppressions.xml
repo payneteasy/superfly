@@ -35,17 +35,17 @@
         <cve>CVE-2016-1000027</cve>
     </suppress>
 
-    <!-- TEMPORARY: CVE-2026-22732 (Spring Security HTTP response headers may not be written).
-         Fixed in spring-security 5.8.24 / 6.4.15, but those patch artifacts are not yet
-         published on Maven Central (latest available: 5.8.16 / 6.4.13, already in use).
-         REVISIT and remove this suppression once 6.4.15 / 5.8.24 (or newer in-line) are
-         released, then bump spring.security.version / spring-security5.version. -->
+    <!-- TEMPORARY: CVE-2026-22732 (Spring Security HTTP response headers may not be written), EE8 only.
+         EE10 runs spring-security 6.5.11 (fixed in 6.5.9), so 6.x is no longer suppressed.
+         The 5.8 fix (5.8.24) is not yet published on Maven Central (latest: 5.8.16).
+         REVISIT and remove this suppression once 5.8.24 (or newer in-line) is released,
+         then bump spring-security5.version. -->
     <suppress>
         <notes><![CDATA[
-        TEMPORARY: no fixed artifact published yet (need >=5.8.24 / >=6.4.15).
-        Remove once the patched spring-security release is available and bumped.
+        TEMPORARY: EE8 only; no fixed artifact published yet (need >=5.8.24).
+        Remove once the patched spring-security 5.8 release is available and bumped.
         ]]></notes>
-        <gav regex="true">^org\.springframework\.security:spring-security-.*:(5\.8\.|6\.4\.).*$</gav>
+        <gav regex="true">^org\.springframework\.security:spring-security-.*:5\.8\..*$</gav>
         <cve>CVE-2026-22732</cve>
     </suppress>
 
@@ -64,8 +64,8 @@
          findings with the justification "provided, not shipped transitively, not the EE10 runtime".
          Each is VERSION-PINNED so it cannot mask the in-line EE10 stack:
            - spring-core is pinned 5.3.x (spring-core 6.2.19 is clean — must stay visible).
-           - spring-security is pinned 5.8.x: CVE-2026-22746 / -22748 are SHARED with the open EE10
-             6.4.13 finding; a cve-only or 6.4-matching suppress would hide a real EE10 issue.
+           - spring-security is pinned 5.8.x: CVE-2026-22746 / -22748 also affect EE10
+             spring-security (fixed in 6.5.10); a cve-only suppress would hide a regression there.
          ============================================================================ -->
 
     <!-- Spring Framework 5.3.x jars (EE8 provided): not exported transitively; not the EE10 runtime
@@ -91,14 +91,14 @@
     </suppress>
 
     <!-- spring-security 5.8.x (EE8 provided): not exported transitively; not the EE10 runtime.
-         CVE-2026-22746/-22748 are SHARED with spring-security 6.4.13 — the 6.4.x finding stays
-         OPEN (tracked, awaiting patch). MUST pin 5.8 here; cve-only/6.4 match is forbidden. -->
+         CVE-2026-22746/-22748 are fixed in 6.5.10 (EE10 runs 6.5.11), but no 5.8 fix is published.
+         MUST pin 5.8 here; a cve-only match would hide a regression in the EE10 stack. -->
     <suppress>
         <notes><![CDATA[
         spring-security 5.8.x (EE8): provided in superfly-spring-security-ee8, not exported
         transitively and not the EE10 server runtime. CVE-2026-22746/-22748 are shared with the
-        open EE10 6.4.13 finding, so this suppress is strictly pinned to 5.8 and must NOT be
-        widened to 6.4.x.
+        EE10 findings (fixed in 6.5.10), so this suppress is strictly pinned to 5.8 and must NOT be
+        widened to 6.x.
         ]]></notes>
         <gav regex="true">^org\.springframework\.security:spring-security-.*:5\.8\..*$</gav>
         <cve>CVE-2026-22746</cve>

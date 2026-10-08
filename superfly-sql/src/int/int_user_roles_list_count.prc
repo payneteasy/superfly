@@ -7,6 +7,10 @@ create procedure int_user_roles_list_count(i_user_id int(10),
  main_sql:
   begin
     declare v_sql_core   text;
+    if i_ssys_list is not null and i_ssys_list <> '' and i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid subsystem list';
+    end if;
+
     set v_sql_core   = concat(
 	    'select count(1) records_count ',
 	    '  from       users u ',

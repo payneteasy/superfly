@@ -21,6 +21,11 @@
             <artifactId>superfly-service</artifactId>
         </dependency>
         <dependency>
+            <!--Justification: In-memory counters of failed logins (rate limit) -->
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+        <dependency>
             <!--Justification: Client library with optional features for SuperFly interaction -->
             <groupId>com.payneteasy.superfly</groupId>
             <artifactId>superfly-client-opt</artifactId>

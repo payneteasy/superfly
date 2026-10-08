@@ -4,7 +4,7 @@ create procedure ui_unlock_suspended_user(i_user_id int(10), i_new_password varc
  main_sql:
   begin
     update users
-       set is_account_locked    = "N", logins_failed=null,
+       set is_account_locked    = "N", logins_failed=null, hotp_logins_failed=0,
        	is_account_suspended = 'N', user_password = i_new_password,
        	is_password_temp = 'Y'
      where user_id = i_user_id;

@@ -119,16 +119,16 @@ public class ComplexDaoTest extends AbstractDaoTest {
         Assert.assertEquals("subsystem-for-complex-url", tokenData.getLandingUrl());
 
         AuthSession session;
-        session = userDao.exchangeSubsystemToken("no-such-token");
+        session = userDao.exchangeSubsystemToken("no-such-token", subsystem.getName());
         Assert.assertNull(session);
-        session = userDao.exchangeSubsystemToken("beef");
+        session = userDao.exchangeSubsystemToken("beef", subsystem.getName());
         Assert.assertNotNull(session);
         Assert.assertEquals("user-for-complex", session.getUsername());
 
         // token must be destroyed after it has been exchanged
-        Assert.assertNull(userDao.exchangeSubsystemToken("beef"));
+        Assert.assertNull(userDao.exchangeSubsystemToken("beef", subsystem.getName()));
 
-        sessionDao.touchSessions("1,2,3,4,5,6,7,8,9,10");
+        sessionDao.touchSessions("1,2,3,4,5,6,7,8,9,10", subsystem.getName());
 
         sessionDao.deleteSSOSession(ssoSession.getIdentifier());
     }

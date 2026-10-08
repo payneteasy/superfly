@@ -11,6 +11,10 @@ create procedure ui_filter_dyn_roles(i_ssys_list text,
     declare v_conditions   text default '';
 
     if i_ssys_list is not null then
+      if i_ssys_list not regexp '^[0-9]+(,[0-9]+)*$' then
+        signal sqlstate '45000' set message_text = 'invalid subsystem list';
+      end if;
+
       set v_conditions   =
             concat(v_conditions, ' and r.ssys_ssys_id in (', i_ssys_list, ')');
     end if;
@@ -20,9 +24,9 @@ create procedure ui_filter_dyn_roles(i_ssys_list text,
                  '  from roles r, subsystems ss ',
                  ' where r.ssys_ssys_id = ss.ssys_id ',
                  v_conditions,
-                 '       and r.role_name like "',
-                 coalesce(i_role_name, ''),
-                 '%" ',
+                 '       and r.role_name like ',
+                 quote(concat(coalesce(i_role_name, ''), '%')),
+                 ' ',
                  'order by r.role_name ',
                  ' limit ',
                  i_start_from,

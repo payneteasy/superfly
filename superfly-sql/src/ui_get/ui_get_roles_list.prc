@@ -14,6 +14,10 @@ create procedure ui_get_roles_list(i_start_from int(10),
 
     call int_roles_list(i_role_name, i_ssys_list, v_search_conditions);
 
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
     set v_sql_core   =
           concat('   select r.role_id, r.role_name, r.principal_name, ss.ssys_id, ss.subsystem_name ',
                  '      from subsystems ss, roles r ',

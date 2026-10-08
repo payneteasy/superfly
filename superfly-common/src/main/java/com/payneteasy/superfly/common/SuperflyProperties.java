@@ -14,10 +14,12 @@ public class SuperflyProperties {
     String  policyName;
     String  cryptoSecret;
     String  cryptoSalt;
+    Boolean cryptoLegacyDefaultKey;
     Long    maxLoginsFailed;
     Boolean csrfLoginValidatorEnable;
     Boolean enableMultiFactorAuth;
     OTPType forceMultiFactorAuthMethod;
+    Integer loginIpLimit;
 
     @Override
     public String toString() {
@@ -30,6 +32,7 @@ public class SuperflyProperties {
                 ", csrfLoginValidatorEnable=" + csrfLoginValidatorEnable +
                 ", enableMultiFactorAuth=" + enableMultiFactorAuth +
                 ", forceMultiFactorAuthMethod=" + forceMultiFactorAuthMethod +
+                ", loginIpLimit=" + loginIpLimit +
                 '}';
     }
 }

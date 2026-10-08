@@ -82,4 +82,8 @@ public class SmtpServerServiceImpl implements SmtpServerService {
     public List<UISmtpServerForFilter> getSmtpServersForFilter() {
         return smtpServerDao.getSmtpServersForFilter();
     }
+
+    public void logPasswordViewed(String serverName) {
+        loggerSink.info(logger, "VIEW_SMTP_PASSWORD", true, serverName);
+    }
 }

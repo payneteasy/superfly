@@ -40,6 +40,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         service.setNotificationService(TrivialProxyFactory.createProxy(NotificationService.class));
         service.setLoggerSink(loggerSink);
         service.setPasswordEncoder(new PlaintextPasswordEncoder());
+        service.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         service.setSaltSource(new NullSaltSource());
         service.setHotpSaltGenerator(new SHA256RandomGUIDSaltGenerator());
         service.setPolicyValidation(new DefaultPasswordPolicyValidation());
@@ -104,7 +105,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         session.setRoles(Collections.singletonList(new AuthRole()));
 
         EasyMock.expect(
-                userService.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
+                userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(true), eq("username"));
         EasyMock.replay(loggerSink, userService);
@@ -117,7 +118,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
     @Test
     public void testAuthenticateFail() throws Exception {
         EasyMock.expect(
-                userService.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
+                userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(null);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
         EasyMock.replay(loggerSink, userService);
@@ -133,7 +134,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         session.setRoles(Collections.<AuthRole> emptyList());
 
         EasyMock.expect(
-                userService.authenticate(eq("username"), eq("password"), anyObject(String.class), anyObject(String.class),
+                userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
         EasyMock.replay(loggerSink, userService);

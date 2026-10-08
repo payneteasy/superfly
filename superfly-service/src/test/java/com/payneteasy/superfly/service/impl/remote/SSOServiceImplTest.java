@@ -27,6 +27,13 @@ public class SSOServiceImplTest {
         ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null);
     }
 
+    // username-based methods only work for users of the caller's subsystem
+    private void expectCallerOwnsUser(String username) {
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
+        expect(internalSSOService.userHasRolesInSubsystem(username, "superfly")).andReturn(false);
+        expect(internalSSOService.userHasRolesInSubsystem(username, "caller")).andReturn(true);
+    }
+
     @Test
     public void testAuthenticateHOTP() {
         // success
@@ -46,10 +53,11 @@ public class SSOServiceImplTest {
 
     @Test
     public void testExchangeSubsystemToken() {
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
         SSOUser user = new SSOUser("pete", Collections.singletonMap(
                 new SSORole("test-role"), new SSOAction[]{new SSOAction("test-action", false)}
         ), null);
-        expect(internalSSOService.exchangeSubsystemToken("token"))
+        expect(internalSSOService.exchangeSubsystemToken("token", "caller"))
                 .andReturn(user);
         replay(internalSSOService);
 
@@ -65,7 +73,8 @@ public class SSOServiceImplTest {
 
     @Test
     public void testTouchSessions() {
-        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L));
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
+        internalSSOService.touchSessions(Arrays.asList(1L, 2L, 3L), "caller");
         expectLastCall();
         replay(internalSSOService);
         ssoService.touchSessions(
@@ -79,6 +88,7 @@ public class SSOServiceImplTest {
 
     @Test
     public void testGetUserDescriptionNotExistingUser() {
+        expectCallerOwnsUser("no-such-user");
         expect(internalSSOService.getUserDescription("no-such-user")).andReturn(null);
         replay(internalSSOService);
         UserDescription user = ssoService.getUserDescription(
@@ -93,6 +103,7 @@ public class SSOServiceImplTest {
 
     @Test
     public void testCompleteUser() {
+        expectCallerOwnsUser("username");
         internalSSOService.completeUser("username");
         expectLastCall();
         replay(internalSSOService);
@@ -132,6 +143,8 @@ public class SSOServiceImplTest {
             }
         });
 
+        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
@@ -149,6 +162,9 @@ public class SSOServiceImplTest {
 
     @Test
     public void testChangeUserRoleWithSubsystemHint() {
+        ssoService.setSubsystemIdentifierObtainer(hint -> hint == null ? "test" : hint);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);

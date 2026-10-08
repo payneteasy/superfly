@@ -14,6 +14,10 @@ create procedure ui_get_groups_list(i_start_from int(10),
 
     call int_groups_list(i_group_name, i_ssys_list, v_search_conditions);
 
+    if i_order_type is null or lower(i_order_type) not in ('asc', 'desc') then
+      set i_order_type = 'asc';
+    end if;
+
     set v_sql_core   =
           concat('   select g.grop_id, g.group_name, ss.ssys_id, ss.subsystem_name ',
                  '      from subsystems ss, groups g ',

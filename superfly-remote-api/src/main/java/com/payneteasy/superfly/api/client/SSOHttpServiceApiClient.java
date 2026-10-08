@@ -241,6 +241,11 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
         return invoke(Endpoint.GET_EVENTS, request, new TypeToken<>() {});
     }
 
+    @Override
+    public Long getLastEventId() {
+        return invoke(Endpoint.GET_LAST_EVENT_ID, null, Long.class);
+    }
+
     // ====================================================================
     // Core: invoke → send → decode
     // ====================================================================

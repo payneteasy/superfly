@@ -1,6 +1,5 @@
 package com.payneteasy.superfly.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
@@ -146,10 +145,11 @@ public interface InternalSSOService {
      * be used for exchanging.
      *
      * @param subsystemToken    subsystem token
+     * @param callerSubsystem  subsystem of the caller; the token is valid only for it
      * @return SSOUser or null if token does not exist, expired or
      * already used
      */
-    SSOUser exchangeSubsystemToken(String subsystemToken);
+    SSOUser exchangeSubsystemToken(String subsystemToken, String callerSubsystem);
 
     /**
      * Touches sessions: that is, updates their access time to avoid
@@ -157,8 +157,9 @@ public interface InternalSSOService {
      * is touched too.
      *
      * @param sessionIds    IDs of sessions to touch
+     * @param subsystemIdentifier    subsystem of the caller; only its sessions are touched, null touches nothing
      */
-    void touchSessions(List<Long> sessionIds);
+    void touchSessions(List<Long> sessionIds, String subsystemIdentifier);
 
     /**
      * Makes a user complete.
@@ -179,5 +180,20 @@ public interface InternalSSOService {
 
     boolean hasOtpMasterKey(String username);
 
-    List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier);
+    /**
+     * @return true if the user has at least one role in the subsystem
+     */
+    boolean userHasRolesInSubsystem(String username, String subsystemIdentifier);
+
+    /**
+     * Validates a new password against the password policy.
+     *
+     * @param username user whose password history is taken into account;
+     *                 null means a user without any history
+     */
+    void validatePasswordPolicy(String username, String password) throws PolicyValidationException;
+
+    List<SSOEvent> getEvents(Long lastEventId, long waitTimeMs, String subsystemIdentifier);
+
+    long getLastEventId(String subsystemIdentifier);
 }

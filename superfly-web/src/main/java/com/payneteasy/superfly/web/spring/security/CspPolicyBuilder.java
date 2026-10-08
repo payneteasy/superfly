@@ -28,17 +28,20 @@ final class CspPolicyBuilder {
     static String build(Collection<String> formActionUrls, Collection<String> styleUrls) {
         return "default-src 'self'; " +
                "script-src 'self' 'unsafe-inline'; " +
-               "style-src 'self' 'unsafe-inline'" + origins(styleUrls) + "; " +
+               "style-src 'self' 'unsafe-inline'" + origins(styleUrls, true) + "; " +
                "img-src 'self' data:; " +
                "frame-ancestors 'none'; " +
-               "form-action 'self'" + origins(formActionUrls);
+               "form-action 'self'" + origins(formActionUrls, false);
     }
 
-    private static String origins(Collection<String> urls) {
+    // A stylesheet over plain http can be swapped by a MITM, and hostile CSS can exfiltrate the CSRF token.
+    private static String origins(Collection<String> urls, boolean httpsOnly) {
         Set<String> origins = new TreeSet<>();
         for (String url : urls) {
             String origin = toOrigin(url);
-            if (origin != null) {
+            if (origin != null && httpsOnly && !origin.startsWith("https://")) {
+                skip(url, "only https is allowed for style-src");
+            } else if (origin != null) {
                 origins.add(origin);
             }
         }

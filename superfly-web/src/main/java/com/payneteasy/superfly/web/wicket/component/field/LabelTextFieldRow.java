@@ -48,6 +48,7 @@ public class LabelTextFieldRow<T> extends Panel {
             super(aId, aModel);
             theResourceKey = aResourceKey;
             setRequired(aRequired);
+            setLabel(new ResourceModel(aResourceKey));
             setOutputMarkupId(true);
             setMarkupId(aMarkupId);
         }

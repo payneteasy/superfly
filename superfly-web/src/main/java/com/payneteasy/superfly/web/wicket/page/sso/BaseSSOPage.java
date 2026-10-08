@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
+import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -45,6 +46,23 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         cssUrlContainer.add(new AttributeModifier("href", cssUrlModel));
         cssUrlContainer.setVisible(StringUtils.hasText(cssUrlModel.getObject()));
         add(cssUrlContainer);
+    }
+
+    /** Throttling of the SSO login steps, shared with the admin login filter; blocked attempts must not reach the DB. */
+    protected boolean isLoginBlocked(String step, String username) {
+        return LoginAttemptLimiter.shared().checkBlocked(step, getHttpServletRequest().getRemoteAddr(),
+                LoginAttemptLimiter.normalizeUsername(username));
+    }
+
+    protected void recordLoginResult(String step, String username, boolean success) {
+        LoginAttemptLimiter limiter = LoginAttemptLimiter.shared();
+        String ip = getHttpServletRequest().getRemoteAddr();
+        String normalized = LoginAttemptLimiter.normalizeUsername(username);
+        if (success) {
+            limiter.recordSuccess(step, ip, normalized);
+        } else {
+            limiter.recordFailure(step, ip, normalized);
+        }
     }
 
     protected Component createCsrfHiddenInput(String markupId) {

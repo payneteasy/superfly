@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.LongSupplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,12 @@ public class SubsystemOriginCache {
 
     private static final Logger logger = LoggerFactory.getLogger(SubsystemOriginCache.class);
     private static final Object KEY = new Object();
+    private static final long FAILURE_BACKOFF_MILLIS = TimeUnit.SECONDS.toMillis(10);
+    private static final long NO_FAILURE = Long.MIN_VALUE;
+
+    /** Test seam. */
+    LongSupplier clock = System::currentTimeMillis;
+    private volatile long lastFailureMillis = NO_FAILURE;
 
     /**
      * @param formActionUrls landing and subsystem URLs (allowed as form-action targets)
@@ -45,19 +52,28 @@ public class SubsystemOriginCache {
     }
 
     /**
-     * Never throws: on a load failure returns empty URLs (base policy). A failure is not cached,
-     * so the next call retries the load.
+     * Never throws: on a load failure returns empty URLs (base policy). A failure is not stored in the cache;
+     * for {@value #FAILURE_BACKOFF_MILLIS} ms after it the base policy is returned without hitting the DAO
+     * (so an unavailable DB is not queried on every response), then the load is retried.
      */
     public Urls getUrls() {
+        long failedAt = lastFailureMillis;
+        if (failedAt != NO_FAILURE && clock.getAsLong() - failedAt < FAILURE_BACKOFF_MILLIS) {
+            return Urls.EMPTY;
+        }
         try {
-            return cache.get(KEY, k -> load());
+            Urls urls = cache.get(KEY, k -> load());
+            lastFailureMillis = NO_FAILURE;
+            return urls;
         } catch (RuntimeException e) {
+            lastFailureMillis = clock.getAsLong();
             logger.warn("Cannot load subsystem URLs for CSP, using base policy", e);
             return Urls.EMPTY;
         }
     }
 
     public void invalidate() {
+        lastFailureMillis = NO_FAILURE;
         cache.invalidateAll();
     }
 

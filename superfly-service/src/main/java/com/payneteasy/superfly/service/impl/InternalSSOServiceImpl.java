@@ -9,9 +9,11 @@ import com.payneteasy.superfly.model.UserRegisterRequest;
 import com.payneteasy.superfly.model.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.Pbkdf2PasswordEncoder;
 import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.policy.impl.AbstractPolicyValidation;
 import com.payneteasy.superfly.policy.password.PasswordCheckContext;
+import com.payneteasy.superfly.policy.password.PasswordSaltPair;
 import com.payneteasy.superfly.register.RegisterUserStrategy;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.spisupport.HOTPService;
@@ -21,6 +23,7 @@ import com.payneteasy.superfly.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +43,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     private       NotificationService  notificationService;
     private       LoggerSink           loggerSink;
     private       PasswordEncoder      passwordEncoder;
+    private       PasswordEncoder      legacyPasswordEncoder;
     private       SaltSource           saltSource;
     private       SaltGenerator        hotpSaltGenerator;
     private       LockoutStrategy      lockoutStrategy;
@@ -86,6 +90,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Autowired
+    @Qualifier("messageDigestPasswordEncoder")
+    public void setLegacyPasswordEncoder(PasswordEncoder legacyPasswordEncoder) {
+        this.legacyPasswordEncoder = legacyPasswordEncoder;
+    }
+
+    @Autowired
     public void setSaltSource(SaltSource saltSource) {
         this.saltSource = saltSource;
     }
@@ -119,8 +129,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
-        String  encPassword = passwordEncoder.encode(password, saltSource.getSalt(username));
-        AuthSession session = userService.authenticate(username, encPassword,
+        String  salt = saltSource.getSalt(username);
+        // null password is an ordinary failed attempt, not an exception
+        AuthSession session = userService.authenticate(username,
+                password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
+                password == null ? null : legacyPasswordEncoder.encode(password, salt),
                 subsystemIdentifier, userIpAddress, sessionInfo);
         boolean ok = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_LOGIN", ok, username);
@@ -136,7 +149,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
-        if (isOtpOptional && (code == null || code.trim().isEmpty())) {
+        // isOtpOptional comes from the caller; a configured key makes OTP mandatory anyway
+        if (isOtpOptional && (code == null || code.trim().isEmpty()) && !hasOtpMasterKey(username)) {
             return true;
         }
         return authenticateByOtpType(otpType, username, code);
@@ -174,7 +188,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         ssoUser = new SSOUser(session.getUsername(), actionsMap, Collections.emptyMap());
         ssoUser.setSessionId(String.valueOf(session.getSessionId()));
         ssoUser.setOtpType(session.otpType());
-        ssoUser.setOtpOptional(session.isOtpOptional());
+        // effective flag: clients decide whether to ask for a code from it, and a configured key makes OTP mandatory
+        ssoUser.setOtpOptional(session.isOtpOptional()
+                && !(session.otpType() == OTPType.GOOGLE_AUTH && hasOtpMasterKey(session.getUsername())));
         return ssoUser;
     }
 
@@ -241,7 +257,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setOtpTypeCode(otpType.code());
 
         // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(username)));
 
         validatePublicKey(publicKey);
@@ -310,7 +326,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     public void changeTempPassword(String userName, String password) throws PolicyValidationException {
-        policyValidation.validate(new PasswordCheckContext(password, passwordEncoder, userService
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
                 .getUserPasswordHistoryAndCurrentPassword(userName)));
         userService.changeTempPassword(userName, password);
     }
@@ -330,11 +346,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public SSOUser exchangeSubsystemToken(String subsystemToken) {
+    public SSOUser exchangeSubsystemToken(String subsystemToken, String callerSubsystem) {
         SSOUser     ssoUser;
-        AuthSession session = userService.exchangeSubsystemToken(subsystemToken);
+        AuthSession session = userService.exchangeSubsystemToken(subsystemToken, callerSubsystem);
         boolean     ok      = session != null && session.getSessionId() != null;
-        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: " + subsystemToken);
+        loggerSink.info(logger, "EXCHANGE_SUBSYSTEM_TOKEN", ok, session != null ? session.getUsername() : "TOKEN: ***");
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
@@ -347,12 +363,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public void touchSessions(List<Long> sessionIds) {
-        if (sessionIds != null && !sessionIds.isEmpty()) {
+    public void touchSessions(List<Long> sessionIds, String subsystemIdentifier) {
+        if (sessionIds != null && !sessionIds.isEmpty() && subsystemIdentifier != null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Touching sessions " + sessionIds);
+                logger.debug("Touching {} sessions for subsystem {}", sessionIds.size(), subsystemIdentifier);
             }
-            sessionService.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds));
+            sessionService.touchSessions(StringUtils.collectionToCommaDelimitedString(sessionIds), subsystemIdentifier);
         }
     }
 
@@ -374,6 +390,19 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         return userService.getOtpMasterKeyByUsername(username) != null;
     }
 
+    @Override
+    public boolean userHasRolesInSubsystem(String username, String subsystemIdentifier) {
+        return userService.userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    @Override
+    public void validatePasswordPolicy(String username, String password) throws PolicyValidationException {
+        List<PasswordSaltPair> history = username == null
+                ? Collections.emptyList()
+                : userService.getUserPasswordHistoryAndCurrentPassword(username);
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, history));
+    }
+
     private EventService eventService;
 
     @Autowired
@@ -383,8 +412,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public List<SSOEvent> getEvents(Date lastEventTime, long waitTimeMs, String subsystemIdentifier) {
-        List<Event> events = eventService.getEvents(lastEventTime, waitTimeMs, subsystemIdentifier);
+    public List<SSOEvent> getEvents(Long lastEventId, long waitTimeMs, String subsystemIdentifier) {
+        List<Event> events = eventService.getEvents(lastEventId, waitTimeMs, subsystemIdentifier);
         if (events != null && !events.isEmpty()) {
             logger.info("getEvents call info={}", events);
             return events.stream()
@@ -392,5 +421,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                     .collect(Collectors.toList());
         }
         return List.of();
+    }
+
+    @Override
+    public long getLastEventId(String subsystemIdentifier) {
+        return eventService.getLastEventId(subsystemIdentifier);
     }
 }

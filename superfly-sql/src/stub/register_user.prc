@@ -21,6 +21,7 @@ create procedure register_user(i_user_name         varchar(32),
   begin
     declare v_completed varchar(1);
     declare v_otp_otp_type_id   int(10);
+    declare v_ssys_id           int(10);
 
     select otp_type_id into v_otp_otp_type_id
       from otp_types where otp_code=i_otp_code;
@@ -28,7 +29,13 @@ create procedure register_user(i_user_name         varchar(32),
 	select user_id, completed from users where user_name = i_user_name into o_user_id, v_completed;
 	
 	if o_user_id is not null then
-        if v_completed = 'N' then
+        select ssys_id into v_ssys_id from subsystems where subsystem_name = i_subsystem_name;
+        -- an uncompleted user holding roles in another subsystem belongs to that subsystem
+        if v_completed = 'N' and not exists (select 1
+                                               from user_roles ur
+                                                    join roles r on r.role_id = ur.role_role_id
+                                              where ur.user_user_id = o_user_id
+                                                and not (r.ssys_ssys_id <=> v_ssys_id)) then
             -- removing old uncompleted user
             delete from user_roles where user_user_id = o_user_id;
             delete from user_history where user_user_id = o_user_id;
@@ -45,10 +52,11 @@ create procedure register_user(i_user_name         varchar(32),
                       , is_account_locked, `name`, surname, secret_question ,secret_answer
                       , is_password_temp,salt, hotp_salt, create_date, public_key, completed
                       , user_organization
-                      , otp_otp_type_id )
+                      , otp_otp_type_id, is_otp_optional )
          values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question,
                  i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key, 'N',
-                 i_user_organization,v_otp_otp_type_id);
+                 i_user_organization,v_otp_otp_type_id,
+                 if(i_otp_code = 'none', 'Y', 'N'));
 
     set o_user_id   = last_insert_id();
 

@@ -14,6 +14,8 @@ public class SSOLoginData implements Serializable {
 
     private String otpTypeCode;
     private boolean isOtpOptional;
+    // set only after the password step for a user who must enrol Google Auth for the first time
+    private boolean googleAuthSetupRequired;
 
     public SSOLoginData() {
     }
@@ -77,6 +79,14 @@ public class SSOLoginData implements Serializable {
 
     public void setOtpOptional(boolean otpOptional) {
         isOtpOptional = otpOptional;
+    }
+
+    public boolean isGoogleAuthSetupRequired() {
+        return googleAuthSetupRequired;
+    }
+
+    public void setGoogleAuthSetupRequired(boolean googleAuthSetupRequired) {
+        this.googleAuthSetupRequired = googleAuthSetupRequired;
     }
 
     @Override

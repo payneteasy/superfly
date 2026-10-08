@@ -1,5 +1,7 @@
 package com.payneteasy.superfly.security.csrf;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import com.payneteasy.superfly.security.exception.CsrfLoginTokenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,7 @@ public class CsrfValidatorImpl implements CsrfValidator {
                             "but also by the browser itself if it's not allowed to set cookies.\n");
         }
 
-        if (!csrf.equals(token)) {
+        if (!MessageDigest.isEqual(csrf.getBytes(StandardCharsets.UTF_8), token.getBytes(StandardCharsets.UTF_8))) {
             logger.error("CSRF is invalid: token from request does not match the session token");
             throw new CsrfLoginTokenException("Invalid CSRF token.",
                     "Invalid login token. This can be caused if you trying to login with multiple browser tabs.");

@@ -33,9 +33,10 @@ public class LocalSecurityServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
         userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        userPasswordEncoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         userPasswordEncoder.setSaltSource(new NullSaltSource());
         localSecurityService.setUserPasswordEncoder(userPasswordEncoder);
-        userService.authenticate(eq("user"), eq("pass"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
+        userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
         EasyMock.expectLastCall().andReturn(new AuthSession("user"));
         EasyMock.replay(userService);
         localSecurityService.authenticate("user", "pass");
@@ -46,9 +47,10 @@ public class LocalSecurityServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         UserPasswordEncoderImpl userPasswordEncoder = new UserPasswordEncoderImpl();
         userPasswordEncoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        userPasswordEncoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         userPasswordEncoder.setSaltSource(new ConstantSaltSource("salt"));
         localSecurityService.setUserPasswordEncoder(userPasswordEncoder);
-        userService.authenticate(eq("user"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
+        userService.authenticate(eq("user"), eq("pass{salt}"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class), anyObject(String.class));
         EasyMock.expectLastCall().andReturn(new AuthSession("user"));
         EasyMock.replay(userService);
         localSecurityService.authenticate("user", "pass");

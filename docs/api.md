@@ -24,6 +24,8 @@ Superfly предоставляет два типа API. Формат везде
 
 Токен подсистемы (`subsystemToken`) задаётся при регистрации подсистемы в UI.
 
+RPC stateless: сессия (`JSESSIONID`) не создаётся, заголовки нужны в каждом запросе; повтор с cookie без `X-Subsystem-*` не проходит.
+
 ### Remote-auth (`/sso/check/**`)
 
 Путь доступен без сессии, токен проверяет сам контроллер. Обязателен заголовок:
@@ -32,7 +34,8 @@ Superfly предоставляет два типа API. Формат везде
 Authorization: Bearer {subsystem_token}
 ```
 
-Любой другой путь под `/sso/check/` закрыт.
+Неполный или неизвестный путь под `/sso/check/check-password/` и `/sso/check/check-otp/` отвечает `404` (`type: NOT_FOUND`, см. [Ошибки](#ошибки)).
+Любой другой путь под `/sso/check/` закрыт Spring Security (`denyAll`): без сессии — редирект на `/login`, с сессией — `403`.
 
 ---
 
@@ -42,16 +45,40 @@ Authorization: Bearer {subsystem_token}
 Имена методов и типы запросов соответствуют интерфейсу `SSOService` из `superfly-remote-api`;
 поля тела — поля классов `com.payneteasy.superfly.api.request.*`. Даты — `yyyy-MM-dd'T'HH:mm:ssZ`.
 
+**Accept:** ответ всегда `application/json`. Отсутствующий заголовок, `*/*`, `application/*` и списки, в которых
+есть JSON, принимаются. Иначе (например `text/xml`) — `406` с пустым телом; проверка идёт до вызова метода,
+побочных эффектов нет.
+
 **Статусы ответа:** `200` — успех; `202` — метод бросил исключение (тело — `ExceptionWrapper`);
+`406` — неподдерживаемый `Accept`;
 `500` — сбой самого вызова (неизвестный метод, невалидное тело), тело тоже `ExceptionWrapper`.
 Клиент `SSOHttpServiceApiClient` разбирает `ExceptionWrapper` при любом статусе, кроме `200`.
 
-**Обработка ошибок** — тело `ExceptionWrapper`:
+**Обработка ошибок** — тело `ExceptionWrapper`. Класс и сообщение отдаются только для исключений контракта
+(`UserExistsException`, `PolicyValidationException`, `BadPublicKeyException`, `MessageSendException`,
+`UserNotFoundException`, `SsoDecryptException`, `SsoAuthException`, `SsoUserException`, `SsoSystemException`,
+`SsoDataException`); `detailMessage` всегда `null`:
 ```json
 { "exceptionClass": "com.payneteasy.superfly.api.UserNotFoundException",
   "message": "User 'john' not found",
-  "detailMessage": "com.payneteasy.superfly.api.UserNotFoundException: User 'john' not found" }
+  "detailMessage": null }
 ```
+Любая другая ошибка (SQL/DAO, NPE, невалидный JSON, неизвестный метод) приходит обезличенной; `errorId` — UUID,
+под которым исключение записано в серверный лог:
+```json
+{ "exceptionClass": "com.payneteasy.superfly.api.exceptions.SsoServerException",
+  "message": "Internal server error, errorId: 3f0c1c8e-7a52-4b1e-9d0e-5a2f6f3d9c11",
+  "detailMessage": null }
+```
+Исключения вне RPC-контроллера (`GlobalExceptionHandler`) — `500`, `{"error": "Internal server error", "errorId": "<uuid>"}`.
+
+### Подмена подсистемы
+
+Если вызывающий — подсистема (`ROLE_SUBSYSTEM`), то `subsystemIdentifier` (в т.ч. в `authRequestInfo`), `subsystemHint`,
+`GetEventsRequest.subsystemName` и `roleGrants[].subsystemIdentifier` (при `detectSubsystemIdentifier = false`)
+должны быть `null` или совпадать с её именем. Иначе ответ `202` с `ExceptionWrapper`
+`com.payneteasy.superfly.api.exceptions.SsoAuthException` (`Subsystem identifier does not match the authenticated subsystem`),
+на сервере пишется WARN. Для локального UI ограничения нет.
 
 ---
 
@@ -106,6 +133,9 @@ Authorization: Bearer {subsystem_token}
 Обменивает SSO-токен (redirect-based flow) на сессию пользователя.
 
 **Request:** `{ "subsystemToken": "abc123..." }`
+
+Токен одноразовый, живёт 30 секунд и обменивается только подсистемой, для которой выдан.
+Иначе (чужой, просроченный, использованный токен, заблокированный пользователь) — `null`.
 
 **Response:** `SSOUser | null`
 
@@ -336,13 +366,20 @@ Authorization: Bearer {subsystem_token}
 
 #### `getEvents`
 
-Long-polling для получения событий. Подсистема определяется по аутентификации запроса.
+Long-polling для получения событий. Подсистема определяется по аутентификации запроса; `subsystemName` в теле должен быть `null` или совпадать
+с именем аутентифицированной подсистемы (см. [Подмена подсистемы](#подмена-подсистемы)).
+Возвращаются события с `eventId` больше `lastEventId`, в порядке возрастания `eventId`; `lastEventId = null` — с начала.
+Для следующего запроса передайте максимальный `eventId` из последнего ответа (`eventTime` курсором быть не может).
+Чтобы при старте не переигрывать историю, начните с курсора из [`getLastEventId`](#getlasteventid).
 `waitTimeMs` ограничен сервером 75 секундами — socket timeout клиента должен быть больше.
 События без подсистемы клиентам не отдаются.
+Событие отдаётся не сразу, а спустя ~5 секунд после создания (горизонт стабильности): событие, созданное ещё не закоммиченной транзакцией,
+получает `eventId` раньше более позднего закоммиченного — без задержки курсор перепрыгнул бы через него. Long-polling учитывает это
+автоматически: запрос вернётся, как только событие пройдёт горизонт (если хватит `waitTimeMs`).
 
 **Request:**
 ```json
-{ "lastEventTime": "2025-01-01T00:00:00+0300", "waitTimeMs": 30000 }
+{ "lastEventId": 41, "waitTimeMs": 30000 }
 ```
 
 **Response:** `List<SSOEvent>`
@@ -358,6 +395,19 @@ Long-polling для получения событий. Подсистема оп
 ```
 
 `PASSWORD_RESET` пишется отдельной записью на каждую подсистему, в которой у пользователя есть роли.
+
+---
+
+#### `getLastEventId`
+
+Возвращает максимальный `eventId` событий вызывающей подсистемы (подсистема — по аутентификации запроса); `0`, если событий нет.
+События других подсистем не учитываются; события младше горизонта стабильности (~5 секунд, см. [`getEvents`](#getevents)) не учитываются —
+они будут получены следующим `getEvents`. Используется как стартовый `lastEventId` для `getEvents`, когда история не нужна:
+события, созданные после вызова, будут получены.
+
+**Request:** тело `null` (аргументов нет)
+
+**Response:** `Long`, например `42`
 
 ---
 
@@ -461,7 +511,10 @@ Content-Type: application/json
 | `BAD_REQUEST` | 400 | невалидный JSON, не заполнены поля, логин в пути и теле не совпадает, ошибка расшифровки (в т.ч. по лимиту) |
 | `BAD_USER_OR_PASSWORD_OR_OTP` | 400 | неверный логин/пароль, неверная или просроченная сессия OTP |
 | `USER_SHOULD_CHANGE_PASSWORD` | 400 | у пользователя временный пароль |
+| `NOT_FOUND` | 404 | неполный/неизвестный путь под `/sso/check/check-password/` или `/sso/check/check-otp/` (`title: Not found`, `detail: Unknown endpoint`) |
 | `INTERNAL_ERROR` | 500 | внутренняя ошибка |
+
+Ошибки отдаются в JSON без заголовка `Accept`, с `Accept: */*` или `application/json`.
 
 ---
 

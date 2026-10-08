@@ -76,7 +76,12 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
         List<User> users = userService.getUsersToSuspend(days);
         for (User user : users) {
             logger.debug(String.format("Suspending user [%s] with id=%d", user.getUserName(), user.getUserid()));
-            userService.suspendUser(user.getUserid());
+            try {
+                userService.suspendUser(user.getUserid());
+            } catch (RuntimeException e) {
+                // users are processed in separate transactions: one failure must not stop the others
+                logger.error("Failed to suspend user id={}", user.getUserid(), e);
+            }
         }
     }
 
@@ -84,7 +89,11 @@ public class PCIDSSAccountPolicy implements AccountPolicy {
         List<User> users = userService.getUsersWithExpiredPasswords(days);
         for (User u : users) {
             logger.debug(String.format("Reset password for user [%s] with id=%d", u.getUserName(), u.getUserid()));
-            resetPasswordStrategy.resetPassword(u.getUserid(), u.getUserName(), null);
+            try {
+                resetPasswordStrategy.resetPassword(u.getUserid(), u.getUserName(), null);
+            } catch (RuntimeException e) {
+                logger.error("Failed to reset password of user id={}", u.getUserid(), e);
+            }
         }
     }
 

@@ -71,7 +71,7 @@ public class PasswordEncryptor {
 
         System.out.println("Starting password encryption");
         Set<String> processedNames = new HashSet<String>();
-        ResultSet rs = st.executeQuery("select user_id, user_name, user_password from users where (user_password is null or user_password = '' or length(user_password) <> " + test.length() + ")");
+        ResultSet rs = st.executeQuery("select user_id, user_name, user_password from users where (user_password is null or user_password = '' or (length(user_password) <> " + test.length() + " and user_password not like 'pbkdf2-sha256$%'))");
         while (rs.next()) {
             long id = rs.getLong("user_id");
             username = rs.getString("user_name");
