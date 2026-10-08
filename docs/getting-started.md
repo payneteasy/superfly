@@ -81,7 +81,8 @@ docker run -d -p 8080:8080 \
 `-e DB_PASSWORD` без значения берёт пароль из окружения хоста, чтобы он не попадал в историю команд.
 
 `compose.yml` поднимает приложение и MySQL 5.7 (`.env` создаётся из `.env.example`; `DB_PASSWORD` и
-`DB_ROOT_PASSWORD` обязательны). `compose.production.yml` добавляет hardening (`read_only`, `cap_drop`, лимиты ресурсов):
+`DB_ROOT_PASSWORD` обязательны). `compose.production.yml` добавляет hardening (`read_only`, `cap_drop`, лимиты ресурсов)
+и требует явно задать `JETTY_TRUST_FORWARDED` (`true` за прокси, см. [Reverse proxy](configuration.md#reverse-proxy-и-cookie)):
 
 ```bash
 docker compose -f compose.yml -f compose.production.yml up -d

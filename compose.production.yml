@@ -33,6 +33,8 @@ services:
     environment:
       SUPERFLY_CRYPTO_SECRET: ${SUPERFLY_CRYPTO_SECRET:?set SUPERFLY_CRYPTO_SECRET}
       SUPERFLY_CRYPTO_SALT: ${SUPERFLY_CRYPTO_SALT:?set SUPERFLY_CRYPTO_SALT}
+      # an explicit choice: without it, behind a proxy all users share the proxy IP in the login IP limit
+      JETTY_TRUST_FORWARDED: ${JETTY_TRUST_FORWARDED:?set JETTY_TRUST_FORWARDED (true behind a proxy)}
     restart: unless-stopped
     logging: *prod-logging
     # backend is internal (no host access), so the app also joins frontend,

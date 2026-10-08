@@ -221,6 +221,8 @@ Docker-образ предполагает TLS-терминирующий про
   доступен исключительно доверенному прокси** (ограничьте на уровне сети или публикуйте порт на `127.0.0.1`). `compose.yml` по умолчанию
   публикует `${APP_PORT:-8080}` на всех интерфейсах, и `compose.production.yml` это не меняет; при прямом доступе и включённом флаге
   IP клиента (аудит, remote-auth, блокировки) и `isSecure` подделываются.
+- `compose.yml` передаёт `JETTY_TRUST_FORWARDED` (по умолчанию `false`) и `SUPERFLY_LOGIN_IP_LIMIT`; `compose.production.yml` требует
+  задать `JETTY_TRUST_FORWARDED` явно — без него `docker compose` не запустится.
 - Прокси обязан передавать исходный `Host` (nginx: `proxy_set_header Host $host;`). Wicket-формы защищены `SameOriginResourceIsolationPolicy`:
   браузеры без заголовков `Sec-Fetch-*` (старые) проверяются по `Origin`/`Referer` против `Host`, и при подменённом `Host` получат `403` на отправке форм.
 - Без флага за прокси `getRemoteAddr()` — IP прокси, а `isSecure()`/HSTS по заголовкам не определяются. Cookie при этом всё равно Secure.
