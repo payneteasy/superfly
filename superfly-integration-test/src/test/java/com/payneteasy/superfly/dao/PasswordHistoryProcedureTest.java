@@ -21,9 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * get_user_password_history_and_current_password must list the user's own passwords newest first and must not
- * let temporary (admin reset) passwords take a place in the history window. Plain JDBC against a database
- * prepared by create_test_database.sh; the URL can be overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
+ * get_user_password_history_and_current_password must list the user's own passwords newest first and must check
+ * a pending temporary (admin reset) password too, without it taking a place in the history window. Plain JDBC
+ * against a database prepared by create_test_database.sh; the URL can be overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
  */
 public class PasswordHistoryProcedureTest {
 
@@ -94,16 +94,17 @@ public class PasswordHistoryProcedureTest {
     }
 
     @Test
-    public void pendingTemporaryPasswordDoesNotTakeAPlaceInTheHistory() throws Exception {
+    public void pendingTemporaryPasswordIsCheckedWithoutTakingAHistorySlot() throws Exception {
         reset("T6");
         List<PasswordSaltPair> history = history();
         PasswordCheckContext ctx = new PasswordCheckContext("x", ENCODER, history);
 
-        assertEquals(stored("P5"), history.get(0).getPassword());
-        for (String own : new String[]{"P2", "P3", "P4", "P5"}) {
+        assertEquals(stored("T6"), history.get(0).getPassword());
+        assertEquals(stored("P5"), history.get(1).getPassword());
+        for (String own : new String[]{"T6", "P5", "P4", "P3", "P2"}) {
             assertTrue(own + " must be rejected", ctx.isPasswordExist(own, HISTORY_DEPTH));
         }
-        assertFalse("temporary password is not the user's own one", ctx.isPasswordExist("T6", HISTORY_DEPTH));
+        assertFalse("fifth previous password is out of the window", ctx.isPasswordExist("P1", HISTORY_DEPTH));
     }
 
     @Test

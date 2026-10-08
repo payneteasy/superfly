@@ -4,17 +4,16 @@ create procedure get_user_password_history_and_current_password(i_user_name varc
  main_sql:
   begin
 
-   -- Newest first: the current password (unless it is temporary, i.e. set by an admin reset and not by the user)
-   -- followed by the history. ORDER BY inside a UNION branch is ignored by MySQL, hence the outer one.
+   -- Newest first: the current password (temporary ones included: it is known to the admin and must not be
+   -- reusable) followed by the history. ORDER BY inside a UNION branch is ignored by MySQL, hence the outer one.
    -- The newest history row stands for the current password and is skipped when the current one is listed
    -- (compared by number, not by hash: a legacy hash is replaced by pbkdf2 in users at login, history keeps it).
-   -- A temporary current password has no history row of its own, so nothing is skipped then.
+   -- A temporary current password has no history row of its own, so nothing is skipped then: it is always first.
    select t.user_password, t.salt
      from (
            select u.user_password, u.salt, 2147483647 as sort_key
              from users u
             where u.user_name = i_user_name
-              and u.is_password_temp = 'N'
            union all
            select uh.user_password, uh.salt, uh.number_history as sort_key
              from user_history uh
@@ -36,4 +35,4 @@ call save_routine_information('get_user_password_history_and_current_password',
                                         'user_password varchar',
                                         'salt varchar'
                               )
-     );
+     );
