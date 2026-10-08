@@ -52,10 +52,11 @@ create procedure register_user(i_user_name         varchar(32),
                       , is_account_locked, `name`, surname, secret_question ,secret_answer
                       , is_password_temp,salt, hotp_salt, create_date, public_key, completed
                       , user_organization
-                      , otp_otp_type_id )
+                      , otp_otp_type_id, is_otp_optional )
          values (i_user_name, i_user_password, i_user_email, 'N', i_name, i_surname, i_secret_question,
                  i_secret_answer, i_is_password_temp,i_salt, i_hotp_salt, now(), i_public_key, 'N',
-                 i_user_organization,v_otp_otp_type_id);
+                 i_user_organization,v_otp_otp_type_id,
+                 if(i_otp_code = 'none', 'Y', 'N'));
 
     set o_user_id   = last_insert_id();
 
