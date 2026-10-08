@@ -28,7 +28,7 @@ public class ProductionLogbackConfigTest {
         JoranConfigurator configurator = new JoranConfigurator();
         configurator.setContext(context);
         // surefire runs with the module directory as the working directory
-        configurator.doConfigure(new File("../docker/jetty/logback.xml"));
+        configurator.doConfigure(new File("../superfly-web/src/main/resources/logback.xml"));
         Logger root = context.getLogger(Logger.ROOT_LOGGER_NAME);
         ConsoleAppender<ILoggingEvent> console = (ConsoleAppender<ILoggingEvent>) root.getAppender("CONSOLE");
         // ConsoleAppender always writes to System.out: reuse its encoder with an in-memory stream

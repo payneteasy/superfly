@@ -1,27 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-	      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	      xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-	      version="3.0">
-
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="3.0">
+    <!-- local runs over plain http (./dev-env.sh app): production web.xml marks the session cookie Secure,
+         which Safari does not keep on http://localhost -->
     <session-config>
         <cookie-config>
             <http-only>true</http-only>
             <secure>false</secure>
         </cookie-config>
     </session-config>
-
     <context-param>
         <param-name>configuration</param-name>
         <param-value>development</param-value>
     </context-param>
-
-    <context-param>
-        <param-name>logbackConfigLocation</param-name>
-        <param-value>file:src/test/resources/logback-test.xml</param-value>
-    </context-param>
-
     <context-param>
         <param-name>superfly-policy</param-name>
         <param-value>none</param-value>

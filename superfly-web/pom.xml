@@ -6,7 +6,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>superfly-web</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Superfly server web-application</name>
     <description>Contains Superfly UI and server-side components implementing Superfly services for clients</description>
     <dependencies>
@@ -66,6 +66,8 @@
             <!--Justification: Provides the Jakarta Servlet API required for building web applications -->
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
+            <!-- the parent manages it as provided; here it has to be packed into the executable JAR -->
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <!--Justification: Core functionality for Spring Security; managing authentication, authorization, and security configurations -->
@@ -109,48 +111,51 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-tester</artifactId>
         </dependency>
-        <!--  JETTY DEPENDENCIES FOR TESTING  -->
+        <!--  EMBEDDED JETTY  -->
         <dependency>
-            <!--Justification: Jetty server for testing purposes -->
+            <!--Justification: Embedded Jetty server -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Provides utility classes for Jetty server, enhancing operational capabilities -->
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Adds support for Jetty's advanced features, including integration with JNDI, EJB, etc. -->
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-plus</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <!--Justification: Jetty web application support. -->
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-webapp</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
+            <!--Justification: JNDI datasource bound to java:comp/env -->
             <groupId>org.eclipse.jetty.ee10</groupId>
             <artifactId>jetty-ee10-jndi</artifactId>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: Reads the server settings from environment variables and system properties -->
+            <groupId>com.payneteasy</groupId>
+            <artifactId>startup-parameters</artifactId>
         </dependency>
         <dependency>
             <!--Justification: MySQL database connectivity -->
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <scope>test</scope>
         </dependency>
-
         <dependency>
-            <!--Justification: Commons Database Connection Pooling -->
+            <!--Justification: Commons Database Connection Pooling (datasource of the embedded server) -->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!--Justification: commons-dbcp2 logs through commons-logging, which is banned; this routes it to SLF4J -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <!--Justification:  Commons Object Pooling Library-->
@@ -196,6 +201,12 @@
     <build>
         <resources>
             <resource>
+                <!-- the embedded server serves the web application from the classpath (/webapp) -->
+                <filtering>false</filtering>
+                <directory>src/main/webapp</directory>
+                <targetPath>webapp</targetPath>
+            </resource>
+            <resource>
                 <filtering>false</filtering>
                 <directory>src/main/resources</directory>
             </resource>
@@ -229,12 +240,49 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <!-- dev datasource (localhost:3344), used only by Start.java from src/main/webapp;
-                         in Docker the datasource comes from docker/jetty/ROOT.xml -->
-                    <packagingExcludes>WEB-INF/jetty-web.xml</packagingExcludes>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.payneteasy.superfly.web.StartSuperfly</mainClass>
+                                    <manifestEntries>
+                                        <!-- bouncycastle and others ship versioned classes -->
+                                        <Multi-Release>true</Multi-Release>
+                                    </manifestEntries>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <finalName>superfly</finalName>
