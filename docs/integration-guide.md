@@ -164,7 +164,7 @@ protected void init() {
 (определяется по токену подсистемы): `checkOtp`, `hasOtpMasterKey`, `updateUserOtpType`,
 `changeTempPassword`, `getUserDescription`, `resetGoogleAuthMasterKey`,
 `updateUserIsOtpOptionalValue`, `updateUserDescription`, `resetPassword`, `completeUser`,
-`getUserStatuses`. Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
+`changeUserRole`, `getUserStatuses`. Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
 иначе ответ такой же, как для несуществующего пользователя.
 
 - Пользователи с ролью в подсистеме `superfly` (админка) недоступны через RPC всегда, даже если
