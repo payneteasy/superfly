@@ -32,7 +32,7 @@ JDK: подпись myCA на сертификате сервера валидн
 JDK сравнивает hostname из URL с полями сертификата:
 
 ```
-URL:      https://superfly.internal:8446/...
+URL:      https://superfly.internal:8443/...
 Cert CN:  superfly-server
 Cert SAN: DNS:superfly.internal, DNS:superfly-server
 
@@ -42,7 +42,7 @@ Cert SAN: DNS:superfly.internal, DNS:superfly-server
 Если сертификат содержит только `CN=superfly-server` без SAN, а мы подключаемся к `localhost`:
 
 ```
-URL:      https://localhost:8446/...
+URL:      https://localhost:8443/...
 Cert CN:  superfly-server
 Cert SAN: (нет)
 
@@ -63,6 +63,27 @@ evil.internal получил cert { CN=evil.internal } от того же CA
 Без hostname check: TrustManager говорит ок (cert от доверенного CA) → уязвимость
 С hostname check:   CN=evil.internal ≠ superfly.internal → отказ ✅
 ```
+
+---
+
+## TLS на стороне сервера
+
+Встроенный Jetty поднимает HTTPS-коннектор, только если задан `JETTY_PORT_SSL` (по умолчанию `-1` — выключен).
+Параметры (полный список — в [Конфигурации](configuration.md#база-данных)):
+
+| Переменная | Назначение |
+|------------|-----------|
+| `JETTY_PORT_SSL` | HTTPS-порт; без `JETTY_SSL_KEYSTORE_PATH` старт падает с ошибкой |
+| `JETTY_SSL_KEYSTORE_PATH` / `JETTY_SSL_KEYSTORE_PASSWORD` | Keystore сервера (дефолтных паролей нет) |
+| `JETTY_SSL_TRUSTSTORE_PATH` / `JETTY_SSL_TRUSTSTORE_PASSWORD` | Truststore для клиентских сертификатов |
+| `JETTY_SSL_CLIENT_AUTH_REQUIRED` | `true` — mTLS обязателен (нужен truststore) |
+
+Пароли передавайте через окружение, не аргументами командной строки. Dev-коннектор `:8446` из `Start.java`
+удалён вместе с этим классом; для локальной проверки mTLS задайте те же переменные.
+
+**SNI.** Проверка SNI включена (стандартное поведение Jetty `SecureRequestCustomizer`), а кастомного обхода больше нет:
+запрос на `https://localhost` с dev-сертификатом, выданным на другое имя, получит `400 Invalid SNI`. Обращайтесь к серверу по имени
+из сертификата (`/etc/hosts`, DNS) или выпускайте сертификат с нужным SAN.
 
 ---
 
@@ -147,7 +168,7 @@ ApacheHC5HttpClient client = ApacheHC5HttpClient.builder().build();
 
 ```
 Cert: CN=superfly.internal, SAN: DNS:superfly.internal
-URL:  https://superfly.internal:8446/...
+URL:  https://superfly.internal:8443/...
 ```
 
 ```java
@@ -166,7 +187,7 @@ ApacheHC5HttpClient client = ApacheHC5HttpClient.builder()
 
 ```
 Cert: CN=superfly-server (без SAN)
-URL:  https://localhost:8446/...
+URL:  https://localhost:8443/...
 ```
 
 Стандартный hostname verifier откажет ("localhost" ≠ "superfly-server"). Решения:

@@ -24,8 +24,19 @@ public interface SSOService {
      */
     SSOUser authenticate(AuthenticateRequest authenticate);
 
-    boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException;
+    /**
+     * Checks a one-time password of a user.
+     *
+     * @param request check OTP request containing username, code, OTP type and optionality
+     * @return result with the check status; {@link CheckOtpResult.Status#INVALID} for an unknown user
+     * @since 2.0
+     */
+    CheckOtpResult checkOtp(CheckOtpRequest request) throws SsoDecryptException;
 
+    /**
+     * @param request request containing username
+     * @return whether the user has an active (confirmed) OTP master key; a pending key does not count
+     */
     boolean hasOtpMasterKey(HasOtpMasterKeyRequest request);
 
     /**
@@ -92,13 +103,26 @@ public interface SSOService {
     UserDescription getUserDescription(GetUserDescriptionRequest request);
 
     /**
-     * Reset Master Key
+     * Reset Master Key. Since 2.0 the new key is pending: login keeps using the current key until the new one is
+     * confirmed with {@link #confirmOtpMasterKey(ConfirmOtpMasterKeyRequest)}; a repeated call replaces the pending key.
      * @param request reset Google Auth master key request containing username
      * @throws UserNotFoundException if no such user
      * @return New master key
      * @since 1.7
      */
     String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request) throws UserNotFoundException, SsoDecryptException;
+
+    /**
+     * Confirms the master key issued by {@link #resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest)} with a
+     * code generated from it; on success the new key replaces the current one and the code cannot be used to log in.
+     * A failed confirmation counts as a failed OTP attempt.
+     *
+     * @param request request containing username and code
+     * @return result with the check status; {@link CheckOtpResult.Status#INVALID} also for an unknown user and when
+     * there is no pending key, {@link CheckOtpResult.Status#LOCKED} if the account is locked
+     * @since 2.0
+     */
+    CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException;
 
     /**
      * Get google auth QR code

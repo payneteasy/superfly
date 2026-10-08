@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.api.ActionDescription;
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
@@ -37,7 +38,7 @@ public interface InternalSSOService {
     SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
             String sessionInfo);
 
-    boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) throws SsoDecryptException;
+    CheckOtpResult.Status checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) throws SsoDecryptException;
 
     /**
         * Returns the same data as if user was successfully authenticated,
@@ -105,9 +106,21 @@ public interface InternalSSOService {
      *
      * @param username    username
      * @param key         key
-     * @return authentication result
+     * @return {@link CheckOtpResult.Status#LOCKED} without checking the code if the account is locked or got
+     * locked by this failed attempt, otherwise the result of the code check
      */
-    boolean authenticateByOtpType(OTPType otp, String username, String key) throws SsoDecryptException;
+    CheckOtpResult.Status authenticateByOtpType(OTPType otp, String username, String key) throws SsoDecryptException;
+
+    /**
+     * Confirms the pending Google Authenticator master key with a code from it; on success the pending key
+     * becomes the active one. A failed confirmation counts as a failed OTP attempt.
+     *
+     * @param username username
+     * @param code     code generated from the pending key
+     * @return {@link CheckOtpResult.Status#LOCKED} without checking the code if the account is locked or got
+     * locked by this failed attempt, otherwise the result of the code check against the pending key
+     */
+    CheckOtpResult.Status confirmOtpMasterKey(String username, String code) throws SsoDecryptException;
 
     /**
      *

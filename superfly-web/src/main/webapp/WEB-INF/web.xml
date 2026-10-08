@@ -63,6 +63,13 @@
         <param-value>6</param-value>
     </context-param>
 
+    <!-- Failed OTP attempts before the user is locked; when not set, superfly-max-logins-failed is used
+    <context-param>
+        <param-name>superfly-max-otp-failed</param-name>
+        <param-value>6</param-value>
+    </context-param>
+    -->
+
     <!--
         ### Deprecated, use superfly-mfa-method-force for multi-factor authentication
 

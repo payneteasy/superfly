@@ -8,6 +8,7 @@ import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.AuthenticateRequest;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
+import com.payneteasy.superfly.api.request.ConfirmOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.request.HasOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
 import com.payneteasy.superfly.api.serialization.ApiSerializer;
@@ -183,21 +184,64 @@ public class SSOHttpServiceApiClientTest {
         Capture<HttpRequest> requestCapture = newCapture();
 
         // Success response
-        HttpResponse response = createSuccessResponse("true");
+        HttpResponse response = createSuccessResponse("{\"status\":\"SUCCESS\"}");
         expect(httpClient.send(capture(requestCapture), anyObject(HttpRequestParameters.class)))
                 .andReturn(response);
         replay(httpClient);
 
         // Call the method under test
-        boolean result = client.checkOtp(request);
+        CheckOtpResult result = client.checkOtp(request);
 
         // Verify the result
-        assertTrue(result);
+        assertEquals(CheckOtpResult.Status.SUCCESS, result.getStatus());
 
         // Verify that the HTTP request was correctly formed
         verify(httpClient);
         HttpRequest capturedRequest = requestCapture.getValue();
         assertEquals(BASE_URL + "/checkOtp", capturedRequest.getUrl());
+    }
+
+    @Test
+    public void checkOtpResultStatusSurvivesJsonRoundTrip() throws Exception {
+        CheckOtpRequest request = new CheckOtpRequest(createTestSSOUser(), "123456");
+        for (CheckOtpResult.Status status : CheckOtpResult.Status.values()) {
+            String json = serializationManager.serialize(new CheckOtpResult(status));
+            assertEquals("{\"status\":\"" + status.name() + "\"}", json);
+
+            resetAll();
+            expect(httpClient.send(anyObject(HttpRequest.class), anyObject(HttpRequestParameters.class)))
+                    .andReturn(createSuccessResponse(json));
+            replay(httpClient);
+
+            assertEquals(status, client.checkOtp(request).getStatus());
+            verify(httpClient);
+        }
+    }
+
+    @Test
+    public void confirmOtpMasterKeySendsUsernameAndCodeAndReadsTheStatus() throws Exception {
+        Capture<HttpRequest> requestCapture = newCapture();
+        expect(httpClient.send(capture(requestCapture), anyObject(HttpRequestParameters.class)))
+                .andReturn(createSuccessResponse("{\"status\":\"CLOCK_SKEW\"}"));
+        replay(httpClient);
+
+        CheckOtpResult result = client.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest("username", "123456"));
+
+        assertEquals(CheckOtpResult.Status.CLOCK_SKEW, result.getStatus());
+        verify(httpClient);
+        HttpRequest capturedRequest = requestCapture.getValue();
+        assertEquals(BASE_URL + "/confirmOtpMasterKey", capturedRequest.getUrl());
+        // the server deserializes the body into the request type of the SSOService method of the same name
+        ConfirmOtpMasterKeyRequest sent = (ConfirmOtpMasterKeyRequest) serializationManager.deserialize(
+                new String(capturedRequest.getBody(), StandardCharsets.UTF_8), ConfirmOtpMasterKeyRequest.class,
+                serializationManager.getDefaultContentType());
+        assertEquals(new ConfirmOtpMasterKeyRequest("username", "123456"), sent);
+    }
+
+    @Test
+    public void confirmOtpMasterKeyEndpointMatchesTheServiceMethod() throws Exception {
+        // the server maps /<path> to the SSOService method of that name
+        SSOService.class.getMethod(Endpoint.CONFIRM_OTP_MASTER_KEY.path().substring(1), ConfirmOtpMasterKeyRequest.class);
     }
 
     @Test

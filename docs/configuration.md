@@ -4,13 +4,35 @@
 
 ## База данных
 
-Конфигурация DataSource задаётся в Jetty XML-файлах.
+Superfly запускается как исполняемый JAR со встроенным Jetty (`superfly.jar`, `java -jar`); WAR и XML-конфиги
+DataSource (`jetty-web.xml`, `jetty-env.conf`, `docker/jetty/ROOT.xml`) больше не используются. DataSource и сервер
+настраиваются **переменными окружения** (или системными свойствами `-D` с тем же именем; `-D` приоритетнее).
+Список — в `IStartSuperflyConfig`.
 
-### Production (Docker): `docker/jetty/ROOT.xml`
+| Переменная | По умолчанию | Описание |
+|------------|-------------|---------|
+| `DB_HOST` | `mysql` | Хост БД |
+| `DB_PORT` | `3306` | Порт |
+| `DB_NAME` | `sso` | Имя базы |
+| `DB_USER` | `sso` | Пользователь MySQL |
+| `DB_PASSWORD` | — | Пароль (только через окружение/секреты; в логе запуска маскируется, но маска раскрывает длину) |
+| `DB_TIMEZONE` | `UTC` | Часовой пояс MySQL-сервера (`serverTimezone` JDBC URL) |
+| `JETTY_PORT` | `8080` | HTTP-порт |
+| `JETTY_PORT_SSL` | `-1` | HTTPS-порт; `-1` выключает TLS-коннектор. Без `JETTY_SSL_KEYSTORE_PATH` старт падает с ошибкой |
+| `JETTY_SSL_KEYSTORE_PATH` / `JETTY_SSL_KEYSTORE_PASSWORD` | пусто | Keystore сервера (дефолтных паролей нет) |
+| `JETTY_SSL_TRUSTSTORE_PATH` / `JETTY_SSL_TRUSTSTORE_PASSWORD` | пусто | Truststore для проверки клиентских сертификатов |
+| `JETTY_SSL_CLIENT_AUTH_REQUIRED` | `false` | Требовать клиентский сертификат (mTLS); без truststore — ошибка старта |
+| `JETTY_MAX_THREADS` / `JETTY_MIN_THREADS` | `200` / `8` | Размер пула потоков |
+| `JETTY_CONTEXT` | `/` | Context path |
+| `JETTY_OUTPUT_BUFFER_SIZE` / `JETTY_HEADER_SIZE` | `32768` / `8192` | Буфер ответа и максимальный размер заголовков |
+| `JETTY_SEND_SERVER_VERSION` / `JETTY_SEND_DATE_HEADER` | `true` / `true` | Заголовки `Server` и `Date` |
+| `JETTY_SECURE_SCHEME` | `https` | Схема для secure-запросов |
+| `JETTY_STOP_TIMEOUT_MS` | `5000` | Таймаут остановки сервера |
+| `JETTY_TRUST_FORWARDED` | `false` | Доверять `X-Forwarded-*` / `Forwarded` (см. [Reverse proxy и cookie](#reverse-proxy-и-cookie)) |
+| `JETTY_XML_CONFIG_FILE_PATH` | пусто | Необязательный Jetty XML (id `Server` и `wac`), применяется после встроенной настройки |
 
-В образе DataSource описан в `docker/jetty/ROOT.xml` и читает параметры из **переменных окружения**:
-`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_TIMEZONE` (порт Jetty — `JETTY_PORT`).
-Пароль передавайте только через окружение/секреты. Запуск — в [Установке и запуске](getting-started.md#docker-образ).
+Если контекст приложения не стартовал (например, недоступна БД), процесс завершается с кодом 1 (restart policy
+оркестратора перезапустит его), а не отвечает 503. Запуск — в [Установке и запуске](getting-started.md#docker-образ).
 
 ### Ключ шифрования OTP master key
 
@@ -53,52 +75,15 @@ Master key TOTP хранится в БД зашифрованным (AES-256-GCM
 
 Если на проде ключ был нестандартным, передайте те же значения в `SUPERFLY_CRYPTO_*` и оставьте флаг `false`.
 
-### Dev: `superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`
+## Запуск Jetty
 
-Конфиг для локального запуска (`./dev-env.sh app`, `Start.java`) с dev-базой на `localhost:3344`.
-Исключён из WAR (`packagingExcludes`), поэтому в контейнере и на сервере не используется. Структура:
-
-```xml
-<Configure id='wac' class="org.eclipse.jetty.ee10.webapp.WebAppContext">
-    <New id="txDatasource" class="org.eclipse.jetty.plus.jndi.Resource">
-        <Arg>java:comp/env/jdbc/superfly</Arg>
-        <Arg>
-            <New class="org.apache.commons.dbcp2.BasicDataSource">
-                <Set name="url">jdbc:mysql://HOST:PORT/sso
-                    ?characterEncoding=utf8
-                    &amp;useInformationSchema=true
-                    &amp;noAccessToProcedureBodies=false
-                    &amp;useLocalSessionState=true
-                    &amp;autoReconnect=false
-                    &amp;serverTimezone=Europe/Moscow</Set>
-                <Set name="driverClassName">com.mysql.cj.jdbc.Driver</Set>
-                <Set name="username">sso</Set>
-                <Set name="password">YOUR_PASSWORD</Set>
-                <Set name="testOnBorrow">true</Set>
-                <Set name="validationQuery">{call create_collections()}</Set>
-            </New>
-        </Arg>
-    </New>
-</Configure>
-```
-
-### `superfly-web/src/main/resources/jetty-env.conf`
-
-Вариант DataSource с параметрами из system properties (`db.host`, `db.port`, `db.name`, `db.user`, `db.password`, `db.timezone`) на `org.apache.commons.dbcp.BasicDataSource` (dbcp1).
-
-| Параметр | Описание |
-|----------|---------|
-| `url` | JDBC URL. Порт по умолчанию: `3306`. Схема: `sso` |
-| `username` | Пользователь MySQL |
-| `password` | Пароль MySQL |
-| `serverTimezone` | Часовой пояс MySQL-сервера (например, `UTC`, `Europe/Moscow`) |
-| `testOnBorrow` | Проверять соединение при взятии из пула |
-| `validationQuery` | SQL-вызов для проверки соединения |
-
-## Параметры запуска Jetty
-
-- **Docker:** порт задаёт `JETTY_PORT` (по умолчанию 8080), см. `docker/jetty/entrypoint.sh`.
-- **Локально:** `./dev-env.sh app` запускает `Start.java` на `http://localhost:8085/superfly/`.
+- **Docker:** `ENTRYPOINT ["java", "-jar", "/app/superfly.jar"]`, параметры — переменные окружения выше.
+- **Локально:** `./dev-env.sh app` запускает `StartSuperfly` (через `exec-maven-plugin`) на `http://localhost:8085/superfly/`
+  с dev-базой на `127.0.0.1:3344`; dev-настройки (без политики pcidss, не-Secure cookie по http) подключаются через
+  `JETTY_XML_CONFIG_FILE_PATH=src/test/resources/jetty/dev-jetty.xml`.
+- **Из JAR:** `java -jar superfly-web/target/superfly.jar` с переменными окружения.
+- **Логи:** `logback.xml` лежит в JAR (`superfly-web/src/main/resources/logback.xml`); свой конфиг —
+  `-Dlogback.configurationFile=...`.
 
 Стадии `development` и `jetty:run` в Docker/Maven больше нет.
 
@@ -132,7 +117,7 @@ Superfly поддерживает несколько политик пароле
 смена пароля = до `historyLength + 1` PBKDF2 на проверку истории (при PCIDSS — порядка 2–2.5 с).
 Проверка истории паролей выбирает алгоритм по формату записи.
 
-**Выкатка.** Хранимые процедуры (`all-proc.sh`) и WAR нужно выкатывать одновременно: сигнатуры `authenticate`,
+**Выкатка.** Хранимые процедуры (`all-proc.sh`) и приложение нужно выкатывать одновременно: сигнатуры `authenticate`,
 `get_user_login_status` и `int_check_user_password` изменились (добавлен параметр с legacy-хэшем), при рассинхроне
 падают все входы.
 
@@ -154,7 +139,7 @@ user:admin, event:CHANGE_USER_OTP_OPTIONAL, resource:bob, result:success, detail
 | `event` | Тип события (таблица ниже) |
 | `resource` | Над кем/чем: имя пользователя, id, имя подсистемы или SMTP-сервера |
 | `result` | `success` (уровень INFO) или `failure` (уровень ERROR) |
-| `details` | Необязательно. Что именно изменено (`role=..., subsystem=...`, `otpOptional=...`); секретов здесь не бывает |
+| `details` | Необязательно. Что именно изменено (`role=..., subsystem=...`, `otpOptional=...`); секретов здесь не бывает; для `REMOTE_OTP_CHECK` — `status=<SUCCESS/INVALID/ALREADY_USED/CLOCK_SKEW/LOCKED>` |
 | `ip` | Необязательно. Адрес клиента запроса; нет у событий вне HTTP-запроса. За reverse proxy при `JETTY_TRUST_FORWARDED` — реальный адрес клиента |
 
 Значения очищаются от управляющих символов (CR, LF, TAB, `\u0085`, ` `, ` ` → `_`), чтобы введённый пользователем
@@ -172,6 +157,7 @@ user:admin, event:CHANGE_USER_OTP_OPTIONAL, resource:bob, result:success, detail
 | `REMOTE_CHANGE_USER_ROLE` | `changeUserRole` через remote API (`details`: роль и подсистема) |
 | `CHANGE_USER_OTP_OPTIONAL` | Включение/отключение обязательности MFA (`details`: `otpOptional=true/false`) |
 | `CHANGE_USER_OTP_TYPE` | Смена типа OTP (`details`: `otpType=...`) |
+| `REMOTE_OTP_KEY_CONFIRM` | Подтверждение нового OTP master key (`confirmOtpMasterKey`; `details`: `status=...`) |
 | `PERSIST_OTP_MASTER_KEY` | Запись нового OTP master key пользователя (сброс `resetGoogleAuthMasterKey`, выдача ключа); сам ключ не логируется |
 | `UPDATE_USER_DESCRIPTION` | Изменение описания/реквизитов пользователя через remote API |
 | `UNLOCK_SUSPENDED_USER` | Разблокировка приостановленного пользователя (новый пароль не логируется) |
@@ -183,12 +169,12 @@ IP неудачных попыток входа дополнительно со�
 **Выкатка.** Изменились хранимые процедуры `get_user_login_status` (`get/get_user_login_status.sql`, новый параметр `i_ip_address`)
 и `login_locked` (файл `stub/lockout_conditionnally.prc`; в `error_message` возвращается `ACCOUNT_LOCKED`, если вызов
 заблокировал учётную запись): процедуры (`all-proc.sh`) и
-WAR нужно выкатывать одновременно.
+приложение нужно выкатывать одновременно.
 
-**Log injection.** В `docker/jetty/logback.xml` сообщение выводится как `%replace(%msg){'[\r\n\t]+', '_'}`, чтобы
+**Log injection.** В `superfly-web/src/main/resources/logback.xml` сообщение выводится как `%replace(%msg){'[\r\n\t]+', '_'}`, чтобы
 пользовательский ввод в любых логах приложения не создавал поддельных записей. Стектрейс (`%ex`) не заменяется:
 он многострочный по природе, выводится логбэком после сообщения и состоит из строк, сформированных JVM. Свой
-logback-конфиг при запуске вне Docker должен использовать тот же `%replace`.
+logback-конфиг (`-Dlogback.configurationFile`) должен использовать тот же `%replace`.
 
 ## SMTP (Email-уведомления)
 
@@ -199,6 +185,24 @@ SMTP-серверы настраиваются через веб-интерфе�
 HOTP-провайдер настраивается через `superfly-spi`. Реализация подключается через Spring DI. По умолчанию используется `NullHOTPProvider` (2FA отключена).
 
 Новые пользователи создаются с `is_otp_optional = 'N'` (миграция R1.7.7; существующие записи не меняются). Если у пользователя настроен ключ Google Authenticator, код обязателен независимо от этого флага. Принятый TOTP-код нельзя использовать повторно: шаг времени последнего принятого кода хранится в `users.otp_last_used_step`, код принимается только для шага выше сохранённого.
+
+**Окно OTP и CLOCK_SKEW.** Шаг TOTP — 30 с. Код принимается в окне ±1 шаг от текущего (один раз, см. выше). Код из шагов ±2..±3
+не принимается, но отличается от неверного: проверка возвращает статус `CLOCK_SKEW` (часы устройства расходятся с сервером);
+шаг при этом не сохраняется; пользователю нужно синхронизировать время на устройстве и ввести новый код. Всё остальное — `INVALID`. Подробнее о статусах —
+[API: `checkOtp`](api.md#checkotp).
+
+**Блокировка по OTP.** Каждая неудачная проверка OTP (`INVALID`, `CLOCK_SKEW`, `ALREADY_USED`, в том числе при
+`confirmOtpMasterKey`) увеличивает счётчик `hotp_logins_failed`. Порог задаёт параметр `superfly-max-otp-failed`:
+
+| Параметр | По умолчанию | Описание |
+|----------|-------------|---------|
+| `superfly-max-otp-failed` | значение `superfly-max-logins-failed` (по умолчанию 6) | Число неудачных OTP до блокировки пользователя |
+
+Задаётся context-param в `web.xml` (в файле есть закомментированный пример) или системным свойством
+`-Dsuperfly-max-otp-failed=3` (приоритетнее); переменной окружения нет. Пустое значение — fallback на
+`superfly-max-logins-failed`. Действует только при `superfly-policy=pcidss`. Значение `<= 0` блокирует после первой ошибки
+(валидации нет, как у `superfly-max-logins-failed`). Блокировка бессрочная: снять её может только администратор. В аудите
+`AUTO_LOCK_USER` поле `maxLoginsFailed=<порог>` для OTP содержит именно OTP-порог.
 
 ## Content-Security-Policy
 
@@ -212,7 +216,7 @@ Origin из `landingUrl` и `subsystemUrl` всех подсистем доба�
 ## Reverse proxy и cookie
 
 Docker-образ предполагает TLS-терминирующий прокси (nginx и т. п.) перед Jetty. Модуль Jetty `forwarded` (`ForwardedRequestCustomizer`)
-**по умолчанию выключен** и включается переменной окружения `JETTY_TRUST_FORWARDED=true` (`docker/jetty/entrypoint.sh`). Тогда схема, хост
+**по умолчанию выключен** и включается переменной окружения `JETTY_TRUST_FORWARDED=true` (см. таблицу выше). Тогда схема, хост
 и IP клиента берутся из `Forwarded` / `X-Forwarded-Proto` / `X-Forwarded-For` / `X-Forwarded-Host`: прокси должен слать `Host`,
 `X-Forwarded-Proto: https` и `X-Forwarded-For`, после чего `request.isSecure()` верен и заголовок HSTS выставляется
 (Spring Security пишет его только для secure-запросов).
@@ -264,7 +268,7 @@ Docker-образ предполагает TLS-терминирующий про
 
 ## Переменные окружения
 
-Подключение к БД в Docker-образе задаётся `DB_*` и `JETTY_PORT` (см. выше). Остальные параметры — через XML-конфиги Jetty и Spring.
+Подключение к БД и параметры Jetty задаются переменными окружения (таблица в разделе «База данных»). Остальные параметры — context-param в `web.xml`, системные свойства `-D` и Spring-конфиги.
 
 ## See Also
 

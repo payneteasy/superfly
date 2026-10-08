@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserNotFoundException;
@@ -80,7 +81,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpForeignUserBehavesLikeUnknownUser() throws Exception {
         expectForeign();
         replayAll();
-        assertFalse(ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)));
+        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
@@ -101,16 +102,16 @@ public class SSOServiceImplSubsystemIsolationTest {
     public void checkOtpLocalUserIsDenied() throws Exception {
         expectLocalUser();
         replayAll();
-        assertFalse(ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)));
+        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
     @Test
     public void checkOtpOwnUserIsDelegated() throws Exception {
         expectOwn();
-        expect(internal.checkOtp(OTPType.GOOGLE_AUTH, false, USER, "123456")).andReturn(true);
+        expect(internal.checkOtp(OTPType.GOOGLE_AUTH, false, USER, "123456")).andReturn(CheckOtpResult.Status.SUCCESS);
         replayAll();
-        assertTrue(ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false)));
+        assertEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
@@ -267,6 +268,36 @@ public class SSOServiceImplSubsystemIsolationTest {
         expect(hotpService.resetGoogleAuthMasterKey(CALLER, USER)).andReturn("key");
         replayAll();
         assertEquals("key", ssoService.resetGoogleAuthMasterKey(new ResetGoogleAuthMasterKeyRequest(USER)));
+        verifyAll();
+    }
+
+    // confirmOtpMasterKey
+
+    @Test
+    public void confirmOtpMasterKeyForeignUserIsInvalid() throws Exception {
+        expectForeign();
+        replayAll();
+        assertEquals(CheckOtpResult.Status.INVALID,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
+        verifyAll();
+    }
+
+    @Test
+    public void confirmOtpMasterKeyLocalUserIsInvalid() throws Exception {
+        expectLocalUser();
+        replayAll();
+        assertEquals(CheckOtpResult.Status.INVALID,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
+        verifyAll();
+    }
+
+    @Test
+    public void confirmOtpMasterKeyOwnUserIsDelegated() throws Exception {
+        expectOwn();
+        expect(internal.confirmOtpMasterKey(USER, "123456")).andReturn(CheckOtpResult.Status.LOCKED);
+        replayAll();
+        assertEquals(CheckOtpResult.Status.LOCKED,
+                ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
         verifyAll();
     }
 

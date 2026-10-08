@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.hotp;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.service.UserService;
 import org.easymock.Capture;
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HOTPServiceImplReencryptTest {
@@ -93,7 +95,7 @@ public class HOTPServiceImplReencryptTest {
         userService.persistOtpMasterKeyIfUnchanged(EasyMock.eq(USER), EasyMock.eq(legacy), EasyMock.capture(saved));
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, validCode()));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, validCode()));
 
         EasyMock.verify(userService);
         assertFalse(crypto.isLegacy(saved.getValue()));
@@ -106,7 +108,7 @@ public class HOTPServiceImplReencryptTest {
         EasyMock.replay(userService);
 
         String wrong = String.format("%06d", (Integer.parseInt(validCode()) + 500000) % 1000000);
-        assertFalse(service.validateGoogleTimePassword(USER, wrong));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, wrong));
 
         EasyMock.verify(userService);
     }
@@ -117,7 +119,7 @@ public class HOTPServiceImplReencryptTest {
         EasyMock.expect(userService.markOtpStepUsed(EasyMock.eq(USER), EasyMock.anyLong())).andReturn(true);
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, validCode()));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, validCode()));
 
         EasyMock.verify(userService);
     }
@@ -130,7 +132,7 @@ public class HOTPServiceImplReencryptTest {
         EasyMock.expectLastCall().andThrow(new RuntimeException("db down"));
         EasyMock.replay(userService);
 
-        assertTrue(service.validateGoogleTimePassword(USER, validCode()));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, validCode()));
 
         EasyMock.verify(userService);
     }
@@ -152,7 +154,7 @@ public class HOTPServiceImplReencryptTest {
 
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             try {
-                assertTrue(service.validateGoogleTimePassword(USER, validCode()));
+                assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, validCode()));
             } catch (Exception e) {
                 throw new AssertionError(e);
             }
@@ -175,7 +177,7 @@ public class HOTPServiceImplReencryptTest {
         // would throw UnexpectedRollbackException on commit if the failure leaked into the outer transaction
         new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             try {
-                assertTrue(service.validateGoogleTimePassword(USER, validCode()));
+                assertEquals(CheckOtpResult.Status.SUCCESS, service.validateGoogleTimePassword(USER, validCode()));
             } catch (Exception e) {
                 throw new AssertionError(e);
             }

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -46,8 +47,8 @@ public class RemoteAuthServiceImplTest {
                 .andStubThrow(new BadPaddingException("bad padding"));
         expect(internalSSOService.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
                 .andStubReturn(otpUser());
-        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "123456")).andStubReturn(true);
-        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "000000")).andStubReturn(false);
+        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "123456")).andStubReturn(CheckOtpResult.Status.SUCCESS);
+        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "000000")).andStubReturn(CheckOtpResult.Status.INVALID);
         replay(subsystemService, internalSSOService, cryptoService);
 
         service = new RemoteAuthServiceImpl(subsystemService, internalSSOService, cryptoService);
@@ -90,6 +91,26 @@ public class RemoteAuthServiceImplTest {
             assertEquals("BAD_USER_OR_PASSWORD_OR_OTP", checkOtp(BILLING, token, "bad-otp-enc"));
         }
         assertEquals("SUCCESS", checkOtp(BILLING, token, "good-otp-enc"));
+    }
+
+    @Test
+    public void everyOtpFailureReasonGivesTheSameAnswer() throws Exception {
+        for (CheckOtpResult.Status status : CheckOtpResult.Status.values()) {
+            if (status == CheckOtpResult.Status.SUCCESS) {
+                continue;
+            }
+            InternalSSOService internal = niceMock(InternalSSOService.class);
+            expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
+                    .andStubReturn(otpUser());
+            expect(internal.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "123456")).andStubReturn(status);
+            replay(internal);
+            service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+            String token = checkPassword(BILLING);
+
+            assertEquals(status.name(), "BAD_USER_OR_PASSWORD_OR_OTP", checkOtp(BILLING, token, "good-otp-enc"));
+            // like a wrong code, the attempt does not burn the session
+            assertEquals(status.name(), "BAD_USER_OR_PASSWORD_OR_OTP", checkOtp(BILLING, token, "good-otp-enc"));
+        }
     }
 
     @Test

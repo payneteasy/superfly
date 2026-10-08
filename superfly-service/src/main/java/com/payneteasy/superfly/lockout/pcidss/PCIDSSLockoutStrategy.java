@@ -21,6 +21,7 @@ public class PCIDSSLockoutStrategy implements LockoutStrategy {
     }
 
     public void checkLoginsFailed(String userName, LockoutType lockoutType) {
-        userService.lockoutConditionnally(userName, properties.maxLoginsFailed(), lockoutType.name());
+        Long max = lockoutType == LockoutType.HOTP ? properties.maxOtpFailed() : properties.maxLoginsFailed();
+        userService.lockoutConditionnally(userName, max, lockoutType.name());
     }
 }

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -93,7 +94,7 @@ public class SSOLoginRateLimitTest extends AbstractPageTest {
     @Test
     public void otpStepIsBlockedWithoutCallingAuthenticationService() {
         expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "victim", "123456"))
-                .andReturn(false).times(PAIR_LIMIT);
+                .andReturn(CheckOtpResult.Status.INVALID).times(PAIR_LIMIT);
         replay(internalSSOService);
 
         for (int i = 0; i < PAIR_LIMIT; i++) {

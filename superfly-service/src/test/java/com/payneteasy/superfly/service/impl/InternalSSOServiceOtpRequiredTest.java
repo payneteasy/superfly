@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -11,7 +12,9 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,12 +42,12 @@ public class InternalSSOServiceOtpRequiredTest {
     @Test
     public void optionalWithKeyAndEmptyCodeIsRejected() throws Exception {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn("encrypted-key").anyTimes();
-        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, "")).andReturn(false);
+        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, "")).andReturn(CheckOtpResult.Status.INVALID);
         userService.incrementHOTPLoginsFailed(USER);
         EasyMock.replay(userService, hotpService);
 
-        assertFalse(service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
-        assertFalse(service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, null));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
+        assertNotEquals(CheckOtpResult.Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, null));
         EasyMock.verify(userService);
     }
 
@@ -53,8 +56,8 @@ public class InternalSSOServiceOtpRequiredTest {
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null).anyTimes();
         EasyMock.replay(userService, hotpService);
 
-        assertTrue(service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
-        assertTrue(service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, null));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
+        assertEquals(CheckOtpResult.Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, null));
     }
 
     @Test

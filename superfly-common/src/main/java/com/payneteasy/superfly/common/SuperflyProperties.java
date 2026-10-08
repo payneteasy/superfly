@@ -16,6 +16,7 @@ public class SuperflyProperties {
     String  cryptoSalt;
     Boolean cryptoLegacyDefaultKey;
     Long    maxLoginsFailed;
+    Long    maxOtpFailed;
     Boolean csrfLoginValidatorEnable;
     Boolean enableMultiFactorAuth;
     OTPType forceMultiFactorAuthMethod;
@@ -29,6 +30,7 @@ public class SuperflyProperties {
                 ", cryptoSecret='" + "***" + '\'' +
                 ", cryptoSalt='" + "***" + '\'' +
                 ", maxLoginsFailed=" + maxLoginsFailed +
+                ", maxOtpFailed=" + maxOtpFailed +
                 ", csrfLoginValidatorEnable=" + csrfLoginValidatorEnable +
                 ", enableMultiFactorAuth=" + enableMultiFactorAuth +
                 ", forceMultiFactorAuthMethod=" + forceMultiFactorAuthMethod +

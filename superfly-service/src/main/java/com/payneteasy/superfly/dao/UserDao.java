@@ -459,6 +459,9 @@ public interface UserDao {
     @AStoredProcedure(name = "get_google_auth_master_key_by_user_name")
     String getGoogleAuthMasterKeyByUsername(String username);
 
+    /**
+     * Sets the active master key (null resets it) and drops the pending one in the same update.
+     */
     @AStoredProcedure(name = "save_google_auth_master_key")
     void persistGoogleAuthMasterKeyForUsername(String username, String masterKey);
 
@@ -470,6 +473,21 @@ public interface UserDao {
      */
     @AStoredProcedure(name = "save_otp_last_used_step")
     int saveOtpLastUsedStep(String username, long step);
+
+    @AStoredProcedure(name = "get_otp_pending_master_key_by_user_name")
+    String getOtpPendingMasterKeyByUsername(String username);
+
+    @AStoredProcedure(name = "save_otp_pending_master_key")
+    void persistOtpPendingMasterKey(String username, String pendingMasterKey);
+
+    /**
+     * Makes the pending master key the active one, only if the pending key still equals pendingMasterKey, and
+     * raises the last used TOTP step to step in the same update.
+     *
+     * @return the number of rows updated: 1 if the key was moved, 0 otherwise
+     */
+    @AStoredProcedure(name = "confirm_otp_pending_master_key")
+    int confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step);
 
     @AStoredProcedure(name = "update_user_otp_type")
     void updateUserOtpType(String username, String otpType);

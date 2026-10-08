@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
@@ -528,6 +529,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void persistOtpPendingMasterKey(String username, String pendingMasterKey) {
+        userDao.persistOtpPendingMasterKey(username, pendingMasterKey);
+        loggerSink.info(logger, "PERSIST_OTP_PENDING_MASTER_KEY", true, username);
+    }
+
+    @Override
+    public String getOtpPendingMasterKeyByUsername(String username) {
+        return userDao.getOtpPendingMasterKeyByUsername(username);
+    }
+
+    @Override
+    public boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step) {
+        boolean confirmed = userDao.confirmOtpPendingMasterKey(username, pendingMasterKey, step) > 0;
+        loggerSink.info(logger, "CONFIRM_OTP_MASTER_KEY", confirmed, username);
+        return confirmed;
+    }
+
+    @Override
     public String getUserSalt(String userName) {
         return userDao.getUserSalt(userName);
     }
@@ -654,7 +673,7 @@ public class UserServiceImpl implements UserService {
         switch (userForDescription.getOtpType()) {
             case GOOGLE_AUTH:
                 try {
-                    ok = hotpService.validateGoogleTimePassword(username, otp);
+                    ok = hotpService.validateGoogleTimePassword(username, otp) == CheckOtpResult.Status.SUCCESS;
                 } catch (SsoDecryptException e) {
                     logger.warn("Can't decrypt secret key for {}", username);
                 }

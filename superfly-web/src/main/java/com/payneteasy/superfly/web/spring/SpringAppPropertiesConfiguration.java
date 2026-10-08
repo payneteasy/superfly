@@ -35,6 +35,7 @@ public class SpringAppPropertiesConfiguration {
                 .cryptoSalt(cryptoSalt())
                 .cryptoLegacyDefaultKey(cryptoLegacyDefaultKey())
                 .maxLoginsFailed(maxLoginsFailed())
+                .maxOtpFailed(maxOtpFailed())
                 .csrfLoginValidatorEnable(csrfLoginValidatorEnable())
                 .enableMultiFactorAuth(enableMultiFactorAuth())
                 .forceMultiFactorAuthMethod(forceMultiFactorAuthMethod())
@@ -105,6 +106,12 @@ public class SpringAppPropertiesConfiguration {
 
     private Long maxLoginsFailed() {
         return Long.parseLong(parameterResolver.getParameter("superfly-max-logins-failed", "6"));
+    }
+
+    // Falls back to superfly-max-logins-failed when not set
+    private Long maxOtpFailed() {
+        String value = parameterResolver.getParameter("superfly-max-otp-failed", null);
+        return value == null || value.isBlank() ? maxLoginsFailed() : Long.parseLong(value.trim());
     }
 
     private Boolean csrfLoginValidatorEnable() {

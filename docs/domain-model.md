@@ -56,6 +56,8 @@ Subsystem (подсистема)
 | `publicKey` | String | Публичный ключ пользователя |
 | `otpType` | OTPType | Тип двухфакторной аутентификации |
 | `isOtpOptional` | boolean | Можно ли пропустить OTP. Для новых пользователей по умолчанию `N`; если настроен ключ Google Authenticator, код обязателен независимо от флага |
+| `users.master_key` | String | Активный OTP master key (зашифрован, `v2:`) |
+| `users.otp_pending_master_key` | String | Ключ, выданный `resetGoogleAuthMasterKey` и ещё не подтверждённый `confirmOtpMasterKey` (миграция R1.7.8, `varchar(128)`, зашифрован как `master_key`); при подтверждении становится `master_key`. Вход его не использует |
 
 ### Статус пользователя (в UIUserForList)
 

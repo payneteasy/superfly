@@ -12,6 +12,7 @@ import com.payneteasy.http.client.api.IHttpClient;
 import com.payneteasy.http.client.api.exceptions.HttpConnectException;
 import com.payneteasy.http.client.api.exceptions.HttpReadException;
 import com.payneteasy.http.client.api.exceptions.HttpWriteException;
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.SSOEvent;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
@@ -40,6 +41,7 @@ import com.payneteasy.superfly.api.request.ChangeTempPasswordRequest;
 import com.payneteasy.superfly.api.request.ChangeUserRoleRequest;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.api.request.CompleteUserRequest;
+import com.payneteasy.superfly.api.request.ConfirmOtpMasterKeyRequest;
 import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.api.request.GetEventsRequest;
 import com.payneteasy.superfly.api.request.GetGoogleAuthQrCodeRequest;
@@ -138,8 +140,8 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
     }
 
     @Override
-    public boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException {
-        return invoke(Endpoint.CHECK_OTP, request, Boolean.class);
+    public CheckOtpResult checkOtp(CheckOtpRequest request) throws SsoDecryptException {
+        return invoke(Endpoint.CHECK_OTP, request, CheckOtpResult.class);
     }
 
     @Override
@@ -187,6 +189,11 @@ public final class SSOHttpServiceApiClient implements SSOService, AutoCloseable 
     public String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request)
             throws UserNotFoundException, SsoDecryptException {
         return invoke(Endpoint.RESET_GOOGLE_AUTH_MASTER_KEY, request, String.class);
+    }
+
+    @Override
+    public CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException {
+        return invoke(Endpoint.CONFIRM_OTP_MASTER_KEY, request, CheckOtpResult.class);
     }
 
     @Override

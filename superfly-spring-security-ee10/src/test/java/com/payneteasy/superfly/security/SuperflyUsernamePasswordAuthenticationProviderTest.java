@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.request.AuthenticateRequest;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.security.authentication.EmptyAuthenticationToken;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 
 public class SuperflyUsernamePasswordAuthenticationProviderTest extends
@@ -44,7 +46,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
         SSOUser ssoUserWithOneRole = createSSOUserWithOneRole();
         expect(ssoService.authenticate(new AuthenticateRequest("pete", "secret", null)))
                 .andReturn(ssoUserWithOneRole);
-        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, null))).andReturn(true);
+        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, null))).andReturn(new CheckOtpResult(CheckOtpResult.Status.SUCCESS));
         replay(ssoService);
         Authentication auth = provider.authenticate(createPasswordAuthentication());
         assertNotNull(auth);
@@ -56,7 +58,7 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
         ssoUserWithOneRole.setOtpType(OTPType.GOOGLE_AUTH);
         expect(ssoService.authenticate(new AuthenticateRequest("pete", "secret", null)))
                 .andReturn(ssoUserWithOneRole);
-        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, "123456"))).andReturn(true);
+        expect(ssoService.checkOtp(new CheckOtpRequest(ssoUserWithOneRole, "123456"))).andReturn(new CheckOtpResult(CheckOtpResult.Status.SUCCESS));
         replay(ssoService);
         Authentication auth = provider.authenticate(createPasswordAuthentication().withSecondFactory("123456"));
         assertNotNull(auth);
@@ -102,6 +104,30 @@ public class SuperflyUsernamePasswordAuthenticationProviderTest extends
             fail();
         } catch (BadCredentialsException e) {
             // expected
+        }
+    }
+
+    @Test
+    public void testSecondFactoryFailureCarriesCheckStatus() {
+        for (CheckOtpResult.Status status : CheckOtpResult.Status.values()) {
+            if (status == CheckOtpResult.Status.SUCCESS) {
+                continue;
+            }
+            SSOService service = EasyMock.createMock(SSOService.class);
+            SuperflyUsernamePasswordAuthenticationProvider p = new SuperflyUsernamePasswordAuthenticationProvider();
+            p.setSsoService(service);
+            SSOUser user = createSSOUserWithOneRole();
+            user.setOtpType(OTPType.GOOGLE_AUTH);
+            expect(service.authenticate(new AuthenticateRequest("pete", "secret", null))).andReturn(user);
+            expect(service.checkOtp(new CheckOtpRequest(user, "123456"))).andReturn(new CheckOtpResult(status));
+            replay(service);
+            try {
+                p.authenticate(createPasswordAuthentication().withSecondFactory("123456"));
+                fail(status.name());
+            } catch (BadOTPValueException e) {
+                assertEquals(status, e.getStatus());
+                assertEquals("Otp check failed!", e.getMessage());
+            }
         }
     }
 }

@@ -30,8 +30,15 @@ cd superfly
 Откройте `http://localhost:8085/superfly/`, логин `admin`, пароль `123admin123`.
 
 `dev-env.sh` публикует MySQL только на `127.0.0.1:3344`. Остальные команды (`seed`, `sql`, `down`) и ограничения
-описаны в [README](../README.md#локальная-разработка). Параметры подключения dev-контура лежат в
-`superfly-web/src/main/webapp/WEB-INF/jetty-web.xml`; этот файл не попадает в WAR.
+описаны в [README](../README.md#локальная-разработка). `./dev-env.sh app` сам задаёт `DB_*` и `JETTY_*` (база `127.0.0.1:3344`) и запускает `StartSuperfly` со встроенным Jetty.
+Собранный JAR запускается так (параметры — [переменные окружения](configuration.md#база-данных)):
+
+```bash
+DB_HOST=127.0.0.1 DB_PORT=3344 DB_PASSWORD=... SUPERFLY_CRYPTO_SECRET=... SUPERFLY_CRYPTO_SALT=... \
+  java -jar superfly-web/target/superfly.jar
+```
+
+WAR больше не собирается: артефакт — `superfly-web/target/superfly.jar` (shaded, ~70 МБ).
 
 ---
 
@@ -52,7 +59,7 @@ cd superfly
 ```bash
 cd superfly-sql/mi
 version_from=R1.7.4 bash all_mi.sh     # с какой версии применять; по умолчанию R1.0.0
-cd ../src && ./all-proc.sh             # хранимые процедуры ставятся отдельно от WAR
+cd ../src && ./all-proc.sh             # хранимые процедуры ставятся отдельно от приложения
 ```
 
 Миграции прерываются на первой ошибке. Что делать при обновлении с конкретных версий — в
@@ -63,7 +70,7 @@ cd ../src && ./all-proc.sh             # хранимые процедуры с�
 
 ## Docker-образ
 
-Образ собирается из `Dockerfile` (стадия `production`): WAR на Jetty 12 (ee10), JRE 21, непривилегированный пользователь.
+Образ собирается из `Dockerfile` (стадия `production`): `superfly.jar` со встроенным Jetty 12 (ee10) на JRE 21, непривилегированный пользователь `superfly`.
 Схему БД образ не ставит — примените миграции и процедуры, как описано выше.
 
 ```bash
@@ -76,7 +83,7 @@ docker run -d -p 8080:8080 \
   superfly-app
 ```
 
-Параметры `DB_*` читаются из окружения (`docker/jetty/ROOT.xml`), порт Jetty — `JETTY_PORT` (по умолчанию 8080).
+Параметры `DB_*` и `JETTY_*` читаются приложением из окружения (порт — `JETTY_PORT`, по умолчанию 8080). Если контекст не стартовал (например, БД недоступна), процесс завершается с кодом 1, а не отвечает 503.
 `SUPERFLY_CRYPTO_SECRET` и `SUPERFLY_CRYPTO_SALT` обязательны (ключ шифрования OTP, см. [Конфигурацию](configuration.md#ключ-шифрования-otp-master-key)): без них приложение не стартует.
 `-e DB_PASSWORD` без значения берёт пароль из окружения хоста, чтобы он не попадал в историю команд.
 
@@ -99,7 +106,7 @@ docker compose -f compose.yml -f compose.production.yml up -d
 | `Connection refused` на 3344 | База не запущена | `./dev-env.sh up` |
 | `Table 'sso.users' doesn't exist` | Миграции не накатаны | `./dev-env.sh up` или `all_mi.sh` |
 | Схема не ставится, ошибка на `groups` | MySQL 8.0 | Использовать MySQL 5.7 |
-| `NullPointerException` при старте | Нет JNDI datasource | Проверить `jetty-web.xml` (dev) или `DB_*` (Docker) |
+| Процесс завершился при старте | Нет подключения к БД | Проверить `DB_*` (хост, порт, пароль) |
 
 ---
 

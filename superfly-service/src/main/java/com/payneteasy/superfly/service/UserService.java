@@ -364,6 +364,9 @@ public interface UserService {
 
     RoutineResult lockoutConditionnally(String userName, long maxLoginsFailed, String lockoutType);
 
+    /**
+     * Sets the active master key (null resets it) and drops the pending one, which this key makes outdated.
+     */
     void persistOtpMasterKeyForUsername(String username, String masterKey);
 
     /**
@@ -379,6 +382,21 @@ public interface UserService {
     boolean markOtpStepUsed(String username, long step);
 
     String getOtpMasterKeyByUsername(String username);
+
+    /**
+     * Stores a master key that is not used for login until it is confirmed; the active key is left as it is.
+     */
+    void persistOtpPendingMasterKey(String username, String pendingMasterKey);
+
+    String getOtpPendingMasterKeyByUsername(String username);
+
+    /**
+     * Compare-and-set: makes the pending master key the active one only if it still equals pendingMasterKey; the
+     * same update records step as used (the last used step is never lowered).
+     *
+     * @return false if the pending key has been replaced or removed meanwhile
+     */
+    boolean confirmOtpPendingMasterKey(String username, String pendingMasterKey, long step);
 
     boolean userHasRolesInSubsystem(String username, String subsystemName);
 

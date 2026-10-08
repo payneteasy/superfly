@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
@@ -67,7 +68,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     @Test
     public void testSuccess() {
         expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "111111"))
-                .andReturn(true);
+                .andReturn(CheckOtpResult.Status.SUCCESS);
         expect(sessionService.createSSOSession("known-user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
@@ -104,7 +105,7 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
     @Test
     public void testFailure() {
         expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "222222"))
-                        .andReturn(false);
+                        .andReturn(CheckOtpResult.Status.INVALID);
         replay(internalSSOService, csrfValidator);
 
         tester.getSession().setSsoLoginData(createLoginData());

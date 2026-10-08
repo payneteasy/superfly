@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.SessionService;
@@ -67,7 +68,7 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
             return;
         }
         boolean ok = internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH,
-                loginData.getUsername(), loginBean.getHotp());
+                loginData.getUsername(), loginBean.getHotp()) == CheckOtpResult.Status.SUCCESS;
         recordLoginResult("otp", loginData.getUsername(), ok);
         if (ok) {
             onHOTPChecked(loginData);

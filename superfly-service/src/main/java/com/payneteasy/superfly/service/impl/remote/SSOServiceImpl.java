@@ -63,11 +63,11 @@ public class SSOServiceImpl implements SSOService {
     }
 
     @Override
-    public boolean checkOtp(CheckOtpRequest request) throws SsoDecryptException {
+    public CheckOtpResult checkOtp(CheckOtpRequest request) throws SsoDecryptException {
         if (!isUserAccessible("checkOtp", request.getUserName())) {
-            return checkOtpForUnknownUser(request);
+            return new CheckOtpResult(checkOtpForUnknownUser(request));
         }
-        return internalSSOService.checkOtp(request.getOtpType(), request.isOtpOptional(), request.getUserName(),  request.getCode());
+        return new CheckOtpResult(internalSSOService.checkOtp(request.getOtpType(), request.isOtpOptional(), request.getUserName(),  request.getCode()));
     }
 
     @Override
@@ -183,6 +183,14 @@ public class SSOServiceImpl implements SSOService {
         }
         String subsystemIdentifier = obtainSubsystemIdentifier(null);
         return hotpService.resetGoogleAuthMasterKey(subsystemIdentifier, request.getUsername());
+    }
+
+    @Override
+    public CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException {
+        if (!isUserAccessible("confirmOtpMasterKey", request.getUsername())) {
+            return new CheckOtpResult(CheckOtpResult.Status.INVALID);
+        }
+        return new CheckOtpResult(internalSSOService.confirmOtpMasterKey(request.getUsername(), request.getCode()));
     }
 
     @Override
@@ -392,20 +400,23 @@ public class SSOServiceImpl implements SSOService {
         return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
-    /** What the underlying service does for a user that does not exist. */
-    private boolean checkOtpForUnknownUser(CheckOtpRequest request) throws SsoDecryptException {
+    /**
+     * What the underlying service does for a user that does not exist: never a status that only an existing
+     * user can get (locked, already used, clock skew).
+     */
+    private CheckOtpResult.Status checkOtpForUnknownUser(CheckOtpRequest request) throws SsoDecryptException {
         String code = request.getCode();
         if (request.isOtpOptional() && (code == null || code.trim().isEmpty())) {
-            return true;
+            return CheckOtpResult.Status.SUCCESS;
         }
         // the real path fails on a missing type with the same NPE
         if (Objects.requireNonNull(request.getOtpType()) != OTPType.GOOGLE_AUTH) {
-            return true;
+            return CheckOtpResult.Status.SUCCESS;
         }
         if (code != null && code.matches("^[0-9]{6}$")) {
             throw new SsoDecryptException("GA master key for " + request.getUserName() + " is null");
         }
-        return false;
+        return CheckOtpResult.Status.INVALID;
     }
 
     /**

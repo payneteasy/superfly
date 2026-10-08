@@ -148,10 +148,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public boolean checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
+    public CheckOtpResult.Status checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
         // isOtpOptional comes from the caller; a configured key makes OTP mandatory anyway
         if (isOtpOptional && (code == null || code.trim().isEmpty()) && !hasOtpMasterKey(username)) {
-            return true;
+            return CheckOtpResult.Status.SUCCESS;
         }
         return authenticateByOtpType(otpType, username, code);
     }
@@ -301,24 +301,73 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     }
 
     @Override
-    public boolean authenticateByOtpType(OTPType otp, String username, String code) {
+    public CheckOtpResult.Status authenticateByOtpType(OTPType otp, String username, String code) {
         logger.debug("Authenticating by OTP type {} for {}", otp, username);
-        boolean ok;
-        if (Objects.requireNonNull(otp) == OTPType.GOOGLE_AUTH) {
-            ok = hotpService.validateGoogleTimePassword(username, code);
+        Objects.requireNonNull(otp);
+        CheckOtpResult.Status status;
+        if (isAccountLocked(username)) {
+            // a locked account gets no code checks: they would let the code be guessed without consequences
+            logger.warn("OTP check of locked account {}", username);
+            status = CheckOtpResult.Status.LOCKED;
         } else {
-            ok = true;
-        }
-        if (!ok) {
-            logger.warn("OTP check failed {}", username);
-            userService.incrementHOTPLoginsFailed(username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
-        } else {
-            userService.clearHOTPLoginsFailed(username);
+            status = otp == OTPType.GOOGLE_AUTH
+                    ? hotpService.validateGoogleTimePassword(username, code)
+                    : CheckOtpResult.Status.SUCCESS;
+            if (status != CheckOtpResult.Status.SUCCESS) {
+                // logged after the count: the attempt may have locked the account, and the result is then LOCKED
+                status = countFailedOtpAttempt(username, status);
+                logger.warn("OTP check failed {}: {}", username, status);
+            } else {
+                userService.clearHOTPLoginsFailed(username);
+            }
         }
 
-        loggerSink.info(logger, "REMOTE_OTP_CHECK", ok, username);
-        return ok;
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+        return status;
+    }
+
+    @Override
+    public CheckOtpResult.Status confirmOtpMasterKey(String username, String code) {
+        CheckOtpResult.Status status;
+        if (isAccountLocked(username)) {
+            logger.warn("OTP key confirmation of locked account {}", username);
+            status = CheckOtpResult.Status.LOCKED;
+        } else {
+            status = hotpService.confirmGoogleAuthMasterKey(username, code);
+            // otherwise confirmation attempts would guess codes past the OTP lockout limit
+            if (status != CheckOtpResult.Status.SUCCESS) {
+                status = countFailedOtpAttempt(username, status);
+                logger.warn("OTP key confirmation failed {}: {}", username, status);
+            }
+        }
+
+        loggerSink.info(logger, "REMOTE_OTP_KEY_CONFIRM", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+        return status;
+    }
+
+    /** @return {@link CheckOtpResult.Status#LOCKED} if this attempt locked the account, the given status otherwise */
+    private CheckOtpResult.Status countFailedOtpAttempt(String username, CheckOtpResult.Status status) {
+        userService.incrementHOTPLoginsFailed(username);
+        lockoutStrategy.checkLoginsFailed(username, LockoutType.HOTP);
+        return isAccountLocked(username) ? CheckOtpResult.Status.LOCKED : status;
+    }
+
+    private boolean isAccountLocked(String username) {
+        if (username == null || username.isEmpty()) {
+            return false;
+        }
+        // The key lookup finds the user with "=", which ignores trailing spaces and compares by collation, while
+        // get_user_statuses matches the list with instr: take the stored name from a lookup with the same "=".
+        UserForDescription user = userService.getUserForDescription(username);
+        String storedName = user == null ? null : user.getUsername();
+        // an empty list means "all users" to the procedure
+        if (storedName == null || storedName.isEmpty()) {
+            return false;
+        }
+        // the procedure splits its argument on commas, so only the row of this very user counts
+        List<UserWithStatus> statuses = userService.getUserStatuses(storedName);
+        return statuses != null && statuses.stream()
+                .anyMatch(status -> storedName.equals(status.getUserName()) && status.isAccountLocked());
     }
 
     protected SSOUserWithActions convertToSSOUser(UserWithActions user) {
