@@ -428,6 +428,47 @@ public class SSOServiceImplSubsystemIsolationTest {
         verifyAll();
     }
 
+    // changeUserRole
+
+    private static ChangeUserRoleRequest changeRoleRequest() {
+        return ChangeUserRoleRequest.builder().username(USER).newRole("ROLE").build();
+    }
+
+    @Test
+    public void changeUserRoleForeignUserFailsLikeUnknownUser() {
+        expectForeign();
+        replayAll();
+        try {
+            ssoService.changeUserRole(changeRoleRequest());
+            fail();
+        } catch (IllegalStateException expected) {
+            assertEquals("Cannot find user by name", expected.getMessage());
+        }
+        verifyAll();
+    }
+
+    @Test
+    public void changeUserRoleLocalUserFailsLikeUnknownUser() {
+        expectLocalUser();
+        replayAll();
+        try {
+            ssoService.changeUserRole(changeRoleRequest());
+            fail();
+        } catch (IllegalStateException expected) {
+            assertEquals("Cannot find user by name", expected.getMessage());
+        }
+        verifyAll();
+    }
+
+    @Test
+    public void changeUserRoleOwnUserIsDelegated() {
+        expectOwn();
+        internal.changeUserRole(USER, "ROLE", CALLER);
+        replayAll();
+        ssoService.changeUserRole(changeRoleRequest());
+        verifyAll();
+    }
+
     // getUserStatuses
 
     @Test

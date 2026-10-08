@@ -143,6 +143,8 @@ public class SSOServiceImplTest {
             }
         });
 
+        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
@@ -160,6 +162,9 @@ public class SSOServiceImplTest {
 
     @Test
     public void testChangeUserRoleWithSubsystemHint() {
+        ssoService.setSubsystemIdentifierObtainer(hint -> hint == null ? "test" : hint);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
+        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);

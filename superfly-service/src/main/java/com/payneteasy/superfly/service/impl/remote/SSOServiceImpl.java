@@ -341,6 +341,10 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void changeUserRole(ChangeUserRoleRequest request) {
+        if (!isUserAccessible("changeUserRole", request.getUsername())) {
+            // same exception as InternalSSOServiceImpl gives for an unknown user
+            throw new IllegalStateException("Cannot find user by name");
+        }
         internalSSOService.changeUserRole(
                 request.getUsername(),
                 request.getNewRole(),
