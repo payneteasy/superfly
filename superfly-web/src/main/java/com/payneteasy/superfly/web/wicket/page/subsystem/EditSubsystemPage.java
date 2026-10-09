@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
@@ -46,7 +47,7 @@ public class EditSubsystemPage extends BasePage {
         super(ListSubsystemsPage.class, parameters);
 
         long              subsystemId = parameters.get("id").toLong(-1L);
-        final UISubsystem subsystem   = subsystemService.getSubsystem(subsystemId);
+        final UISubsystemView subsystem = subsystemService.getSubsystem(subsystemId);
 
         Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
 

@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -46,7 +47,7 @@ public class EditSubsystemPageTest extends AbstractPageTest {
                 new TestingAuthenticationToken("admin", "n/a", "ROLE_ADMIN"));
 
         storedHash = SubsystemTokenHasher.hash("old-token");
-        UISubsystem subsystem = new UISubsystem();
+        UISubsystemView subsystem = new UISubsystemView();
         subsystem.setId(1L);
         subsystem.setName("billing");
         // ui_get_subsystem never returns the token, only the flag
@@ -56,7 +57,7 @@ public class EditSubsystemPageTest extends AbstractPageTest {
         smtpServerService = createNiceMock(SmtpServerService.class);
         settingsService = createNiceMock(SettingsService.class);
         expect(subsystemService.getSubsystem(1L)).andStubReturn(subsystem);
-        UISubsystem without = new UISubsystem();
+        UISubsystemView without = new UISubsystemView();
         without.setId(2L);
         without.setName("crm");
         expect(subsystemService.getSubsystem(2L)).andStubReturn(without);

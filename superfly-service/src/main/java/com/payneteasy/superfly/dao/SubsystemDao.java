@@ -9,6 +9,7 @@ import com.payneteasy.superfly.model.SubsystemPrivateKey;
 import com.payneteasy.superfly.model.SubsystemToNotify;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
@@ -53,7 +54,7 @@ public interface SubsystemDao {
      * @return subsystem or null if no such subsystem
      */
     @AStoredProcedure(name = "ui_get_subsystem")
-    UISubsystem getSubsystem(long subsystemId);
+    UISubsystemView getSubsystem(long subsystemId);
 
     /**
      * Returns a subsystem by its name.
