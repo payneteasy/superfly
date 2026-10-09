@@ -3,6 +3,10 @@ package com.payneteasy.superfly.web.server;
 import com.payneteasy.startup.parameters.StartupParametersBuilder;
 import com.payneteasy.superfly.web.IStartSuperflyConfig;
 import com.payneteasy.superfly.web.SuperflyServer;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -94,6 +98,36 @@ public class StartSuperflyServerTest {
         HttpResponse<String> dev = get(startServer(Map.of(
                 "JETTY_XML_CONFIG_FILE_PATH", "src/test/resources/jetty/dev-jetty.xml")), Map.of());
         assertTrue(dev.body(), dev.body().contains("configuration=development"));
+    }
+
+    @Test
+    public void sessionCookieIsSameSiteLax() throws Exception {
+        Map<String, String> values = new HashMap<>();
+        values.put("JETTY_PORT", "0");
+        values.put("DB_HOST", "db.example.invalid");
+        values.put("DB_PORT", "3307");
+        values.put("DB_NAME", "ssodb");
+        values.put("DB_USER", "fake-user");
+        values.put("DB_PASSWORD", "fake-password");
+        Server started = server = new SuperflyServer(getClass().getResource("/embedded-webapp/")).createServer(config(values));
+        ((ServletContextHandler) started.getHandler()).addServlet(SessionStartingServlet.class, "/start-session");
+        started.start();
+        int port = ((ServerConnector) started.getConnectors()[0]).getLocalPort();
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(
+                HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/start-session")).build(),
+                HttpResponse.BodyHandlers.ofString());
+
+        String cookie = response.headers().allValues("Set-Cookie").stream()
+                .filter(c -> c.startsWith("JSESSIONID=")).findFirst().orElseThrow();
+        assertTrue(cookie, cookie.contains("SameSite=Lax"));
+    }
+
+    public static class SessionStartingServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+            req.getSession(true);
+        }
     }
 
     @Test
