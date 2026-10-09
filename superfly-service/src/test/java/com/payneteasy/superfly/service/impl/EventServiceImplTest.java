@@ -163,6 +163,9 @@ public class EventServiceImplTest {
     private static EventServiceImpl blockingService(CountDownLatch entered, CountDownLatch release, AtomicLong sleeps) {
         EventServiceImpl service = service(dao(List::of), new AtomicLong());
         service.sleeper = millis -> {
+            if (millis == EventServiceImpl.OVER_LIMIT_PAUSE_MS) {
+                return; // the pause of an over-limit poll must not block the test thread
+            }
             sleeps.incrementAndGet();
             entered.countDown();
             release.await();
@@ -232,6 +235,36 @@ public class EventServiceImplTest {
         service.sleeper = after::addAndGet;
         service.getEvents(LAST, 1, "other");
         assertEquals(500, after.get());
+    }
+
+    @Test
+    public void overLimitPollPausesForOneSecondWithoutHoldingPermits() throws Exception {
+        int n = EventServiceImpl.MAX_WAITING_PER_SUBSYSTEM;
+        CountDownLatch entered = new CountDownLatch(n);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicLong sleeps = new AtomicLong();
+        EventServiceImpl service = blockingService(entered, release, sleeps);
+        List<Thread> threads = new ArrayList<>();
+        try {
+            for (int i = 0; i < n; i++) {
+                threads.add(startBlockedPoll(service, "a", entered));
+            }
+            assertTrue(entered.await(5, TimeUnit.SECONDS));
+
+            List<Long> pauses = new ArrayList<>();
+            service.sleeper = pauses::add;
+            assertTrue(service.getEvents(LAST, 60_000, "a").isEmpty());
+            assertEquals(List.of(1000L), pauses);
+
+            pauses.clear();
+            assertTrue(service.getEvents(LAST, 300, "a").isEmpty());
+            assertEquals(List.of(300L), pauses);
+        } finally {
+            release.countDown();
+            for (Thread t : threads) {
+                t.join(5000);
+            }
+        }
     }
 
     @Test

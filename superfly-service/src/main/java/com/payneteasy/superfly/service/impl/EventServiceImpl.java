@@ -31,6 +31,7 @@ public class EventServiceImpl implements EventService, DisposableBean {
     // the paynet client waits for the response for 90 s
     static final long MAX_WAIT_TIME_MS = 75_000;
     // each waiting poll holds a request thread; excess polls get an empty result at once
+    static final long OVER_LIMIT_PAUSE_MS = 1000;
     static final int MAX_WAITING_TOTAL = 50;
     static final int MAX_WAITING_PER_SUBSYSTEM = 4;
     private final Semaphore totalWaiting = new Semaphore(MAX_WAITING_TOTAL);
@@ -63,29 +64,47 @@ public class EventServiceImpl implements EventService, DisposableBean {
         List<Event> events = eventDao.getEvents(lastEventId, EVENTS_LIMIT, subsystemName);
         List<Event> result = (events != null ? new ArrayList<>(events) : new ArrayList<>());
         if (result.isEmpty() && waitTimeMs > 0) {
-            Semaphore perSubsystem = subsystemWaiting.computeIfAbsent(String.valueOf(subsystemName),
-                    k -> new Semaphore(MAX_WAITING_PER_SUBSYSTEM));
-            if (!perSubsystem.tryAcquire()) {
-                logger.warn("Too many concurrent event polls for subsystem {}, returning without waiting",
-                        sanitize(subsystemName));
-                return result;
-            }
-            try {
-                if (!totalWaiting.tryAcquire()) {
-                    logger.warn("Too many concurrent event polls, returning without waiting for subsystem {}",
-                            sanitize(subsystemName));
-                    return result;
-                }
-                try {
-                    waitForEvents(lastEventId, waitTimeMs, subsystemName, result);
-                } finally {
-                    totalWaiting.release();
-                }
-            } finally {
-                perSubsystem.release();
+            if (!waitWithPermits(lastEventId, waitTimeMs, subsystemName, result)) {
+                pauseOverLimit(waitTimeMs);
             }
         }
         return result;
+    }
+
+    /** @return false when the poll was over the limit and did not wait */
+    private boolean waitWithPermits(Long lastEventId, long waitTimeMs, String subsystemName, List<Event> result) {
+        Semaphore perSubsystem = subsystemWaiting.computeIfAbsent(String.valueOf(subsystemName),
+                k -> new Semaphore(MAX_WAITING_PER_SUBSYSTEM));
+        if (!perSubsystem.tryAcquire()) {
+            logger.warn("Too many concurrent event polls for subsystem {}, returning without waiting",
+                    sanitize(subsystemName));
+            return false;
+        }
+        try {
+            if (!totalWaiting.tryAcquire()) {
+                logger.warn("Too many concurrent event polls, returning without waiting for subsystem {}",
+                        sanitize(subsystemName));
+                return false;
+            }
+            try {
+                waitForEvents(lastEventId, waitTimeMs, subsystemName, result);
+            } finally {
+                totalWaiting.release();
+            }
+        } finally {
+            perSubsystem.release();
+        }
+        return true;
+    }
+
+    // a client without backoff would otherwise re-poll (and hit the DB) in a tight loop; no permits are held here
+    private void pauseOverLimit(long waitTimeMs) {
+        long pause = Math.min(OVER_LIMIT_PAUSE_MS, Math.min(waitTimeMs, MAX_WAIT_TIME_MS));
+        try {
+            sleeper.sleep(pause);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void waitForEvents(Long lastEventId, long waitTimeMs, String subsystemName, List<Event> result) {
