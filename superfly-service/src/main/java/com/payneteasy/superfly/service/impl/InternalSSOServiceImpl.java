@@ -173,9 +173,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             return CheckOtpResult.Status.SUCCESS;
         }
         if (storedType == OTPType.NONE && !keyConfigured) {
+            CheckOtpResult.Status status = isAccountLocked(username) ? CheckOtpResult.Status.LOCKED : CheckOtpResult.Status.SUCCESS;
             // nothing was checked, so the failed attempts counter must stay as it is
-            loggerSink.info(logger, "REMOTE_OTP_CHECK", true, username, "status=" + CheckOtpResult.Status.SUCCESS);
-            return CheckOtpResult.Status.SUCCESS;
+            loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+            return status;
         }
         return authenticateByOtpType(OTPType.GOOGLE_AUTH, username, code);
     }
