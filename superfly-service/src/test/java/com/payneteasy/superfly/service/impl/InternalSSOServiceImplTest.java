@@ -71,8 +71,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new NullSaltSource());
-        expect(userService.userHasRolesInSubsystem("user", "superfly")).andReturn(false);
-        expect(userService.userHasRolesInSubsystem("user", "subsystem")).andReturn(true);
+        expect(userService.isUserAccessibleFrom("user", "subsystem")).andReturn(true);
         userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
@@ -85,8 +84,7 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
-        expect(userService.userHasRolesInSubsystem("user", "superfly")).andReturn(false);
-        expect(userService.userHasRolesInSubsystem("user", "subsystem")).andReturn(true);
+        expect(userService.isUserAccessibleFrom("user", "subsystem")).andReturn(true);
         userService.authenticate(eq("user"), eq("pass{salt}"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
@@ -321,8 +319,7 @@ public class InternalSSOServiceImplTest {
         authRole.setActions(Arrays.asList(action1, action2));
         session.setRoles(Collections.singletonList(authRole));
 
-        expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(userService.userHasRolesInSubsystem("username", "subsystemIdentifier")).andReturn(true);
+        expect(userService.isUserAccessibleFrom("username", "subsystemIdentifier")).andReturn(true);
         expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(session);
         replay(userService);
 
@@ -340,8 +337,7 @@ public class InternalSSOServiceImplTest {
 
     @Test
     public void testPseudoAuthenticateNoSuchUser() {
-        expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(userService.userHasRolesInSubsystem("username", "subsystemIdentifier")).andReturn(true);
+        expect(userService.isUserAccessibleFrom("username", "subsystemIdentifier")).andReturn(true);
         expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(null);
         replay(userService);
 

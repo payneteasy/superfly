@@ -186,11 +186,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public boolean isUserAccessibleFrom(String username, String subsystemIdentifier) {
-        if (username == null || subsystemIdentifier == null) {
-            return false;
-        }
-        return !userService.userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
-                && userService.userHasRolesInSubsystem(username, subsystemIdentifier);
+        return userService.isUserAccessibleFrom(username, subsystemIdentifier);
     }
 
     // values come from the request body: strip line breaks to prevent log injection
