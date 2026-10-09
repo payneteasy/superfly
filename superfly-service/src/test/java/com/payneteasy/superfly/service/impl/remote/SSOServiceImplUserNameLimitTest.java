@@ -8,6 +8,7 @@ import com.payneteasy.superfly.api.request.*;
 import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,8 @@ public class SSOServiceImplUserNameLimitTest {
         internal = createStrictMock(InternalSSOService.class);
         hotpService = createStrictMock(HOTPService.class);
         resetPasswordStrategy = createStrictMock(ResetPasswordStrategy.class);
-        ssoService = new SSOServiceImpl(internal, hotpService, resetPasswordStrategy, null, null);
+        ssoService = new SSOServiceImpl(internal, hotpService, resetPasswordStrategy, null, null,
+                createNiceMock(LoggerSink.class));
         ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
     }
 

@@ -22,6 +22,7 @@ import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -198,6 +199,40 @@ public class InternalSSOServiceSubsystemGuardTest {
         assertEquals(USER, service.pseudoAuthenticate(USER, CALLER).getName());
 
         verify(userService);
+    }
+
+    // denials go to the security log
+
+    private LoggerSink strictLoggerSink() {
+        LoggerSink loggerSink = createStrictMock(LoggerSink.class);
+        service.setLoggerSink(loggerSink);
+        return loggerSink;
+    }
+
+    @Test
+    public void authenticateDenialIsLogged() {
+        LoggerSink loggerSink = strictLoggerSink();
+        expectForeign();
+        loggerSink.info(anyObject(Logger.class), eq("SUBSYSTEM_ACCESS_DENIED"), eq(false), eq(USER),
+                eq("method=authenticate, subsystem=" + CALLER));
+        replay(userService, lockoutStrategy, loggerSink);
+
+        assertNull(service.authenticate(USER, "pass", CALLER, null, null));
+
+        verify(userService, lockoutStrategy, loggerSink);
+    }
+
+    @Test
+    public void pseudoAuthenticateDenialIsLogged() {
+        LoggerSink loggerSink = strictLoggerSink();
+        expectForeign();
+        loggerSink.info(anyObject(Logger.class), eq("SUBSYSTEM_ACCESS_DENIED"), eq(false), eq(USER),
+                eq("method=pseudoAuthenticate, subsystem=" + CALLER));
+        replay(userService, loggerSink);
+
+        assertNull(service.pseudoAuthenticate(USER, CALLER));
+
+        verify(userService, loggerSink);
     }
 
     // names that cannot exist: no database access at all, the salt lookup included

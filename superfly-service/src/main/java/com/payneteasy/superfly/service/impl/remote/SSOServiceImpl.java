@@ -10,6 +10,7 @@ import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -29,8 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
-
 /**
  * Implementation of SSOService.
  *
@@ -49,6 +48,7 @@ public class SSOServiceImpl implements SSOService {
     private final ResetPasswordStrategy       resetPasswordStrategy;
     private final EmailService                emailService;
     private final PublicKeyCrypto             publicKeyCrypto;
+    private final LoggerSink                  loggerSink;
 
     /**
      * @see SSOService#authenticate(AuthenticateRequest)
@@ -404,7 +404,8 @@ public class SSOServiceImpl implements SSOService {
     }
 
     private void logDenied(String method, String subsystem, String username) {
-        logger.warn("Subsystem {} was denied {} on user {}", forLog(subsystem), method, forLog(username));
+        loggerSink.info(logger, "SUBSYSTEM_ACCESS_DENIED", false, username,
+                "method=" + method + ", subsystem=" + subsystem);
     }
 
     /**

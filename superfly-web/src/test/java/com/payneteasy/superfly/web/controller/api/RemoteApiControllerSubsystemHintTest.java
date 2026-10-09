@@ -5,6 +5,7 @@ import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.impl.remote.SSOServiceImpl;
 import com.payneteasy.superfly.web.obtainer.AuthenticationPrincipalSubsystemIdentifierObtainer;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
@@ -39,7 +40,7 @@ public class RemoteApiControllerSubsystemHintTest {
         internal = createMock(InternalSSOService.class);
         SSOServiceImpl service = new SSOServiceImpl(internal, createNiceMock(HOTPService.class),
                 createNiceMock(ResetPasswordStrategy.class), createNiceMock(EmailService.class),
-                createNiceMock(PublicKeyCrypto.class));
+                createNiceMock(PublicKeyCrypto.class), createNiceMock(LoggerSink.class));
         service.setSubsystemIdentifierObtainer(new AuthenticationPrincipalSubsystemIdentifierObtainer());
         mvc = MockMvcBuilders.standaloneSetup(
                 new RemoteApiController(service, new ApiSerializationManager())).build();

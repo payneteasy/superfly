@@ -32,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
-
 @Service
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -142,7 +140,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                 passwordEncoder.encode(password, salt);
                 legacyPasswordEncoder.encode(password, salt);
             }
-            logger.warn("Subsystem {} was denied authenticate on user {}", forLog(subsystemIdentifier), forLog(username));
+            logDenied("authenticate", subsystemIdentifier, username);
             return null;
         }
         // null password is an ordinary failed attempt, not an exception
@@ -191,7 +189,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
         if (!UserNames.isPossible(username) || !isUserAccessibleFrom(username, subsystemIdentifier)) {
-            logger.warn("Subsystem {} was denied pseudoAuthenticate on user {}", forLog(subsystemIdentifier), forLog(username));
+            logDenied("pseudoAuthenticate", subsystemIdentifier, username);
             return null;
         }
         AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
@@ -214,6 +212,12 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
         return userService.isUserManageableFrom(username, subsystemIdentifier);
+    }
+
+    // the security log only: the failed-login counter and unauthorised_access are left alone
+    private void logDenied(String method, String subsystemIdentifier, String username) {
+        loggerSink.info(logger, "SUBSYSTEM_ACCESS_DENIED", false, username,
+                "method=" + method + ", subsystem=" + subsystemIdentifier);
     }
 
     private SSOUser buildSSOUser(AuthSession session) {

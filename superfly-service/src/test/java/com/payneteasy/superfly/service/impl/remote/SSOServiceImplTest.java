@@ -7,6 +7,7 @@ import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.request.*;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,7 +26,7 @@ public class SSOServiceImplTest {
     @Before
     public void setUp() {
         internalSSOService = EasyMock.createMock(InternalSSOService.class);
-        ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null);
+        ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null, createNiceMock(LoggerSink.class));
     }
 
     // username-based methods only work for users of the caller's subsystem
