@@ -40,6 +40,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -56,6 +57,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -168,7 +170,9 @@ public class SpringSecurityConfiguration {
                 securityContext.requireExplicitSave(false);
             })
             .logout(logout -> logout
-                    .logoutUrl("/j_spring_security_logout")
+                    // logout changes state, so it is accepted only as POST
+                    .logoutRequestMatcher(PathPatternRequestMatcher.withDefaults()
+                            .matcher(HttpMethod.POST, "/j_spring_security_logout"))
                     .logoutSuccessHandler(logoutSuccessHandler()))
             // CSRF disabled here intentionally: state-changing REST endpoints use token-based auth
             // (X-Subsystem-Token or Authorization: Bearer), not cookies. Wicket pages are protected by

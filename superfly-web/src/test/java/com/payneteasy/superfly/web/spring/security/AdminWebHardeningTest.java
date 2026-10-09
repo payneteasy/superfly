@@ -3,6 +3,10 @@ package com.payneteasy.superfly.web.spring.security;
 import static org.easymock.EasyMock.niceMock;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -10,7 +14,11 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -22,9 +30,11 @@ import com.payneteasy.superfly.service.LoggerSink;
 import jakarta.servlet.Filter;
 
 /**
- * Response headers of the admin security chains, over plain http (TLS ends at a proxy).
+ * Response headers and logout method of the admin security chains, over plain http (TLS ends at a proxy).
  */
 public class AdminWebHardeningTest {
+
+    private static final String LOGOUT_URL = "/j_spring_security_logout";
 
     private static AnnotationConfigWebApplicationContext context;
     private static Filter securityFilterChain;
@@ -69,6 +79,27 @@ public class AdminWebHardeningTest {
         assertHsts(run(request));
     }
 
+    @Test
+    public void getOnLogoutUrlKeepsSession() throws Exception {
+        MockHttpSession session = adminSession();
+        MockHttpServletRequest request = logoutRequest("GET", session);
+
+        run(request);
+
+        assertFalse(session.isInvalid());
+    }
+
+    @Test
+    public void postOnLogoutUrlEndsSession() throws Exception {
+        MockHttpSession session = adminSession();
+        MockHttpServletRequest request = logoutRequest("POST", session);
+
+        MockHttpServletResponse response = run(request);
+
+        assertTrue(session.isInvalid());
+        assertEquals(302, response.getStatus());
+    }
+
     private static void assertHsts(MockHttpServletResponse response) {
         String hsts = response.getHeader("Strict-Transport-Security");
         assertEquals("max-age=31536000", hsts);
@@ -78,6 +109,20 @@ public class AdminWebHardeningTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         securityFilterChain.doFilter(request, response, new MockFilterChain());
         return response;
+    }
+
+    private static MockHttpServletRequest logoutRequest(String method, MockHttpSession session) {
+        MockHttpServletRequest request = new MockHttpServletRequest(method, LOGOUT_URL);
+        request.setServletPath(LOGOUT_URL);
+        request.setSession(session);
+        return request;
+    }
+
+    private static MockHttpSession adminSession() {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(
+                new UsernamePasswordAuthenticationToken("admin", "pw", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))));
+        return session;
     }
 
     private static <T> T mock(Class<T> type) {
