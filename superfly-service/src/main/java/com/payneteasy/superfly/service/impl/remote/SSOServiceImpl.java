@@ -164,7 +164,7 @@ public class SSOServiceImpl implements SSOService {
         result.setFirstName(user.getName());
         result.setLastName(user.getSurname());
         result.setSecretQuestion(user.getSecretQuestion());
-        result.setSecretAnswer(user.getSecretAnswer());
+        // the answer is a credential that Superfly never checks: subsystems do not need it
         result.setPublicKey(user.getPublicKey());
         result.setOtpOptional(user.isOtpOptional());
         result.setOtpType(user.getOtpType());
@@ -233,7 +233,10 @@ public class SSOServiceImpl implements SSOService {
         userForDescription.setName(user.getFirstName());
         userForDescription.setSurname(user.getLastName());
         userForDescription.setSecretQuestion(user.getSecretQuestion());
-        userForDescription.setSecretAnswer(user.getSecretAnswer());
+        // getUserDescription does not return the answer, so a read-modify-write sends null: keep the stored one
+        if (user.getSecretAnswer() != null) {
+            userForDescription.setSecretAnswer(user.getSecretAnswer());
+        }
         userForDescription.setPublicKey(user.getPublicKey());
         userForDescription.setOrganization(user.getOrganization());
 

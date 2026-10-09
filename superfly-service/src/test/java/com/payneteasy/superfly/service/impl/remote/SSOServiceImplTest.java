@@ -5,6 +5,7 @@ import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.request.*;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.InternalSSOService;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -102,6 +103,57 @@ public class SSOServiceImplTest {
                         .build()
         );
         Assert.assertNull(user);
+        verify(internalSSOService);
+    }
+
+    private static UserForDescription storedUser() {
+        UserForDescription user = new UserForDescription();
+        user.setUsername("pete");
+        user.setSecretQuestion("question");
+        user.setSecretAnswer("stored-answer");
+        return user;
+    }
+
+    @Test
+    public void testGetUserDescriptionDoesNotReturnSecretAnswer() {
+        expectCallerOwnsUser("pete");
+        expect(internalSSOService.getUserDescription("pete")).andReturn(storedUser());
+        replay(internalSSOService);
+        UserDescription user = ssoService.getUserDescription(
+                GetUserDescriptionRequest.builder().username("pete").build());
+        Assert.assertEquals("question", user.getSecretQuestion());
+        Assert.assertNull(user.getSecretAnswer());
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testUpdateUserDescriptionWithoutSecretAnswerKeepsStoredOne() throws Exception {
+        expectCallerMayChangeUser("pete");
+        UserForDescription stored = storedUser();
+        expect(internalSSOService.getUserDescription("pete")).andReturn(stored);
+        internalSSOService.updateUserForDescription(stored);
+        replay(internalSSOService);
+        UserDescription update = new UserDescription();
+        update.setUsername("pete");
+        update.setSecretQuestion("new question");
+        ssoService.updateUserDescription(new UpdateUserDescriptionRequest(update));
+        Assert.assertEquals("new question", stored.getSecretQuestion());
+        Assert.assertEquals("stored-answer", stored.getSecretAnswer());
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testUpdateUserDescriptionWithSecretAnswerReplacesIt() throws Exception {
+        expectCallerMayChangeUser("pete");
+        UserForDescription stored = storedUser();
+        expect(internalSSOService.getUserDescription("pete")).andReturn(stored);
+        internalSSOService.updateUserForDescription(stored);
+        replay(internalSSOService);
+        UserDescription update = new UserDescription();
+        update.setUsername("pete");
+        update.setSecretAnswer("new-answer");
+        ssoService.updateUserDescription(new UpdateUserDescriptionRequest(update));
+        Assert.assertEquals("new-answer", stored.getSecretAnswer());
         verify(internalSSOService);
     }
 

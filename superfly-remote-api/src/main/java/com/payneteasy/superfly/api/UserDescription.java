@@ -18,6 +18,10 @@ public class UserDescription implements Serializable {
     private String  firstName;
     private String  lastName;
     private String  secretQuestion;
+    /**
+     * Never returned by {@code getUserDescription} (always null there). In {@code updateUserDescription}
+     * null keeps the stored answer, any other value replaces it.
+     */
     private String  secretAnswer;
     private String  publicKey;
     private String  organization;
