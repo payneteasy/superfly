@@ -118,6 +118,7 @@ public class SSOUtils {
         if (loginData == null) {
             throw new IllegalStateException("loginData is null");
         }
+        BaseSSOPage.renewSessionId(page);
 
         SSOSession ssoSession = sessionService.createSSOSession(username);
         Cookie cookie = newSsoSessionCookie(ssoSession.getIdentifier(), SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE, page);
