@@ -164,8 +164,11 @@ protected void init() {
 (определяется по токену подсистемы): `checkOtp`, `hasOtpMasterKey`, `updateUserOtpType`,
 `changeTempPassword`, `getUserDescription`, `resetGoogleAuthMasterKey`,
 `updateUserIsOtpOptionalValue`, `updateUserDescription`, `resetPassword`, `completeUser`,
-`changeUserRole`, `getUserStatuses`. Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
-иначе ответ такой же, как для несуществующего пользователя.
+`changeUserRole`, `getUserStatuses`, а также вход: `authenticate`, `pseudoAuthenticate`, remote-auth
+`/sso/check/check-password` и SSO-форма логина (для подсистемы, на которую идёт вход). Пользователь должен иметь
+хотя бы одну роль в подсистеме вызывающего, иначе ответ такой же, как для несуществующего пользователя
+(`authenticate` → `null`, remote-auth → `BAD_USER_OR_PASSWORD_OR_OTP`, SSO-форма — ошибка неверного пароля).
+Такая попытка не увеличивает счётчик неудачных входов и не блокирует учётную запись.
 
 - Пользователи с ролью в подсистеме `superfly` (админка) недоступны через RPC всегда, даже если
   у них есть роль и в подсистеме вызывающего. Учётки админки и подсистем должны быть раздельными.
