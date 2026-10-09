@@ -6,6 +6,7 @@ import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
@@ -25,6 +26,7 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
         super(params);
 
         long id = PageParametersBuilder.getId(params);
+        // without the password: it is read only when shown and is not kept in the page
         UISmtpServer server = smtpServerService.getSmtpServer(id);
 
         ModalDialog modalDialog = new ModalDialog("modal");
@@ -39,7 +41,8 @@ public class ViewSmtpServerPage extends AbstractSmtpServerPage {
                 smtpServerService.logPasswordViewed(server.getName());
                 modalDialog
                         //.setInitialHeight(40)
-                        .setContent(new Label(ModalDialog.CONTENT_ID, server.getPassword()));
+                        .setContent(new Label(ModalDialog.CONTENT_ID, LoadableDetachableModel.of(
+                                () -> smtpServerService.getSmtpServerWithPassword(id).getPassword())));
                 modalDialog.open(target);
             }
         });
