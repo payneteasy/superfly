@@ -8,6 +8,9 @@ import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.JavaMailSenderPool;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.NotificationService;
+import com.payneteasy.superfly.service.RemoteAuthCryptoService;
+import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
+import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -56,7 +59,46 @@ public class SubsystemPrivateKeyEncryptionTest {
         service.createSubsystem(subsystem);
 
         verify(dao);
-        assertEquals("the page keeps working with the plain key", PEM, subsystem.getPrivateKey());
+        assertNotEquals("the page model must not keep the plain key", PEM, subsystem.getPrivateKey());
+    }
+
+    @Test
+    public void updateLeavesNoPlainKeyInTheModel() {
+        expect(dao.updateSubsystem(anyObject())).andReturn(RoutineResult.okResult());
+        replay(dao);
+        UISubsystem subsystem = subsystem(PEM);
+
+        service.updateSubsystem(subsystem);
+
+        assertNotEquals(PEM, subsystem.getPrivateKey());
+    }
+
+    @Test
+    public void generatedKeyPairHasEncryptedPrivateKey() throws Exception {
+        RemoteAuthCryptoService remoteCrypto = createNiceMock(RemoteAuthCryptoService.class);
+        expect(remoteCrypto.generateKeyPair(anyObject())).andReturn(new KeyPairData("public", PEM));
+        replay(remoteCrypto);
+        service.setRemoteAuthCryptoService(remoteCrypto);
+
+        KeyPairData pair = service.generateKeyPair(RemoteAuthEncryptionAlgorithm.RSA_OAEP);
+
+        assertEquals("public", pair.publicKey());
+        assertTrue(pair.privateKey().startsWith("v2:"));
+        assertEquals(PEM, crypto.decrypt(pair.privateKey()));
+    }
+
+    @Test
+    public void alreadyEncryptedKeyIsNotEncryptedTwice() throws Exception {
+        String encrypted = crypto.encrypt(PEM);
+        expect(dao.updateSubsystem(anyObject())).andAnswer(() -> {
+            assertEquals(encrypted, ((UISubsystem) getCurrentArguments()[0]).getPrivateKey());
+            return RoutineResult.okResult();
+        });
+        replay(dao);
+
+        service.updateSubsystem(subsystem(encrypted));
+
+        verify(dao);
     }
 
     @Test

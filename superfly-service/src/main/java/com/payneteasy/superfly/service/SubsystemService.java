@@ -112,7 +112,7 @@ public interface SubsystemService {
 
     /**
      *
-     * @return key pair data for subsystem
+     * @return key pair data for subsystem; the private key is already encrypted for storage
      */
     KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm);
 }
