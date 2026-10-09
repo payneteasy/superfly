@@ -36,6 +36,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -55,6 +56,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
@@ -84,6 +86,17 @@ public class SpringSecurityConfiguration {
     }
 
     /**
+     * TLS is terminated by a reverse proxy, so the request seen here is plain http; the default writer would
+     * send nothing. Browsers ignore the header over http, so sending it always is harmless.
+     */
+    private static void alwaysSendHsts(HeadersConfigurer<HttpSecurity> headers) {
+        headers.httpStrictTransportSecurity(hsts -> hsts
+                .requestMatcher(AnyRequestMatcher.INSTANCE)
+                .maxAgeInSeconds(31536000)
+                .includeSubDomains(false));
+    }
+
+    /**
      * Subsystem RPC is authenticated by X-Subsystem-* headers on every request. It must not create an
      * HttpSession: otherwise the returned JSESSIONID would keep ROLE_SUBSYSTEM without the headers.
      */
@@ -91,6 +104,7 @@ public class SpringSecurityConfiguration {
     @Order(1)
     public SecurityFilterChain remotingSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher(antPathRequestMatcher("/remoting/sso.service/**"))
+            .headers(SpringSecurityConfiguration::alwaysSendHsts)
             .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_SUBSYSTEM"))
             // RPC clients get a status, not a redirect to the login form.
             .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(
@@ -110,14 +124,16 @@ public class SpringSecurityConfiguration {
     @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
-            .headers(headers -> headers
-                // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
+            .headers(headers -> {
+                alwaysSendHsts(headers);
+                headers
+                // X-Content-Type-Options, X-Frame-Options: DENY by Spring Security defaults.
                 // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
                 // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
                 .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
                 // Keeps SSO tokens and target URLs out of Referer on outgoing navigation.
-                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
-            )
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN));
+            })
             .authorizeHttpRequests(
                     auth ->
                             auth
