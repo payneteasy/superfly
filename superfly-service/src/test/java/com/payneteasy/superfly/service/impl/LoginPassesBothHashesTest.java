@@ -57,6 +57,7 @@ public class LoginPassesBothHashesTest {
         encoder.setLegacyPasswordEncoder(new MessageDigestPasswordEncoder());
         encoder.setSaltSource(new ConstantSaltSource("salt"));
         service.setUserPasswordEncoder(encoder);
+        EasyMock.expect(userService.userHasRolesInSubsystem("user", "superfly")).andReturn(true);
         EasyMock.expect(userService.authenticate(eq("user"), eq("pass{salt}"), eq(LEGACY),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                 .andReturn(new AuthSession("user"));
@@ -99,6 +100,7 @@ public class LoginPassesBothHashesTest {
         encoder.setLegacyPasswordEncoder(new MessageDigestPasswordEncoder());
         encoder.setSaltSource(new ConstantSaltSource("salt"));
         service.setUserPasswordEncoder(encoder);
+        EasyMock.expect(userService.userHasRolesInSubsystem("user", "superfly")).andReturn(true);
         EasyMock.expect(userService.authenticate(eq("user"), eq(Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH), EasyMock.isNull(String.class),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                 .andReturn(null);

@@ -70,8 +70,14 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         // null password is an ordinary failed attempt, not an exception
         String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
                 : userPasswordEncoder.encode(password, username);
-        AuthSession session = userService.authenticate(username, encPassword,
-                password == null ? null : userPasswordEncoder.encodeLegacy(password, username),
+        String legacyPassword = password == null ? null : userPasswordEncoder.encodeLegacy(password, username);
+        if (username == null || !userService.userHasRolesInSubsystem(username, localSubsystemName)) {
+            // hashing is already done above; the failed-login counter of users outside the admin console stays untouched
+            logger.warn("Login failed. User <{}> has no role in the local subsystem", sanitize(username));
+            loggerSink.info(logger, "LOCAL_LOGIN", false, username);
+            return null;
+        }
+        AuthSession session = userService.authenticate(username, encPassword, legacyPassword,
                 localSubsystemName, userInfoService == null ? null : userInfoService.getRemoteAddress(), null);
         AuthRole role = null;
         if (session != null) {
@@ -104,6 +110,11 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
         return null;
+    }
+
+    // the username comes from the login form: strip line breaks to prevent log injection
+    private static String sanitize(String value) {
+        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     public boolean authenticateUsingOTP(String username, String otp) {

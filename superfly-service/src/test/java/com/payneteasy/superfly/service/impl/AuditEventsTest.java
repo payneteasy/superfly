@@ -280,6 +280,7 @@ public class AuditEventsTest {
         encoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         encoder.setSaltSource(new com.payneteasy.superfly.password.NullSaltSource());
         service.setUserPasswordEncoder(encoder);
+        EasyMock.expect(mockUserService.userHasRolesInSubsystem("admin", "superfly")).andReturn(true);
         EasyMock.expect(mockUserService.authenticate(eq("admin"), anyObject(String.class), anyObject(String.class),
                 eq("superfly"), eq(IP), EasyMock.isNull(String.class))).andReturn(new AuthSession("admin"));
         EasyMock.replay(mockUserService);
