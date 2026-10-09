@@ -80,7 +80,8 @@ https://superfly-server/remoting/sso.service/{method}
 ```
 
 Запросы — `POST` с JSON-телом и заголовками `X-Subsystem-Name` / `X-Subsystem-Token`
-(или клиентский сертификат). Проверка учётных данных — метод `authenticate`:
+(или клиентский сертификат). Токен подсистемы показывается в админке один раз при генерации, Superfly хранит только
+его хэш: сохраните токен сразу, потерянный токен можно только перегенерировать. Проверка учётных данных — метод `authenticate`:
 
 ```http
 POST /remoting/sso.service/authenticate
