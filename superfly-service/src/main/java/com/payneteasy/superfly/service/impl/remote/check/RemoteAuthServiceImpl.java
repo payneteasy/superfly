@@ -90,9 +90,12 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
 
         // 4. Generate Session Token and Cache
         String sessionToken = UUID.randomUUID().toString();
-        sessionCache.put(sessionToken, new RemoteSession(subsystemName, username, ssoUser.getOtpType()));
+        // a configured OTP key makes OTP mandatory whatever the stored type and the optional flag say
+        boolean keyConfigured = internalSSOService.hasOtpMasterKey(username);
+        OTPType otpType = keyConfigured ? OTPType.GOOGLE_AUTH : ssoUser.getOtpType();
+        sessionCache.put(sessionToken, new RemoteSession(subsystemName, username, otpType));
 
-        boolean otpRequired = ssoUser.getOtpType() != OTPType.NONE && !ssoUser.isOtpOptional();
+        boolean otpRequired = otpType != OTPType.NONE && (keyConfigured || !ssoUser.isOtpOptional());
 
         return new RemoteAuthSession(sessionToken, otpRequired);
     }

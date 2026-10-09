@@ -196,6 +196,54 @@ public class RemoteAuthServiceImplTest {
                 .getSessionToken();
     }
 
+    @Test
+    public void configuredKeyMakesOtpRequiredForStoredTypeNone() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
+                .andStubReturn(noOtpUser());
+        expect(internal.hasOtpMasterKey(USER)).andStubReturn(true);
+        expect(internal.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "123456")).andStubReturn(CheckOtpResult.Status.SUCCESS);
+        expect(internal.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "000000")).andStubReturn(CheckOtpResult.Status.INVALID);
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertTrue(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+        String token = checkPassword(BILLING);
+        assertEquals("BAD_USER_OR_PASSWORD_OR_OTP", checkOtp(BILLING, token, "bad-otp-enc"));
+        assertEquals("SUCCESS", checkOtp(BILLING, token, "good-otp-enc"));
+    }
+
+    @Test
+    public void configuredKeyMakesOptionalOtpRequired() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        SSOUser user = otpUser();
+        user.setOtpOptional(true);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString())).andStubReturn(user);
+        expect(internal.hasOtpMasterKey(USER)).andStubReturn(true);
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertTrue(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+    }
+
+    @Test
+    public void storedTypeNoneWithoutKeyDoesNotRequireOtp() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
+                .andStubReturn(noOtpUser());
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertFalse(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+    }
+
+    private static SSOUser noOtpUser() {
+        SSOUser user = new SSOUser(USER, Map.of(), Map.of());
+        user.setOtpType(OTPType.NONE);
+        user.setOtpOptional(false);
+        return user;
+    }
+
     private String checkOtp(String subsystemName, String sessionToken, String otpEncrypted) throws RemoteAuthException {
         return service.checkOtp(subsystemName, USER, otpEncrypted, sessionToken, token(subsystemName));
     }
