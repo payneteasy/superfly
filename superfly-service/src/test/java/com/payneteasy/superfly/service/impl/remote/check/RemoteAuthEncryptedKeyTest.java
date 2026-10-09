@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.crypto.CryptoServiceImpl;
 import com.payneteasy.superfly.dao.SubsystemDao;
@@ -27,7 +28,7 @@ public class RemoteAuthEncryptedKeyTest {
         CryptoServiceImpl crypto = new CryptoServiceImpl("test-secret", "test-salt");
         SubsystemAuth auth = new SubsystemAuth();
         auth.setName("billing");
-        auth.setSubsystemToken("bearer");
+        auth.setSubsystemToken(SubsystemTokenHasher.hash("bearer"));
         auth.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
         SubsystemDao dao = createNiceMock(SubsystemDao.class);
         expect(dao.getSubsystemAuth("billing")).andStubReturn(auth);
