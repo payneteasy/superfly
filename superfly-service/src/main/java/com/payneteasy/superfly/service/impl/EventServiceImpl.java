@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.common.utils.LogSanitizer;
 import com.payneteasy.superfly.dao.EventDao;
 import com.payneteasy.superfly.model.Event;
 import com.payneteasy.superfly.service.EventService;
@@ -77,13 +78,13 @@ public class EventServiceImpl implements EventService, DisposableBean {
                 k -> new Semaphore(MAX_WAITING_PER_SUBSYSTEM));
         if (!perSubsystem.tryAcquire()) {
             logger.warn("Too many concurrent event polls for subsystem {}, returning without waiting",
-                    sanitize(subsystemName));
+                    LogSanitizer.forLog(subsystemName));
             return false;
         }
         try {
             if (!totalWaiting.tryAcquire()) {
                 logger.warn("Too many concurrent event polls, returning without waiting for subsystem {}",
-                        sanitize(subsystemName));
+                        LogSanitizer.forLog(subsystemName));
                 return false;
             }
             try {
@@ -125,10 +126,6 @@ public class EventServiceImpl implements EventService, DisposableBean {
             }
             now = clock.getAsLong();
         }
-    }
-
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     @Override
