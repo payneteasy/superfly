@@ -49,6 +49,16 @@
       class="com.payneteasy.superfly.security.SSOUserSessionBindFilter"/>
 ```
 
+**Уведомления от Superfly (logout и др.) подписаны.** Фильтры приёма уведомлений (`SuperflyLogoutFilter`,
+`SuperflyNotificationSinkFilter` и их наследники) принимают запрос только с валидной подписью. Им нужен токен подсистемы —
+тот же, что в `SSOClientConfig.subsystemToken`: init-param `notificationSecret`, сеттер `setNotificationSecret(token)` или
+свойство `notification.secret` в `propertiesResource`. Без токена, без подписи, с неверной или просроченной (больше 5 минут)
+подписью фильтр отвечает `403` и сессии не трогает; IP allow-list, если задан, проверяется дополнительно.
+
+Формат: параметры `superflyNotificationTimestamp` (epoch millis) и `superflyNotificationSignature` — lowercase hex
+HMAC-SHA256 с ключом `sha256:` + hex(SHA-256(токен)) от каноничной строки: все параметры с префиксом `superfly`, кроме
+подписи, по имени, `name=value` (значения через `,`), строки через `\n`. Формат совпадает с hotfix 1.7, отличается только ключ.
+
 ## Режимы аутентификации
 
 ### No-redirect режим
