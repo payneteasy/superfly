@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class SubsystemDaoTest extends AbstractDaoTest {
@@ -123,14 +126,43 @@ public class SubsystemDaoTest extends AbstractDaoTest {
 
     @Test
     public void testGetSubsystemPrivateKey() {
-        subsystemDao.getSubsystemPrivateKey(getAnySubsystemName());
+        UISubsystem subsystem = createSubsystemWithKey("key-read-subsystem", "plain-test-key");
+
+        assertEquals("plain-test-key", subsystemDao.getSubsystemPrivateKey(subsystem.getName()));
+        assertNull(subsystemDao.getSubsystemPrivateKey("no-such-subsystem"));
     }
 
     @Test
     public void testEncryptSubsystemPrivateKey() {
-        subsystemDao.encryptSubsystemPrivateKey(getAnySubsystemId(), "v2:test");
-        List<SubsystemPrivateKey> plain = subsystemDao.getSubsystemsWithPlainPrivateKey();
-        assertNotNull(plain);
+        UISubsystem subsystem = createSubsystemWithKey("key-encrypt-subsystem", "plain-test-key");
+        assertTrue(isListedAsPlain(subsystem.getName()));
+
+        subsystemDao.encryptSubsystemPrivateKey(subsystem.getId(), "v2:test");
+
+        assertEquals("v2:test", subsystemDao.getSubsystemPrivateKey(subsystem.getName()));
+        assertFalse(isListedAsPlain(subsystem.getName()));
+    }
+
+    private UISubsystem createSubsystemWithKey(String name, String privateKey) {
+        UISubsystem subsystem = new UISubsystem();
+        subsystem.setName(name);
+        subsystem.setTitle("The Subsystem");
+        subsystem.setCallbackUrl("http://no-such-host.dlm");
+        subsystem.setLandingUrl("/landing-url");
+        subsystem.setSubsystemUrl("/");
+        subsystem.setPrivateKey(privateKey);
+        subsystemDao.createSubsystem(subsystem);
+        assertNotNull("ID must be generated", subsystem.getId());
+        return subsystem;
+    }
+
+    private boolean isListedAsPlain(String name) {
+        for (SubsystemPrivateKey key : subsystemDao.getSubsystemsWithPlainPrivateKey()) {
+            if (name.equals(key.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Test
