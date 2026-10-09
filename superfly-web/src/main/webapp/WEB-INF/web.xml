@@ -98,6 +98,25 @@
         </init-param>
     </filter>
 
+    <!-- Body size limits: 64 KB for the public bearer-check endpoints, 1 MB for the remote API.
+         Declared before springSecurityFilterChain so oversized bodies are cut off first. -->
+    <filter>
+        <filter-name>checkBodyLimit</filter-name>
+        <filter-class>com.payneteasy.superfly.web.servlet.RequestBodyLimitFilter</filter-class>
+        <init-param>
+            <param-name>maxBytes</param-name>
+            <param-value>65536</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>remotingBodyLimit</filter-name>
+        <filter-class>com.payneteasy.superfly.web.servlet.RequestBodyLimitFilter</filter-class>
+        <init-param>
+            <param-name>maxBytes</param-name>
+            <param-value>1048576</param-value>
+        </init-param>
+    </filter>
+
     <filter>
         <filter-name>cookieEnforcer</filter-name>
         <filter-class>com.payneteasy.superfly.web.servlet.CookieEnforcer</filter-class>
@@ -116,6 +135,16 @@
     <filter-mapping>
         <filter-name>cookieEnforcer</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>checkBodyLimit</filter-name>
+        <url-pattern>/sso/check/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>remotingBodyLimit</filter-name>
+        <url-pattern>/remoting/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
