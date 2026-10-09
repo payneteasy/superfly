@@ -76,9 +76,11 @@ Jetty; запуск — `java -jar` с переменными окружения
 **База данных.** Перед выкаткой приложения:
 
 1. Миграция `superfly-sql/mi/R1.7.8` — колонка `users.otp_pending_master_key`.
-2. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
+2. Миграция `superfly-sql/mi/R1.7.9` — `admin` с паролем по умолчанию получает временный пароль (смена при первом входе),
+   опубликованный `hotp_salt` `admin` заменяется случайным.
+3. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
    `save_otp_pending_master_key`, `confirm_otp_pending_master_key`; изменена `get_user_password_history_and_current_password`
-   (собственные пароли пользователя, от новых к старым); изменена `save_google_auth_master_key` (теперь также очищает
+   (текущий пароль, в том числе временный, затем собственные пароли пользователя от новых к старым); изменена `save_google_auth_master_key` (теперь также очищает
    `otp_pending_master_key`).
 
 **API.** `SSOService.checkOtp` возвращает `CheckOtpResult` вместо `boolean`, HTTP-тело — `{"status":"..."}`; добавлен
