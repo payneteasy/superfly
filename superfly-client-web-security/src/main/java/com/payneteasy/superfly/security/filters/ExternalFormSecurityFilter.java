@@ -23,6 +23,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -157,7 +158,7 @@ public class ExternalFormSecurityFilter implements Filter {
         if(flow.getPath().equals("/check-token") || flow.getPath().equals("/j_superfly_sso_security_check")) {
             try {
                 validateExternalToken(request);
-                response.sendRedirect(request.getParameter("targetUrl"));
+                response.sendRedirect(getSafeTargetUrl(request));
             } catch (Exception e) {
                 LOG.error("Could not validate token", e);
                 showBadTokenPage(response, "Token validation failed");
@@ -177,6 +178,45 @@ public class ExternalFormSecurityFilter implements Filter {
         return false;
     }
 
+    /**
+     * Returns the targetUrl parameter if it is a path inside this application,
+     * otherwise the context root, so the filter can't redirect to a foreign site.
+     */
+    static String getSafeTargetUrl(HttpServletRequest aRequest) {
+        String targetUrl = aRequest.getParameter("targetUrl");
+        if (isLocalPath(targetUrl)) {
+            return targetUrl;
+        }
+        LOG.warn("Ignoring non-local targetUrl, redirecting to the context root");
+        return aRequest.getContextPath() + "/";
+    }
+
+    static boolean isLocalPath(String aUrl) {
+        if (!isLocalPathOnce(aUrl)) {
+            return false;
+        }
+        try {
+            // a once more decoded value must stay local too
+            return isLocalPathOnce(URLDecoder.decode(aUrl, StandardCharsets.UTF_8));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static boolean isLocalPathOnce(String aUrl) {
+        if (aUrl == null || !aUrl.startsWith("/") || aUrl.startsWith("//") || aUrl.startsWith("/\\")) {
+            return false;
+        }
+        for (int i = 0; i < aUrl.length(); i++) {
+            char c = aUrl.charAt(i);
+            // browsers ignore tabs and line breaks, so '/\t/host' would become '//host'
+            if (c < 0x20 || c == 0x7f) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void showBadTokenPage(HttpServletResponse aResponse, String aMessage) throws IOException {
         aResponse.getWriter().println(aMessage);
     }
@@ -194,6 +234,10 @@ public class ExternalFormSecurityFilter implements Filter {
 
         SecurityContext context = createContextFromUser(ssoUser);
         LOG.info("Got security context: {}", context);
+        // the authenticated session must get a new id
+        if (aRequest.getSession(false) != null) {
+            aRequest.changeSessionId();
+        }
         SecurityContextStore.setToSession(context, aRequest);
     }
 
