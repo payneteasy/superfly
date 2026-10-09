@@ -6,6 +6,10 @@
 </head>
 <body>
 <wicket:extend>
+    <div wicket:id="created" class="col-6 mb-4">
+        <div wicket:id="newSubsystemToken" class="shadow p-3 bg-warning" style="font-family: monospace; word-break: break-all;">new token</div>
+        <a href="" wicket:id="back" class="btn btn-light mt-3">Back to subsystems</a>
+    </div>
     <form wicket:id="form" class="form-horizontal col-4 mb-4">
         <wicket:container wicket:id="name"></wicket:container>
         <wicket:container wicket:id="title"></wicket:container>
