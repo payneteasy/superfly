@@ -44,6 +44,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
     public void testAuthenticateUser() throws Exception {
         final AuthRole role = new AuthRole();
         role.setRoleName("local");
+        EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(true);
         EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                         .andReturn(new AuthSession("username", 1L){{setRoles(Collections.singletonList(role));}});
@@ -57,6 +58,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 
     @Test
     public void testAuthenticateUserFailNotNull() throws Exception {
+        EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(true);
         EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                 anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                         .andReturn(new AuthSession("username"));
@@ -70,6 +72,7 @@ public class LocalSecurityServiceLoggingTest extends AbstractServiceLoggingTest 
 
     @Test
     public void testAuthenticateUserFailWithNull() throws Exception {
+           EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(true);
            EasyMock.expect(userService.authenticate(eq("username"), eq("password"), eq("password"),
                    anyObject(String.class), anyObject(String.class), anyObject(String.class)))
                            .andReturn(null);
