@@ -252,6 +252,7 @@ public class InternalSSOServiceOtpStatusTest {
     @Test
     public void storedNoneWithoutKeySucceedsAndKeepsTheFailureCounter() {
         expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
         // no clearHOTPLoginsFailed, no code check
         replayAll();
 
@@ -261,8 +262,20 @@ public class InternalSSOServiceOtpStatusTest {
     }
 
     @Test
+    public void storedNoneWithoutKeyOfLockedAccountIsLocked() {
+        expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, true);
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.checkOtp(OTPType.NONE, false, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
     public void storedNoneWithoutKeyIgnoresGoogleAuthFromCaller() {
         expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
         replayAll();
 
         assertEquals(Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, false, USER, CODE));
@@ -304,6 +317,7 @@ public class InternalSSOServiceOtpStatusTest {
     public void mismatchWithTheStoredSettingsIsLoggedWithoutTheCode() {
         serviceLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
         expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
         replayAll();
 
         service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, CODE);
