@@ -83,6 +83,10 @@ Jetty; запуск — `java -jar` с переменными окружения
    (текущий пароль, в том числе временный, затем собственные пароли пользователя от новых к старым); изменена `save_google_auth_master_key` (теперь также очищает
    `otp_pending_master_key`).
 
+**Изоляция входа.** `authenticate`, `pseudoAuthenticate`, remote-auth `check-password` и SSO-форма логина пускают только
+пользователей с ролью в подсистеме входа и без роли в `superfly`. Учётка, у которой есть роли и в админке, и в подсистеме,
+в подсистему больше не войдёт — заведите отдельные учётки. Проверить до выкатки: пользователи с ролями в `superfly` и других подсистемах.
+
 **API.** `SSOService.checkOtp` возвращает `CheckOtpResult` вместо `boolean`, HTTP-тело — `{"status":"..."}`; добавлен
 `confirmOtpMasterKey`; `resetGoogleAuthMasterKey` теперь сохраняет pending-ключ (см. [API](api.md#checkotp)).
 Клиентов и сервер обновляйте вместе.
