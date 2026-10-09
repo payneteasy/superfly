@@ -2,4 +2,4 @@
 
 . ../../functions.sh
 
-runScript R1.7.8_SSO.sql
+runScript R2.0.0_SSO.sql

@@ -20,14 +20,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The pending OTP master key (R1.7.8) and its procedures: the pending key never touches master_key until it is
+ * The pending OTP master key (R2.0.0) and its procedures: the pending key never touches master_key until it is
  * confirmed, and the confirmation is a compare-and-set that loses to a concurrent reset. Plain JDBC against a
  * database prepared by create_test_database.sh; the URL can be overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
  */
 public class OtpPendingMasterKeyProcedureTest {
 
     private static final String USER = "otp-pending-user";
-    private static final Path MIGRATION = Paths.get("..", "superfly-sql", "mi", "R1.7.8", "R1.7.8_SSO.sql");
+    private static final Path MIGRATION = Paths.get("..", "superfly-sql", "mi", "R2.0.0", "R2.0.0_SSO.sql");
 
     private Connection conn;
 

@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class LegacyHistoryRehashTest {
 
     private static final String USER = "legacy-hist-user";
-    private static final String MIGRATION = "../superfly-sql/mi/R1.8.0/R1.8.0_SSO.sql";
+    private static final String MIGRATION = "../superfly-sql/mi/R2.0.0/R2.0.0_SSO.sql";
     private static final String MIGRATION_STEP_START = "delete uh";
     private static final PasswordEncoder LEGACY = (plain, salt) -> "legacy(" + plain + ")";
 

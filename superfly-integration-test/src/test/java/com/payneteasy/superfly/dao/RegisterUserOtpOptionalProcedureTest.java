@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * register_user must mark a user without OTP as OTP-optional, otherwise the client rejects the login with
- * "No OTP type for user" (the column default is 'N' since R1.7.7). Plain JDBC against a database prepared by
+ * "No OTP type for user" (the column default is 'N' since R2.0.0). Plain JDBC against a database prepared by
  * create_test_database.sh; the URL can be overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
  */
 public class RegisterUserOtpOptionalProcedureTest {

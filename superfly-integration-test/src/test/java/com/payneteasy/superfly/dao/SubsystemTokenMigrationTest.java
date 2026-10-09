@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * R1.8.0 converts the plain subsystem tokens to sha256:hex, keeps NULL as is and does not hash twice. Plain JDBC
+ * R2.0.0 converts the plain subsystem tokens to sha256:hex, keeps NULL as is and does not hash twice. Plain JDBC
  * against a database prepared by create_test_database.sh; the URL can be overridden with
  * -Dsso.db.url=jdbc:mysql://host:port/db.
  */
@@ -114,7 +114,7 @@ public class SubsystemTokenMigrationTest {
     }
 
     private void migrate() throws Exception {
-        String script = new String(Files.readAllBytes(MI_DIR.resolve("R1.8.0").resolve("R1.8.0_SSO.sql")), StandardCharsets.UTF_8)
+        String script = new String(Files.readAllBytes(MI_DIR.resolve("R2.0.0").resolve("R2.0.0_SSO.sql")), StandardCharsets.UTF_8)
                 .replaceAll("(?m)^\\s*--.*$", "");
         for (String statement : script.split(";")) {
             String sql = statement.trim();

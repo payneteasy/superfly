@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * The built-in admin must not be usable with the default password from the documentation: it is created with a
- * temporary password, a re-run of the install script does not restore the default one, and R1.7.9 marks an existing
+ * temporary password, a re-run of the install script does not restore the default one, and R2.0.0 marks an existing
  * admin that still has it. Plain JDBC against a database prepared by create_test_database.sh; the URL can be
  * overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
  */
@@ -96,8 +96,8 @@ public class DefaultAdminPasswordMigrationTest {
     public void migrationMarksAdminWithDefaultPassword() throws Exception {
         setAdmin(DEFAULT_HASH, DEFAULT_SALT, "N", PUBLISHED_HOTP);
 
-        run("R1.7.9", "R1.7.9_SSO.sql");
-        run("R1.7.9", "R1.7.9_SSO.sql");
+        run("R2.0.0", "R2.0.0_SSO.sql");
+        run("R2.0.0", "R2.0.0_SSO.sql");
 
         assertEquals("Y", admin("is_password_temp"));
         assertEquals(DEFAULT_HASH, admin("user_password"));
@@ -108,7 +108,7 @@ public class DefaultAdminPasswordMigrationTest {
     public void migrationDoesNotTouchAdminWithChangedPassword() throws Exception {
         setAdmin("pbkdf2-sha256$600000$changed", DEFAULT_SALT, "N", "custom-hotp");
 
-        run("R1.7.9", "R1.7.9_SSO.sql");
+        run("R2.0.0", "R2.0.0_SSO.sql");
 
         assertEquals("N", admin("is_password_temp"));
         assertEquals("pbkdf2-sha256$600000$changed", admin("user_password"));
