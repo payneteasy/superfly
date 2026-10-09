@@ -1,7 +1,9 @@
 package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
+import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthSession;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
@@ -55,5 +57,38 @@ public class LocalSecurityServiceImplTest {
         EasyMock.replay(userService);
         localSecurityService.authenticate("user", "pass");
         EasyMock.verify(userService);
+    }
+
+    @Test
+    public void testFailedPasswordCountsTowardsPasswordLockout() {
+        LockoutStrategy lockoutStrategy = EasyMock.createStrictMock(LockoutStrategy.class);
+        localSecurityService.setLockoutStrategy(lockoutStrategy);
+        localSecurityService.setUserPasswordEncoder(plainEncoder());
+        EasyMock.expect(userService.authenticate(eq("user"), eq("bad"), eq("bad"), anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+                .andReturn(null);
+        lockoutStrategy.checkLoginsFailed("user", LockoutType.PASSWORD);
+        EasyMock.replay(userService, lockoutStrategy);
+        org.junit.Assert.assertNull(localSecurityService.authenticate("user", "bad"));
+        EasyMock.verify(userService, lockoutStrategy);
+    }
+
+    @Test
+    public void testCorrectPasswordWithoutRolesDoesNotCountTowardsLockout() {
+        LockoutStrategy lockoutStrategy = EasyMock.createStrictMock(LockoutStrategy.class);
+        localSecurityService.setLockoutStrategy(lockoutStrategy);
+        localSecurityService.setUserPasswordEncoder(plainEncoder());
+        EasyMock.expect(userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class), anyObject(String.class)))
+                .andReturn(new AuthSession("user"));
+        EasyMock.replay(userService, lockoutStrategy);
+        org.junit.Assert.assertNull(localSecurityService.authenticate("user", "pass"));
+        EasyMock.verify(userService, lockoutStrategy);
+    }
+
+    private static UserPasswordEncoderImpl plainEncoder() {
+        UserPasswordEncoderImpl encoder = new UserPasswordEncoderImpl();
+        encoder.setPasswordEncoder(new PlaintextPasswordEncoder());
+        encoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
+        encoder.setSaltSource(new NullSaltSource());
+        return encoder;
     }
 }

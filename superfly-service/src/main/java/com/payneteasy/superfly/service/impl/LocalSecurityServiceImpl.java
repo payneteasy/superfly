@@ -97,10 +97,10 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 
         if (session == null) {
             logger.warn("Login failed. No session for user <{}>", username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.SESSION);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         } else if (session.getRoles().isEmpty()) {
+            // the password was correct (logins_failed is already reset), so this must not count towards lockout
             logger.warn("Login failed. There are no roles or actions for user <{}>", username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.ROLES);
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
         return null;
