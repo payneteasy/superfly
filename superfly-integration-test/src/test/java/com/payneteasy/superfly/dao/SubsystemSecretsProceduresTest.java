@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -35,8 +34,7 @@ public class SubsystemSecretsProceduresTest {
 
     @Before
     public void setUp() throws Exception {
-        conn = DriverManager.getConnection(
-                System.getProperty("sso.db.url", "jdbc:mysql://localhost/ssotest"), "sso", "123sso123");
+        conn = TestDatabase.connect();
         cleanUp();
         try (CallableStatement cs = conn.prepareCall("{call ui_create_subsystem(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}")) {
             cs.setString(1, NAME);

@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Types;
@@ -28,8 +27,7 @@ public class RegisterUserOtpOptionalProcedureTest {
 
     @Before
     public void setUp() throws Exception {
-        conn = DriverManager.getConnection(
-                System.getProperty("sso.db.url", "jdbc:mysql://localhost/ssotest"), "sso", "123sso123");
+        conn = TestDatabase.connect();
         cleanup();
     }
 

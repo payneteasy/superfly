@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -39,8 +38,7 @@ public class DefaultAdminPasswordMigrationTest {
 
     @Before
     public void setUp() throws Exception {
-        conn = DriverManager.getConnection(
-                System.getProperty("sso.db.url", "jdbc:mysql://localhost/ssotest"), "sso", "123sso123");
+        conn = TestDatabase.connect();
         try (PreparedStatement ps = conn.prepareStatement(
                 "select user_password, salt, is_password_temp, hotp_salt from users where user_name = 'admin'");
              ResultSet rs = ps.executeQuery()) {

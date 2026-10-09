@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -34,8 +33,7 @@ public class SubsystemTokenMigrationTest {
 
     @Before
     public void setUp() throws Exception {
-        conn = DriverManager.getConnection(
-                System.getProperty("sso.db.url", "jdbc:mysql://localhost/ssotest"), "sso", "123sso123");
+        conn = TestDatabase.connect();
         cleanUp();
     }
 
