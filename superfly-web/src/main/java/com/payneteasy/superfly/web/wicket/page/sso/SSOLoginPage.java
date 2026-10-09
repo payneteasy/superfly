@@ -12,11 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.util.regex.Pattern;
+
 /**
  * @author rpuch
  */
 public class SSOLoginPage extends BaseSSOPage {
     private static final Logger logger = LoggerFactory.getLogger(SSOLoginPage.class);
+    private static final Pattern STATE_PATTERN = Pattern.compile("^[A-Za-z0-9_-]{16,128}$");
 
     @SpringBean
     private SubsystemService subsystemService;
@@ -41,6 +44,7 @@ public class SSOLoginPage extends BaseSSOPage {
             targetUrl = ensureSameOriginPath(sanitizeTargetUrl(targetUrl));
 
             SSOLoginData loginData = new SSOLoginData(subsystemIdentifier, targetUrl);
+            loginData.setState(validState(request.getRequestParameters().getParameterValue("state").toString()));
             SSOUtils.saveLoginData(this, loginData);
 
             String ssoSessionId = SSOUtils.getSsoSessionIdFromCookie(request);
@@ -76,6 +80,18 @@ public class SSOLoginPage extends BaseSSOPage {
                 getRequestCycle().setResponsePage(new SSOLoginPasswordPage());
             }
         }
+    }
+
+    /** A state of an unexpected shape is dropped, never echoed back. */
+    private static String validState(String state) {
+        if (state == null) {
+            return null;
+        }
+        if (!STATE_PATTERN.matcher(state).matches()) {
+            logger.warn("Ignoring a malformed state parameter");
+            return null;
+        }
+        return state;
     }
 
     private String sanitizeTargetUrl(String targetUrl) {

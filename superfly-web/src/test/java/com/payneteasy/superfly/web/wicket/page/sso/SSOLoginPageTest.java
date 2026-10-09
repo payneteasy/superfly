@@ -17,11 +17,14 @@ import java.util.HashMap;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author rpuch
  */
 public class SSOLoginPageTest extends AbstractPageTest {
+    private static final String STATE = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+
     private SessionService sessionService;
     private SubsystemService subsystemService;
     private CsrfValidator csrfValidator;
@@ -150,6 +153,71 @@ public class SSOLoginPageTest extends AbstractPageTest {
         tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
 
         verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testStateEchoedWithSSOCookie() {
+        startWithValidSSOCookie(STATE);
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + STATE);
+        assertNull("state is one-time", tester.getSession().getSsoLoginData().getState());
+        verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testTooShortStateNotEchoed() {
+        startWithValidSSOCookie("abcdefghijklmno");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
+        verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testTooLongStateNotEchoed() {
+        startWithValidSSOCookie("a".repeat(129));
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
+        verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testStateWithForeignCharactersNotEchoed() {
+        startWithValidSSOCookie("abcdefghijklmnop&x=<y>");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget");
+        verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testLongestStateEchoed() {
+        String state = "a".repeat(128);
+        startWithValidSSOCookie(state);
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + state);
+        verify(sessionService, subsystemService);
+    }
+
+    @Test
+    public void testStateKeptForPasswordStep() {
+        expect(subsystemService.getSubsystemByName("test-subsystem")).andReturn(createTestSubsystem()).anyTimes();
+        replay(subsystemService, csrfValidator);
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
+            put("subsystemIdentifier", "test-subsystem");
+            put("targetUrl", "/target");
+            put("state", STATE);
+        }}));
+        tester.assertRenderedPage(SSOLoginPasswordPage.class);
+        assertEquals(STATE, tester.getSession().getSsoLoginData().getState());
+    }
+
+    private void startWithValidSSOCookie(String state) {
+        expect(sessionService.getValidSSOSession("super-session-id"))
+                .andReturn(new SSOSession(1, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+        replay(sessionService, subsystemService);
+
+        tester.getRequest().addCookie(new Cookie("SSOSESSIONID", "super-session-id"));
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
+            put("subsystemIdentifier", "test-subsystem");
+            put("targetUrl", "/target");
+            put("state", state);
+        }}));
     }
 
     @Test
