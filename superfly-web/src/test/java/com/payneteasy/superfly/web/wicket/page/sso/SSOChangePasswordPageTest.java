@@ -114,6 +114,37 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
     }
 
     @Test
+    public void testStateEchoedAfterPasswordChange() throws PolicyValidationException {
+        String state = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        userService.validatePassword("user", "password");
+        expectLastCall();
+        userService.changeTempPassword("user", "password");
+        expectLastCall();
+        UserForDescription user = new UserForDescription();
+        user.setUsername("user");
+        user.setOtpTypeCode(OTPType.NONE.code());
+        expect(userService.getUserForDescription("user")).andReturn(user);
+        expect(sessionService.createSSOSession("user"))
+                .andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+        replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
+
+        SSOLoginData loginData = new SSOLoginData("test-subsystem", "/target");
+        loginData.setState(state);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(new SSOChangePasswordPage("user"));
+        FormTester form = tester.newFormTester("change-password-panel:form");
+        form.setValue("password", "password");
+        form.setValue("password2", "password");
+        form.submit();
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + state);
+
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
+    }
+
+    @Test
     public void testMismatchingPassword() throws PolicyValidationException {
         expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         userService.validatePassword("user", "password");

@@ -88,6 +88,29 @@ public class SSOLoginHOTPPageTest extends AbstractPageTest {
         verify(internalSSOService, sessionService, subsystemService, csrfValidator);
     }
 
+    @Test
+    public void testStateEchoedAfterOtp() {
+        String state = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "111111"))
+                .andReturn(CheckOtpResult.Status.SUCCESS);
+        expect(sessionService.createSSOSession("known-user"))
+                .andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+        replay(internalSSOService, sessionService, subsystemService, csrfValidator);
+
+        SSOLoginData loginData = createLoginData();
+        loginData.setState(state);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOLoginHOTPPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("hotp", "111111");
+        form.submit();
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + state);
+
+        verify(internalSSOService, sessionService, subsystemService, csrfValidator);
+    }
+
     private UISubsystem createSubsystem() {
         UISubsystem subsystem = new UISubsystem();
         subsystem.setId(1L);

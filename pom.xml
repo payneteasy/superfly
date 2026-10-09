@@ -660,6 +660,12 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>8.2.0</version>
             </dependency>
+            <dependency>
+                <!--Justification: transitive from mysql-connector-j; pinned above the 3.21.x line it brings -->
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.25.8</version>
+            </dependency>
 
             <dependency>
                 <!--Justification: Spring framework support for testing -->
@@ -1054,8 +1060,13 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
+                        <version>${owasp.dependencyCheck.version}</version>
                         <configuration>
                             <suppressionFile>src/main/dependency-check/suppressions.xml</suppressionFile>
+                            <!-- without a key the NVD update takes tens of minutes -->
+                            <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
+                            <!-- OSS Index requires an account since 2025 -->
+                            <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                             <!--format>xml</format>
                             <prettyPrint>true</prettyPrint>
                             <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled-->
@@ -1063,6 +1074,8 @@
                         </configuration>
                         <executions>
                             <execution>
+                                <!-- the aggregate goal has no default phase: without one the profile scans nothing -->
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>aggregate</goal>
                                 </goals>
@@ -1105,7 +1118,7 @@
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>10.11.0</wicket.version>
-        <wicket8.version>8.18.0</wicket8.version>
+        <wicket8.version>8.19.0</wicket8.version>
         <jetty.version>12.0.36</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -1119,6 +1132,6 @@
         <java.version>21</java.version>
         <modernizer.failOnViolations>true</modernizer.failOnViolations>
         <fail.on.dup.dependency>true</fail.on.dup.dependency>
-        <owasp.dependencyCheck.version>8.2.1</owasp.dependencyCheck.version>
+        <owasp.dependencyCheck.version>12.1.9</owasp.dependencyCheck.version>
     </properties>
 </project>

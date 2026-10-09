@@ -8,19 +8,20 @@
 #   ./dev-env.sh sql     open a mysql shell on the dev database
 #   ./dev-env.sh down    remove the container and the network
 #
-# Login: admin / 123admin123
+# Login: admin / 123admin123 (temporary: the first login asks for a new password)
 #
 # MySQL 5.7 is not a free choice: on 8.0 the schema does not install at all,
 # because `groups` became a reserved word.
 
 set -e
 
-CONTAINER=superfly-mysql-dev
-NETWORK=superfly-dev-net
+# Container, network and host port can be overridden to run a second environment side by side
+CONTAINER=${SUPERFLY_DEV_CONTAINER:-superfly-mysql-dev}
+NETWORK=${SUPERFLY_DEV_NETWORK:-superfly-dev-net}
 IMAGE=mysql:5.7
 ROOT_PASSWORD=charpa
 # the app gets it as DB_PORT (see cmd_app)
-HOST_PORT=3344
+HOST_PORT=${SUPERFLY_DEV_PORT:-3344}
 
 ROOT_DIR=$(cd "$(dirname "$0")" && pwd)
 SHIM_DIR=$ROOT_DIR/target/dev-env
@@ -158,7 +159,7 @@ SQL
 }
 
 cmd_app() {
-    echo "Starting on http://localhost:8085/superfly/ — login admin / 123admin123"
+    echo "Starting on http://localhost:8085/superfly/ — login admin / 123admin123 (change it at the first login)"
     if [ -z "${SUPERFLY_CRYPTO_SECRET:-}" ] || [ -z "${SUPERFLY_CRYPTO_SALT:-}" ]; then
         echo "WARNING: dev dummy crypto key (SUPERFLY_CRYPTO_SECRET/SALT not set) — never use outside local dev"
         export SUPERFLY_CRYPTO_SECRET="dev-dummy-secret"

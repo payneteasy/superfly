@@ -2,6 +2,8 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
@@ -191,6 +193,36 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
         tester.assertLabel("form:message", "One-time password value did not match.");
         assertTrue(loginData.isGoogleAuthSetupRequired());
         verify(hotpService);
+    }
+
+    @Test
+    public void testStateEchoedAfterSetupAndOtp() throws Exception {
+        String state = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString())).andReturn(CheckOtpResult.Status.SUCCESS);
+        expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "123456"))
+                .andReturn(CheckOtpResult.Status.SUCCESS);
+        expect(sessionService.createSSOSession("known-user")).andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        loginData.setState(state);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        form.submit();
+        tester.assertRenderedPage(SSOLoginHOTPPage.class);
+
+        FormTester otpForm = tester.newFormTester("form");
+        otpForm.setValue("hotp", "123456");
+        otpForm.submit();
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + state);
+
+        verify(hotpService, internalSSOService, sessionService, subsystemService);
     }
 
     @Test

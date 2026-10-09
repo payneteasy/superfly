@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
 
 @Service
 @Transactional
@@ -67,11 +70,23 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     }
 
     public String[] authenticate(String username, String password) {
+        if (!UserNames.isPossible(username)) {
+            // the salt lookup would pass the name to the database, which cannot hold it
+            logger.warn("Login failed. User <{}> cannot exist", forLog(username));
+            loggerSink.info(logger, "LOCAL_LOGIN", false, username);
+            return null;
+        }
         // null password is an ordinary failed attempt, not an exception
         String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
                 : userPasswordEncoder.encode(password, username);
-        AuthSession session = userService.authenticate(username, encPassword,
-                password == null ? null : userPasswordEncoder.encodeLegacy(password, username),
+        String legacyPassword = password == null ? null : userPasswordEncoder.encodeLegacy(password, username);
+        if (!userService.userHasRolesInSubsystem(username, localSubsystemName)) {
+            // hashing is already done above; the failed-login counter of users outside the admin console stays untouched
+            logger.warn("Login failed. User <{}> has no role in the local subsystem", forLog(username));
+            loggerSink.info(logger, "LOCAL_LOGIN", false, username);
+            return null;
+        }
+        AuthSession session = userService.authenticate(username, encPassword, legacyPassword,
                 localSubsystemName, userInfoService == null ? null : userInfoService.getRemoteAddress(), null);
         AuthRole role = null;
         if (session != null) {
@@ -97,10 +112,10 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
 
         if (session == null) {
             logger.warn("Login failed. No session for user <{}>", username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.SESSION);
+            lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         } else if (session.getRoles().isEmpty()) {
+            // the password was correct (logins_failed is already reset), so this must not count towards lockout
             logger.warn("Login failed. There are no roles or actions for user <{}>", username);
-            lockoutStrategy.checkLoginsFailed(username, LockoutType.ROLES);
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
         return null;

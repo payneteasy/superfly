@@ -65,8 +65,14 @@ public class InternalSSOServiceOtpStatusTest {
     }
 
     private static UserForDescription stored(String username) {
+        return stored(username, OTPType.NONE, false);
+    }
+
+    private static UserForDescription stored(String username, OTPType type, boolean optional) {
         UserForDescription user = new UserForDescription();
         user.setUsername(username);
+        user.setOtpTypeCode(type.code());
+        user.setOtpOptional(optional);
         return user;
     }
 
@@ -93,7 +99,10 @@ public class InternalSSOServiceOtpStatusTest {
     @Test
     public void lockedAccountIsLockedWithoutCheckingTheCode() {
         expectLockLookup(USER, USER, true);
-        expectLockLookup(USER, USER, true);
+        // checkOtp looks the stored settings up, then the lock
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored(USER, OTPType.GOOGLE_AUTH, false)).times(2);
+        EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn("encrypted-key");
+        EasyMock.expect(userService.getUserStatuses(USER)).andReturn(statuses(USER, true));
         // hotpService and lockoutStrategy have no expectations, the failure counter is not touched
         replayAll();
 
@@ -198,6 +207,7 @@ public class InternalSSOServiceOtpStatusTest {
 
     @Test
     public void optionalOtpWithoutKeySucceedsWithoutChecks() {
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored(USER, OTPType.GOOGLE_AUTH, true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null);
         replayAll();
 
@@ -216,5 +226,105 @@ public class InternalSSOServiceOtpStatusTest {
 
         assertEquals(Collections.singletonList("OTP check failed user: LOCKED"),
                 appender.list.stream().map(ILoggingEvent::getFormattedMessage).collect(java.util.stream.Collectors.toList()));
+    }
+
+    private void expectStoredAndKey(OTPType type, boolean optional, String key) {
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored(USER, type, optional));
+        EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(key);
+    }
+
+    @Test
+    public void typeNoneFromCallerIsIgnoredWhenStoredTypeIsGoogleAuth() {
+        expectStoredAndKey(OTPType.GOOGLE_AUTH, false, "encrypted-key");
+        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.INVALID);
+        userService.incrementHOTPLoginsFailed(USER);
+        lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
+        expectLockLookup(USER, USER, false);
+        // the lock lookup before the check
+        expectLockLookup(USER, USER, false);
+        replayAll();
+
+        assertEquals(Status.INVALID, service.checkOtp(OTPType.NONE, true, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void storedNoneWithoutKeySucceedsAndKeepsTheFailureCounter() {
+        expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
+        // no clearHOTPLoginsFailed, no code check
+        replayAll();
+
+        assertEquals(Status.SUCCESS, service.checkOtp(OTPType.NONE, false, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void storedNoneWithoutKeyOfLockedAccountIsLocked() {
+        expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, true);
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.checkOtp(OTPType.NONE, false, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void storedNoneWithoutKeyIgnoresGoogleAuthFromCaller() {
+        expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
+        replayAll();
+
+        assertEquals(Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, false, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void storedNoneWithKeyStillChecksTheCode() {
+        expectStoredAndKey(OTPType.NONE, false, "encrypted-key");
+        expectLockLookup(USER, USER, false);
+        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, CODE)).andReturn(Status.INVALID);
+        userService.incrementHOTPLoginsFailed(USER);
+        lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
+        expectLockLookup(USER, USER, false);
+        replayAll();
+
+        assertEquals(Status.INVALID, service.checkOtp(OTPType.NONE, true, USER, CODE));
+
+        verifyAll();
+    }
+
+    @Test
+    public void optionalFlagFromCallerIsIgnored() {
+        expectStoredAndKey(OTPType.GOOGLE_AUTH, false, null);
+        expectLockLookup(USER, USER, false);
+        EasyMock.expect(hotpService.validateGoogleTimePassword(USER, "")).andReturn(Status.INVALID);
+        userService.incrementHOTPLoginsFailed(USER);
+        lockoutStrategy.checkLoginsFailed(USER, LockoutType.HOTP);
+        expectLockLookup(USER, USER, false);
+        replayAll();
+
+        assertEquals(Status.INVALID, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
+
+        verifyAll();
+    }
+
+    @Test
+    public void mismatchWithTheStoredSettingsIsLoggedWithoutTheCode() {
+        serviceLogger.setLevel(ch.qos.logback.classic.Level.DEBUG);
+        expectStoredAndKey(OTPType.NONE, false, null);
+        expectLockLookup(USER, USER, false);
+        replayAll();
+
+        service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, CODE);
+
+        boolean logged = appender.list.stream().anyMatch(event ->
+                event.getFormattedMessage().contains("differ from the stored ones")
+                        && !event.getFormattedMessage().contains(CODE));
+        org.junit.Assert.assertTrue(logged);
     }
 }

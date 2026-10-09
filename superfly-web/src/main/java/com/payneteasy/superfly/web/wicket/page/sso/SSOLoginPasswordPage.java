@@ -79,6 +79,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         recordLoginResult("password", loginBean.getUsername(), loginStatus != UserLoginStatus.FAILED);
         switch (loginStatus) {
             case SUCCESS:
+                renewSessionId(this);
                 onPasswordChecked(loginBean, loginData);
                 break;
             case FAILED:

@@ -3,13 +3,14 @@ package com.payneteasy.superfly.service.impl.remote;
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
-import com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl;
+import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -47,6 +48,7 @@ public class SSOServiceImpl implements SSOService {
     private final ResetPasswordStrategy       resetPasswordStrategy;
     private final EmailService                emailService;
     private final PublicKeyCrypto             publicKeyCrypto;
+    private final LoggerSink                  loggerSink;
 
     /**
      * @see SSOService#authenticate(AuthenticateRequest)
@@ -131,7 +133,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void updateUserOtpType(UpdateUserOtpTypeRequest request) {
-        if (!isUserAccessible("updateUserOtpType", request.getUsername())) {
+        if (!isUserManageable("updateUserOtpType", request.getUsername())) {
             return;
         }
         internalSSOService.updateUserOtpType(request.getUsername(), request.getOtpType());
@@ -139,7 +141,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void changeTempPassword(ChangeTempPasswordRequest request) throws PolicyValidationException {
-        if (!isUserAccessible("changeTempPassword", request.getUsername())) {
+        if (!isUserManageable("changeTempPassword", request.getUsername())) {
             internalSSOService.validatePasswordPolicy(null, request.getNewPassword());
             return;
         }
@@ -165,7 +167,7 @@ public class SSOServiceImpl implements SSOService {
         result.setFirstName(user.getName());
         result.setLastName(user.getSurname());
         result.setSecretQuestion(user.getSecretQuestion());
-        result.setSecretAnswer(user.getSecretAnswer());
+        // the answer is a credential that Superfly never checks: subsystems do not need it
         result.setPublicKey(user.getPublicKey());
         result.setOtpOptional(user.isOtpOptional());
         result.setOtpType(user.getOtpType());
@@ -177,7 +179,7 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public String resetGoogleAuthMasterKey(ResetGoogleAuthMasterKeyRequest request)
             throws UserNotFoundException, SsoDecryptException {
-        if (!isUserAccessible("resetGoogleAuthMasterKey", request.getUsername())) {
+        if (!isUserManageable("resetGoogleAuthMasterKey", request.getUsername())) {
             // an unknown user gets a fresh key that is persisted nowhere
             return new GoogleAuthenticator().createCredentials().getKey();
         }
@@ -187,7 +189,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public CheckOtpResult confirmOtpMasterKey(ConfirmOtpMasterKeyRequest request) throws SsoDecryptException {
-        if (!isUserAccessible("confirmOtpMasterKey", request.getUsername())) {
+        if (!isUserManageable("confirmOtpMasterKey", request.getUsername())) {
             return new CheckOtpResult(CheckOtpResult.Status.INVALID);
         }
         return new CheckOtpResult(internalSSOService.confirmOtpMasterKey(request.getUsername(), request.getCode()));
@@ -204,7 +206,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void updateUserIsOtpOptionalValue(UpdateUserIsOtpOptionalValueRequest request) {
-        if (!isUserAccessible("updateUserIsOtpOptionalValue", request.getUsername())) {
+        if (!isUserManageable("updateUserIsOtpOptionalValue", request.getUsername())) {
             return;
         }
         internalSSOService.updateUserIsOtpOptionalValue(
@@ -219,7 +221,7 @@ public class SSOServiceImpl implements SSOService {
     @Override
     public void updateUserDescription(UpdateUserDescriptionRequest request)
             throws UserNotFoundException, BadPublicKeyException {
-        if (!isUserAccessible("updateUserDescription", request.getUserDescription().getUsername())) {
+        if (!isUserManageable("updateUserDescription", request.getUserDescription().getUsername())) {
             throw new UserNotFoundException(request.getUserDescription().getUsername());
         }
         UserForDescription userForDescription = internalSSOService.getUserDescription(
@@ -234,7 +236,10 @@ public class SSOServiceImpl implements SSOService {
         userForDescription.setName(user.getFirstName());
         userForDescription.setSurname(user.getLastName());
         userForDescription.setSecretQuestion(user.getSecretQuestion());
-        userForDescription.setSecretAnswer(user.getSecretAnswer());
+        // getUserDescription does not return the answer, so a read-modify-write sends null: keep the stored one
+        if (user.getSecretAnswer() != null) {
+            userForDescription.setSecretAnswer(user.getSecretAnswer());
+        }
         userForDescription.setPublicKey(user.getPublicKey());
         userForDescription.setOrganization(user.getOrganization());
 
@@ -245,7 +250,7 @@ public class SSOServiceImpl implements SSOService {
                                  String newPassword,
                                  boolean sendPasswordByEmail
     ) throws UserNotFoundException, PolicyValidationException {
-        if (!isUserAccessible("resetPassword", username)) {
+        if (!isUserManageable("resetPassword", username)) {
             throw new UserNotFoundException(username);
         }
         UserForDescription user = internalSSOService.getUserDescription(username);
@@ -341,7 +346,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void completeUser(CompleteUserRequest request) {
-        if (!isUserAccessible("completeUser", request.getUsername())) {
+        if (!isUserManageable("completeUser", request.getUsername())) {
             return;
         }
         internalSSOService.completeUser(request.getUsername());
@@ -349,7 +354,7 @@ public class SSOServiceImpl implements SSOService {
 
     @Override
     public void changeUserRole(ChangeUserRoleRequest request) {
-        if (!isUserAccessible("changeUserRole", request.getUsername())) {
+        if (!isUserManageable("changeUserRole", request.getUsername())) {
             // same exception as InternalSSOServiceImpl gives for an unknown user
             throw new IllegalStateException("Cannot find user by name");
         }
@@ -372,19 +377,26 @@ public class SSOServiceImpl implements SSOService {
     }
 
     /**
-     * Users with a role in the local (admin UI) subsystem are never reachable through RPC.
-     * A subsystem may only touch users that have a role in it, and never the users of the local
-     * (admin UI) subsystem. A denial must look like "no such user" to the caller, so callers
-     * mimic the unknown-user behaviour of their method.
+     * A subsystem may sign in and read only users that have a role in it. A denial must look like
+     * "no such user" to the caller, so callers mimic the unknown-user behaviour of their method.
+     * A name that cannot exist (empty, longer than the column) is such a user too and never reaches the database.
      */
     private boolean isUserAccessible(String method, String username) {
         String subsystem = obtainSubsystemIdentifier(null);
-        if (subsystem == null || username == null) {
+        if (!UserNames.isPossible(username) || !internalSSOService.isUserAccessibleFrom(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
         }
-        if (internalSSOService.userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
-                || !internalSSOService.userHasRolesInSubsystem(username, subsystem)) {
+        return true;
+    }
+
+    /**
+     * Changes additionally exclude users with a role in the local (admin UI) subsystem: their password,
+     * OTP, profile and roles are changed in Superfly only. The denial looks like "no such user" as well.
+     */
+    private boolean isUserManageable(String method, String username) {
+        String subsystem = obtainSubsystemIdentifier(null);
+        if (!UserNames.isPossible(username) || !internalSSOService.isUserManageableFrom(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
         }
@@ -392,12 +404,8 @@ public class SSOServiceImpl implements SSOService {
     }
 
     private void logDenied(String method, String subsystem, String username) {
-        logger.warn("Subsystem {} was denied {} on user {}", sanitize(subsystem), method, sanitize(username));
-    }
-
-    // values come from the request body: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
+        loggerSink.info(logger, "SUBSYSTEM_ACCESS_DENIED", false, username,
+                "method=" + method + ", subsystem=" + subsystem);
     }
 
     /**

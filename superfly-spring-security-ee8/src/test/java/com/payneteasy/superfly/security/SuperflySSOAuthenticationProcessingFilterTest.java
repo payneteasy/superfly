@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.client.SSOLoginState;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
 import org.easymock.EasyMock;
@@ -13,6 +14,7 @@ import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 public class SuperflySSOAuthenticationProcessingFilterTest {
 
@@ -36,7 +38,12 @@ public class SuperflySSOAuthenticationProcessingFilterTest {
         HttpServletRequest request = EasyMock.createMock(HttpServletRequest.class);
         HttpServletResponse response = EasyMock.createMock(HttpServletResponse.class);
         Authentication result = EasyMock.createMock(Authentication.class);
+        HttpSession session = EasyMock.createNiceMock(HttpSession.class);
+        EasyMock.expect(session.getAttribute(SSOLoginState.SESSION_ATTRIBUTE)).andReturn("state-1234567890abcdef");
+        EasyMock.replay(session);
 
+        EasyMock.expect(request.getParameter("state")).andReturn("state-1234567890abcdef");
+        EasyMock.expect(request.getSession(false)).andReturn(session);
         EasyMock.expect(request.getParameter("subsystemToken")).andReturn("test-token");
         EasyMock.expect(request.getParameter("targetUrl")).andReturn("/target");
         EasyMock.expect(authenticationManager.authenticate(EasyMock.anyObject(CompoundAuthentication.class)))

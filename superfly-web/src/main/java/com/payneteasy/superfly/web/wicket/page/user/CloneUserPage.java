@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.user.UIUser;
@@ -21,6 +22,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.apache.wicket.validation.validator.StringValidator;
 import org.springframework.security.access.annotation.Secured;
 
 /**
@@ -65,6 +67,7 @@ public class CloneUserPage extends BasePage {
         form.add(new LabelValueRow<String>("old-username", new Model<String>(oldUser.getUsername()),"user.clone.template-name"));
 
         LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
+        userName.getTextField().add(StringValidator.maximumLength(UserNames.MAX_LENGTH));
         form.add(userName);
 
         LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);

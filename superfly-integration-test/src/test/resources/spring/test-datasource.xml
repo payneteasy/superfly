@@ -3,17 +3,28 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!-- Defaults match the database that dev-env.sh starts; override with -Dsso.db.url, -Dsso.db.user, -Dsso.db.password -->
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="properties">
+            <props>
+                <prop key="sso.db.url">jdbc:mysql://127.0.0.1:3344/ssotest?autoReconnect=true&amp;characterEncoding=utf8&amp;serverTimezone=Europe/Moscow</prop>
+                <prop key="sso.db.user">sso</prop>
+                <prop key="sso.db.password">123sso123</prop>
+            </props>
+        </property>
+    </bean>
+
     <!-- Data-source -->
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url"
-                  value="jdbc:mysql://localhost/ssotest?autoReconnect=true&amp;characterEncoding=utf8&amp;serverTimezone=Europe/Moscow"/>
+                  value="${sso.db.url}"/>
         <!--&amp;profileSQL=true-->
-        <property name="username"  value="sso"     />
-        <property name="password"  value="123sso123" />
-        <property name="maxActive" value="-1"      />
+        <property name="username"  value="${sso.db.user}"/>
+        <property name="password"  value="${sso.db.password}"/>
+        <property name="maxTotal" value="-1"      />
         <property name="maxIdle"   value="2"       />
-        <property name="maxWait"   value="5000"    />
+        <property name="maxWaitMillis"   value="5000"    />
         <property name="testOnBorrow"   value="true"    />
         <property name="validationQuery"   value="{call create_collections()}"    />
     </bean>

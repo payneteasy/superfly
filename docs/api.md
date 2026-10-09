@@ -22,9 +22,15 @@ Superfly предоставляет два типа API. Формат везде
 - **Заголовки** `X-Subsystem-Name: {subsystem}` и `X-Subsystem-Token: {subsystemToken}` (так ходит `SSOHttpServiceApiClient`);
 - **Клиентский сертификат** (mTLS, X509).
 
-Токен подсистемы (`subsystemToken`) задаётся при регистрации подсистемы в UI.
+Токен подсистемы (`subsystemToken`) генерируется в UI при создании подсистемы или по кнопке перегенерации и показывается
+один раз: Superfly хранит только его SHA-256-хэш.
 
 RPC stateless: сессия (`JSESSIONID`) не создаётся, заголовки нужны в каждом запросе; повтор с cookie без `X-Subsystem-*` не проходит.
+
+Тело запроса ограничено 1 МБ; больше — `413` без обработки.
+
+Имя пользователя — от 1 до 32 символов (размер колонки). Для методов, принимающих имя существующего пользователя,
+пустое или более длинное имя обрабатывается как неизвестный пользователь; `registerUser` бросает `SsoUserException`.
 
 ### Remote-auth (`/sso/check/**`)
 
@@ -33,6 +39,8 @@ RPC stateless: сессия (`JSESSIONID`) не создаётся, заголо
 ```
 Authorization: Bearer {subsystem_token}
 ```
+
+Тело запроса ограничено 64 КБ; больше — `413`.
 
 Неполный или неизвестный путь под `/sso/check/check-password/` и `/sso/check/check-otp/` отвечает `404` (`type: NOT_FOUND`, см. [Ошибки](#ошибки)).
 Любой другой путь под `/sso/check/` закрыт Spring Security (`denyAll`): без сессии — редирект на `/login`, с сессией — `403`.
@@ -152,6 +160,10 @@ Authorization: Bearer {subsystem_token}
 
 **Response:** `CheckOtpResult` — в HTTP-теле `{ "status": "SUCCESS" }`.
 
+`otpType` и `isOtpOptional` из запроса не используются: тип OTP и признак optional берутся из настроек пользователя в БД
+(расхождение пишется в DEBUG-лог). Пользователь без OTP и без настроенного ключа получает `SUCCESS`, счётчик неудачных
+OTP-попыток при этом не сбрасывается.
+
 > **Несовместимо со старыми клиентами.** Раньше метод возвращал `boolean` (тело `true`/`false`); теперь — объект
 > `CheckOtpResult`. Клиент (`SSOHttpServiceApiClient` и собственные реализации) и сервер обновляйте вместе.
 > `/sso/check/check-otp` (remote-auth) не изменился.
@@ -228,13 +240,14 @@ Authorization: Bearer {subsystem_token}
 
 **Response:** `void`
 
-**Исключения:** `UserExistsException`, `PolicyValidationException`, `BadPublicKeyException`, `MessageSendException`
+**Исключения:** `UserExistsException`, `PolicyValidationException`, `BadPublicKeyException`, `MessageSendException`,
+`SsoUserException` (имя пустое или длиннее 32 символов)
 
 ---
 
 #### `getUserDescription`
 
-Возвращает профиль пользователя.
+Возвращает профиль пользователя. `secretAnswer` не возвращается (всегда `null`).
 
 **Request:** `{ "username": "john" }`
 
@@ -256,7 +269,7 @@ Authorization: Bearer {subsystem_token}
 
 #### `updateUserDescription`
 
-Обновляет профиль пользователя.
+Обновляет профиль пользователя. `secretAnswer = null` оставляет сохранённый ответ без изменений.
 
 **Request:** `{ "userDescription": { ...поля UserDescription, как в getUserDescription... } }`
 
@@ -425,6 +438,8 @@ Long-polling для получения событий. Подсистема оп
 Для следующего запроса передайте максимальный `eventId` из последнего ответа (`eventTime` курсором быть не может).
 Чтобы при старте не переигрывать историю, начните с курсора из [`getLastEventId`](#getlasteventid).
 `waitTimeMs` ограничен сервером 75 секундами — socket timeout клиента должен быть больше.
+Одновременно ждут не больше 4 запросов одной подсистемы и 50 всего; сверх лимита запрос возвращает пустой список после
+паузы ~1 с (не дольше `waitTimeMs`). Клиент, получивший пустой ответ раньше `waitTimeMs`, должен сделать паузу перед следующим запросом.
 События без подсистемы клиентам не отдаются.
 Событие отдаётся не сразу, а спустя ~5 секунд после создания (горизонт стабильности): событие, созданное ещё не закоммиченной транзакцией,
 получает `eventId` раньше более позднего закоммиченного — без задержки курсор перепрыгнул бы через него. Long-polling учитывает это

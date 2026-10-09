@@ -5,6 +5,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthSession;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
@@ -39,8 +40,17 @@ public class InternalSSOServiceOtpRequiredTest {
         service.setLockoutStrategy(EasyMock.createNiceMock(LockoutStrategy.class));
     }
 
+    private void expectStored(OTPType type, boolean optional) {
+        UserForDescription stored = new UserForDescription();
+        stored.setUsername(USER);
+        stored.setOtpTypeCode(type.code());
+        stored.setOtpOptional(optional);
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored).anyTimes();
+    }
+
     @Test
     public void optionalWithKeyAndEmptyCodeIsRejected() throws Exception {
+        expectStored(OTPType.GOOGLE_AUTH, true);
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn("encrypted-key").anyTimes();
         EasyMock.expect(hotpService.validateGoogleTimePassword(USER, "")).andReturn(CheckOtpResult.Status.INVALID);
         userService.incrementHOTPLoginsFailed(USER);
@@ -53,6 +63,7 @@ public class InternalSSOServiceOtpRequiredTest {
 
     @Test
     public void optionalWithoutKeyAndEmptyCodeSucceeds() {
+        expectStored(OTPType.GOOGLE_AUTH, true);
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null).anyTimes();
         EasyMock.replay(userService, hotpService);
 
@@ -62,6 +73,7 @@ public class InternalSSOServiceOtpRequiredTest {
 
     @Test
     public void ssoUserOfOptionalUserWithKeyIsNotOptional() {
+        EasyMock.expect(userService.isUserAccessibleFrom(USER, "sub")).andReturn(true);
         EasyMock.expect(userService.pseudoAuthenticate(USER, "sub")).andReturn(session(true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn("encrypted-key").anyTimes();
         EasyMock.replay(userService);
@@ -73,6 +85,7 @@ public class InternalSSOServiceOtpRequiredTest {
 
     @Test
     public void ssoUserOfOptionalUserWithoutKeyStaysOptional() {
+        EasyMock.expect(userService.isUserAccessibleFrom(USER, "sub")).andReturn(true);
         EasyMock.expect(userService.pseudoAuthenticate(USER, "sub")).andReturn(session(true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null).anyTimes();
         EasyMock.replay(userService);

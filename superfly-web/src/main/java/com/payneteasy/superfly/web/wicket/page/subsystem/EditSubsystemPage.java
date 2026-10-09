@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
@@ -46,7 +47,7 @@ public class EditSubsystemPage extends BasePage {
         super(ListSubsystemsPage.class, parameters);
 
         long              subsystemId = parameters.get("id").toLong(-1L);
-        final UISubsystem subsystem   = subsystemService.getSubsystem(subsystemId);
+        final UISubsystemView subsystem = subsystemService.getSubsystem(subsystemId);
 
         Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
 
@@ -71,13 +72,25 @@ public class EditSubsystemPage extends BasePage {
         form.add(new LabelCheckBoxRow("sendCallbacks", subsystem, "subsystem.edit.send-callbacks"));
 
         // Subsystem token fields
+        // the stored token is a hash: only its presence is shown; a newly generated raw token is shown once
         final Label labelSubsystemToken = new Label("subsystemToken", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return subsystem.getSubsystemToken();
+                // a token generated on this page is not persisted yet, but it will be on Save
+                return subsystem.isSubsystemTokenSet() || subsystem.getSubsystemToken() != null ? "Set" : "Not set";
             }
         });
         labelSubsystemToken.setOutputMarkupId(true);
+        final OneTimeModel newTokenModel = new OneTimeModel();
+        final Label labelNewToken = new Label("newSubsystemToken", newTokenModel) {
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(newTokenModel.getObject() != null);
+            }
+        };
+        labelNewToken.setOutputMarkupPlaceholderTag(true);
+        form.add(labelNewToken);
 
         form.add(new Label("subsystemTokenLabel", new ResourceModel("subsystem.edit.subsystemToken")));
         form.add(labelSubsystemToken);
@@ -85,8 +98,9 @@ public class EditSubsystemPage extends BasePage {
             private static final long serialVersionUID = 1L;
 
             public void onClick(AjaxRequestTarget aTarget) {
-                subsystem.setSubsystemToken(generateNewToken());
-                aTarget.add(labelSubsystemToken);
+                newTokenModel.setObject("New token (shown once, applied on Save): "
+                        + subsystemService.generateMainSubsystemToken(subsystem));
+                aTarget.add(labelSubsystemToken, labelNewToken);
             }
         });
 
@@ -163,8 +177,26 @@ public class EditSubsystemPage extends BasePage {
         return "Edit subsystem";
     }
 
-    private String generateNewToken() {
-        return subsystemService.generateMainSubsystemToken();
+    /**
+     * Holds the raw token for the current request only: it is cleared on detach and never serialized into the page store.
+     */
+    private static class OneTimeModel implements IModel<String> {
+        private transient String value;
+
+        @Override
+        public String getObject() {
+            return value;
+        }
+
+        @Override
+        public void setObject(String object) {
+            value = object;
+        }
+
+        @Override
+        public void detach() {
+            value = null;
+        }
     }
 
     private KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {

@@ -33,12 +33,21 @@ public class SSOUtils {
     public static final int SSO_SESSION_ID_COOKIE_MAXAGE = 3600; // seconds
 
     public static String buildRedirectToSubsystemUrl(String landingUrl, String subsystemToken, String targetUrl) {
+        return buildRedirectToSubsystemUrl(landingUrl, subsystemToken, targetUrl, null);
+    }
+
+    /** {@code state} is added only when the subsystem sent one, so older clients get the same URL as before. */
+    public static String buildRedirectToSubsystemUrl(String landingUrl, String subsystemToken, String targetUrl,
+                                                     String state) {
         StringBuilder buf = new StringBuilder();
         buf.append(landingUrl);
         buf.append(landingUrl.contains("?") ? "&" : "?");
         buf.append("subsystemToken").append("=").append(encodeForUrl(subsystemToken));
         buf.append("&");
         buf.append("targetUrl").append("=").append(encodeForUrl(targetUrl));
+        if (state != null) {
+            buf.append("&").append("state").append("=").append(encodeForUrl(state));
+        }
         return buf.toString();
     }
 
@@ -80,7 +89,10 @@ public class SSOUtils {
         } else {
             SSOUtils.anonymizeLoginData(page);
             String url = buildRedirectToSubsystemUrl(token.getLandingUrl(),
-                    token.getSubsystemToken(), loginData.getTargetUrl());
+                    token.getSubsystemToken(), loginData.getTargetUrl(), loginData.getState());
+            // one-time: kept until here (not cleared in anonymizeLoginData) so that a failed password
+            // attempt followed by a successful one still returns it
+            loginData.setState(null);
             redirect(page, url);
         }
     }
@@ -106,6 +118,7 @@ public class SSOUtils {
         if (loginData == null) {
             throw new IllegalStateException("loginData is null");
         }
+        BaseSSOPage.renewSessionId(page);
 
         SSOSession ssoSession = sessionService.createSSOSession(username);
         Cookie cookie = newSsoSessionCookie(ssoSession.getIdentifier(), SSOUtils.SSO_SESSION_ID_COOKIE_MAXAGE, page);

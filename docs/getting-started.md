@@ -28,6 +28,8 @@ cd superfly
 ```
 
 Откройте `http://localhost:8085/superfly/`, логин `admin`, пароль `123admin123`.
+Пароль временный: первый вход ведёт на страницу смены пароля, остальная админка доступна после смены.
+Пока у `admin` дефолтный пароль, приложение пишет при старте ERROR в лог.
 
 `dev-env.sh` публикует MySQL только на `127.0.0.1:3344`. Остальные команды (`seed`, `sql`, `down`) и ограничения
 описаны в [README](../README.md#локальная-разработка). `./dev-env.sh app` сам задаёт `DB_*` и `JETTY_*` (база `127.0.0.1:3344`) и запускает `StartSuperfly` со встроенным Jetty.
@@ -39,6 +41,26 @@ DB_HOST=127.0.0.1 DB_PORT=3344 DB_PASSWORD=... SUPERFLY_CRYPTO_SECRET=... SUPERF
 ```
 
 WAR больше не собирается: артефакт — `superfly-web/target/superfly.jar` (shaded, ~70 МБ).
+
+### Интеграционные тесты
+
+DAO-тесты (`superfly-integration-test`) ходят в реальную MySQL 5.7 и по умолчанию пропускаются. Отдельная база
+поднимается тем же `dev-env.sh` с другими именем контейнера, сети и портом, чтобы не задеть рабочее окружение:
+
+```bash
+export SUPERFLY_DEV_CONTAINER=superfly-test-db SUPERFLY_DEV_NETWORK=superfly-test-net SUPERFLY_DEV_PORT=3401
+SSO_DB_DATABASE=ssotest ./dev-env.sh up
+./mvnw -B -pl superfly-integration-test -am -Pintegration-test verify \
+  -Dsso.db.url='jdbc:mysql://127.0.0.1:3401/ssotest?autoReconnect=true&characterEncoding=utf8&serverTimezone=Europe/Moscow' \
+  -Dsso.db.skipCreate=true
+./dev-env.sh down
+```
+
+Без `-Dsso.db.skipCreate=true` тесты сами запускают `src/test/sh/create_test_database.sh`: он пересоздаёт базу
+`ssotest` (не `sso`) и накатывает миграции и процедуры; для этого нужны `mysql` в `PATH` и переменные
+`SSO_DB_HOST`, `SSO_DB_PORT`, `SSO_DB_ROOT_PASSWORD` (по умолчанию `localhost`, `3344`, `1234`).
+Адрес, пользователь и пароль тестов — `-Dsso.db.url`, `-Dsso.db.user`, `-Dsso.db.password`
+(по умолчанию `127.0.0.1:3344/ssotest`, `sso`/`123sso123`).
 
 ---
 
@@ -58,7 +80,8 @@ WAR больше не собирается: артефакт — `superfly-web/t
 
 ```bash
 cd superfly-sql/mi
-version_from=R1.7.4 bash all_mi.sh     # с какой версии применять; по умолчанию R1.0.0
+version_from=R2.0.0 bash all_mi.sh     # с какой версии применять (включая её); по умолчанию R1.0.0
+# version_to=<каталог> — до какого каталога (не включая его); по умолчанию — до конца
 cd ../src && ./all-proc.sh             # хранимые процедуры ставятся отдельно от приложения
 ```
 

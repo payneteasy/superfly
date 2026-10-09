@@ -52,12 +52,6 @@
         <param-value>none</param-value> <!-- none or google_auth -->
     </context-param>
 
-    <!-- This is for constant salt generator -->
-    <context-param>
-        <param-name>superfly-salt</param-name>
-        <param-value>kdjfKJ48jfjf$Etj84f>DFJ48fj4fzFJdf8jADfj84fjaijdf84jfjzdfjakjfajf8j4qaq</param-value>
-    </context-param>
-
     <context-param>
         <param-name>superfly-max-logins-failed</param-name>
         <param-value>6</param-value>
@@ -70,35 +64,6 @@
     </context-param>
     -->
 
-    <!--
-        ### Deprecated, use superfly-mfa-method-force for multi-factor authentication
-
-        Modification of ANY of HOTP-related parameters here (except for
-        lookahead window size) must be followed by regeneration of user tokens
-        as server-side HOTP sequences will be changed.
-        Table size leads to table of distinct size, but the sequence remains
-        the same. -->
-    <context-param>
-        <param-name>superfly-hotpMasterKey</param-name>
-        <param-value>dakjf89j4f89j4faio[jf89j4fkl;mdAKDJFLAKJ4Fkdfjliajf894jfozjdf</param-value>
-    </context-param>
-    <context-param>
-        <param-name>superfly-hotpCodeDigits</param-name>
-        <param-value>6</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>superfly-hotpLookahead</param-name>
-        <param-value>10</param-value>
-    </context-param>
-    <context-param>
-        <param-name>superfly-hotpTableSize</param-name>
-        <param-value>100</param-value>
-    </context-param>
-    <context-param>
-        <param-name>superfly-enable-hotp-emails</param-name>
-        <param-value>false</param-value>
-    </context-param>
     <context-param>
         <param-name>superfly-csrf-login-validator-enable</param-name>
         <param-value>true</param-value>
@@ -133,6 +98,25 @@
         </init-param>
     </filter>
 
+    <!-- Body size limits: 64 KB for the public bearer-check endpoints, 1 MB for the remote API.
+         Declared before springSecurityFilterChain so oversized bodies are cut off first. -->
+    <filter>
+        <filter-name>checkBodyLimit</filter-name>
+        <filter-class>com.payneteasy.superfly.web.servlet.RequestBodyLimitFilter</filter-class>
+        <init-param>
+            <param-name>maxBytes</param-name>
+            <param-value>65536</param-value>
+        </init-param>
+    </filter>
+    <filter>
+        <filter-name>remotingBodyLimit</filter-name>
+        <filter-class>com.payneteasy.superfly.web.servlet.RequestBodyLimitFilter</filter-class>
+        <init-param>
+            <param-name>maxBytes</param-name>
+            <param-value>1048576</param-value>
+        </init-param>
+    </filter>
+
     <filter>
         <filter-name>cookieEnforcer</filter-name>
         <filter-class>com.payneteasy.superfly.web.servlet.CookieEnforcer</filter-class>
@@ -151,6 +135,16 @@
     <filter-mapping>
         <filter-name>cookieEnforcer</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>checkBodyLimit</filter-name>
+        <url-pattern>/sso/check/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>remotingBodyLimit</filter-name>
+        <url-pattern>/remoting/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

@@ -49,6 +49,16 @@
       class="com.payneteasy.superfly.security.SSOUserSessionBindFilter"/>
 ```
 
+**Уведомления от Superfly (logout и др.) подписаны.** Фильтры приёма уведомлений (`SuperflyLogoutFilter`,
+`SuperflyNotificationSinkFilter` и их наследники) принимают запрос только с валидной подписью. Им нужен токен подсистемы —
+тот же, что в `SSOClientConfig.subsystemToken`: init-param `notificationSecret`, сеттер `setNotificationSecret(token)` или
+свойство `notification.secret` в `propertiesResource`. Без токена, без подписи, с неверной или просроченной (больше 5 минут)
+подписью фильтр отвечает `403` и сессии не трогает; IP allow-list, если задан, проверяется дополнительно.
+
+Формат: параметры `superflyNotificationTimestamp` (epoch millis) и `superflyNotificationSignature` — lowercase hex
+HMAC-SHA256 с ключом `sha256:` + hex(SHA-256(токен)) от каноничной строки: все параметры с префиксом `superfly`, кроме
+подписи, по имени, `name=value` (значения через `,`), строки через `\n`. Формат совпадает с hotfix 1.7, отличается только ключ.
+
 ## Режимы аутентификации
 
 ### No-redirect режим
@@ -69,6 +79,23 @@
 Пользователь → Приложение → Redirect → Superfly UI → аутентификация → Redirect назад
 ```
 
+- Перед редиректом на `/sso/login` клиент кладёт в HTTP-сессию случайный параметр `state` и добавляет его к URL входа;
+  Superfly возвращает его вместе с токеном, и клиент обменивает токен только при совпадении (`state` одноразовый).
+  Без `state` или при несовпадении токен не обменивается и вход не выполняется — мягкого режима нет. Поэтому между
+  редиректом на вход и приёмом токена нужна одна и та же HTTP-сессия приложения.
+  `ExternalFormSecurityFilter` делает это сам. Spring Security-приложения должны использовать entry point
+  `com.payneteasy.superfly.security.SuperflySSOLoginUrlAuthenticationEntryPoint` (ee8/ee10) с тем же URL входа вместо
+  `LoginUrlAuthenticationEntryPoint`: со стандартным entry point `state` не создаётся и каждый SSO-вход отклоняется.
+  Сервер принимает `state` формата `[A-Za-z0-9_-]{16,128}`; клиенты без `state` (1.7) работают как раньше.
+  `targetUrl=no-target` редиректит на landing URL без токена и без `state` — для входа клиентом 2.0 не годится.
+  Ожидающий `state` в сессии один: вход, начатый в другой вкладке, отменяет предыдущий (тот повторит редирект на вход).
+- После успешного входа (processing-фильтры клиента и обмен токена в `ExternalFormSecurityFilter`) session id меняется,
+  атрибуты сессии сохраняются. Сервер Superfly тоже меняет session id после проверки пароля, после смены пароля
+  и перед выдачей токена.
+- `targetUrl` после обмена токена принимается только как локальный путь приложения (`/...`); иначе — редирект на корень контекста.
+- Исключённые пути (`ExcludedPaths`) сравниваются по целым сегментам нормализованного пути: `/static` покрывает `/static`
+  и `/static/x`, но не `/staticX`; пути с `..` выше корня или закодированным `/` не исключаются.
+
 ## HTTP API
 
 Если Spring Security не используется, можно работать напрямую через HTTP API.
@@ -80,7 +107,8 @@ https://superfly-server/remoting/sso.service/{method}
 ```
 
 Запросы — `POST` с JSON-телом и заголовками `X-Subsystem-Name` / `X-Subsystem-Token`
-(или клиентский сертификат). Проверка учётных данных — метод `authenticate`:
+(или клиентский сертификат). Токен подсистемы показывается в админке один раз при генерации, Superfly хранит только
+его хэш: сохраните токен сразу, потерянный токен можно только перегенерировать. Проверка учётных данных — метод `authenticate`:
 
 ```http
 POST /remoting/sso.service/authenticate
@@ -161,14 +189,23 @@ protected void init() {
 ## Subsystem isolation (2.0)
 
 Методы `SSOService`, работающие с пользователем по имени, ограничены подсистемой вызывающего
-(определяется по токену подсистемы): `checkOtp`, `hasOtpMasterKey`, `updateUserOtpType`,
-`changeTempPassword`, `getUserDescription`, `resetGoogleAuthMasterKey`,
-`updateUserIsOtpOptionalValue`, `updateUserDescription`, `resetPassword`, `completeUser`,
-`changeUserRole`, `getUserStatuses`. Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
-иначе ответ такой же, как для несуществующего пользователя.
+(определяется по токену подсистемы). Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
+иначе ответ такой же, как для несуществующего пользователя (`authenticate` → `null`, remote-auth →
+`BAD_USER_OR_PASSWORD_OR_OTP`, SSO-форма — ошибка неверного пароля). Такая попытка не увеличивает счётчик
+неудачных входов и не блокирует учётную запись.
 
-- Пользователи с ролью в подсистеме `superfly` (админка) недоступны через RPC всегда, даже если
-  у них есть роль и в подсистеме вызывающего. Учётки админки и подсистем должны быть раздельными.
+- Вход и чтение — достаточно роли в подсистеме вызывающего: `authenticate`, `pseudoAuthenticate`, remote-auth
+  `/sso/check/check-password`, SSO-форма логина (для подсистемы, на которую идёт вход), `checkOtp`,
+  `hasOtpMasterKey`, `getUserDescription`, `getUserStatuses`. Роль в подсистеме `superfly` (админка) этому
+  не мешает: администратор Superfly, которому выдали роль в подсистеме, входит в неё как обычный пользователь,
+  его неудачные входы считаются и блокируют учётку. Счётчики общие: подсистема, где у администратора есть роль,
+  может заблокировать его и в админке — неверными паролями или неверными кодами в `checkOtp` (для этого пароль не нужен).
+- Изменение — дополнительно нужно отсутствие роли в `superfly`: `resetPassword`, `changeTempPassword`,
+  `resetGoogleAuthMasterKey`, `confirmOtpMasterKey`, `updateUserOtpType`, `updateUserIsOtpOptionalValue`,
+  `updateUserDescription`, `changeUserRole`, `completeUser`. Пароль, OTP, данные и роли администраторов Superfly
+  подсистема через API поменять не может (ответ как для несуществующего пользователя) — это делается в админке.
+  Страницы самого Superfly, через которые идёт SSO-вход, по-прежнему дают пользователю сменить свой временный пароль
+  и пройти первичную настройку Google Authenticator: это делает сам пользователь, подсистема в этом не участвует.
 - `exchangeSubsystemToken`: токен одноразовый, живёт 30 секунд и обменивается только подсистемой,
   для которой выдан (вызывающий определяется по токену подсистемы). Чужой, просроченный, уже
   использованный токен и токен заблокированного пользователя дают `null`; неудачный обмен чужим
@@ -177,8 +214,8 @@ protected void init() {
 - `changeTempPassword` меняет пароль только пока он временный (`is_password_temp='Y'`).
 - `resetPassword` проверяет новый пароль по password policy.
 
-Перед выкаткой найдите учётки с ролями и в `superfly`, и в других подсистемах: через RPC они
-перестанут быть доступны.
+Учётки с ролями и в `superfly`, и в других подсистемах входят в подсистемы, но сменить пароль или OTP
+через API подсистемы (например, её страницей «забыли пароль») не смогут. Найти их:
 
 ```sql
 select u.user_name, group_concat(distinct s.subsystem_name)

@@ -11,6 +11,8 @@ public class SSOLoginData implements Serializable {
     private String subsystemTitle;
     private String subsystemUrl;
     private String username;
+    // one-time value from the subsystem, returned to it together with the subsystem token
+    private String state;
 
     private String otpTypeCode;
     private boolean isOtpOptional;
@@ -63,6 +65,14 @@ public class SSOLoginData implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getOtpTypeCode() {

@@ -6,6 +6,7 @@ import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -63,6 +64,17 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         } else {
             limiter.recordFailure(step, ip, normalized);
         }
+    }
+
+    /**
+     * Gives the HTTP session a new id once the user has passed an authentication step.
+     * {@code Session.changeSessionId()} calls {@code HttpServletRequest.changeSessionId()}, which keeps
+     * the session attributes (CSRF token, Wicket session and its pages), and updates the id cached by
+     * Wicket. {@code Session.replaceSession()} is not suitable: it invalidates the HTTP session and
+     * loses those attributes. Without a bound session there is no id to change.
+     */
+    protected static void renewSessionId(Page page) {
+        page.getSession().changeSessionId();
     }
 
     protected Component createCsrfHiddenInput(String markupId) {

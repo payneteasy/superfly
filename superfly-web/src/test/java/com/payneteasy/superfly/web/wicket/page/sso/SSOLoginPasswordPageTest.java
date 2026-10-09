@@ -12,18 +12,23 @@ import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
+import com.payneteasy.superfly.web.wicket.utils.PageParametersBuilder;
 import org.apache.wicket.util.tester.FormTester;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author rpuch
  */
 public class SSOLoginPasswordPageTest extends AbstractPageTest {
+    private static final String STATE = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
     private UserService userService;
     private SessionService sessionService;
     private SubsystemService subsystemService;
@@ -107,6 +112,64 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         tester.assertHasCookie(SSOUtils.SSO_SESSION_ID_COOKIE_NAME, "super-session-id");
 
         verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
+    }
+
+    @Test
+    public void testStateEchoedAfterPassword() {
+        expectNoOtpLogin();
+        replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
+
+        startLoginWithState();
+        submitPassword("password");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + STATE);
+        assertNull("state is one-time", tester.getSession().getSsoLoginData().getState());
+
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
+    }
+
+    @Test
+    public void testStateSurvivesFailedPasswordAttempt() {
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "wrong", "test-subsystem"))
+                .andReturn(UserLoginStatus.FAILED);
+        expectNoOtpLogin();
+        replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
+
+        startLoginWithState();
+        submitPassword("wrong");
+        tester.assertRenderedPage(SSOLoginPasswordPage.class);
+        submitPassword("password");
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + STATE);
+
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
+    }
+
+    private void expectNoOtpLogin() {
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
+                .andReturn(UserLoginStatus.SUCCESS);
+        UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
+        expect(userForDescription.getOtpType()).andReturn(OTPType.NONE).anyTimes();
+        replay(userForDescription);
+        expect(userService.getUserForDescription("known-user")).andReturn(userForDescription).anyTimes();
+        expect(sessionService.createSSOSession("known-user"))
+                .andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+    }
+
+    private void startLoginWithState() {
+        tester.startPage(SSOLoginPage.class, PageParametersBuilder.fromMap(new HashMap<String, Object>() {{
+            put("subsystemIdentifier", "test-subsystem");
+            put("targetUrl", "/target");
+            put("state", STATE);
+        }}));
+        tester.assertRenderedPage(SSOLoginPasswordPage.class);
+    }
+
+    private void submitPassword(String password) {
+        FormTester form = tester.newFormTester("form");
+        form.setValue("username", "known-user");
+        form.setValue("password", password);
+        form.submit();
     }
 
     @Test

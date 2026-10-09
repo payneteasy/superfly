@@ -1,8 +1,9 @@
 package com.payneteasy.superfly.web.security;
 
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SubsystemService;
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -47,6 +48,24 @@ public class SubsystemAuthenticationProviderTest {
         replay(userDetailsService);
 
         provider.authenticate(new SubsystemAuthenticationToken("subsystem", "wrong-token"));
+    }
+
+    @Test(expected = BadCredentialsException.class)
+    public void testStoredHashPresentedAsTokenIsRejected() {
+        String storedHash = SubsystemTokenHasher.hash("valid-token");
+        expect(userDetailsService.loadUserByUsername("subsystem")).andReturn(userWith("subsystem", "valid-token"));
+        replay(userDetailsService);
+
+        provider.authenticate(new SubsystemAuthenticationToken("subsystem", storedHash));
+    }
+
+    @Test(expected = BadCredentialsException.class)
+    public void testLegacyPlainStoredTokenIsRejected() {
+        expect(userDetailsService.loadUserByUsername("subsystem")).andReturn(
+                new User("subsystem", "valid-token", List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM"))));
+        replay(userDetailsService);
+
+        provider.authenticate(new SubsystemAuthenticationToken("subsystem", "valid-token"));
     }
 
     @Test
@@ -100,14 +119,14 @@ public class SubsystemAuthenticationProviderTest {
         // а не UsernameNotFoundException, и текст исключения содержит имя подсистемы.
         SubsystemService subsystemService = createMock(SubsystemService.class);
         LoggerSink loggerSink = niceMock(LoggerSink.class);
-        UISubsystem tokenless = new UISubsystem();
+        SubsystemAuth tokenless = new SubsystemAuth();
         tokenless.setName("tokenless");
-        UISubsystem known = new UISubsystem();
+        SubsystemAuth known = new SubsystemAuth();
         known.setName("known");
-        known.setSubsystemToken("valid-token");
-        expect(subsystemService.getSubsystemByName("unknown")).andReturn(null);
-        expect(subsystemService.getSubsystemByName("tokenless")).andReturn(tokenless);
-        expect(subsystemService.getSubsystemByName("known")).andReturn(known);
+        known.setSubsystemToken(SubsystemTokenHasher.hash("valid-token"));
+        expect(subsystemService.getSubsystemAuth("unknown")).andReturn(null);
+        expect(subsystemService.getSubsystemAuth("tokenless")).andReturn(tokenless);
+        expect(subsystemService.getSubsystemAuth("known")).andReturn(known);
         replay(subsystemService, loggerSink);
         SubsystemAuthenticationProvider realProvider =
                 new SubsystemAuthenticationProvider(new SubsystemUserDetailsService(subsystemService, loggerSink));
@@ -131,6 +150,7 @@ public class SubsystemAuthenticationProviderTest {
     }
 
     private static UserDetails userWith(String username, String password) {
-        return new User(username, password, List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
+        // SubsystemUserDetailsService hands the stored token hash over as the password
+        return new User(username, SubsystemTokenHasher.hash(password), List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
     }
 }

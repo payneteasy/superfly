@@ -221,6 +221,7 @@ public class AuditEventsTest {
 
     @Test
     public void ssoPasswordStepSuccessPassesIpAndIsAudited() {
+        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), eq("pw{salt}"), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("Y");
         EasyMock.replay(userDao);
@@ -236,6 +237,7 @@ public class AuditEventsTest {
 
     @Test
     public void ssoPasswordStepFailureIsAudited() {
+        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), anyObject(String.class), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("N");
         EasyMock.replay(userDao);
@@ -251,6 +253,7 @@ public class AuditEventsTest {
         lockoutStrategy.checkLoginsFailed("bob", com.payneteasy.superfly.model.LockoutType.PASSWORD);
         EasyMock.replay(lockoutStrategy);
         userService.setLockoutStrategy(lockoutStrategy);
+        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), anyObject(String.class), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("N");
         EasyMock.replay(userDao);
@@ -274,6 +277,7 @@ public class AuditEventsTest {
         encoder.setLegacyPasswordEncoder(new PlaintextPasswordEncoder());
         encoder.setSaltSource(new com.payneteasy.superfly.password.NullSaltSource());
         service.setUserPasswordEncoder(encoder);
+        EasyMock.expect(mockUserService.userHasRolesInSubsystem("admin", "superfly")).andReturn(true);
         EasyMock.expect(mockUserService.authenticate(eq("admin"), anyObject(String.class), anyObject(String.class),
                 eq("superfly"), eq(IP), EasyMock.isNull(String.class))).andReturn(new AuthSession("admin"));
         EasyMock.replay(mockUserService);

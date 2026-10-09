@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.security.x509.X509PreAuthenticatedAuthenticationProvider;
 import org.junit.After;
 import org.junit.Before;
@@ -137,6 +138,6 @@ public class SubsystemAuthenticationIntegrationTest {
     // ── helper ────────────────────────────────────────────────────────────────
 
     private static UserDetails user(String username, String password) {
-        return new User(username, password, List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
+        return new User(username, SubsystemTokenHasher.hash(password), List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
     }
 }

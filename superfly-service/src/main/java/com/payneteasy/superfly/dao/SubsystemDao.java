@@ -4,9 +4,12 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SubsystemAuth;
+import com.payneteasy.superfly.model.SubsystemPrivateKey;
 import com.payneteasy.superfly.model.SubsystemToNotify;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
@@ -51,7 +54,7 @@ public interface SubsystemDao {
      * @return subsystem or null if no such subsystem
      */
     @AStoredProcedure(name = "ui_get_subsystem")
-    UISubsystem getSubsystem(long subsystemId);
+    UISubsystemView getSubsystem(long subsystemId);
 
     /**
      * Returns a subsystem by its name.
@@ -61,6 +64,41 @@ public interface SubsystemDao {
      */
     @AStoredProcedure(name = "ui_get_subsystem_by_name")
     UISubsystem getSubsystemByName(String subsystemName);
+
+    /**
+     * Returns what subsystem authentication needs (including the token).
+     *
+     * @param subsystemName    name of the subsystem
+     * @return subsystem auth data or null if no such subsystem
+     */
+    @AStoredProcedure(name = "get_subsystem_auth")
+    SubsystemAuth getSubsystemAuth(String subsystemName);
+
+    /**
+     * Returns the stored private key as it is in the database (encrypted, or plain PEM before the startup migration).
+     *
+     * @param subsystemName    name of the subsystem
+     * @return stored key or null if there is no such subsystem or it has no key
+     */
+    @AStoredProcedure(name = "get_subsystem_private_key")
+    String getSubsystemPrivateKey(String subsystemName);
+
+    /**
+     * Returns subsystems whose private key is not encrypted yet.
+     *
+     * @return subsystems with plain keys
+     */
+    @AStoredProcedure(name = "get_subsystems_with_plain_private_key")
+    List<SubsystemPrivateKey> getSubsystemsWithPlainPrivateKey();
+
+    /**
+     * Stores an encrypted private key; an already encrypted key in the database is left as is.
+     *
+     * @param subsystemId    ID of the subsystem
+     * @param privateKey     encrypted key
+     */
+    @AStoredProcedure(name = "encrypt_subsystem_private_key")
+    void encryptSubsystemPrivateKey(long subsystemId, String privateKey);
 
     /**
      * Deletes a subsystem.

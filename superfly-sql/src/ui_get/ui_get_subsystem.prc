@@ -12,12 +12,13 @@ create procedure ui_get_subsystem(i_ssys_id int(10))
            ss.allow_list_users,
            smtp.ssrv_id smtp_server_ssrv_id,
            smtp.server_name smtp_server_server_name,
-           ss.subsystem_token,
+           null subsystem_token,
+           if(ss.subsystem_token is null or ss.subsystem_token = '', 'N', 'Y') subsystem_token_set,
            ss.subsystem_url,
            ss.landing_url,
            ss.login_form_css_url,
            ss.public_key,
-           -- the key is only needed by remote auth (ui_get_subsystem_by_name); keep it out of UI page state
+           -- token and key are secrets, served to authentication only (get_subsystem_auth, get_subsystem_private_key)
            null private_key,
            ss.encryption_algorithm
       from subsystems ss
@@ -39,6 +40,7 @@ call save_routine_information('ui_get_subsystem',
                                         'smtp_server_ssrv_id int',
                                         'smtp_server_server_name varchar',
                                         'subsystem_token varchar',
+                                        'subsystem_token_set varchar',
                                         'subsystem_url varchar',
                                         'landing_url varchar',
                                         'login_form_css_url varchar',

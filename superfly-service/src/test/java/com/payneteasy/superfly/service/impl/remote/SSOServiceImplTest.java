@@ -5,7 +5,9 @@ import com.payneteasy.superfly.api.SSORole;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.request.*;
+import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,14 +26,18 @@ public class SSOServiceImplTest {
     @Before
     public void setUp() {
         internalSSOService = EasyMock.createMock(InternalSSOService.class);
-        ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null);
+        ssoService = new SSOServiceImpl(internalSSOService, null, null, null, null, createNiceMock(LoggerSink.class));
     }
 
     // username-based methods only work for users of the caller's subsystem
     private void expectCallerOwnsUser(String username) {
         ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
-        expect(internalSSOService.userHasRolesInSubsystem(username, "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem(username, "caller")).andReturn(true);
+        expect(internalSSOService.isUserAccessibleFrom(username, "caller")).andReturn(true);
+    }
+
+    private void expectCallerMayChangeUser(String username) {
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
+        expect(internalSSOService.isUserManageableFrom(username, "caller")).andReturn(true);
     }
 
     @Test
@@ -101,9 +107,60 @@ public class SSOServiceImplTest {
         verify(internalSSOService);
     }
 
+    private static UserForDescription storedUser() {
+        UserForDescription user = new UserForDescription();
+        user.setUsername("pete");
+        user.setSecretQuestion("question");
+        user.setSecretAnswer("stored-answer");
+        return user;
+    }
+
+    @Test
+    public void testGetUserDescriptionDoesNotReturnSecretAnswer() {
+        expectCallerOwnsUser("pete");
+        expect(internalSSOService.getUserDescription("pete")).andReturn(storedUser());
+        replay(internalSSOService);
+        UserDescription user = ssoService.getUserDescription(
+                GetUserDescriptionRequest.builder().username("pete").build());
+        Assert.assertEquals("question", user.getSecretQuestion());
+        Assert.assertNull(user.getSecretAnswer());
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testUpdateUserDescriptionWithoutSecretAnswerKeepsStoredOne() throws Exception {
+        expectCallerMayChangeUser("pete");
+        UserForDescription stored = storedUser();
+        expect(internalSSOService.getUserDescription("pete")).andReturn(stored);
+        internalSSOService.updateUserForDescription(stored);
+        replay(internalSSOService);
+        UserDescription update = new UserDescription();
+        update.setUsername("pete");
+        update.setSecretQuestion("new question");
+        ssoService.updateUserDescription(new UpdateUserDescriptionRequest(update));
+        Assert.assertEquals("new question", stored.getSecretQuestion());
+        Assert.assertEquals("stored-answer", stored.getSecretAnswer());
+        verify(internalSSOService);
+    }
+
+    @Test
+    public void testUpdateUserDescriptionWithSecretAnswerReplacesIt() throws Exception {
+        expectCallerMayChangeUser("pete");
+        UserForDescription stored = storedUser();
+        expect(internalSSOService.getUserDescription("pete")).andReturn(stored);
+        internalSSOService.updateUserForDescription(stored);
+        replay(internalSSOService);
+        UserDescription update = new UserDescription();
+        update.setUsername("pete");
+        update.setSecretAnswer("new-answer");
+        ssoService.updateUserDescription(new UpdateUserDescriptionRequest(update));
+        Assert.assertEquals("new-answer", stored.getSecretAnswer());
+        verify(internalSSOService);
+    }
+
     @Test
     public void testCompleteUser() {
-        expectCallerOwnsUser("username");
+        expectCallerMayChangeUser("username");
         internalSSOService.completeUser("username");
         expectLastCall();
         replay(internalSSOService);
@@ -143,8 +200,7 @@ public class SSOServiceImplTest {
             }
         });
 
-        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserManageableFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
@@ -163,8 +219,7 @@ public class SSOServiceImplTest {
     @Test
     public void testChangeUserRoleWithSubsystemHint() {
         ssoService.setSubsystemIdentifierObtainer(hint -> hint == null ? "test" : hint);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserManageableFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);

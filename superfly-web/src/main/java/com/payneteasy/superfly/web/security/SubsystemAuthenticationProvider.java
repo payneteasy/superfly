@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.web.security.exception.SubsystemNotAllowedHostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
@@ -11,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.security.MessageDigest;
-import java.nio.charset.StandardCharsets;
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 
 @Slf4j
 public class SubsystemAuthenticationProvider implements AuthenticationProvider {
@@ -29,7 +30,7 @@ public class SubsystemAuthenticationProvider implements AuthenticationProvider {
         if (!supports(authentication.getClass())) {
             return null;
         }
-        log.debug("Subsystem authentication request for principal={}", sanitize(authentication.getPrincipal()));
+        log.debug("Subsystem authentication request for principal={}", forLog(authentication.getPrincipal()));
 
         if (authentication.getPrincipal() == null) {
             log.warn("Subsystem auth rejected: no principal in request");
@@ -48,27 +49,25 @@ public class SubsystemAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("No subsystem token found in request.");
         }
 
-        log.debug("Loading subsystem details for subsystem={}", sanitize(subsystemName));
+        log.debug("Loading subsystem details for subsystem={}", forLog(subsystemName));
         UserDetails userDetails;
         try {
             userDetails = subsystemDetailsService.loadUserByUsername(subsystemName);
         } catch (UsernameNotFoundException | SubsystemNotAllowedHostException e) {
             // Намеренно не различаем "не найден" и "неверный токен" — предотвращаем enumeration subsystem-ов
-            log.warn("Subsystem auth rejected: invalid token for subsystem={}", sanitize(subsystemName));
+            log.warn("Subsystem auth rejected: invalid token for subsystem={}", forLog(subsystemName));
             throw new BadCredentialsException("Invalid subsystem token");
         }
 
         userDetailsChecker.check(userDetails);
 
         String storedToken = userDetails.getPassword();
-        if (storedToken == null || storedToken.isEmpty() || !MessageDigest.isEqual(
-                storedToken.getBytes(StandardCharsets.UTF_8),
-                credentials.getBytes(StandardCharsets.UTF_8))) {
-            log.warn("Subsystem auth rejected: invalid token for subsystem={}", sanitize(subsystemName));
+        if (!SubsystemTokenHasher.matches(credentials, storedToken)) {
+            log.warn("Subsystem auth rejected: invalid token for subsystem={}", forLog(subsystemName));
             throw new BadCredentialsException("Invalid subsystem token");
         }
 
-        log.info("Subsystem auth granted for subsystem={}", sanitize(subsystemName));
+        log.info("Subsystem auth granted for subsystem={}", forLog(subsystemName));
         return new SubsystemAuthenticationToken(
                 subsystemName,
                 null,
@@ -79,10 +78,5 @@ public class SubsystemAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return SubsystemAuthenticationToken.class.isAssignableFrom(authentication);
-    }
-
-    private static String sanitize(Object value) {
-        if (value == null) return null;
-        return value.toString().replaceAll("[\\r\\n\\t]", "_");
     }
 }

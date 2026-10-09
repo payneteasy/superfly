@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -47,11 +48,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final String IMPOSSIBLE_USER_SALT = "impossible-user";
 
     // error_message of login_locked when the call actually locked the account
     private static final String LOCKED_MARKER = "ACCOUNT_LOCKED";
@@ -440,7 +444,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
-        String salt = saltSource.getSalt(username);
+        boolean possible = UserNames.isPossible(username);
+        // a name that cannot exist must not reach the database even for the salt
+        String salt = possible ? saltSource.getSalt(username) : IMPOSSIBLE_USER_SALT;
+        if (!possible || !isUserAccessibleFrom(username, subsystemIdentifier)) {
+            // same hashing cost as a regular attempt, but the failed-login counter is not touched
+            if (password != null) {
+                passwordEncoder.encode(password, salt);
+                legacyPasswordEncoder.encode(password, salt);
+            }
+            logger.warn("Subsystem {} was denied SSO password login on user {}", forLog(subsystemIdentifier), forLog(username));
+            loggerSink.info(logger, "SSO_PASSWORD_LOGIN", false, username, "subsystem=" + subsystemIdentifier);
+            return UserLoginStatus.FAILED;
+        }
         // null password is an ordinary failed attempt, not an exception
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
                 userDao.getUserLoginStatus(username,
@@ -453,6 +469,20 @@ public class UserServiceImpl implements UserService {
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         }
         return result;
+    }
+
+    @Override
+    public boolean isUserAccessibleFrom(String username, String subsystemIdentifier) {
+        if (username == null || subsystemIdentifier == null) {
+            return false;
+        }
+        return userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    @Override
+    public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
+        return isUserAccessibleFrom(username, subsystemIdentifier)
+                && !userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME);
     }
 
     // request threads only: scheduled jobs have no client

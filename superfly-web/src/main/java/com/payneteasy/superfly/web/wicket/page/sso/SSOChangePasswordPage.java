@@ -46,6 +46,7 @@ public class SSOChangePasswordPage extends BaseSSOPage {
 
             @Override
             protected void onPasswordChanged() {
+                renewSessionId(SSOChangePasswordPage.this);
                 UserForDescription user = userService.getUserForDescription(username);
                 SSOLoginData loginData = SSOChangePasswordPage.this.getSession().getSsoLoginData();
                 if (loginData != null) {

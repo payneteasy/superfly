@@ -22,6 +22,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -38,14 +39,14 @@ public class SubsystemCspHeaderTest {
     private static Filter securityFilterChain;
     private static SubsystemOriginCache originCache;
     private static SubsystemDao dao;
-    private static UISubsystem subsystem;
+    private static UISubsystemView subsystem;
 
     @BeforeClass
     public static void setUp() {
         dao = EasyMock.createNiceMock(SubsystemDao.class);
         UISubsystemForList item = new UISubsystemForList();
         item.setId(1L);
-        subsystem = new UISubsystem();
+        subsystem = new UISubsystemView();
         subsystem.setLandingUrl("https://first.example/landing");
         subsystem.setLoginFormCssUrl("https://css.example/login.css");
         EasyMock.expect(dao.getSubsystems()).andReturn(List.of(item)).anyTimes();
