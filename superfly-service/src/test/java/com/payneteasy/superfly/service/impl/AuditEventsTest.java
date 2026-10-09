@@ -221,7 +221,6 @@ public class AuditEventsTest {
 
     @Test
     public void ssoPasswordStepSuccessPassesIpAndIsAudited() {
-        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "superfly")).andReturn("N");
         EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), eq("pw{salt}"), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("Y");
@@ -238,7 +237,6 @@ public class AuditEventsTest {
 
     @Test
     public void ssoPasswordStepFailureIsAudited() {
-        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "superfly")).andReturn("N");
         EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), anyObject(String.class), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("N");
@@ -255,7 +253,6 @@ public class AuditEventsTest {
         lockoutStrategy.checkLoginsFailed("bob", com.payneteasy.superfly.model.LockoutType.PASSWORD);
         EasyMock.replay(lockoutStrategy);
         userService.setLockoutStrategy(lockoutStrategy);
-        EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "superfly")).andReturn("N");
         EasyMock.expect(userDao.userHasRolesInSubsystem("bob", "billing")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("bob"), anyObject(String.class), anyObject(String.class),
                 eq("billing"), eq(IP))).andReturn("N");

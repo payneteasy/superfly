@@ -33,6 +33,11 @@ public class SSOServiceImplTest {
         expect(internalSSOService.isUserAccessibleFrom(username, "caller")).andReturn(true);
     }
 
+    private void expectCallerMayChangeUser(String username) {
+        ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
+        expect(internalSSOService.isUserManageableFrom(username, "caller")).andReturn(true);
+    }
+
     @Test
     public void testAuthenticateHOTP() {
         // success
@@ -102,7 +107,7 @@ public class SSOServiceImplTest {
 
     @Test
     public void testCompleteUser() {
-        expectCallerOwnsUser("username");
+        expectCallerMayChangeUser("username");
         internalSSOService.completeUser("username");
         expectLastCall();
         replay(internalSSOService);
@@ -142,7 +147,7 @@ public class SSOServiceImplTest {
             }
         });
 
-        expect(internalSSOService.isUserAccessibleFrom("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserManageableFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
@@ -161,7 +166,7 @@ public class SSOServiceImplTest {
     @Test
     public void testChangeUserRoleWithSubsystemHint() {
         ssoService.setSubsystemIdentifierObtainer(hint -> hint == null ? "test" : hint);
-        expect(internalSSOService.isUserAccessibleFrom("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserManageableFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);

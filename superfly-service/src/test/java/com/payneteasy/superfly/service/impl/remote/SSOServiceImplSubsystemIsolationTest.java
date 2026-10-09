@@ -24,8 +24,9 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
- * A subsystem may only act on users that have a role in it; users of the local subsystem are off limits.
- * Every denial must look exactly like "no such user" and must not reach the underlying service.
+ * A subsystem may only act on users that have a role in it; users that also have a role in the local subsystem
+ * are signed in and read, but never changed. Every denial must look exactly like "no such user" and must not
+ * reach the underlying service.
  */
 public class SSOServiceImplSubsystemIsolationTest {
     private static final String CALLER = "caller";
@@ -46,16 +47,32 @@ public class SSOServiceImplSubsystemIsolationTest {
         ssoService.setSubsystemIdentifierObtainer(hint -> CALLER);
     }
 
+    // sign-in and reads
+
     private void expectForeign() {
         expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
-    private void expectLocalUser() {
-        expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
+    private void expectSuperflyAdminWithRole() {
+        expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(true);
     }
 
     private void expectOwn() {
         expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(true);
+    }
+
+    // changes of password, OTP, profile and roles
+
+    private void expectForeignForChange() {
+        expect(internal.isUserManageableFrom(USER, CALLER)).andReturn(false);
+    }
+
+    private void expectSuperflyAdminWithRoleForChange() {
+        expect(internal.isUserManageableFrom(USER, CALLER)).andReturn(false);
+    }
+
+    private void expectOwnForChange() {
+        expect(internal.isUserManageableFrom(USER, CALLER)).andReturn(true);
     }
 
     private void replayAll() {
@@ -97,10 +114,11 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void checkOtpLocalUserIsDenied() throws Exception {
-        expectLocalUser();
+    public void checkOtpSuperflyAdminWithRoleIsDelegated() throws Exception {
+        expectSuperflyAdminWithRole();
+        expect(internal.checkOtp(OTPType.GOOGLE_AUTH, false, USER, "abcdef")).andReturn(CheckOtpResult.Status.SUCCESS);
         replayAll();
-        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
+        assertEquals(CheckOtpResult.Status.SUCCESS, ssoService.checkOtp(new CheckOtpRequest(USER, "abcdef", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 
@@ -124,10 +142,11 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void hasOtpMasterKeyLocalUser() {
-        expectLocalUser();
+    public void hasOtpMasterKeySuperflyAdminWithRole() {
+        expectSuperflyAdminWithRole();
+        expect(internal.hasOtpMasterKey(USER)).andReturn(true);
         replayAll();
-        assertFalse(ssoService.hasOtpMasterKey(new HasOtpMasterKeyRequest(USER)));
+        assertTrue(ssoService.hasOtpMasterKey(new HasOtpMasterKeyRequest(USER)));
         verifyAll();
     }
 
@@ -144,15 +163,15 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserOtpTypeForeignUser() {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         ssoService.updateUserOtpType(new UpdateUserOtpTypeRequest(USER, "GOOGLE_AUTH"));
         verifyAll();
     }
 
     @Test
-    public void updateUserOtpTypeLocalUser() {
-        expectLocalUser();
+    public void updateUserOtpTypeSuperflyAdminWithRole() {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         ssoService.updateUserOtpType(new UpdateUserOtpTypeRequest(USER, "GOOGLE_AUTH"));
         verifyAll();
@@ -160,7 +179,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserOtpTypeOwnUser() {
-        expectOwn();
+        expectOwnForChange();
         internal.updateUserOtpType(USER, "GOOGLE_AUTH");
         replayAll();
         ssoService.updateUserOtpType(new UpdateUserOtpTypeRequest(USER, "GOOGLE_AUTH"));
@@ -171,7 +190,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void changeTempPasswordForeignUserStillValidatesPolicy() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         internal.validatePasswordPolicy(null, "pw");
         replayAll();
         ssoService.changeTempPassword(new ChangeTempPasswordRequest(USER, "pw"));
@@ -180,7 +199,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void changeTempPasswordForeignUserWeakPasswordFailsLikeUnknownUser() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         internal.validatePasswordPolicy(null, "pw");
         expectLastCall().andThrow(new PolicyValidationException("weak"));
         replayAll();
@@ -194,8 +213,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void changeTempPasswordLocalUser() throws Exception {
-        expectLocalUser();
+    public void changeTempPasswordSuperflyAdminWithRole() throws Exception {
+        expectSuperflyAdminWithRoleForChange();
         internal.validatePasswordPolicy(null, "pw");
         replayAll();
         ssoService.changeTempPassword(new ChangeTempPasswordRequest(USER, "pw"));
@@ -204,7 +223,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void changeTempPasswordOwnUser() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         internal.changeTempPassword(USER, "pw");
         replayAll();
         ssoService.changeTempPassword(new ChangeTempPasswordRequest(USER, "pw"));
@@ -222,10 +241,13 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void getUserDescriptionLocalUser() {
-        expectLocalUser();
+    public void getUserDescriptionSuperflyAdminWithRole() {
+        expectSuperflyAdminWithRole();
+        expect(internal.getUserDescription(USER)).andReturn(userForDescription());
         replayAll();
-        assertNull(ssoService.getUserDescription(GetUserDescriptionRequest.builder().username(USER).build()));
+        UserDescription description =
+                ssoService.getUserDescription(GetUserDescriptionRequest.builder().username(USER).build());
+        assertEquals(USER, description.getUsername());
         verifyAll();
     }
 
@@ -244,7 +266,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void resetGoogleAuthMasterKeyForeignUserReturnsKeyAndPersistsNothing() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         String key = ssoService.resetGoogleAuthMasterKey(new ResetGoogleAuthMasterKeyRequest(USER));
         assertNotNull(key);
@@ -253,8 +275,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void resetGoogleAuthMasterKeyLocalUser() throws Exception {
-        expectLocalUser();
+    public void resetGoogleAuthMasterKeySuperflyAdminWithRole() throws Exception {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         assertNotNull(ssoService.resetGoogleAuthMasterKey(new ResetGoogleAuthMasterKeyRequest(USER)));
         verifyAll();
@@ -262,7 +284,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void resetGoogleAuthMasterKeyOwnUser() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         expect(hotpService.resetGoogleAuthMasterKey(CALLER, USER)).andReturn("key");
         replayAll();
         assertEquals("key", ssoService.resetGoogleAuthMasterKey(new ResetGoogleAuthMasterKeyRequest(USER)));
@@ -273,7 +295,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void confirmOtpMasterKeyForeignUserIsInvalid() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         assertEquals(CheckOtpResult.Status.INVALID,
                 ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
@@ -281,8 +303,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void confirmOtpMasterKeyLocalUserIsInvalid() throws Exception {
-        expectLocalUser();
+    public void confirmOtpMasterKeySuperflyAdminWithRoleIsInvalid() throws Exception {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         assertEquals(CheckOtpResult.Status.INVALID,
                 ssoService.confirmOtpMasterKey(new ConfirmOtpMasterKeyRequest(USER, "123456")).getStatus());
@@ -291,7 +313,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void confirmOtpMasterKeyOwnUserIsDelegated() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         expect(internal.confirmOtpMasterKey(USER, "123456")).andReturn(CheckOtpResult.Status.LOCKED);
         replayAll();
         assertEquals(CheckOtpResult.Status.LOCKED,
@@ -303,15 +325,15 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserIsOtpOptionalValueForeignUser() {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         ssoService.updateUserIsOtpOptionalValue(new UpdateUserIsOtpOptionalValueRequest(USER, true));
         verifyAll();
     }
 
     @Test
-    public void updateUserIsOtpOptionalValueLocalUser() {
-        expectLocalUser();
+    public void updateUserIsOtpOptionalValueSuperflyAdminWithRole() {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         ssoService.updateUserIsOtpOptionalValue(new UpdateUserIsOtpOptionalValueRequest(USER, true));
         verifyAll();
@@ -319,7 +341,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserIsOtpOptionalValueOwnUser() {
-        expectOwn();
+        expectOwnForChange();
         internal.updateUserIsOtpOptionalValue(USER, true);
         replayAll();
         ssoService.updateUserIsOtpOptionalValue(new UpdateUserIsOtpOptionalValueRequest(USER, true));
@@ -336,7 +358,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserDescriptionForeignUserNotFound() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         try {
             ssoService.updateUserDescription(updateDescriptionRequest());
@@ -348,8 +370,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void updateUserDescriptionLocalUserNotFound() throws Exception {
-        expectLocalUser();
+    public void updateUserDescriptionSuperflyAdminWithRoleNotFound() throws Exception {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         try {
             ssoService.updateUserDescription(updateDescriptionRequest());
@@ -362,7 +384,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void updateUserDescriptionOwnUser() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         UserForDescription user = userForDescription();
         expect(internal.getUserDescription(USER)).andReturn(user);
         internal.updateUserForDescription(user);
@@ -379,7 +401,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void resetPasswordForeignUserNotFound() throws Exception {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         try {
             ssoService.resetPassword(resetRequest("pw"));
@@ -391,8 +413,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void resetPasswordLocalUserNotFound() throws Exception {
-        expectLocalUser();
+    public void resetPasswordSuperflyAdminWithRoleNotFound() throws Exception {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         try {
             ssoService.resetPassword(resetRequest("pw"));
@@ -405,7 +427,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void resetPasswordOwnUserValidatesPolicyBeforeReset() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         expect(internal.getUserDescription(USER)).andReturn(userForDescription());
         internal.validatePasswordPolicy(USER, "pw");
         resetPasswordStrategy.resetPassword(7L, USER, "pw");
@@ -416,7 +438,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void resetPasswordRejectedByPolicyIsNotApplied() throws Exception {
-        expectOwn();
+        expectOwnForChange();
         expect(internal.getUserDescription(USER)).andReturn(userForDescription());
         internal.validatePasswordPolicy(USER, "pw");
         expectLastCall().andThrow(new PolicyValidationException("weak"));
@@ -434,15 +456,15 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void completeUserForeignUser() {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         ssoService.completeUser(CompleteUserRequest.builder().username(USER).build());
         verifyAll();
     }
 
     @Test
-    public void completeUserLocalUser() {
-        expectLocalUser();
+    public void completeUserSuperflyAdminWithRole() {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         ssoService.completeUser(CompleteUserRequest.builder().username(USER).build());
         verifyAll();
@@ -450,7 +472,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void completeUserOwnUser() {
-        expectOwn();
+        expectOwnForChange();
         internal.completeUser(USER);
         replayAll();
         ssoService.completeUser(CompleteUserRequest.builder().username(USER).build());
@@ -465,7 +487,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void changeUserRoleForeignUserFailsLikeUnknownUser() {
-        expectForeign();
+        expectForeignForChange();
         replayAll();
         try {
             ssoService.changeUserRole(changeRoleRequest());
@@ -477,8 +499,8 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void changeUserRoleLocalUserFailsLikeUnknownUser() {
-        expectLocalUser();
+    public void changeUserRoleSuperflyAdminWithRoleFailsLikeUnknownUser() {
+        expectSuperflyAdminWithRoleForChange();
         replayAll();
         try {
             ssoService.changeUserRole(changeRoleRequest());
@@ -491,7 +513,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void changeUserRoleOwnUserIsDelegated() {
-        expectOwn();
+        expectOwnForChange();
         internal.changeUserRole(USER, "ROLE", CALLER);
         replayAll();
         ssoService.changeUserRole(changeRoleRequest());
@@ -508,7 +530,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void getUserStatusesOnlyForeignAndLocalUsersReturnsNothing() {
+    public void getUserStatusesOnlyForeignUsersAndAdminsWithoutRoleReturnsNothing() {
         expect(internal.isUserAccessibleFrom("foreign", CALLER)).andReturn(false);
         expect(internal.isUserAccessibleFrom("admin", CALLER)).andReturn(false);
         replayAll();
@@ -528,6 +550,19 @@ public class SSOServiceImplSubsystemIsolationTest {
                 ssoService.getUserStatuses(new GetUserStatusesRequest(Arrays.asList("own", "foreign")));
         assertEquals(1, result.size());
         assertEquals("own", result.get(0).getUsername());
+        verifyAll();
+    }
+
+    @Test
+    public void getUserStatusesIncludesSuperflyAdminWithRole() {
+        expect(internal.isUserAccessibleFrom("admin", CALLER)).andReturn(true);
+        UserWithStatus admin = new UserWithStatus();
+        admin.setUserName("admin");
+        expect(internal.getUserStatuses("admin")).andReturn(Collections.singletonList(admin));
+        replayAll();
+        List<UserStatus> result = ssoService.getUserStatuses(new GetUserStatusesRequest(Collections.singletonList("admin")));
+        assertEquals(1, result.size());
+        assertEquals("admin", result.get(0).getUsername());
         verifyAll();
     }
 
@@ -572,6 +607,21 @@ public class SSOServiceImplSubsystemIsolationTest {
         replayAll();
         assertFalse(ssoService.hasOtpMasterKey(new HasOtpMasterKeyRequest(USER)));
         assertNull(ssoService.getUserDescription(GetUserDescriptionRequest.builder().username(USER).build()));
+        verifyAll();
+    }
+
+    @Test
+    public void callerWithoutSubsystemCannotChangeAnything() throws Exception {
+        ssoService.setSubsystemIdentifierObtainer(hint -> null);
+        expect(internal.isUserManageableFrom(USER, null)).andReturn(false).times(2);
+        replayAll();
+        ssoService.completeUser(CompleteUserRequest.builder().username(USER).build());
+        try {
+            ssoService.resetPassword(resetRequest("pw"));
+            fail();
+        } catch (UserNotFoundException expected) {
+            // same as for an unknown user
+        }
         verifyAll();
     }
 }

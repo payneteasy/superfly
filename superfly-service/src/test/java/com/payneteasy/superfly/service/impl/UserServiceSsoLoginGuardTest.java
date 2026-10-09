@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
+import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.PasswordEncoder;
@@ -20,7 +21,6 @@ import static org.junit.Assert.*;
  */
 public class UserServiceSsoLoginGuardTest {
 
-    private static final String LOCAL  = "superfly";
     private static final String TARGET = "billing";
     private static final String USER   = "victim";
 
@@ -49,7 +49,6 @@ public class UserServiceSsoLoginGuardTest {
 
     @Test
     public void foreignUserFailsWithoutProcedureOrLockout() {
-        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andReturn("N");
         expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("N");
         replay(userDao, lockoutStrategy);
 
@@ -60,8 +59,8 @@ public class UserServiceSsoLoginGuardTest {
     }
 
     @Test
-    public void localUserFailsWithoutProcedureOrLockout() {
-        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andReturn("Y");
+    public void superflyAdminWithoutRoleInTargetFailsWithoutProcedureOrLockout() {
+        expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("N");
         replay(userDao, lockoutStrategy);
 
         assertEquals(UserLoginStatus.FAILED, service.checkUserCanLoginWithThisPassword(USER, "pass", TARGET));
@@ -81,7 +80,6 @@ public class UserServiceSsoLoginGuardTest {
 
     @Test
     public void deniedUserWithNullPasswordDoesNotHash() {
-        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andReturn("N");
         expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("N");
         replay(userDao, lockoutStrategy);
 
@@ -93,7 +91,6 @@ public class UserServiceSsoLoginGuardTest {
 
     @Test
     public void ownUserGoesToTheProcedure() {
-        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andReturn("N");
         expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("Y");
         expect(userDao.getUserLoginStatus(eq(USER), eq("pass{salt}"), eq("pass{salt}"), eq(TARGET), anyObject(String.class)))
                 .andReturn("Y");
@@ -105,8 +102,32 @@ public class UserServiceSsoLoginGuardTest {
     }
 
     @Test
+    public void superflyAdminWithRoleInTargetGoesToTheProcedure() {
+        expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("Y");
+        expect(userDao.getUserLoginStatus(eq(USER), eq("pass{salt}"), eq("pass{salt}"), eq(TARGET), anyObject(String.class)))
+                .andReturn("Y");
+        replay(userDao, lockoutStrategy);
+
+        assertEquals(UserLoginStatus.SUCCESS, service.checkUserCanLoginWithThisPassword(USER, "pass", TARGET));
+
+        verify(userDao, lockoutStrategy);
+    }
+
+    @Test
+    public void superflyAdminWithRoleInTargetAndWrongPasswordCountsFailure() {
+        expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("Y");
+        expect(userDao.getUserLoginStatus(eq(USER), eq("bad{salt}"), eq("bad{salt}"), eq(TARGET), anyObject(String.class)))
+                .andReturn("N");
+        lockoutStrategy.checkLoginsFailed(USER, LockoutType.PASSWORD);
+        replay(userDao, lockoutStrategy);
+
+        assertEquals(UserLoginStatus.FAILED, service.checkUserCanLoginWithThisPassword(USER, "bad", TARGET));
+
+        verify(userDao, lockoutStrategy);
+    }
+
+    @Test
     public void accessibilityRule() {
-        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andReturn("N");
         expect(userDao.userHasRolesInSubsystem(USER, TARGET)).andReturn("Y");
         replay(userDao);
 

@@ -121,7 +121,6 @@ public class LoginPassesBothHashesTest {
         service.setSaltSource(new ConstantSaltSource("salt"));
         service.setLockoutStrategy(TrivialProxyFactory.createProxy(com.payneteasy.superfly.lockout.LockoutStrategy.class));
         service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
-        EasyMock.expect(userDao.userHasRolesInSubsystem("user", "superfly")).andReturn("N");
         EasyMock.expect(userDao.userHasRolesInSubsystem("user", "subsystem")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus(eq("user"), eq(Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH),
                 EasyMock.isNull(String.class), eq("subsystem"), EasyMock.isNull(String.class))).andReturn("N");

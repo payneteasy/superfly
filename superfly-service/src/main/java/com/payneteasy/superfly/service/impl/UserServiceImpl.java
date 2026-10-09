@@ -470,8 +470,13 @@ public class UserServiceImpl implements UserService {
         if (username == null || subsystemIdentifier == null) {
             return false;
         }
-        return !userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
-                && userHasRolesInSubsystem(username, subsystemIdentifier);
+        return userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    @Override
+    public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
+        return isUserAccessibleFrom(username, subsystemIdentifier)
+                && !userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME);
     }
 
     // values come from the request: strip line breaks to prevent log injection

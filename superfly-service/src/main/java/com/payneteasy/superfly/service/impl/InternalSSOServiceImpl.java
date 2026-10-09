@@ -205,6 +205,11 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         return userService.isUserAccessibleFrom(username, subsystemIdentifier);
     }
 
+    @Override
+    public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
+        return userService.isUserManageableFrom(username, subsystemIdentifier);
+    }
+
     // values come from the request body: strip line breaks to prevent log injection
     private static String sanitize(String value) {
         return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");

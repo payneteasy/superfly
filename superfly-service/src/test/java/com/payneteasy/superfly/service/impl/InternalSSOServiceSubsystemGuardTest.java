@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -24,8 +25,8 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 /**
- * authenticate / pseudoAuthenticate only touch users of the calling subsystem: a denial must not reach the
- * failed-login counter and must cost the same hashing as a regular attempt.
+ * authenticate / pseudoAuthenticate only touch users of the calling subsystem, Superfly administrators included:
+ * a denial must not reach the failed-login counter and must cost the same hashing as a regular attempt.
  */
 public class InternalSSOServiceSubsystemGuardTest {
 
@@ -60,7 +61,7 @@ public class InternalSSOServiceSubsystemGuardTest {
         expect(userService.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
-    private void expectLocalUser() {
+    private void expectSuperflyAdminWithoutRoleInCaller() {
         expect(userService.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
@@ -85,8 +86,8 @@ public class InternalSSOServiceSubsystemGuardTest {
     }
 
     @Test
-    public void authenticateLocalUserReturnsNullWithoutTouchingCounter() {
-        expectLocalUser();
+    public void authenticateSuperflyAdminWithoutRoleInCallerReturnsNullWithoutTouchingCounter() {
+        expectSuperflyAdminWithoutRoleInCaller();
         replay(userService, lockoutStrategy);
 
         assertNull(service.authenticate(USER, "pass", CALLER, null, null));
@@ -164,8 +165,8 @@ public class InternalSSOServiceSubsystemGuardTest {
     }
 
     @Test
-    public void pseudoAuthenticateLocalUserReturnsNull() {
-        expectLocalUser();
+    public void pseudoAuthenticateSuperflyAdminWithoutRoleInCallerReturnsNull() {
+        expectSuperflyAdminWithoutRoleInCaller();
         replay(userService);
 
         assertNull(service.pseudoAuthenticate(USER, CALLER));
@@ -190,6 +191,74 @@ public class InternalSSOServiceSubsystemGuardTest {
         replay(userService);
 
         assertEquals(USER, service.pseudoAuthenticate(USER, CALLER).getName());
+
+        verify(userService);
+    }
+
+    // the access rule itself, not a mock of it
+    private UserDao serviceWithRealAccessRule(boolean roleInLocal, boolean roleInCaller) {
+        UserDao userDao = createStrictMock(UserDao.class);
+        expect(userDao.userHasRolesInSubsystem(USER, LOCAL)).andStubReturn(roleInLocal ? "Y" : "N");
+        expect(userDao.userHasRolesInSubsystem(USER, CALLER)).andStubReturn(roleInCaller ? "Y" : "N");
+        UserServiceImpl realUserService = new UserServiceImpl();
+        realUserService.setUserDao(userDao);
+        service.setUserService(realUserService);
+        return userDao;
+    }
+
+    @Test
+    public void authenticateSuperflyAdminWithRoleInCallerIsDelegated() {
+        UserDao userDao = serviceWithRealAccessRule(true, true);
+        expect(userDao.authenticate(eq(USER), eq("pass{salt}"), eq("pass{salt}"), eq(CALLER),
+                anyObject(String.class), anyObject(String.class))).andReturn(session());
+        replay(userDao, lockoutStrategy);
+
+        assertEquals(USER, service.authenticate(USER, "pass", CALLER, null, null).getName());
+
+        verify(userDao, lockoutStrategy);
+    }
+
+    @Test
+    public void authenticateSuperflyAdminWithRoleInCallerAndWrongPasswordCountsFailure() {
+        UserDao userDao = serviceWithRealAccessRule(true, true);
+        expect(userDao.authenticate(eq(USER), anyObject(String.class), anyObject(String.class), eq(CALLER),
+                anyObject(String.class), anyObject(String.class))).andReturn(null);
+        lockoutStrategy.checkLoginsFailed(USER, com.payneteasy.superfly.model.LockoutType.PASSWORD);
+        replay(userDao, lockoutStrategy);
+
+        assertNull(service.authenticate(USER, "bad", CALLER, null, null));
+
+        verify(userDao, lockoutStrategy);
+    }
+
+    @Test
+    public void authenticateSuperflyAdminWithoutRoleInCallerIsDeniedByTheRealRule() {
+        UserDao userDao = serviceWithRealAccessRule(true, false);
+        replay(userDao, lockoutStrategy);
+
+        assertNull(service.authenticate(USER, "pass", CALLER, null, null));
+
+        assertEquals(2, encodeCalls.get());
+        verify(userDao, lockoutStrategy);
+    }
+
+    @Test
+    public void pseudoAuthenticateSuperflyAdminWithRoleInCallerIsDelegated() {
+        UserDao userDao = serviceWithRealAccessRule(true, true);
+        expect(userDao.pseudoAuthenticate(USER, CALLER)).andReturn(session());
+        replay(userDao);
+
+        assertEquals(USER, service.pseudoAuthenticate(USER, CALLER).getName());
+
+        verify(userDao);
+    }
+
+    @Test
+    public void manageabilityIsAskedFromUserService() {
+        expect(userService.isUserManageableFrom(USER, CALLER)).andReturn(true);
+        replay(userService);
+
+        assertTrue(service.isUserManageableFrom(USER, CALLER));
 
         verify(userService);
     }
