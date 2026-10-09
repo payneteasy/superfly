@@ -2,13 +2,18 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.utils.SubsystemTokenHasher;
+import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.exceptions.SsoUserException;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
 import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
@@ -193,6 +198,63 @@ public class InternalSSOServiceSubsystemGuardTest {
         assertEquals(USER, service.pseudoAuthenticate(USER, CALLER).getName());
 
         verify(userService);
+    }
+
+    // names that cannot exist: no database access at all, the salt lookup included
+
+    private static final String TOO_LONG = "a".repeat(UserNames.MAX_LENGTH + 1);
+
+    private SaltSource saltSourceThatMustNotBeAsked() {
+        SaltSource saltSource = createStrictMock(SaltSource.class);
+        service.setSaltSource(saltSource);
+        return saltSource;
+    }
+
+    @Test
+    public void authenticateTooLongNameIsDeniedLikeUnknownUserButStillHashes() {
+        SaltSource saltSource = saltSourceThatMustNotBeAsked();
+        replay(userService, lockoutStrategy, saltSource);
+
+        assertNull(service.authenticate(TOO_LONG, "pass", CALLER, null, null));
+
+        assertEquals(2, encodeCalls.get());
+        verify(userService, lockoutStrategy, saltSource);
+    }
+
+    @Test
+    public void authenticateEmptyNameIsDeniedLikeUnknownUserButStillHashes() {
+        SaltSource saltSource = saltSourceThatMustNotBeAsked();
+        replay(userService, lockoutStrategy, saltSource);
+
+        assertNull(service.authenticate("", "pass", CALLER, null, null));
+
+        assertEquals(2, encodeCalls.get());
+        verify(userService, lockoutStrategy, saltSource);
+    }
+
+    @Test
+    public void pseudoAuthenticateTooLongOrEmptyNameIsDenied() {
+        replay(userService);
+
+        assertNull(service.pseudoAuthenticate(TOO_LONG, CALLER));
+        assertNull(service.pseudoAuthenticate("", CALLER));
+
+        verify(userService);
+    }
+
+    @Test
+    public void registerUserWithTooLongNameIsRefusedWithClientException() throws Exception {
+        SaltSource saltSource = saltSourceThatMustNotBeAsked();
+        replay(userService, saltSource);
+
+        try {
+            service.registerUser(TOO_LONG, "pass", "e@example.com", CALLER, new RoleGrantSpecification[0],
+                    "n", "s", "q", "a", null, "o", OTPType.NONE);
+            fail("an over-long name must be refused");
+        } catch (SsoUserException expected) {
+            assertTrue(expected.getMessage().contains(String.valueOf(UserNames.MAX_LENGTH)));
+        }
+        verify(userService, saltSource);
     }
 
     // the access rule itself, not a mock of it

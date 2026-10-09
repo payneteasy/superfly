@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.lockout.none.NoneLockoutStrategy;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthAction;
@@ -9,6 +10,7 @@ import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.NullSaltSource;
 import com.payneteasy.superfly.password.PlaintextPasswordEncoder;
+import com.payneteasy.superfly.password.UserPasswordEncoder;
 import com.payneteasy.superfly.password.UserPasswordEncoderImpl;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserService;
@@ -34,6 +36,18 @@ public class LocalSecurityServiceImplTest {
         service.setLoggerSink(TrivialProxyFactory.createProxy(LoggerSink.class));
         service.setLockoutStrategy(new NoneLockoutStrategy());
         localSecurityService = service;
+    }
+
+    @Test
+    public void testTooLongOrEmptyNameFailsLikeUnknownUserWithoutDatabase() {
+        UserPasswordEncoder userPasswordEncoder = EasyMock.createStrictMock(UserPasswordEncoder.class);
+        localSecurityService.setUserPasswordEncoder(userPasswordEncoder);
+        EasyMock.replay(userService, userPasswordEncoder);
+        org.junit.Assert.assertNull(localSecurityService.authenticate(
+                "a".repeat(UserNames.MAX_LENGTH + 1), "pass"));
+        org.junit.Assert.assertNull(localSecurityService.authenticate("", "pass"));
+        org.junit.Assert.assertNull(localSecurityService.authenticate(null, "pass"));
+        EasyMock.verify(userService, userPasswordEncoder);
     }
 
     @Test

@@ -1,11 +1,13 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.LockoutType;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.PasswordEncoder;
+import com.payneteasy.superfly.password.SaltSource;
 import com.payneteasy.superfly.service.LoggerSink;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +69,20 @@ public class UserServiceSsoLoginGuardTest {
 
         assertEquals(2, encodeCalls.get());
         verify(userDao, lockoutStrategy);
+    }
+
+    @Test
+    public void tooLongOrEmptyNameFailsWithoutDatabaseButStillHashes() {
+        SaltSource saltSource = createStrictMock(SaltSource.class);
+        service.setSaltSource(saltSource);
+        replay(userDao, lockoutStrategy, saltSource);
+
+        assertEquals(UserLoginStatus.FAILED, service.checkUserCanLoginWithThisPassword(
+                "a".repeat(UserNames.MAX_LENGTH + 1), "pass", TARGET));
+        assertEquals(UserLoginStatus.FAILED, service.checkUserCanLoginWithThisPassword("", "pass", TARGET));
+
+        assertEquals(4, encodeCalls.get());
+        verify(userDao, lockoutStrategy, saltSource);
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
@@ -67,11 +68,17 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     }
 
     public String[] authenticate(String username, String password) {
+        if (!UserNames.isPossible(username)) {
+            // the salt lookup would pass the name to the database, which cannot hold it
+            logger.warn("Login failed. User <{}> cannot exist", sanitize(username));
+            loggerSink.info(logger, "LOCAL_LOGIN", false, username);
+            return null;
+        }
         // null password is an ordinary failed attempt, not an exception
         String encPassword = password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH
                 : userPasswordEncoder.encode(password, username);
         String legacyPassword = password == null ? null : userPasswordEncoder.encodeLegacy(password, username);
-        if (username == null || !userService.userHasRolesInSubsystem(username, localSubsystemName)) {
+        if (!userService.userHasRolesInSubsystem(username, localSubsystemName)) {
             // hashing is already done above; the failed-login counter of users outside the admin console stays untouched
             logger.warn("Login failed. User <{}> has no role in the local subsystem", sanitize(username));
             loggerSink.info(logger, "LOCAL_LOGIN", false, username);

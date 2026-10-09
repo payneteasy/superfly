@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.dao.DaoConstants;
 import com.payneteasy.superfly.dao.UserDao;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
@@ -52,6 +53,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final String IMPOSSIBLE_USER_SALT = "impossible-user";
 
     // error_message of login_locked when the call actually locked the account
     private static final String LOCKED_MARKER = "ACCOUNT_LOCKED";
@@ -440,8 +442,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
-        String salt = saltSource.getSalt(username);
-        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+        boolean possible = UserNames.isPossible(username);
+        // a name that cannot exist must not reach the database even for the salt
+        String salt = possible ? saltSource.getSalt(username) : IMPOSSIBLE_USER_SALT;
+        if (!possible || !isUserAccessibleFrom(username, subsystemIdentifier)) {
             // same hashing cost as a regular attempt, but the failed-login counter is not touched
             if (password != null) {
                 passwordEncoder.encode(password, salt);

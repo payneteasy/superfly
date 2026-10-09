@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.GetEventsRequest;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.UserRegisterRequest;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 public class InternalSSOServiceImpl implements InternalSSOService {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+    // hashes the password of a name that cannot exist: such a name must not reach the database even for the salt
+    private static final String IMPOSSIBLE_USER_SALT = "impossible-user";
 
     private       UserService          userService;
     private       ActionService        actionService;
@@ -129,8 +132,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
-        String  salt = saltSource.getSalt(username);
-        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+        boolean possible = UserNames.isPossible(username);
+        String  salt = possible ? saltSource.getSalt(username) : IMPOSSIBLE_USER_SALT;
+        if (!possible || !isUserAccessibleFrom(username, subsystemIdentifier)) {
             // same hashing cost as a regular attempt, but the failed-login counter is not touched
             if (password != null) {
                 passwordEncoder.encode(password, salt);
@@ -184,7 +188,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
-        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+        if (!UserNames.isPossible(username) || !isUserAccessibleFrom(username, subsystemIdentifier)) {
             logger.warn("Subsystem {} was denied pseudoAuthenticate on user {}", sanitize(subsystemIdentifier), sanitize(username));
             return null;
         }
@@ -283,6 +287,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                              RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
                              String secretAnswer, String publicKey, String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
+        if (!UserNames.isPossible(username)) {
+            loggerSink.info(logger, "REGISTER_USER", false, username);
+            throw new SsoUserException("Username must be from 1 to " + UserNames.MAX_LENGTH + " characters long");
+        }
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
         registerUser.setUsername(username);

@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl.remote;
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.*;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.email.EmailService;
 import com.payneteasy.superfly.model.UserWithStatus;
@@ -376,10 +377,11 @@ public class SSOServiceImpl implements SSOService {
     /**
      * A subsystem may sign in and read only users that have a role in it. A denial must look like
      * "no such user" to the caller, so callers mimic the unknown-user behaviour of their method.
+     * A name that cannot exist (empty, longer than the column) is such a user too and never reaches the database.
      */
     private boolean isUserAccessible(String method, String username) {
         String subsystem = obtainSubsystemIdentifier(null);
-        if (!internalSSOService.isUserAccessibleFrom(username, subsystem)) {
+        if (!UserNames.isPossible(username) || !internalSSOService.isUserAccessibleFrom(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
         }
@@ -392,7 +394,7 @@ public class SSOServiceImpl implements SSOService {
      */
     private boolean isUserManageable(String method, String username) {
         String subsystem = obtainSubsystemIdentifier(null);
-        if (!internalSSOService.isUserManageableFrom(username, subsystem)) {
+        if (!UserNames.isPossible(username) || !internalSSOService.isUserManageableFrom(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
         }
