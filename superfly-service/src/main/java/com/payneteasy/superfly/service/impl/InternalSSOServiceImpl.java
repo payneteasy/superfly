@@ -158,11 +158,26 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public CheckOtpResult.Status checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
-        // isOtpOptional comes from the caller; a configured key makes OTP mandatory anyway
-        if (isOtpOptional && (code == null || code.trim().isEmpty()) && !hasOtpMasterKey(username)) {
+        // the type and the optional flag come from the database: what the caller sends must not weaken the check
+        UserForDescription stored = userService.getUserForDescription(username);
+        // an unknown user gets the strictest check
+        OTPType storedType = stored == null || stored.getOtpType() == null ? OTPType.GOOGLE_AUTH : stored.getOtpType();
+        boolean storedOptional = stored != null && stored.isOtpOptional();
+        if (storedType != otpType || storedOptional != isOtpOptional) {
+            logger.debug("OTP settings of the request differ from the stored ones for {}: requested type {}, optional {}; "
+                    + "stored type {}, optional {}", username, otpType, isOtpOptional, storedType, storedOptional);
+        }
+        boolean keyConfigured = hasOtpMasterKey(username);
+        // a configured key makes OTP mandatory anyway
+        if (storedOptional && (code == null || code.trim().isEmpty()) && !keyConfigured) {
             return CheckOtpResult.Status.SUCCESS;
         }
-        return authenticateByOtpType(otpType, username, code);
+        if (storedType == OTPType.NONE && !keyConfigured) {
+            // nothing was checked, so the failed attempts counter must stay as it is
+            loggerSink.info(logger, "REMOTE_OTP_CHECK", true, username, "status=" + CheckOtpResult.Status.SUCCESS);
+            return CheckOtpResult.Status.SUCCESS;
+        }
+        return authenticateByOtpType(OTPType.GOOGLE_AUTH, username, code);
     }
 
     @Override
