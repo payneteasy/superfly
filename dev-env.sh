@@ -15,12 +15,13 @@
 
 set -e
 
-CONTAINER=superfly-mysql-dev
-NETWORK=superfly-dev-net
+# Container, network and host port can be overridden to run a second environment side by side
+CONTAINER=${SUPERFLY_DEV_CONTAINER:-superfly-mysql-dev}
+NETWORK=${SUPERFLY_DEV_NETWORK:-superfly-dev-net}
 IMAGE=mysql:5.7
 ROOT_PASSWORD=charpa
 # the app gets it as DB_PORT (see cmd_app)
-HOST_PORT=3344
+HOST_PORT=${SUPERFLY_DEV_PORT:-3344}
 
 ROOT_DIR=$(cd "$(dirname "$0")" && pwd)
 SHIM_DIR=$ROOT_DIR/target/dev-env
