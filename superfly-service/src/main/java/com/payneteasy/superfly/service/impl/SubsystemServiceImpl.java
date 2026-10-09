@@ -2,13 +2,13 @@ package com.payneteasy.superfly.service.impl;
 
 
 import java.util.List;
-import java.util.UUID;
 
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
 import com.payneteasy.superfly.service.impl.remote.check.RemoteAuthEncryptionAlgorithm;
 import com.payneteasy.superfly.utils.SecureTokens;
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,10 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     public RoutineResult createSubsystem(UISubsystem subsystem) {
-        subsystem.setSubsystemToken(generateMainSubsystemToken());
+        if (subsystem.getSubsystemToken() == null) {
+            // the raw token is not recoverable here: the admin regenerates it on the edit page
+            subsystem.setSubsystemToken(SubsystemTokenHasher.hash(SecureTokens.generate("")));
+        }
         RoutineResult result = subsystemDao.createSubsystem(subsystem);
         invalidateOriginCache();
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
@@ -141,8 +144,11 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     @Override
-    public String generateMainSubsystemToken() {
-        return UUID.randomUUID().toString();
+    public String generateMainSubsystemToken(UISubsystem subsystem) {
+        String token = SecureTokens.generate("");
+        subsystem.setSubsystemToken(SubsystemTokenHasher.hash(token));
+        loggerSink.info(logger, "GENERATE_SUBSYSTEM_TOKEN", true, String.valueOf(subsystem.getName()));
+        return token;
     }
 
     @Override

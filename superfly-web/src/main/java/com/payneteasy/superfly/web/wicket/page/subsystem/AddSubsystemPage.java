@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.subsystem;
 
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
+import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.SmtpServerService;
 import com.payneteasy.superfly.service.SubsystemService;
@@ -47,7 +48,12 @@ public class AddSubsystemPage extends BasePage {
         Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
             @Override
             protected void onSubmit() {
-                subsystemService.createSubsystem(subsystem);
+                String token = subsystemService.generateMainSubsystemToken(subsystem);
+                RoutineResult result = subsystemService.createSubsystem(subsystem);
+                if (result.isOk()) {
+                    // session feedback is rendered once by the list page and then dropped; the token is not kept in the page
+                    getSession().info("Subsystem token (shown once, store it now): " + token);
+                }
                 setResponsePage(ListSubsystemsPage.class);
             }
 

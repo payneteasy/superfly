@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.spring.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -47,7 +48,7 @@ public class RemotingStatelessSecurityTest {
                     .enableMultiFactorAuth(false));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", mock(LocalSecurityService.class));
-            UserDetailsService subsystems = name -> new User(name, "test-token",
+            UserDetailsService subsystems = name -> new User(name, SubsystemTokenHasher.hash("test-token"),
                     List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
             beanFactory.registerSingleton("userDetailsService", subsystems);
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());

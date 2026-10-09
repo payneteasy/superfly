@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
@@ -214,7 +215,7 @@ public class RemoteAuthServiceImplTest {
     private static UISubsystem subsystem(String name) {
         UISubsystem subsystem = new UISubsystem();
         subsystem.setName(name);
-        subsystem.setSubsystemToken(token(name));
+        subsystem.setSubsystemToken(SubsystemTokenHasher.hash(token(name)));
         subsystem.setPrivateKey("private-key");
         subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
         return subsystem;

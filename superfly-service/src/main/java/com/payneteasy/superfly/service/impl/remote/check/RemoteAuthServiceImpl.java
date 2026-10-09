@@ -1,7 +1,5 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
@@ -15,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.stereotype.Service;
+
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -162,9 +162,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     private UISubsystem validateSubsystem(String subsystemName, String bearerToken) throws RemoteAuthException {
         UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemName);
         // Same answer for unknown subsystem and wrong token: no subsystem enumeration.
-        if (subsystem == null || subsystem.getSubsystemToken() == null || bearerToken == null
-                || !MessageDigest.isEqual(subsystem.getSubsystemToken().getBytes(StandardCharsets.UTF_8),
-                bearerToken.getBytes(StandardCharsets.UTF_8))) {
+        if (subsystem == null || !SubsystemTokenHasher.matches(bearerToken, subsystem.getSubsystemToken())) {
             throw new RemoteAuthException("Invalid subsystem token", "UNAUTHORIZED");
         }
         return subsystem;
