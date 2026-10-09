@@ -6,6 +6,7 @@ import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
@@ -61,7 +62,7 @@ public interface SubsystemService {
      * @param subsystemId    ID of the subsystem
      * @return subsystem or null if no such subsystem
      */
-    UISubsystem getSubsystem(long subsystemId);
+    UISubsystemView getSubsystem(long subsystemId);
 
     /**
      * Returns a subsystem by its name.

@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
@@ -122,7 +123,7 @@ public class SubsystemServiceImpl implements SubsystemService {
         return subsystemDao.getSubsystemsForFilter();
     }
 
-    public UISubsystem getSubsystem(long subsystemId) {
+    public UISubsystemView getSubsystem(long subsystemId) {
         return subsystemDao.getSubsystem(subsystemId);
     }
 
