@@ -2,6 +2,7 @@ package com.payneteasy.superfly.dao;
 
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.SubsystemAuth;
+import com.payneteasy.superfly.model.SubsystemPrivateKey;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServer;
 import com.payneteasy.superfly.model.ui.smtp_server.UISmtpServerForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -123,6 +124,13 @@ public class SubsystemDaoTest extends AbstractDaoTest {
     @Test
     public void testGetSubsystemPrivateKey() {
         subsystemDao.getSubsystemPrivateKey(getAnySubsystemName());
+    }
+
+    @Test
+    public void testEncryptSubsystemPrivateKey() {
+        subsystemDao.encryptSubsystemPrivateKey(getAnySubsystemId(), "v2:test");
+        List<SubsystemPrivateKey> plain = subsystemDao.getSubsystemsWithPlainPrivateKey();
+        assertNotNull(plain);
     }
 
     @Test
