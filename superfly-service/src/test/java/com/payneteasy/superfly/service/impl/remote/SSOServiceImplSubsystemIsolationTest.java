@@ -47,17 +47,15 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     private void expectForeign() {
-        expect(internal.userHasRolesInSubsystem(USER, LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem(USER, CALLER)).andReturn(false);
+        expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
     private void expectLocalUser() {
-        expect(internal.userHasRolesInSubsystem(USER, LOCAL)).andReturn(true);
+        expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
     private void expectOwn() {
-        expect(internal.userHasRolesInSubsystem(USER, LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem(USER, CALLER)).andReturn(true);
+        expect(internal.isUserAccessibleFrom(USER, CALLER)).andReturn(true);
     }
 
     private void replayAll() {
@@ -511,9 +509,8 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void getUserStatusesOnlyForeignAndLocalUsersReturnsNothing() {
-        expect(internal.userHasRolesInSubsystem("foreign", LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("foreign", CALLER)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("admin", LOCAL)).andReturn(true);
+        expect(internal.isUserAccessibleFrom("foreign", CALLER)).andReturn(false);
+        expect(internal.isUserAccessibleFrom("admin", CALLER)).andReturn(false);
         replayAll();
         assertTrue(ssoService.getUserStatuses(new GetUserStatusesRequest(Arrays.asList("foreign", "admin"))).isEmpty());
         verifyAll();
@@ -521,10 +518,8 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void getUserStatusesQueriesOnlyOwnUsers() {
-        expect(internal.userHasRolesInSubsystem("own", LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("own", CALLER)).andReturn(true);
-        expect(internal.userHasRolesInSubsystem("foreign", LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("foreign", CALLER)).andReturn(false);
+        expect(internal.isUserAccessibleFrom("own", CALLER)).andReturn(true);
+        expect(internal.isUserAccessibleFrom("foreign", CALLER)).andReturn(false);
         UserWithStatus status = new UserWithStatus();
         status.setUserName("own");
         expect(internal.getUserStatuses("own")).andReturn(Collections.singletonList(status));
@@ -539,8 +534,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     @Test
     public void getUserStatusesNameWithCommaNeverReachesDao() {
         // "x,admin" is a legitimate-looking login of the caller's own user, but the DAO would split it
-        expect(internal.userHasRolesInSubsystem("own", LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("own", CALLER)).andReturn(true);
+        expect(internal.isUserAccessibleFrom("own", CALLER)).andReturn(true);
         expect(internal.getUserStatuses("own")).andReturn(Collections.emptyList());
         replayAll();
         assertTrue(ssoService.getUserStatuses(new GetUserStatusesRequest(Arrays.asList("x,admin", "own"))).isEmpty());
@@ -549,8 +543,7 @@ public class SSOServiceImplSubsystemIsolationTest {
 
     @Test
     public void getUserStatusesDropsRowsOfUsersThatDidNotPassTheGuard() {
-        expect(internal.userHasRolesInSubsystem("own", LOCAL)).andReturn(false);
-        expect(internal.userHasRolesInSubsystem("own", CALLER)).andReturn(true);
+        expect(internal.isUserAccessibleFrom("own", CALLER)).andReturn(true);
         UserWithStatus own = new UserWithStatus();
         own.setUserName("OWN");
         UserWithStatus foreign = new UserWithStatus();
@@ -575,6 +568,7 @@ public class SSOServiceImplSubsystemIsolationTest {
     @Test
     public void callerWithoutSubsystemIsDeniedEverything() {
         ssoService.setSubsystemIdentifierObtainer(hint -> null);
+        expect(internal.isUserAccessibleFrom(USER, null)).andReturn(false).times(2);
         replayAll();
         assertFalse(ssoService.hasOtpMasterKey(new HasOtpMasterKeyRequest(USER)));
         assertNull(ssoService.getUserDescription(GetUserDescriptionRequest.builder().username(USER).build()));

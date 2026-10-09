@@ -199,6 +199,13 @@ public interface InternalSSOService {
     boolean userHasRolesInSubsystem(String username, String subsystemIdentifier);
 
     /**
+     * A subsystem may only act on users that have a role in it and no role in the local (admin UI) subsystem.
+     *
+     * @return true if the user is reachable from the subsystem; false also for null arguments
+     */
+    boolean isUserAccessibleFrom(String username, String subsystemIdentifier);
+
+    /**
      * Validates a new password against the password policy.
      *
      * @param username user whose password history is taken into account;

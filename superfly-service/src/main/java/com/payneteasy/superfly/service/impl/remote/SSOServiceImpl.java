@@ -9,7 +9,6 @@ import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.resetpassword.ResetPasswordStrategy;
 import com.payneteasy.superfly.service.InternalSSOService;
-import com.payneteasy.superfly.service.impl.LocalSecurityServiceImpl;
 import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.utils.StringUtils;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
@@ -379,12 +378,7 @@ public class SSOServiceImpl implements SSOService {
      */
     private boolean isUserAccessible(String method, String username) {
         String subsystem = obtainSubsystemIdentifier(null);
-        if (subsystem == null || username == null) {
-            logDenied(method, subsystem, username);
-            return false;
-        }
-        if (internalSSOService.userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
-                || !internalSSOService.userHasRolesInSubsystem(username, subsystem)) {
+        if (!internalSSOService.isUserAccessibleFrom(username, subsystem)) {
             logDenied(method, subsystem, username);
             return false;
         }
