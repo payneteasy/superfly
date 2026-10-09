@@ -153,6 +153,10 @@ Authorization: Bearer {subsystem_token}
 
 **Response:** `CheckOtpResult` — в HTTP-теле `{ "status": "SUCCESS" }`.
 
+`otpType` и `isOtpOptional` из запроса не используются: тип OTP и признак optional берутся из настроек пользователя в БД
+(расхождение пишется в DEBUG-лог). Пользователь без OTP и без настроенного ключа получает `SUCCESS`, счётчик неудачных
+OTP-попыток при этом не сбрасывается.
+
 > **Несовместимо со старыми клиентами.** Раньше метод возвращал `boolean` (тело `true`/`false`); теперь — объект
 > `CheckOtpResult`. Клиент (`SSOHttpServiceApiClient` и собственные реализации) и сервер обновляйте вместе.
 > `/sso/check/check-otp` (remote-auth) не изменился.
