@@ -78,10 +78,16 @@ Jetty; запуск — `java -jar` с переменными окружения
 1. Миграция `superfly-sql/mi/R1.7.8` — колонка `users.otp_pending_master_key`.
 2. Миграция `superfly-sql/mi/R1.7.9` — `admin` с паролем по умолчанию получает временный пароль (смена при первом входе),
    опубликованный `hotp_salt` `admin` заменяется случайным.
-3. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
+3. Миграция `superfly-sql/mi/R1.8.0` — `subsystems.subsystem_token` хранится как `sha256:<hex>`; существующие токены
+   хэшируются, подсистемы продолжают работать со своими токенами. Показать текущий токен админка больше не может — только
+   сгенерировать новый (он показывается один раз).
+4. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
    `save_otp_pending_master_key`, `confirm_otp_pending_master_key`; изменена `get_user_password_history_and_current_password`
    (текущий пароль, в том числе временный, затем собственные пароли пользователя от новых к старым); изменена `save_google_auth_master_key` (теперь также очищает
-   `otp_pending_master_key`).
+   `otp_pending_master_key`); новые `get_subsystem_auth`, `get_subsystem_private_key`, `get_subsystems_with_plain_private_key`,
+   `encrypt_subsystem_private_key`; `ui_get_subsystem*` больше не отдают токен и приватный ключ.
+5. Первый старт приложения шифрует приватные ключи подсистем (`SUPERFLY_CRYPTO_SECRET`, формат `v2:`); до него remote-auth
+   принимает ключи в открытом виде с WARN в логе.
 
 **Изоляция входа.** `authenticate`, `pseudoAuthenticate`, remote-auth `check-password` и SSO-форма логина пускают только
 пользователей с ролью в подсистеме входа и без роли в `superfly`. Учётка, у которой есть роли и в админке, и в подсистеме,
