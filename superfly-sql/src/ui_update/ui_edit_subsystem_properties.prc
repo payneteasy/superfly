@@ -23,7 +23,7 @@ create procedure ui_edit_subsystem_properties(i_ssys_id int(10),
            callback_information   = i_callback_information,
            send_callbacks     = i_send_callbacks,
            allow_list_users   = coalesce(i_allow_list_users, allow_list_users),
-           ssrv_ssrv_id = i_ssrv_id,
+           ssrv_ssrv_id = nullif(i_ssrv_id, 0),
            -- UI does not load the stored token (ui_get_subsystem), null means "keep", a value comes from token regeneration
            subsystem_token = coalesce(i_subsystem_token, subsystem_token),
            subsystem_url = i_subsystem_url,
