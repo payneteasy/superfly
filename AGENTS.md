@@ -125,4 +125,5 @@ superfly/
   - Правильно: сначала `git checkout master`, затем `git pull origin master`
 - Не мешать javax.servlet и jakarta.servlet в одном модуле — см. EE8/EE10 разделение
 - Интеграционные тесты требуют реальный MySQL — не заменять на H2/mock
+  Запуск: профиль `-Pintegration-test` на базе из `dev-env.sh` (`-Dsso.db.url`, `-Dsso.db.skipCreate=true`) — см. docs/getting-started.md
 - Слой данных — только stored procedures через jdbc-proc, без JPA/Hibernate

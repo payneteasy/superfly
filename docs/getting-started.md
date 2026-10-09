@@ -42,6 +42,26 @@ DB_HOST=127.0.0.1 DB_PORT=3344 DB_PASSWORD=... SUPERFLY_CRYPTO_SECRET=... SUPERF
 
 WAR больше не собирается: артефакт — `superfly-web/target/superfly.jar` (shaded, ~70 МБ).
 
+### Интеграционные тесты
+
+DAO-тесты (`superfly-integration-test`) ходят в реальную MySQL 5.7 и по умолчанию пропускаются. Отдельная база
+поднимается тем же `dev-env.sh` с другими именем контейнера, сети и портом, чтобы не задеть рабочее окружение:
+
+```bash
+export SUPERFLY_DEV_CONTAINER=superfly-test-db SUPERFLY_DEV_NETWORK=superfly-test-net SUPERFLY_DEV_PORT=3401
+SSO_DB_DATABASE=ssotest ./dev-env.sh up
+./mvnw -B -pl superfly-integration-test -am -Pintegration-test verify \
+  -Dsso.db.url='jdbc:mysql://127.0.0.1:3401/ssotest?autoReconnect=true&characterEncoding=utf8&serverTimezone=Europe/Moscow' \
+  -Dsso.db.skipCreate=true
+./dev-env.sh down
+```
+
+Без `-Dsso.db.skipCreate=true` тесты сами запускают `src/test/sh/create_test_database.sh`: он пересоздаёт базу
+`ssotest` (не `sso`) и накатывает миграции и процедуры; для этого нужны `mysql` в `PATH` и переменные
+`SSO_DB_HOST`, `SSO_DB_PORT`, `SSO_DB_ROOT_PASSWORD` (по умолчанию `localhost`, `3344`, `1234`).
+Адрес, пользователь и пароль тестов — `-Dsso.db.url`, `-Dsso.db.user`, `-Dsso.db.password`
+(по умолчанию `127.0.0.1:3344/ssotest`, `sso`/`123sso123`).
+
 ---
 
 ## Обновление существующей базы
