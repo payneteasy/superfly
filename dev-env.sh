@@ -8,7 +8,7 @@
 #   ./dev-env.sh sql     open a mysql shell on the dev database
 #   ./dev-env.sh down    remove the container and the network
 #
-# Login: admin / 123admin123
+# Login: admin / 123admin123 (temporary: the first login asks for a new password)
 #
 # MySQL 5.7 is not a free choice: on 8.0 the schema does not install at all,
 # because `groups` became a reserved word.
@@ -158,7 +158,7 @@ SQL
 }
 
 cmd_app() {
-    echo "Starting on http://localhost:8085/superfly/ — login admin / 123admin123"
+    echo "Starting on http://localhost:8085/superfly/ — login admin / 123admin123 (change it at the first login)"
     if [ -z "${SUPERFLY_CRYPTO_SECRET:-}" ] || [ -z "${SUPERFLY_CRYPTO_SALT:-}" ]; then
         echo "WARNING: dev dummy crypto key (SUPERFLY_CRYPTO_SECRET/SALT not set) — never use outside local dev"
         export SUPERFLY_CRYPTO_SECRET="dev-dummy-secret"
