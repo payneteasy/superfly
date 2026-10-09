@@ -99,7 +99,7 @@ Jetty; запуск — `java -jar` с переменными окружения
 
 **Изоляция входа.** `authenticate`, `pseudoAuthenticate`, remote-auth `check-password` и SSO-форма логина пускают только
 пользователей с ролью в подсистеме входа. Учётка с ролями и в `superfly`, и в подсистеме входит в подсистему и читается
-ею, но подсистема не может менять ей пароль, OTP, данные и роли — это делается в админке
+ею, но подсистема через API не может менять ей пароль, OTP, данные и роли — это делается в админке
 (см. [Subsystem isolation](integration-guide.md#subsystem-isolation-20)).
 
 **API.** `SSOService.checkOtp` возвращает `CheckOtpResult` вместо `boolean`, HTTP-тело — `{"status":"..."}`; добавлен
