@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 /**
  * Implementation of SSOService.
  *
@@ -402,12 +404,7 @@ public class SSOServiceImpl implements SSOService {
     }
 
     private void logDenied(String method, String subsystem, String username) {
-        logger.warn("Subsystem {} was denied {} on user {}", sanitize(subsystem), method, sanitize(username));
-    }
-
-    // values come from the request body: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
+        logger.warn("Subsystem {} was denied {} on user {}", forLog(subsystem), method, forLog(username));
     }
 
     /**

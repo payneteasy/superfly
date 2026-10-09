@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -140,7 +142,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                 passwordEncoder.encode(password, salt);
                 legacyPasswordEncoder.encode(password, salt);
             }
-            logger.warn("Subsystem {} was denied authenticate on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            logger.warn("Subsystem {} was denied authenticate on user {}", forLog(subsystemIdentifier), forLog(username));
             return null;
         }
         // null password is an ordinary failed attempt, not an exception
@@ -189,7 +191,7 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
         if (!UserNames.isPossible(username) || !isUserAccessibleFrom(username, subsystemIdentifier)) {
-            logger.warn("Subsystem {} was denied pseudoAuthenticate on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            logger.warn("Subsystem {} was denied pseudoAuthenticate on user {}", forLog(subsystemIdentifier), forLog(username));
             return null;
         }
         AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
@@ -212,11 +214,6 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
         return userService.isUserManageableFrom(username, subsystemIdentifier);
-    }
-
-    // values come from the request body: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     private SSOUser buildSSOUser(AuthSession session) {

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Slf4j
 public class JsonAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
@@ -28,7 +30,7 @@ public class JsonAuthenticationFailureHandler implements AuthenticationFailureHa
         error.put("status", "error");
         // Exception messages can name the subsystem and tell "not found" from "no token" — keep them in
         // the server log only, callers get the same text for every failure.
-        String reason = String.valueOf(exception.getMessage()).replaceAll("[\\r\\n\\t]", "_");
+        String reason = forLog(exception.getMessage());
         log.warn("Authentication failed for {}: {}", request.getRequestURI(), reason);
         error.put("message", "Authentication failed");
 

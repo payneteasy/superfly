@@ -48,6 +48,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -451,7 +453,7 @@ public class UserServiceImpl implements UserService {
                 passwordEncoder.encode(password, salt);
                 legacyPasswordEncoder.encode(password, salt);
             }
-            logger.warn("Subsystem {} was denied SSO password login on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            logger.warn("Subsystem {} was denied SSO password login on user {}", forLog(subsystemIdentifier), forLog(username));
             loggerSink.info(logger, "SSO_PASSWORD_LOGIN", false, username, "subsystem=" + subsystemIdentifier);
             return UserLoginStatus.FAILED;
         }
@@ -481,11 +483,6 @@ public class UserServiceImpl implements UserService {
     public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
         return isUserAccessibleFrom(username, subsystemIdentifier)
                 && !userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME);
-    }
-
-    // values come from the request: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     // request threads only: scheduled jobs have no client

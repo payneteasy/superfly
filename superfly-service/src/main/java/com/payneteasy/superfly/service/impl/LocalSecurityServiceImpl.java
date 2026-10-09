@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class LocalSecurityServiceImpl implements LocalSecurityService {
@@ -70,7 +72,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
     public String[] authenticate(String username, String password) {
         if (!UserNames.isPossible(username)) {
             // the salt lookup would pass the name to the database, which cannot hold it
-            logger.warn("Login failed. User <{}> cannot exist", sanitize(username));
+            logger.warn("Login failed. User <{}> cannot exist", forLog(username));
             loggerSink.info(logger, "LOCAL_LOGIN", false, username);
             return null;
         }
@@ -80,7 +82,7 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         String legacyPassword = password == null ? null : userPasswordEncoder.encodeLegacy(password, username);
         if (!userService.userHasRolesInSubsystem(username, localSubsystemName)) {
             // hashing is already done above; the failed-login counter of users outside the admin console stays untouched
-            logger.warn("Login failed. User <{}> has no role in the local subsystem", sanitize(username));
+            logger.warn("Login failed. User <{}> has no role in the local subsystem", forLog(username));
             loggerSink.info(logger, "LOCAL_LOGIN", false, username);
             return null;
         }
@@ -117,11 +119,6 @@ public class LocalSecurityServiceImpl implements LocalSecurityService {
         }
         loggerSink.info(logger, "LOCAL_LOGIN", false, username);
         return null;
-    }
-
-    // the username comes from the login form: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     public boolean authenticateUsingOTP(String username, String otp) {
