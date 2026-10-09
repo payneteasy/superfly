@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.client.SSOLoginState;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,7 @@ public class SingleStepFilterSessionIdTest extends AbstractSSOUserAwareTest {
         HttpServletRequest request = createMock(HttpServletRequest.class);
         HttpSession session = createNiceMock(HttpSession.class);
         expect(session.getId()).andReturn("old-id").anyTimes();
+        expect(session.getAttribute(SSOLoginState.SESSION_ATTRIBUTE)).andReturn("state-1234567890abcdef").anyTimes();
         replay(session);
         expect(request.getContextPath()).andReturn("").anyTimes();
         expect(request.getMethod()).andReturn("POST").anyTimes();
@@ -66,6 +68,7 @@ public class SingleStepFilterSessionIdTest extends AbstractSSOUserAwareTest {
         expect(request.getServletPath()).andReturn("").anyTimes();
         expect(request.getPathInfo()).andReturn("/j_superfly_sso_security_check").anyTimes();
         expect(request.getParameter("subsystemToken")).andReturn("abcdef").anyTimes();
+        expect(request.getParameter("state")).andReturn("state-1234567890abcdef").anyTimes();
         expect(request.getParameter(anyObject(String.class))).andReturn(null).anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(session).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();

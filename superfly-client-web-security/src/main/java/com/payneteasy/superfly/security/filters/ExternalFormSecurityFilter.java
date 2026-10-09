@@ -11,6 +11,7 @@ import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.client.SSOClientConfig;
 import com.payneteasy.superfly.api.client.SSOHttpServiceApiClient;
+import com.payneteasy.superfly.api.client.SSOLoginState;
 import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
 import com.payneteasy.superfly.security.filters.internal.SecurityFilterFlow;
 import com.payneteasy.superfly.security.spring.SecuredBeanPostProcessor;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -166,7 +168,7 @@ public class ExternalFormSecurityFilter implements Filter {
             return;
         }
 
-        redirectToLoginPage(request.getRequestURI(), response);
+        redirectToLoginPage(request, response);
     }
 
     public boolean processLogoutUrl(String path, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -222,6 +224,10 @@ public class ExternalFormSecurityFilter implements Filter {
     }
 
     private void validateExternalToken(HttpServletRequest aRequest) {
+        if (!consumeLoginState(aRequest)) {
+            LOG.warn("SSO login state is missing or does not match the session, the subsystem token is not checked");
+            throw new IllegalStateException("SSO login state mismatch");
+        }
         String subsystemToken = aRequest.getParameter("subsystemToken");
         if(subsystemToken == null) {
             throw new IllegalStateException("No 'subsystemToken' in paraters");
@@ -241,6 +247,18 @@ public class ExternalFormSecurityFilter implements Filter {
         SecurityContextStore.setToSession(context, aRequest);
     }
 
+    /** The state is one-time: it is removed from the session whatever the outcome. */
+    private static boolean consumeLoginState(HttpServletRequest aRequest) {
+        String actual = aRequest.getParameter(SSOLoginState.PARAMETER);
+        HttpSession session = aRequest.getSession(false);
+        if (session == null) {
+            return false;
+        }
+        Object expected = session.getAttribute(SSOLoginState.SESSION_ATTRIBUTE);
+        session.removeAttribute(SSOLoginState.SESSION_ATTRIBUTE);
+        return expected instanceof String && SSOLoginState.matches((String) expected, actual);
+    }
+
     private SecurityContext createContextFromUser(SSOUser aUser) {
         SSOAction[] ssoActions = aUser.getActionsMap().values().iterator().next();
         Set<String> actions = new HashSet<>();
@@ -250,9 +268,13 @@ public class ExternalFormSecurityFilter implements Filter {
         return new SecurityContext(aUser.getName(), actions);
     }
 
-    private void redirectToLoginPage(String aUrl, HttpServletResponse aResponse) throws IOException {
-        String formUrl = loginFormUrl + URLEncoder.encode(aUrl, StandardCharsets.UTF_8);
-        LOG.debug("Sending redirect to external form to {}", formUrl);
+    private void redirectToLoginPage(HttpServletRequest aRequest, HttpServletResponse aResponse) throws IOException {
+        String state = SSOLoginState.generate();
+        aRequest.getSession(true).setAttribute(SSOLoginState.SESSION_ATTRIBUTE, state);
+        // state goes after the encoded targetUrl, so the targetUrl value is not affected
+        String formUrl = SSOLoginState.appendTo(
+                loginFormUrl + URLEncoder.encode(aRequest.getRequestURI(), StandardCharsets.UTF_8), state);
+        LOG.debug("Sending redirect to external form for {}", aRequest.getRequestURI());
         aResponse.sendRedirect(formUrl);
     }
 
