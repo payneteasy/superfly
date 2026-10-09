@@ -75,7 +75,8 @@ public class EditSubsystemPage extends BasePage {
         final Label labelSubsystemToken = new Label("subsystemToken", new LoadableDetachableModel<String>() {
             @Override
             protected String load() {
-                return subsystem.getSubsystemToken() == null ? "Not set" : "Set";
+                // a token generated on this page is not persisted yet, but it will be on Save
+                return subsystem.isSubsystemTokenSet() || subsystem.getSubsystemToken() != null ? "Set" : "Not set";
             }
         });
         labelSubsystemToken.setOutputMarkupId(true);

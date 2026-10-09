@@ -49,12 +49,17 @@ public class EditSubsystemPageTest extends AbstractPageTest {
         UISubsystem subsystem = new UISubsystem();
         subsystem.setId(1L);
         subsystem.setName("billing");
-        subsystem.setSubsystemToken(storedHash);
+        // ui_get_subsystem never returns the token, only the flag
+        subsystem.setSubsystemTokenSet(true);
 
         subsystemService = createNiceMock(SubsystemService.class);
         smtpServerService = createNiceMock(SmtpServerService.class);
         settingsService = createNiceMock(SettingsService.class);
         expect(subsystemService.getSubsystem(1L)).andStubReturn(subsystem);
+        UISubsystem without = new UISubsystem();
+        without.setId(2L);
+        without.setName("crm");
+        expect(subsystemService.getSubsystem(2L)).andStubReturn(without);
         expect(subsystemService.generateMainSubsystemToken(anyObject(UISubsystem.class))).andStubAnswer(() -> {
             ((UISubsystem) getCurrentArguments()[0]).setSubsystemToken(SubsystemTokenHasher.hash(RAW));
             return RAW;
@@ -81,6 +86,20 @@ public class EditSubsystemPageTest extends AbstractPageTest {
             return settingsService;
         }
         return super.getBean(type);
+    }
+
+    @Test
+    public void tokenPresenceIsShownByTheFlag() {
+        tester.startPage(EditSubsystemPage.class, new PageParameters().add("id", 1));
+
+        tester.assertLabel("form:subsystemToken", "Set");
+    }
+
+    @Test
+    public void missingTokenIsShownAsNotSet() {
+        tester.startPage(EditSubsystemPage.class, new PageParameters().add("id", 2));
+
+        tester.assertLabel("form:subsystemToken", "Not set");
     }
 
     @Test

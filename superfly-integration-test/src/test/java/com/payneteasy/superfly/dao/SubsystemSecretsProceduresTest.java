@@ -90,6 +90,17 @@ public class SubsystemSecretsProceduresTest {
     }
 
     @Test
+    public void uiGetSubsystemTellsWhetherTokenIsSet() throws Exception {
+        assertEquals("Y", tokenSetFlag());
+
+        update("update subsystems set subsystem_token = null where ssys_id = " + id);
+        assertEquals("N", tokenSetFlag());
+
+        update("update subsystems set subsystem_token = '' where ssys_id = " + id);
+        assertEquals("N", tokenSetFlag());
+    }
+
+    @Test
     public void authProceduresReturnTokenAndKey() throws Exception {
         try (CallableStatement cs = conn.prepareCall("{call get_subsystem_auth(?)}")) {
             cs.setString(1, NAME);
@@ -157,6 +168,22 @@ public class SubsystemSecretsProceduresTest {
             cs.setLong(1, subsystemId);
             cs.setString(2, key);
             cs.execute();
+        }
+    }
+
+    private String tokenSetFlag() throws Exception {
+        try (CallableStatement cs = conn.prepareCall("{call ui_get_subsystem(?)}")) {
+            cs.setLong(1, id);
+            try (ResultSet rs = cs.executeQuery()) {
+                assertTrue(rs.next());
+                return rs.getString("subsystem_token_set");
+            }
+        }
+    }
+
+    private void update(String sql) throws Exception {
+        try (java.sql.Statement st = conn.createStatement()) {
+            st.executeUpdate(sql);
         }
     }
 
