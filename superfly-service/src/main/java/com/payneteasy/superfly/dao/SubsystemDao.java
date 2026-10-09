@@ -5,6 +5,7 @@ import java.util.List;
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
 import com.payneteasy.superfly.model.SubsystemAuth;
+import com.payneteasy.superfly.model.SubsystemPrivateKey;
 import com.payneteasy.superfly.model.SubsystemToNotify;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -80,6 +81,23 @@ public interface SubsystemDao {
      */
     @AStoredProcedure(name = "get_subsystem_private_key")
     String getSubsystemPrivateKey(String subsystemName);
+
+    /**
+     * Returns subsystems whose private key is not encrypted yet.
+     *
+     * @return subsystems with plain keys
+     */
+    @AStoredProcedure(name = "get_subsystems_with_plain_private_key")
+    List<SubsystemPrivateKey> getSubsystemsWithPlainPrivateKey();
+
+    /**
+     * Stores an encrypted private key; an already encrypted key in the database is left as is.
+     *
+     * @param subsystemId    ID of the subsystem
+     * @param privateKey     encrypted key
+     */
+    @AStoredProcedure(name = "encrypt_subsystem_private_key")
+    void encryptSubsystemPrivateKey(long subsystemId, String privateKey);
 
     /**
      * Deletes a subsystem.

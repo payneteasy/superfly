@@ -10,9 +10,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -131,6 +134,32 @@ public class SubsystemSecretsProceduresTest {
         }
     }
 
+    @Test
+    public void plainKeysAreListedAndEncryptedOnesAreNot() throws Exception {
+        assertTrue(plainKeySubsystems().contains(NAME));
+
+        call("{call encrypt_subsystem_private_key(?,?)}", id, "v2:ciphertext");
+
+        assertEquals("v2:ciphertext", storedKey());
+        assertFalse(plainKeySubsystems().contains(NAME));
+    }
+
+    @Test
+    public void encryptNeverOverwritesAnEncryptedKey() throws Exception {
+        call("{call encrypt_subsystem_private_key(?,?)}", id, "v2:first");
+        call("{call encrypt_subsystem_private_key(?,?)}", id, "v2:second");
+
+        assertEquals("v2:first", storedKey());
+    }
+
+    private void call(String sql, long subsystemId, String key) throws Exception {
+        try (CallableStatement cs = conn.prepareCall(sql)) {
+            cs.setLong(1, subsystemId);
+            cs.setString(2, key);
+            cs.execute();
+        }
+    }
+
     private String storedKey() throws Exception {
         try (CallableStatement cs = conn.prepareCall("{call get_subsystem_private_key(?)}")) {
             cs.setString(1, NAME);
@@ -139,6 +168,18 @@ public class SubsystemSecretsProceduresTest {
                 return rs.getString("private_key");
             }
         }
+    }
+
+    private List<String> plainKeySubsystems() throws Exception {
+        List<String> names = new ArrayList<>();
+        try (CallableStatement cs = conn.prepareCall("{call get_subsystems_with_plain_private_key()}");
+             ResultSet rs = cs.executeQuery()) {
+            while (rs.next()) {
+                assertNotNull(rs.getString("private_key"));
+                names.add(rs.getString("subsystem_name"));
+            }
+        }
+        return names;
     }
 
     private void cleanUp() throws Exception {

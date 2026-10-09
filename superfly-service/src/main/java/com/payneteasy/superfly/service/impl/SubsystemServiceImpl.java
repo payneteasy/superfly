@@ -3,6 +3,9 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import com.payneteasy.superfly.crypto.CryptoService;
+import com.payneteasy.superfly.crypto.exception.DecryptException;
+import com.payneteasy.superfly.crypto.exception.EncryptException;
 import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.*;
@@ -36,6 +39,7 @@ public class SubsystemServiceImpl implements SubsystemService {
     private JavaMailSenderPool javaMailSenderPool;
     private RemoteAuthCryptoService remoteAuthCryptoService;
     private SubsystemOriginCache subsystemOriginCache;
+    private CryptoService cryptoService;
 
     @Autowired
     public void setSubsystemDao(SubsystemDao subsystemDao) {
@@ -45,6 +49,11 @@ public class SubsystemServiceImpl implements SubsystemService {
     @Autowired
     public void setSubsystemOriginCache(SubsystemOriginCache subsystemOriginCache) {
         this.subsystemOriginCache = subsystemOriginCache;
+    }
+
+    @Autowired
+    public void setCryptoService(CryptoService cryptoService) {
+        this.cryptoService = cryptoService;
     }
 
     @Autowired
@@ -72,7 +81,14 @@ public class SubsystemServiceImpl implements SubsystemService {
             // the raw token is not recoverable here: the admin regenerates it on the edit page
             subsystem.setSubsystemToken(SubsystemTokenHasher.hash(SecureTokens.generate("")));
         }
-        RoutineResult result = subsystemDao.createSubsystem(subsystem);
+        RoutineResult result;
+        String plainKey = subsystem.getPrivateKey();
+        subsystem.setPrivateKey(encryptKey(plainKey));
+        try {
+            result = subsystemDao.createSubsystem(subsystem);
+        } finally {
+            subsystem.setPrivateKey(plainKey);
+        }
         invalidateOriginCache();
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
@@ -95,7 +111,14 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     public RoutineResult updateSubsystem(UISubsystem subsystem) {
-        RoutineResult result = subsystemDao.updateSubsystem(subsystem);
+        RoutineResult result;
+        String plainKey = subsystem.getPrivateKey();
+        subsystem.setPrivateKey(encryptKey(plainKey));
+        try {
+            result = subsystemDao.updateSubsystem(subsystem);
+        } finally {
+            subsystem.setPrivateKey(plainKey);
+        }
         invalidateOriginCache();
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
@@ -124,7 +147,32 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     @Override
     public String getSubsystemPrivateKey(String subsystemName) {
-        return subsystemDao.getSubsystemPrivateKey(subsystemName);
+        String stored = subsystemDao.getSubsystemPrivateKey(subsystemName);
+        if (stored == null || stored.isEmpty()) {
+            return null;
+        }
+        if (cryptoService.isLegacy(stored)) {
+            // transitional: the startup task (SubsystemPrivateKeyEncryptionTask) has not encrypted this key yet
+            logger.warn("Private key of subsystem {} is not encrypted yet, using it as is", subsystemName);
+            return stored;
+        }
+        try {
+            return cryptoService.decrypt(stored);
+        } catch (DecryptException e) {
+            throw new IllegalStateException("Cannot decrypt the private key of subsystem " + subsystemName, e);
+        }
+    }
+
+    // null means "no key": nothing to store (a null in the edit procedure keeps the stored key)
+    private String encryptKey(String plainKey) {
+        if (plainKey == null) {
+            return null;
+        }
+        try {
+            return cryptoService.encrypt(plainKey);
+        } catch (EncryptException e) {
+            throw new IllegalStateException("Cannot encrypt the subsystem private key", e);
+        }
     }
 
     @Override
