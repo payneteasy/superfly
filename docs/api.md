@@ -22,7 +22,8 @@ Superfly предоставляет два типа API. Формат везде
 - **Заголовки** `X-Subsystem-Name: {subsystem}` и `X-Subsystem-Token: {subsystemToken}` (так ходит `SSOHttpServiceApiClient`);
 - **Клиентский сертификат** (mTLS, X509).
 
-Токен подсистемы (`subsystemToken`) задаётся при регистрации подсистемы в UI.
+Токен подсистемы (`subsystemToken`) генерируется в UI при создании подсистемы или по кнопке перегенерации и показывается
+один раз: Superfly хранит только его SHA-256-хэш.
 
 RPC stateless: сессия (`JSESSIONID`) не создаётся, заголовки нужны в каждом запросе; повтор с cookie без `X-Subsystem-*` не проходит.
 
