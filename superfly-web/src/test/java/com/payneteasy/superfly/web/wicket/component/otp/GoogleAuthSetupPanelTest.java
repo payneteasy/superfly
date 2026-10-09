@@ -1,8 +1,10 @@
 package com.payneteasy.superfly.web.wicket.component.otp;
 
 import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.qrcode.QRCodeReader;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import org.apache.wicket.mock.MockApplication;
@@ -16,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,16 +62,40 @@ public class GoogleAuthSetupPanelTest {
         tester.startComponentInPage(new GoogleAuthSetupPanel("panel", "sub", "alice", secret));
 
         String src = extractSrc(tester.getLastResponseAsString());
+        String decoded = decodeQr(src);
+
+        assertEquals("otpauth://totp/alice:sub?secret=" + secret.getObject() + "&issuer=SuperflySSO", decoded);
+    }
+
+    @Test
+    public void qrOfKnownUriDecodesBack() throws Exception {
+        String uri = "otpauth://totp/alice:sub?secret=JBSWY3DPEHPK3PXP&issuer=SuperflySSO";
+        assertEquals(uri, decodeQr(GoogleAuthSetupPanel.toQrDataUri(uri)));
+    }
+
+    @Test
+    public void qrDecodesBackForManyRandomSecrets() throws Exception {
+        GoogleAuthenticator authenticator = new GoogleAuthenticator();
+        for (int i = 0; i < 200; i++) {
+            String uri = "otpauth://totp/alice:sub?secret=" + authenticator.createCredentials().getKey()
+                    + "&issuer=SuperflySSO";
+            assertEquals("iteration " + i, uri, decodeQr(GoogleAuthSetupPanel.toQrDataUri(uri)));
+        }
+    }
+
+    private static String decodeQr(String dataUri) throws Exception {
+        assertTrue(dataUri, dataUri.startsWith(PREFIX));
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(
-                Base64.getDecoder().decode(src.substring(PREFIX.length()))));
+                Base64.getDecoder().decode(dataUri.substring(PREFIX.length()))));
         assertEquals(150, image.getWidth());
         assertEquals(150, image.getHeight());
 
         int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
         LuminanceSource source = new RGBLuminanceSource(image.getWidth(), image.getHeight(), pixels);
-        String decoded = new MultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source))).getText();
-
-        assertEquals("otpauth://totp/alice:sub?secret=" + secret.getObject() + "&issuer=SuperflySSO", decoded);
+        return new QRCodeReader().decode(new BinaryBitmap(new HybridBinarizer(source)), Map.of(
+                DecodeHintType.PURE_BARCODE, Boolean.TRUE,
+                DecodeHintType.TRY_HARDER, Boolean.TRUE,
+                DecodeHintType.CHARACTER_SET, "UTF-8")).getText();
     }
 
     private static String extractSrc(String markup) {
