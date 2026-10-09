@@ -178,17 +178,20 @@ protected void init() {
 ## Subsystem isolation (2.0)
 
 Методы `SSOService`, работающие с пользователем по имени, ограничены подсистемой вызывающего
-(определяется по токену подсистемы): `checkOtp`, `hasOtpMasterKey`, `updateUserOtpType`,
-`changeTempPassword`, `getUserDescription`, `resetGoogleAuthMasterKey`,
-`updateUserIsOtpOptionalValue`, `updateUserDescription`, `resetPassword`, `completeUser`,
-`changeUserRole`, `getUserStatuses`, а также вход: `authenticate`, `pseudoAuthenticate`, remote-auth
-`/sso/check/check-password` и SSO-форма логина (для подсистемы, на которую идёт вход). Пользователь должен иметь
-хотя бы одну роль в подсистеме вызывающего, иначе ответ такой же, как для несуществующего пользователя
-(`authenticate` → `null`, remote-auth → `BAD_USER_OR_PASSWORD_OR_OTP`, SSO-форма — ошибка неверного пароля).
-Такая попытка не увеличивает счётчик неудачных входов и не блокирует учётную запись.
+(определяется по токену подсистемы). Пользователь должен иметь хотя бы одну роль в подсистеме вызывающего,
+иначе ответ такой же, как для несуществующего пользователя (`authenticate` → `null`, remote-auth →
+`BAD_USER_OR_PASSWORD_OR_OTP`, SSO-форма — ошибка неверного пароля). Такая попытка не увеличивает счётчик
+неудачных входов и не блокирует учётную запись.
 
-- Пользователи с ролью в подсистеме `superfly` (админка) недоступны через RPC всегда, даже если
-  у них есть роль и в подсистеме вызывающего. Учётки админки и подсистем должны быть раздельными.
+- Вход и чтение — достаточно роли в подсистеме вызывающего: `authenticate`, `pseudoAuthenticate`, remote-auth
+  `/sso/check/check-password`, SSO-форма логина (для подсистемы, на которую идёт вход), `checkOtp`,
+  `hasOtpMasterKey`, `getUserDescription`, `getUserStatuses`. Роль в подсистеме `superfly` (админка) этому
+  не мешает: администратор Superfly, которому выдали роль в подсистеме, входит в неё как обычный пользователь,
+  его неудачные входы считаются и блокируют учётку.
+- Изменение — дополнительно нужно отсутствие роли в `superfly`: `resetPassword`, `changeTempPassword`,
+  `resetGoogleAuthMasterKey`, `confirmOtpMasterKey`, `updateUserOtpType`, `updateUserIsOtpOptionalValue`,
+  `updateUserDescription`, `changeUserRole`, `completeUser`. Пароль, OTP, данные и роли администраторов Superfly
+  подсистема поменять не может (ответ как для несуществующего пользователя) — это делается в админке.
 - `exchangeSubsystemToken`: токен одноразовый, живёт 30 секунд и обменивается только подсистемой,
   для которой выдан (вызывающий определяется по токену подсистемы). Чужой, просроченный, уже
   использованный токен и токен заблокированного пользователя дают `null`; неудачный обмен чужим
@@ -197,8 +200,8 @@ protected void init() {
 - `changeTempPassword` меняет пароль только пока он временный (`is_password_temp='Y'`).
 - `resetPassword` проверяет новый пароль по password policy.
 
-Перед выкаткой найдите учётки с ролями и в `superfly`, и в других подсистемах: через RPC они
-перестанут быть доступны.
+Учётки с ролями и в `superfly`, и в других подсистемах входят в подсистемы, но сменить пароль или OTP
+через подсистему (например, страницей «забыли пароль») не смогут. Найти их:
 
 ```sql
 select u.user_name, group_concat(distinct s.subsystem_name)
