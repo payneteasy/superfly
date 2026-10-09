@@ -1,7 +1,7 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.utils.SubsystemTokenHasher;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
@@ -20,11 +20,11 @@ public class RemoteAuthSubsystemEnumerationTest {
     @Test
     public void unknownSubsystemAndWrongTokenGiveSameError() {
         SubsystemService subsystemService = createNiceMock(SubsystemService.class);
-        UISubsystem billing = new UISubsystem();
+        SubsystemAuth billing = new SubsystemAuth();
         billing.setName("billing");
         billing.setSubsystemToken(SubsystemTokenHasher.hash("secret"));
-        expect(subsystemService.getSubsystemByName("billing")).andStubReturn(billing);
-        expect(subsystemService.getSubsystemByName("nope")).andStubReturn(null);
+        expect(subsystemService.getSubsystemAuth("billing")).andStubReturn(billing);
+        expect(subsystemService.getSubsystemAuth("nope")).andStubReturn(null);
         replay(subsystemService);
         RemoteAuthServiceImpl service = new RemoteAuthServiceImpl(subsystemService,
                 createNiceMock(InternalSSOService.class), createNiceMock(RemoteAuthCryptoService.class));

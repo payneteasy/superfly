@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.web.security.exception.SubsystemNotAllowedHostException;
@@ -40,7 +40,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException, DataAccessException {
-        UISubsystem subsystem = subsystemService.getSubsystemByName(username);
+        SubsystemAuth subsystem = subsystemService.getSubsystemAuth(username);
         if (subsystem == null) {
             loggerSink.info(logger, "CHECK_SUBSYSTEM_EXIST", false, username);
             throw new SubsystemNotAllowedHostException(

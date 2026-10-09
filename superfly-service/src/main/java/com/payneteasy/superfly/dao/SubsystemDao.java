@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.googlecode.jdbcproc.daofactory.annotation.AStoredProcedure;
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.SubsystemToNotify;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
@@ -61,6 +62,24 @@ public interface SubsystemDao {
      */
     @AStoredProcedure(name = "ui_get_subsystem_by_name")
     UISubsystem getSubsystemByName(String subsystemName);
+
+    /**
+     * Returns what subsystem authentication needs (including the token).
+     *
+     * @param subsystemName    name of the subsystem
+     * @return subsystem auth data or null if no such subsystem
+     */
+    @AStoredProcedure(name = "get_subsystem_auth")
+    SubsystemAuth getSubsystemAuth(String subsystemName);
+
+    /**
+     * Returns the stored private key as it is in the database (encrypted, or plain PEM before the startup migration).
+     *
+     * @param subsystemName    name of the subsystem
+     * @return stored key or null if there is no such subsystem or it has no key
+     */
+    @AStoredProcedure(name = "get_subsystem_private_key")
+    String getSubsystemPrivateKey(String subsystemName);
 
     /**
      * Deletes a subsystem.
