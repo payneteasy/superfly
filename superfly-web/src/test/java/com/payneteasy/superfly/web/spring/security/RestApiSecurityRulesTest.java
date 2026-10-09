@@ -17,7 +17,10 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static org.easymock.EasyMock.niceMock;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -74,6 +77,29 @@ public class RestApiSecurityRulesTest {
     }
 
     @Test
+    public void ssoPagesByClassNameAreDenied() throws Exception {
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        securityFilterChain.doFilter(get("/sso/wicket/bookmarkable/"
+                + "com.payneteasy.superfly.web.wicket.page.user.ListUsersPage"), response, chain);
+
+        assertNull(chain.getRequest());
+        // anonymous: denyAll goes through the entry point, as for /sso/check/**
+        assertEquals(302, response.getStatus());
+        assertEquals("http://localhost/login", response.getRedirectedUrl());
+    }
+
+    @Test
+    public void ssoLoginPageStaysPublicForGet() throws Exception {
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();
+        securityFilterChain.doFilter(get("/sso/login"), response, chain);
+
+        assertNotNull(chain.getRequest());
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
     public void remotingRequiresSubsystemAuthentication() throws Exception {
         assertFalse(passes("/remoting", "/sso.service/getUserDescription"));
     }
@@ -86,6 +112,12 @@ public class RestApiSecurityRulesTest {
         MockFilterChain chain = new MockFilterChain();
         securityFilterChain.doFilter(request, new MockHttpServletResponse(), chain);
         return chain.getRequest() != null;
+    }
+
+    private static MockHttpServletRequest get(String servletPath) {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", servletPath);
+        request.setServletPath(servletPath);
+        return request;
     }
 
     private static <T> T mock(Class<T> type) {
