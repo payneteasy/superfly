@@ -256,9 +256,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setOrganization(organization);
         registerUser.setOtpTypeCode(otpType.code());
 
-        // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
-                .getUserPasswordHistoryAndCurrentPassword(username)));
+        // validate password policy against an empty history: a new user has none, and an existing user's
+        // history must not leak through the validation result (register_user.prc recreates incomplete users)
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder,
+                Collections.<PasswordSaltPair>emptyList()));
 
         validatePublicKey(publicKey);
 
