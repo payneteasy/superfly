@@ -83,10 +83,12 @@ public interface SubsystemService {
     SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
 
     /**
+     * Generates a new main token and puts its hash into the subsystem; the hash is persisted by
+     * create/update. The raw token is returned for a one-time display and is not stored anywhere.
      *
-     * @return main token for subsystem
+     * @return raw main token for the subsystem
      */
-    String generateMainSubsystemToken();
+    String generateMainSubsystemToken(UISubsystem subsystem);
 
     /**
      *

@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.web.security.exception.SubsystemNotAllowedHostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
@@ -11,8 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.security.MessageDigest;
-import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class SubsystemAuthenticationProvider implements AuthenticationProvider {
@@ -61,9 +60,7 @@ public class SubsystemAuthenticationProvider implements AuthenticationProvider {
         userDetailsChecker.check(userDetails);
 
         String storedToken = userDetails.getPassword();
-        if (storedToken == null || storedToken.isEmpty() || !MessageDigest.isEqual(
-                storedToken.getBytes(StandardCharsets.UTF_8),
-                credentials.getBytes(StandardCharsets.UTF_8))) {
+        if (!SubsystemTokenHasher.matches(credentials, storedToken)) {
             log.warn("Subsystem auth rejected: invalid token for subsystem={}", sanitize(subsystemName));
             throw new BadCredentialsException("Invalid subsystem token");
         }

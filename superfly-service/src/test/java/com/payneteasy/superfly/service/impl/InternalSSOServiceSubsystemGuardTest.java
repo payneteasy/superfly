@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.service.impl;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
@@ -198,7 +199,7 @@ public class InternalSSOServiceSubsystemGuardTest {
         SubsystemService subsystemService = createNiceMock(SubsystemService.class);
         UISubsystem subsystem = new UISubsystem();
         subsystem.setName(CALLER);
-        subsystem.setSubsystemToken("bearer");
+        subsystem.setSubsystemToken(SubsystemTokenHasher.hash("bearer"));
         subsystem.setPrivateKey("private-key");
         subsystem.setEncryptionAlgorithm("RSA");
         expect(subsystemService.getSubsystemByName(CALLER)).andReturn(subsystem);

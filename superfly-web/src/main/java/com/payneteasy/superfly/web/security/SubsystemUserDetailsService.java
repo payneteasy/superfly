@@ -58,6 +58,7 @@ public class SubsystemUserDetailsService implements UserDetailsService {
             gas[i] = new SimpleGrantedAuthority(authorities[i]);
         }
         loggerSink.info(logger, "CHECK_SUBSYSTEM_EXIST", true, username);
+        // the password is the stored token hash: SubsystemAuthenticationProvider compares it via SubsystemTokenHasher
         return new User(username, subsystem.getSubsystemToken(), true, true, true, true, Arrays.asList(gas));
     }
 
