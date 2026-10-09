@@ -81,14 +81,9 @@ public class SubsystemServiceImpl implements SubsystemService {
             // the raw token is not recoverable here: the admin regenerates it on the edit page
             subsystem.setSubsystemToken(SubsystemTokenHasher.hash(SecureTokens.generate("")));
         }
-        RoutineResult result;
-        String plainKey = subsystem.getPrivateKey();
-        subsystem.setPrivateKey(encryptKey(plainKey));
-        try {
-            result = subsystemDao.createSubsystem(subsystem);
-        } finally {
-            subsystem.setPrivateKey(plainKey);
-        }
+        // the model is page state: it must never hold the plain key after the call
+        subsystem.setPrivateKey(encryptKey(subsystem.getPrivateKey()));
+        RoutineResult result = subsystemDao.createSubsystem(subsystem);
         invalidateOriginCache();
         loggerSink.info(logger, "CREATE_SUBSYSTEM", true, subsystem.getName());
         javaMailSenderPool.flushAll(); // clearing pool so changes are applied
@@ -111,14 +106,9 @@ public class SubsystemServiceImpl implements SubsystemService {
     }
 
     public RoutineResult updateSubsystem(UISubsystem subsystem) {
-        RoutineResult result;
-        String plainKey = subsystem.getPrivateKey();
-        subsystem.setPrivateKey(encryptKey(plainKey));
-        try {
-            result = subsystemDao.updateSubsystem(subsystem);
-        } finally {
-            subsystem.setPrivateKey(plainKey);
-        }
+        // the model is page state: it must never hold the plain key after the call
+        subsystem.setPrivateKey(encryptKey(subsystem.getPrivateKey()));
+        RoutineResult result = subsystemDao.updateSubsystem(subsystem);
         invalidateOriginCache();
         if (result.isOk()) {
             notificationService.notifyAboutUsersChanged();
@@ -163,10 +153,10 @@ public class SubsystemServiceImpl implements SubsystemService {
         }
     }
 
-    // null means "no key": nothing to store (a null in the edit procedure keeps the stored key)
+    // null means "no key" (a null in the edit procedure keeps the stored key); an encrypted key is passed through
     private String encryptKey(String plainKey) {
-        if (plainKey == null) {
-            return null;
+        if (plainKey == null || !cryptoService.isLegacy(plainKey)) {
+            return plainKey;
         }
         try {
             return cryptoService.encrypt(plainKey);
@@ -212,6 +202,8 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     @Override
     public KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
-        return remoteAuthCryptoService.generateKeyPair(algorithm);
+        // encrypted right away: the pages keep the pair in their model until the form is submitted
+        KeyPairData pair = remoteAuthCryptoService.generateKeyPair(algorithm);
+        return new KeyPairData(pair.publicKey(), encryptKey(pair.privateKey()));
     }
 }
