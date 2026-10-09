@@ -130,6 +130,8 @@ public class UserServiceImplTest {
     @Test
     public void testGetUserLoginStatusSuccess() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        EasyMock.expect(userDao.userHasRolesInSubsystem("pete", "superfly")).andReturn("N");
+        EasyMock.expect(userDao.userHasRolesInSubsystem("pete", "subsystem")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus("pete", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("Y");
         EasyMock.replay(userDao);
@@ -144,6 +146,8 @@ public class UserServiceImplTest {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
         TestLockoutStrategy testLockoutStrategy = new TestLockoutStrategy();
         userService.setLockoutStrategy(testLockoutStrategy);
+        EasyMock.expect(userDao.userHasRolesInSubsystem("stranger", "superfly")).andReturn("N");
+        EasyMock.expect(userDao.userHasRolesInSubsystem("stranger", "subsystem")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus("stranger", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("N");
         EasyMock.replay(userDao);
@@ -158,6 +162,8 @@ public class UserServiceImplTest {
     @Test
     public void testGetUserLoginStatusTemp() {
         userService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        EasyMock.expect(userDao.userHasRolesInSubsystem("old-pete", "superfly")).andReturn("N");
+        EasyMock.expect(userDao.userHasRolesInSubsystem("old-pete", "subsystem")).andReturn("Y");
         EasyMock.expect(userDao.getUserLoginStatus("old-pete", "password{c3pio}", org.apache.commons.codec.digest.DigestUtils.sha256Hex("password{c3pio}"), "subsystem", null))
                 .andReturn("T");
         EasyMock.replay(userDao);

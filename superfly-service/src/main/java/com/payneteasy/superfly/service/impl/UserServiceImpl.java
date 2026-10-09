@@ -441,6 +441,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserLoginStatus checkUserCanLoginWithThisPassword(String username, String password, String subsystemIdentifier) {
         String salt = saltSource.getSalt(username);
+        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+            // same hashing cost as a regular attempt, but the failed-login counter is not touched
+            if (password != null) {
+                passwordEncoder.encode(password, salt);
+                legacyPasswordEncoder.encode(password, salt);
+            }
+            logger.warn("Subsystem {} was denied SSO password login on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            loggerSink.info(logger, "SSO_PASSWORD_LOGIN", false, username, "subsystem=" + subsystemIdentifier);
+            return UserLoginStatus.FAILED;
+        }
         // null password is an ordinary failed attempt, not an exception
         UserLoginStatus result = UserLoginStatus.findByDbStatus(
                 userDao.getUserLoginStatus(username,
@@ -453,6 +463,20 @@ public class UserServiceImpl implements UserService {
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
         }
         return result;
+    }
+
+    @Override
+    public boolean isUserAccessibleFrom(String username, String subsystemIdentifier) {
+        if (username == null || subsystemIdentifier == null) {
+            return false;
+        }
+        return !userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
+                && userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    // values come from the request: strip line breaks to prevent log injection
+    private static String sanitize(String value) {
+        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     // request threads only: scheduled jobs have no client

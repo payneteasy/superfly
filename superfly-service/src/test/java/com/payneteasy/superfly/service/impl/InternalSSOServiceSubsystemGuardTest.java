@@ -56,17 +56,15 @@ public class InternalSSOServiceSubsystemGuardTest {
     }
 
     private void expectForeign() {
-        expect(userService.userHasRolesInSubsystem(USER, LOCAL)).andReturn(false);
-        expect(userService.userHasRolesInSubsystem(USER, CALLER)).andReturn(false);
+        expect(userService.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
     private void expectLocalUser() {
-        expect(userService.userHasRolesInSubsystem(USER, LOCAL)).andReturn(true);
+        expect(userService.isUserAccessibleFrom(USER, CALLER)).andReturn(false);
     }
 
     private void expectOwn() {
-        expect(userService.userHasRolesInSubsystem(USER, LOCAL)).andReturn(false);
-        expect(userService.userHasRolesInSubsystem(USER, CALLER)).andReturn(true);
+        expect(userService.isUserAccessibleFrom(USER, CALLER)).andReturn(true);
     }
 
     private static AuthSession session() {
@@ -119,6 +117,7 @@ public class InternalSSOServiceSubsystemGuardTest {
 
     @Test
     public void authenticateWithoutSubsystemIsDenied() {
+        expect(userService.isUserAccessibleFrom(USER, null)).andReturn(false);
         replay(userService, lockoutStrategy);
 
         assertNull(service.authenticate(USER, "pass", null, null, null));
@@ -175,6 +174,7 @@ public class InternalSSOServiceSubsystemGuardTest {
 
     @Test
     public void pseudoAuthenticateWithoutSubsystemIsDenied() {
+        expect(userService.isUserAccessibleFrom(USER, null)).andReturn(false);
         replay(userService);
 
         assertNull(service.pseudoAuthenticate(USER, null));

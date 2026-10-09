@@ -101,8 +101,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         AuthSession session = new AuthSession("username", 1L);
         session.setRoles(Collections.singletonList(new AuthRole()));
 
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "sub")).andReturn(true);
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
@@ -116,8 +115,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
     @Test
     public void testAuthenticateFail() throws Exception {
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "sub")).andReturn(true);
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(null);
@@ -134,8 +132,7 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         AuthSession session = new AuthSession("username");
         session.setRoles(Collections.<AuthRole> emptyList());
 
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        EasyMock.expect(userService.userHasRolesInSubsystem("username", "sub")).andReturn(true);
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
