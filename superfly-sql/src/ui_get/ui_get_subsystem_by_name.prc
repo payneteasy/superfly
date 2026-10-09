@@ -3,6 +3,7 @@ delimiter $$
 create procedure ui_get_subsystem_by_name(i_subsystem_name varchar(32))
  main_sql:
   begin
+    -- token and private key are secrets: get_subsystem_auth / get_subsystem_private_key serve them to authentication only
     select ss.ssys_id,
            ss.subsystem_name,
            ss.subsystem_title,
@@ -12,11 +13,11 @@ create procedure ui_get_subsystem_by_name(i_subsystem_name varchar(32))
            ss.allow_list_users,
            smtp.ssrv_id smtp_server_ssrv_id,
            smtp.server_name smtp_server_server_name,
-           ss.subsystem_token,
+           null subsystem_token,
            ss.subsystem_url,
            ss.landing_url,
            ss.login_form_css_url,
-           ss.private_key,
+           null private_key,
            ss.public_key,
            ss.encryption_algorithm
       from subsystems ss

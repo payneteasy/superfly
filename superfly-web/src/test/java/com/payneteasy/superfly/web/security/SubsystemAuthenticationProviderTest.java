@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.utils.SubsystemTokenHasher;
@@ -119,14 +119,14 @@ public class SubsystemAuthenticationProviderTest {
         // а не UsernameNotFoundException, и текст исключения содержит имя подсистемы.
         SubsystemService subsystemService = createMock(SubsystemService.class);
         LoggerSink loggerSink = niceMock(LoggerSink.class);
-        UISubsystem tokenless = new UISubsystem();
+        SubsystemAuth tokenless = new SubsystemAuth();
         tokenless.setName("tokenless");
-        UISubsystem known = new UISubsystem();
+        SubsystemAuth known = new SubsystemAuth();
         known.setName("known");
         known.setSubsystemToken(SubsystemTokenHasher.hash("valid-token"));
-        expect(subsystemService.getSubsystemByName("unknown")).andReturn(null);
-        expect(subsystemService.getSubsystemByName("tokenless")).andReturn(tokenless);
-        expect(subsystemService.getSubsystemByName("known")).andReturn(known);
+        expect(subsystemService.getSubsystemAuth("unknown")).andReturn(null);
+        expect(subsystemService.getSubsystemAuth("tokenless")).andReturn(tokenless);
+        expect(subsystemService.getSubsystemAuth("known")).andReturn(known);
         replay(subsystemService, loggerSink);
         SubsystemAuthenticationProvider realProvider =
                 new SubsystemAuthenticationProvider(new SubsystemUserDetailsService(subsystemService, loggerSink));

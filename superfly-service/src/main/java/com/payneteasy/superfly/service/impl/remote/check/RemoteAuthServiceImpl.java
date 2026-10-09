@@ -3,7 +3,7 @@ package com.payneteasy.superfly.service.impl.remote.check;
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService;
@@ -53,15 +53,16 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     @Override
     public RemoteAuthSession checkPassword(String subsystemName, String username, String passwordEncrypted, String bearerToken, String ipAddress, String userAgent) throws RemoteAuthException {
         // 1. Validate Subsystem and Token
-        UISubsystem subsystem = validateSubsystem(subsystemName, bearerToken);
+        SubsystemAuth subsystem = validateSubsystem(subsystemName, bearerToken);
         checkDecryptionFailureLimit(subsystemName);
 
         // 2. Decrypt Password
         String password;
         try {
+             // the decrypted key lives only for this call
              password = remoteAuthCryptoService.decryptPassword(
                      passwordEncrypted,
-                     subsystem.getPrivateKey(),
+                     subsystemService.getSubsystemPrivateKey(subsystemName),
                      RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
              );
         } catch (Exception e) {
@@ -99,7 +100,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
     @Override
     public String checkOtp(String subsystemName, String username, String otpEncrypted, String sessionToken, String bearerToken) throws RemoteAuthException {
         // 1. Validate Subsystem and Token
-        UISubsystem subsystem = validateSubsystem(subsystemName, bearerToken);
+        SubsystemAuth subsystem = validateSubsystem(subsystemName, bearerToken);
         checkDecryptionFailureLimit(subsystemName);
 
         // 2. Validate Session Token. The session is taken out of the cache for the duration of the check:
@@ -117,7 +118,7 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         try {
             otp = remoteAuthCryptoService.decryptOtp(
                     otpEncrypted,
-                    subsystem.getPrivateKey(),
+                    subsystemService.getSubsystemPrivateKey(subsystemName),
                     RemoteAuthEncryptionAlgorithm.valueOf(subsystem.getEncryptionAlgorithm())
             );
         } catch (Exception e) {
@@ -159,8 +160,8 @@ public class RemoteAuthServiceImpl implements RemoteAuthService {
         }
     }
 
-    private UISubsystem validateSubsystem(String subsystemName, String bearerToken) throws RemoteAuthException {
-        UISubsystem subsystem = subsystemService.getSubsystemByName(subsystemName);
+    private SubsystemAuth validateSubsystem(String subsystemName, String bearerToken) throws RemoteAuthException {
+        SubsystemAuth subsystem = subsystemService.getSubsystemAuth(subsystemName);
         // Same answer for unknown subsystem and wrong token: no subsystem enumeration.
         if (subsystem == null || !SubsystemTokenHasher.matches(bearerToken, subsystem.getSubsystemToken())) {
             throw new RemoteAuthException("Invalid subsystem token", "UNAUTHORIZED");

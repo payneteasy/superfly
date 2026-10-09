@@ -1,6 +1,6 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
@@ -66,10 +66,10 @@ public class RemoteAuthSubsystemTokenHashTest {
     }
 
     private void store(String stored) {
-        UISubsystem billing = new UISubsystem();
+        SubsystemAuth billing = new SubsystemAuth();
         billing.setName("billing");
         billing.setSubsystemToken(stored);
-        expect(subsystemService.getSubsystemByName("billing")).andStubReturn(billing);
+        expect(subsystemService.getSubsystemAuth("billing")).andStubReturn(billing);
         replay(subsystemService);
     }
 

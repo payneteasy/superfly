@@ -5,7 +5,7 @@ import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.AuthRole;
 import com.payneteasy.superfly.model.AuthSession;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.password.ConstantSaltSource;
 import com.payneteasy.superfly.password.PasswordEncoder;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -197,12 +197,12 @@ public class InternalSSOServiceSubsystemGuardTest {
     @Test
     public void remoteAuthCheckPasswordForForeignUserGivesGenericAnswer() throws Exception {
         SubsystemService subsystemService = createNiceMock(SubsystemService.class);
-        UISubsystem subsystem = new UISubsystem();
+        SubsystemAuth subsystem = new SubsystemAuth();
         subsystem.setName(CALLER);
         subsystem.setSubsystemToken(SubsystemTokenHasher.hash("bearer"));
-        subsystem.setPrivateKey("private-key");
         subsystem.setEncryptionAlgorithm("RSA");
-        expect(subsystemService.getSubsystemByName(CALLER)).andReturn(subsystem);
+        expect(subsystemService.getSubsystemAuth(CALLER)).andReturn(subsystem);
+        expect(subsystemService.getSubsystemPrivateKey(CALLER)).andReturn("private-key");
         RemoteAuthCryptoService crypto = createNiceMock(RemoteAuthCryptoService.class);
         expect(crypto.decryptPassword(anyString(), anyString(), anyObject())).andReturn("pass");
         expectForeign();

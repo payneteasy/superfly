@@ -4,7 +4,7 @@ import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
@@ -39,8 +39,9 @@ public class RemoteAuthServiceImplTest {
         internalSSOService = niceMock(InternalSSOService.class);
         cryptoService = niceMock(RemoteAuthCryptoService.class);
 
-        expect(subsystemService.getSubsystemByName(BILLING)).andStubReturn(subsystem(BILLING));
-        expect(subsystemService.getSubsystemByName(CRM)).andStubReturn(subsystem(CRM));
+        expect(subsystemService.getSubsystemAuth(BILLING)).andStubReturn(subsystem(BILLING));
+        expect(subsystemService.getSubsystemAuth(CRM)).andStubReturn(subsystem(CRM));
+        expect(subsystemService.getSubsystemPrivateKey(anyString())).andStubReturn("private-key");
         expect(cryptoService.decryptPassword(anyString(), anyString(), anyObject())).andStubReturn("password");
         expect(cryptoService.decryptOtp(eq("good-otp-enc"), anyString(), anyObject())).andStubReturn("123456");
         expect(cryptoService.decryptOtp(eq("bad-otp-enc"), anyString(), anyObject())).andStubReturn("000000");
@@ -212,11 +213,10 @@ public class RemoteAuthServiceImplTest {
         return subsystemName + "-bearer";
     }
 
-    private static UISubsystem subsystem(String name) {
-        UISubsystem subsystem = new UISubsystem();
+    private static SubsystemAuth subsystem(String name) {
+        SubsystemAuth subsystem = new SubsystemAuth();
         subsystem.setName(name);
         subsystem.setSubsystemToken(SubsystemTokenHasher.hash(token(name)));
-        subsystem.setPrivateKey("private-key");
         subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
         return subsystem;
     }

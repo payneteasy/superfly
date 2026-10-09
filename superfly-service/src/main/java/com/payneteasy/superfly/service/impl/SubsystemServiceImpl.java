@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 
 import java.util.List;
 
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.service.*;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
@@ -114,6 +115,16 @@ public class SubsystemServiceImpl implements SubsystemService {
 
     public UISubsystem getSubsystemByName(String subsystemName) {
         return subsystemDao.getSubsystemByName(subsystemName);
+    }
+
+    @Override
+    public SubsystemAuth getSubsystemAuth(String subsystemName) {
+        return subsystemDao.getSubsystemAuth(subsystemName);
+    }
+
+    @Override
+    public String getSubsystemPrivateKey(String subsystemName) {
+        return subsystemDao.getSubsystemPrivateKey(subsystemName);
     }
 
     @Override

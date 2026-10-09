@@ -32,6 +32,10 @@ create table mysql_routines_return_arguments (
 
 \. get/get_users_with_expired_passwords.prc
 
+\. get/get_subsystem_auth.prc
+
+\. get/get_subsystem_private_key.prc
+
 \. create/create_collections.prc
 
 \. int/int_users_list.prc
