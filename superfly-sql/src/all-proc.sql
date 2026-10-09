@@ -38,6 +38,8 @@ create table mysql_routines_return_arguments (
 
 \. get/get_subsystems_with_plain_private_key.prc
 
+\. get/get_smtp_servers_with_plain_password.prc
+
 \. create/create_collections.prc
 
 \. int/int_users_list.prc
@@ -129,6 +131,8 @@ create table mysql_routines_return_arguments (
 \. save/update_user_salt.prc
 
 \. save/encrypt_subsystem_private_key.prc
+
+\. save/encrypt_smtp_server_password.prc
 
 \. ui_get/ui_get_groups_list.prc
 

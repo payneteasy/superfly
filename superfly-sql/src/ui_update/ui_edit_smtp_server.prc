@@ -5,7 +5,7 @@ create procedure ui_edit_smtp_server(i_ssrv_id int(10),
                                      i_host varchar(64),
                                      i_port int(10),
                                      i_username varchar(64),
-                                     i_password varchar(64),
+                                     i_password varchar(255),
                                      i_from_address varchar(64),
                                      i_is_ssl varchar(1)
 )
@@ -16,7 +16,7 @@ create procedure ui_edit_smtp_server(i_ssrv_id int(10),
            host = i_host,
            port = i_port,
            username = i_username,
-           password = i_password,
+           password = coalesce(nullif(i_password, ''), password),
            from_address = i_from_address,
            is_ssl = i_is_ssl
      where ssrv_id = i_ssrv_id;

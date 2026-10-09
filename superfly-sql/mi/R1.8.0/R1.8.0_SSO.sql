@@ -8,7 +8,6 @@ update subsystems
    and subsystem_token <> ''
    and subsystem_token not like 'sha256:%';
 
-
 -- legacy (not pbkdf2) hashes in user_history outside the reuse check window are dropped: the window is the 5 newest
 -- rows of a user (the one standing for the current password and the 4 before it); the rows inside it are replaced
 -- by pbkdf2 hashes at login or leave the window with the next password changes
@@ -22,3 +21,6 @@ delete uh
                    having count(*) >= 5) old
                on old.user_user_id = uh.user_user_id and old.number_history = uh.number_history
  where uh.user_password not like 'pbkdf2-sha256$%';
+
+-- SMTP server passwords are stored as CryptoService ciphertext ("v2:" + base64), which does not fit varchar(64)
+call run_install_command('alter table smtp_servers modify column password varchar(255)', '42S21');
