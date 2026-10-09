@@ -18,6 +18,9 @@ import javax.sql.DataSource;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -147,6 +150,109 @@ public class EventServiceImplTest {
         assertTrue(calls.get() >= 2);
         assertFalse(firstCallTx.get());
         assertFalse(secondCallTx.get());
+    }
+
+    /** Starts a poll on its own thread; the poll blocks in sleep until released. */
+    private static Thread startBlockedPoll(EventServiceImpl service, String subsystem, CountDownLatch entered) {
+        Thread t = new Thread(() -> service.getEvents(LAST, 1000, subsystem));
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+
+    private static EventServiceImpl blockingService(CountDownLatch entered, CountDownLatch release, AtomicLong sleeps) {
+        EventServiceImpl service = service(dao(List::of), new AtomicLong());
+        service.sleeper = millis -> {
+            sleeps.incrementAndGet();
+            entered.countDown();
+            release.await();
+            throw new InterruptedException();
+        };
+        return service;
+    }
+
+    @Test
+    public void excessPollsOfOneSubsystemReturnEmptyWithoutWaiting() throws Exception {
+        int n = EventServiceImpl.MAX_WAITING_PER_SUBSYSTEM;
+        CountDownLatch entered = new CountDownLatch(n);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicLong sleeps = new AtomicLong();
+        EventServiceImpl service = blockingService(entered, release, sleeps);
+        List<Thread> threads = new ArrayList<>();
+        try {
+            for (int i = 0; i < n; i++) {
+                threads.add(startBlockedPoll(service, "a", entered));
+            }
+            assertTrue(entered.await(5, TimeUnit.SECONDS));
+
+            assertTrue(service.getEvents(LAST, 1000, "a").isEmpty());
+            assertEquals(n, sleeps.get());
+
+            // another subsystem is not affected
+            CountDownLatch otherEntered = new CountDownLatch(1);
+            threads.add(startBlockedPoll(service, "b", otherEntered));
+            long deadline = System.currentTimeMillis() + 5000;
+            while (sleeps.get() < n + 1 && System.currentTimeMillis() < deadline) {
+                Thread.sleep(10);
+            }
+            assertEquals(n + 1, sleeps.get());
+        } finally {
+            release.countDown();
+            for (Thread t : threads) {
+                t.join(5000);
+            }
+        }
+    }
+
+    @Test
+    public void globalLimitAppliesAcrossSubsystems() throws Exception {
+        int n = EventServiceImpl.MAX_WAITING_TOTAL;
+        CountDownLatch entered = new CountDownLatch(n);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicLong sleeps = new AtomicLong();
+        EventServiceImpl service = blockingService(entered, release, sleeps);
+        List<Thread> threads = new ArrayList<>();
+        try {
+            for (int i = 0; i < n; i++) {
+                threads.add(startBlockedPoll(service, "s" + i, entered));
+            }
+            assertTrue(entered.await(5, TimeUnit.SECONDS));
+
+            assertTrue(service.getEvents(LAST, 1000, "other").isEmpty());
+            assertEquals(n, sleeps.get());
+        } finally {
+            release.countDown();
+            for (Thread t : threads) {
+                t.join(5000);
+            }
+        }
+        // permits are returned once the polls are over
+        AtomicLong after = new AtomicLong();
+        service.clock = after::get;
+        service.sleeper = after::addAndGet;
+        service.getEvents(LAST, 1, "other");
+        assertEquals(500, after.get());
+    }
+
+    @Test
+    public void permitsAreReleasedWhenDaoFails() {
+        AtomicLong calls = new AtomicLong();
+        EventServiceImpl service = service(dao(() -> {
+            if (calls.getAndIncrement() > 0) {
+                throw new IllegalStateException("db down");
+            }
+            return List.of();
+        }), new AtomicLong());
+
+        for (int i = 0; i < EventServiceImpl.MAX_WAITING_TOTAL * 2; i++) {
+            calls.set(0);
+            try {
+                service.getEvents(LAST, 1000, "s");
+                fail();
+            } catch (IllegalStateException expected) {
+                // the poll was admitted and failed; the permits must be back
+            }
+        }
     }
 
     @Configuration
