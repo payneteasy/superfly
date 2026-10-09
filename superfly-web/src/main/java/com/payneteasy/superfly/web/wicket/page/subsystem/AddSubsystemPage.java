@@ -14,6 +14,7 @@ import com.payneteasy.superfly.web.wicket.page.BasePage;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
@@ -45,18 +46,39 @@ public class AddSubsystemPage extends BasePage {
         super(ListSubsystemsPage.class);
 
         final UISubsystem subsystem = new UISubsystem();
+        // the raw token is kept only for the response that shows it: not in the page store, not in session feedback
+        final OneTimeModel newTokenModel = new OneTimeModel();
+        final boolean[] created = {false};
+
+        final WebMarkupContainer createdBlock = new WebMarkupContainer("created") {
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(created[0]);
+            }
+        };
+        createdBlock.add(new Label("newSubsystemToken", newTokenModel));
+        createdBlock.add(new BookmarkablePageLink<Page>("back", ListSubsystemsPage.class));
+        add(createdBlock);
+
         Form<UISubsystem> form = new Form<UISubsystem>("form", new CompoundPropertyModel<>(subsystem)) {
             @Override
             protected void onSubmit() {
                 String token = subsystemService.generateMainSubsystemToken(subsystem);
                 RoutineResult result = subsystemService.createSubsystem(subsystem);
                 if (result.isOk()) {
-                    // session feedback is rendered once by the list page and then dropped; the token is not kept in the page
-                    getSession().info("Subsystem token (shown once, store it now): " + token);
+                    newTokenModel.setObject("Subsystem token (shown once, store it now): " + token);
+                    created[0] = true;
+                } else {
+                    setResponsePage(ListSubsystemsPage.class);
                 }
-                setResponsePage(ListSubsystemsPage.class);
             }
 
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(!created[0]);
+            }
         };
         add(form);
         form.add(new LabelTextFieldRow<UISubsystem>(subsystem, "name", "subsystem.add.name", true));
@@ -139,6 +161,28 @@ public class AddSubsystemPage extends BasePage {
     @Override
     protected String getTitle() {
         return "Add subsystem";
+    }
+
+    /**
+     * Holds the raw token for the current request only: cleared on detach and never serialized.
+     */
+    private static class OneTimeModel implements IModel<String> {
+        private transient String value;
+
+        @Override
+        public String getObject() {
+            return value;
+        }
+
+        @Override
+        public void setObject(String object) {
+            value = object;
+        }
+
+        @Override
+        public void detach() {
+            value = null;
+        }
     }
 
     private KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm) {
