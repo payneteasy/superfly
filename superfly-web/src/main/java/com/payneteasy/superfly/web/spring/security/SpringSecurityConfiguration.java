@@ -129,6 +129,10 @@ public class SpringSecurityConfiguration {
                                     .permitAll()
                                     .requestMatchers(antPathRequestMatcher("/sso/check/**"))
                                     .denyAll()
+                                    // SSO pages are mounted or reached through page instances, never by class name;
+                                    // the SSO Wicket app refuses non-SSO pages too (defense in depth).
+                                    .requestMatchers(antPathRequestMatcher("/sso/wicket/bookmarkable/**"))
+                                    .denyAll()
                                     .requestMatchers(antPathRequestMatcher("/favicon.ico"),
                                                      antPathRequestMatcher("/css/**"),
                                                      antPathRequestMatcher("/login*"),
