@@ -660,6 +660,12 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>8.2.0</version>
             </dependency>
+            <dependency>
+                <!--Justification: transitive from mysql-connector-j; pinned above the 3.21.x line it brings -->
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.25.8</version>
+            </dependency>
 
             <dependency>
                 <!--Justification: Spring framework support for testing -->
@@ -1112,7 +1118,7 @@
         <aspectj.version>1.6.5</aspectj.version>
 
         <wicket.version>10.11.0</wicket.version>
-        <wicket8.version>8.18.0</wicket8.version>
+        <wicket8.version>8.19.0</wicket8.version>
         <jetty.version>12.0.36</jetty.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>

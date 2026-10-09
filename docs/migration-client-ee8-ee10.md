@@ -314,7 +314,7 @@ Spring Security 5.8.x, Wicket 8 + встроенный старый jQuery) на
 <dependency>
     <groupId>org.apache.wicket</groupId>
     <artifactId>wicket</artifactId>
-    <version>8.18.0</version>
+    <version>8.19.0</version>
     <type>pom</type>
 </dependency>
 ```
