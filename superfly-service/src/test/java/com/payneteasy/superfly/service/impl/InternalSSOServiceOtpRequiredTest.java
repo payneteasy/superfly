@@ -62,6 +62,8 @@ public class InternalSSOServiceOtpRequiredTest {
 
     @Test
     public void ssoUserOfOptionalUserWithKeyIsNotOptional() {
+        EasyMock.expect(userService.userHasRolesInSubsystem(USER, "superfly")).andReturn(false);
+        EasyMock.expect(userService.userHasRolesInSubsystem(USER, "sub")).andReturn(true);
         EasyMock.expect(userService.pseudoAuthenticate(USER, "sub")).andReturn(session(true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn("encrypted-key").anyTimes();
         EasyMock.replay(userService);
@@ -73,6 +75,8 @@ public class InternalSSOServiceOtpRequiredTest {
 
     @Test
     public void ssoUserOfOptionalUserWithoutKeyStaysOptional() {
+        EasyMock.expect(userService.userHasRolesInSubsystem(USER, "superfly")).andReturn(false);
+        EasyMock.expect(userService.userHasRolesInSubsystem(USER, "sub")).andReturn(true);
         EasyMock.expect(userService.pseudoAuthenticate(USER, "sub")).andReturn(session(true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null).anyTimes();
         EasyMock.replay(userService);

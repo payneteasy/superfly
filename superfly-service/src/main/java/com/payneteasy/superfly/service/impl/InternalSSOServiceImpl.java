@@ -130,6 +130,15 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                                 String sessionInfo) {
         SSOUser ssoUser;
         String  salt = saltSource.getSalt(username);
+        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+            // same hashing cost as a regular attempt, but the failed-login counter is not touched
+            if (password != null) {
+                passwordEncoder.encode(password, salt);
+                legacyPasswordEncoder.encode(password, salt);
+            }
+            logger.warn("Subsystem {} was denied authenticate on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            return null;
+        }
         // null password is an ordinary failed attempt, not an exception
         AuthSession session = userService.authenticate(username,
                 password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
@@ -159,6 +168,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
+        if (!isUserAccessibleFrom(username, subsystemIdentifier)) {
+            logger.warn("Subsystem {} was denied pseudoAuthenticate on user {}", sanitize(subsystemIdentifier), sanitize(username));
+            return null;
+        }
         AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
         boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
@@ -169,6 +182,20 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             ssoUser = null;
         }
         return ssoUser;
+    }
+
+    @Override
+    public boolean isUserAccessibleFrom(String username, String subsystemIdentifier) {
+        if (username == null || subsystemIdentifier == null) {
+            return false;
+        }
+        return !userService.userHasRolesInSubsystem(username, LocalSecurityServiceImpl.DEFAULT_LOCAL_SUBSYSTEM_NAME)
+                && userService.userHasRolesInSubsystem(username, subsystemIdentifier);
+    }
+
+    // values come from the request body: strip line breaks to prevent log injection
+    private static String sanitize(String value) {
+        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
     private SSOUser buildSSOUser(AuthSession session) {

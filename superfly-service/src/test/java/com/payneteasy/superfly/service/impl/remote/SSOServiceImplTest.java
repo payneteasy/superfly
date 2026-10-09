@@ -30,8 +30,7 @@ public class SSOServiceImplTest {
     // username-based methods only work for users of the caller's subsystem
     private void expectCallerOwnsUser(String username) {
         ssoService.setSubsystemIdentifierObtainer(hint -> "caller");
-        expect(internalSSOService.userHasRolesInSubsystem(username, "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem(username, "caller")).andReturn(true);
+        expect(internalSSOService.isUserAccessibleFrom(username, "caller")).andReturn(true);
     }
 
     @Test
@@ -143,8 +142,7 @@ public class SSOServiceImplTest {
             }
         });
 
-        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserAccessibleFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
@@ -163,8 +161,7 @@ public class SSOServiceImplTest {
     @Test
     public void testChangeUserRoleWithSubsystemHint() {
         ssoService.setSubsystemIdentifierObtainer(hint -> hint == null ? "test" : hint);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "superfly")).andReturn(false);
-        expect(internalSSOService.userHasRolesInSubsystem("username", "test")).andReturn(true);
+        expect(internalSSOService.isUserAccessibleFrom("username", "test")).andReturn(true);
         internalSSOService.changeUserRole("username", "ROLE_TO", "test");
         expectLastCall();
         replay(internalSSOService);
