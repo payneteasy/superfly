@@ -80,7 +80,8 @@ SSO_DB_DATABASE=ssotest ./dev-env.sh up
 
 ```bash
 cd superfly-sql/mi
-version_from=R1.7.4 bash all_mi.sh     # с какой версии применять; по умолчанию R1.0.0
+version_from=R2.0.0 bash all_mi.sh     # с какой версии применять (включая её); по умолчанию R1.0.0
+# version_to=<каталог> — до какого каталога (не включая его); по умолчанию — до конца
 cd ../src && ./all-proc.sh             # хранимые процедуры ставятся отдельно от приложения
 ```
 
