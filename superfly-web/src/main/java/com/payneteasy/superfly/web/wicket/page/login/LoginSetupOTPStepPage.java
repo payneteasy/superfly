@@ -2,6 +2,7 @@ package com.payneteasy.superfly.web.wicket.page.login;
 
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
+import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.wicket.component.otp.GoogleAuthSetupPanel;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseException;
@@ -20,9 +21,12 @@ public class LoginSetupOTPStepPage extends AbstractLoginPage {
         }
         String relativePath = getRequest().getPrefixToContextPath();
         String url = buildSuperflyHOTPSecurityCheckUrl(relativePath);
+        // shown only: the form sends the code, the key stays in the session
+        String key = SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(getHttpSession(),
+                localNeedOTPToken.getName());
 
         Form<Void> form = new Form<Void>("form");
-        form.add(new GoogleAuthSetupPanel("otp", "superfly", localNeedOTPToken.getName(), Model.of("")));
+        form.add(new GoogleAuthSetupPanel("otp", "superfly", localNeedOTPToken.getName(), Model.of(key)));
         form.add(new AttributeModifier("action", Model.of(url)));
         form.add(createCsrfHiddenInput("_csrf"));
 

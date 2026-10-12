@@ -96,7 +96,7 @@ public abstract class AbstractLoginPage extends WebPage {
         return LoginPasswordStepPage.class;
     }
 
-    private HttpSession getHttpSession() {
+    protected HttpSession getHttpSession() {
         ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
         HttpServletRequest request = servletWebRequest.getContainerRequest();
 

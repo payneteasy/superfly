@@ -57,6 +57,18 @@ public class GoogleAuthSetupPanelTest {
     }
 
     @Test
+    public void givenKeyIsShownAndNotRenderedIntoAFormField() throws Exception {
+        Model<String> secret = Model.of("JBSWY3DPEHPK3PXP");
+        tester.startComponentInPage(new GoogleAuthSetupPanel("panel", "sub", "alice", secret));
+
+        String markup = tester.getLastResponseAsString();
+        assertEquals("JBSWY3DPEHPK3PXP", secret.getObject());
+        assertTrue(markup, markup.contains("JBSWY3DPEHPK3PXP"));
+        assertEquals("otpauth://totp/alice:sub?secret=JBSWY3DPEHPK3PXP&issuer=SuperflySSO", decodeQr(extractSrc(markup)));
+        assertFalse(markup, markup.contains("<input"));
+    }
+
+    @Test
     public void qrDecodesBackToOtpAuthUri() throws Exception {
         Model<String> secret = Model.of("");
         tester.startComponentInPage(new GoogleAuthSetupPanel("panel", "sub", "alice", secret));

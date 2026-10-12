@@ -5,14 +5,17 @@ import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
+import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.web.security.SecurityUtils;
 import com.payneteasy.superfly.web.security.SpringSecurityAuthorizationStrategy;
+import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
 import com.payneteasy.superfly.web.spring.ApplicationParameterResolver;
 import com.payneteasy.superfly.web.spring.SpringAppPropertiesConfiguration;
 import com.payneteasy.superfly.web.wicket.page.user.ChangePasswordPage;
 import com.payneteasy.superfly.web.wicket.page.user.ListUsersPage;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import jakarta.servlet.Filter;
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import org.w3c.dom.Document;
@@ -35,6 +39,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.easymock.EasyMock.niceMock;
@@ -118,23 +123,83 @@ public class AdminTotpRequiredByWebXmlTest {
         AdminStore store = new AdminStore("ADMIN");
         Filter console = startConsole(store);
         Browser browser = passwordStep(console);
+        String key = browser.setupPageKey();
+        String code = codeOf(key);
 
-        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_key", "SETUPKEY").getStatus());
+        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_otp", code).getStatus());
 
         assertEquals("the key is stored for the user, as Google Authenticator key", OTPType.GOOGLE_AUTH, store.otpType);
-        assertEquals("SETUPKEY", store.otpKey);
-        assertConsoleClosed(browser, "/login-step2");
-        assertPassesFilterChain(browser, "/login-step2");
+        assertEquals("the key shown on the setup page is stored", key, store.otpKey);
+        assertEquals("the code goes through the check of the code step, which records its time step",
+                List.of(code), store.checkedCodes);
+        assertConsoleOpen(browser);
+        assertEquals(List.of("ROLE_ADMIN"), authorities(browser));
 
-        MockHttpServletResponse wrongCode = browser.post("/j_superfly_otp_security_check", "j_otp", "000000");
+        Browser next = passwordStep(console);
+        assertConsoleClosed(next, "/login-step2");
+        assertPassesFilterChain(next, "/login-step2");
+
+        MockHttpServletResponse wrongCode = next.post("/j_superfly_otp_security_check", "j_otp", "000000");
         assertTrue(wrongCode.getRedirectedUrl(), wrongCode.getRedirectedUrl().endsWith("/login"));
-        assertConsoleClosed(browser, "/login");
+        assertConsoleClosed(next, "/login");
 
         Browser retry = passwordStep(console);
         assertConsoleClosed(retry, "/login-step2");
         assertEquals(302, retry.post("/j_superfly_otp_security_check", "j_otp", VALID_CODE).getStatus());
         assertConsoleOpen(retry);
         assertEquals(List.of("ROLE_ADMIN"), authorities(retry));
+    }
+
+    @Test
+    public void wrongSetupCodeStoresNothingAndKeepsTheUserOnTheSetupPage() throws Exception {
+        AdminStore store = new AdminStore("ADMIN");
+        Browser browser = passwordStep(startConsole(store));
+        String key = browser.setupPageKey();
+
+        MockHttpServletResponse wrongCode = browser.post("/j_superfly_otp_reset", "j_otp", wrongCodeOf(key));
+
+        assertTrue(wrongCode.getRedirectedUrl(), wrongCode.getRedirectedUrl().endsWith("/login-setup"));
+        assertEquals("no key is stored", 0, store.keysStored);
+        assertTrue("the setup page shows the message of a wrong code",
+                browser.session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION) instanceof BadOTPValueException);
+        assertConsoleClosed(browser, "/login-setup");
+        assertEquals("the same key is shown again", key, browser.setupPageKey());
+
+        String code = codeOf(key);
+        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_otp", code).getStatus());
+        assertEquals(key, store.otpKey);
+        assertConsoleOpen(browser);
+    }
+
+    @Test
+    public void wrongSetupCodesAreLimitedLikeTheOtherLoginSteps() throws Exception {
+        AdminStore store = new AdminStore("ADMIN");
+        Browser browser = passwordStep(startConsole(store));
+        String key = browser.setupPageKey();
+
+        for (int i = 0; i < 5; i++) {
+            assertEquals(302, browser.post("/j_superfly_otp_reset", "j_otp", wrongCodeOf(key)).getStatus());
+        }
+
+        assertEquals(429, browser.post("/j_superfly_otp_reset", "j_otp", codeOf(key)).getStatus());
+        assertEquals(0, store.keysStored);
+    }
+
+    @Test
+    public void setupKeyIsNotTakenFromTheRequest() throws Exception {
+        AdminStore store = new AdminStore("ADMIN");
+        Browser browser = passwordStep(startConsole(store));
+        String key = browser.setupPageKey();
+        String otherKey = new GoogleAuthenticator().createCredentials().getKey();
+
+        MockHttpServletResponse otherKeyCode = browser.post("/j_superfly_otp_reset",
+                "j_key", otherKey, "j_otp", codeOf(otherKey));
+        assertTrue(otherKeyCode.getRedirectedUrl(), otherKeyCode.getRedirectedUrl().endsWith("/login-setup"));
+        assertEquals("a key sent with the form is not stored", 0, store.keysStored);
+
+        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_key", otherKey, "j_otp", codeOf(key)).getStatus());
+        assertEquals("the key shown on the setup page is stored", key, store.otpKey);
+        assertConsoleOpen(browser);
     }
 
     @Test
@@ -168,9 +233,7 @@ public class AdminTotpRequiredByWebXmlTest {
         Browser browser = passwordStep(startConsole(new AdminStore("action_temp_password")));
 
         assertConsoleClosed(browser, "/login-setup");
-        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_key", "SETUPKEY").getStatus());
-        assertConsoleClosed(browser, "/login-step2");
-        assertEquals(302, browser.post("/j_superfly_otp_security_check", "j_otp", VALID_CODE).getStatus());
+        assertEquals(302, browser.post("/j_superfly_otp_reset", "j_otp", codeOf(browser.setupPageKey())).getStatus());
 
         assertEquals(List.of("ROLE_ACTION_TEMP_PASSWORD"), authorities(browser));
         // SuperflyApplication shows the password change page instead of any other page for this role
@@ -267,6 +330,23 @@ public class AdminTotpRequiredByWebXmlTest {
         }
     }
 
+    private static String codeOf(String key) {
+        return String.format("%06d", new GoogleAuthenticator().getTotpPassword(key));
+    }
+
+    /** A well-formed code that the key does not accept now. */
+    private static String wrongCodeOf(String key) {
+        int code = 1;
+        while (isCodeOf(key, String.format("%06d", code))) {
+            code++;
+        }
+        return String.format("%06d", code);
+    }
+
+    private static boolean isCodeOf(String key, String code) {
+        return code.matches("[0-9]{6}") && new GoogleAuthenticator().authorize(key, Integer.parseInt(code));
+    }
+
     private static <T> T mock(Class<T> type) {
         T mock = niceMock(type);
         replay(mock);
@@ -275,10 +355,11 @@ public class AdminTotpRequiredByWebXmlTest {
 
     /** One administrator in memory: the password, the OTP type and the TOTP key the way the database holds them. */
     private static final class AdminStore implements LocalSecurityService {
-        private final String[] actions;
-        private OTPType        otpType = OTPType.NONE;
-        private String         otpKey;
-        private int            keysStored;
+        private final String[]     actions;
+        private final List<String> checkedCodes = new ArrayList<>();
+        private OTPType            otpType      = OTPType.NONE;
+        private String             otpKey;
+        private int                keysStored;
 
         AdminStore(String... actions) {
             this.actions = actions;
@@ -295,9 +376,11 @@ public class AdminTotpRequiredByWebXmlTest {
             return USERNAME.equals(username) && PASSWORD.equals(password) ? actions : null;
         }
 
+        /** {@link #VALID_CODE} stands for the code of a key enrolled before the test; a key set up in the test is checked. */
         @Override
         public boolean authenticateUsingOTP(String username, String otp) {
-            return otpKey != null && VALID_CODE.equals(otp);
+            checkedCodes.add(otp);
+            return otpKey != null && (VALID_CODE.equals(otp) || isCodeOf(otpKey, otp));
         }
 
         @Override
@@ -336,6 +419,11 @@ public class AdminTotpRequiredByWebXmlTest {
 
         Reply get(String uri) throws Exception {
             return send(new MockHttpServletRequest("GET", uri));
+        }
+
+        /** What {@code /login-setup} shows: the page issues the key into the session. */
+        String setupPageKey() {
+            return SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(session, USERNAME);
         }
 
         private Reply send(MockHttpServletRequest request) throws Exception {

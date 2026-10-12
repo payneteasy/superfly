@@ -2,15 +2,13 @@ package com.payneteasy.superfly.web.wicket.component.otp;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.util.string.Strings;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -39,7 +37,9 @@ public class GoogleAuthSetupPanel extends Panel {
         this.subsystem = subsystem;
         this.username = username;
         this.totpSecret = totpSecret;
-        this.totpSecret.setObject(generateKey());
+        if (Strings.isEmpty(totpSecret.getObject())) {
+            this.totpSecret.setObject(generateKey());
+        }
         init();
     }
 
@@ -59,8 +59,6 @@ public class GoogleAuthSetupPanel extends Panel {
                 })
         );
 
-        refreshable.add(new HiddenField<>("key-input", Model.of(totpSecret.getObject()))
-                .add(new AttributeModifier("name", "j_key")));
         refreshable.add(new Label("key", totpSecret));
     }
 
