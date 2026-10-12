@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,8 @@ import java.util.concurrent.TimeUnit;
 public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApacheHC5HttpClient.class);
+
+    private static final String INVALID_URL = "(invalid callback URL)";
 
     // ── connection pool defaults ──────────────────────────────────────────────
 
@@ -163,19 +167,19 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
 
         } catch (ConnectTimeoutException e) {
             LOG.warn("send: connect timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
-            throw new HttpConnectException("Connect timeout to " + url, e);
+            throw new HttpConnectException("Connect timeout to " + maskedUrl(url), e);
 
         } catch (SocketTimeoutException e) {
             LOG.warn("send: response timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
-            throw new HttpReadException("Response timeout from " + url, e);
+            throw new HttpReadException("Response timeout from " + maskedUrl(url), e);
 
         } catch (IOException e) {
             if (isConnectFailure(e)) {
                 LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
-                throw new HttpConnectException("Connection failed to " + url, e);
+                throw new HttpConnectException("Connection failed to " + maskedUrl(url), e);
             }
             LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
-            throw new HttpReadException("I/O error communicating with " + url, e);
+            throw new HttpReadException("I/O error communicating with " + maskedUrl(url), e);
         }
     }
 
@@ -184,6 +188,39 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
                 || e instanceof UnknownHostException
                 || e instanceof NoRouteToHostException
                 || e instanceof ConnectTimeoutException;
+    }
+
+    /**
+     * The URL without user info, query and fragment, as it is written to exception messages: they may carry
+     * credentials. The scheme, the host, the port and the path are kept.
+     *
+     * <p>The same rule as {@code CallbackUrls} of superfly-service applies to the callback URL in the notification
+     * logs; this module cannot use that class, so keep the two in line.
+     *
+     * @return the URL to write to a message; {@code "(invalid callback URL)"} if it cannot be parsed or is not an
+     * absolute URL with a host, since repeating such a URL would repeat the parts to hide
+     */
+    static String maskedUrl(String url) {
+        if (url == null) {
+            return "null";
+        }
+        URI parsed;
+        try {
+            parsed = new URI(url);
+        } catch (URISyntaxException e) {
+            return INVALID_URL;
+        }
+        String authority = parsed.getRawAuthority();
+        if (parsed.getScheme() == null || authority == null) {
+            return INVALID_URL;
+        }
+        // User info is everything before the last '@': URI#getUserInfo() is null (and URI#getHost() too) for a
+        // registry-based authority, which is what a host name with '_' (a docker-compose service name) parses to
+        String hostAndPort = authority.substring(authority.lastIndexOf('@') + 1);
+        if (hostAndPort.isEmpty()) {
+            return INVALID_URL;
+        }
+        return parsed.getScheme() + "://" + hostAndPort + parsed.getRawPath();
     }
 
     /** SSL is pool-wide here; silently ignoring per-request SSL settings would weaken the caller's intended TLS checks. */

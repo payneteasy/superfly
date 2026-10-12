@@ -16,14 +16,13 @@ import com.payneteasy.superfly.common.utils.SubsystemTokenHashes;
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
+import com.payneteasy.superfly.notification.CallbackUrls;
 import com.payneteasy.superfly.notification.NotificationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -76,7 +75,7 @@ public abstract class AbstractHttpNotificationSendStrategy implements
         }
         Map<String, String> signedParams = sign(key, params);
 
-        logger.debug("Sending notification to {} with params {}", uri, params);
+        logger.debug("Sending notification to {} with params {}", CallbackUrls.masked(uri), params);
 
         HttpRequest request = HttpRequest.builder()
                 .url(uri)
@@ -95,7 +94,8 @@ public abstract class AbstractHttpNotificationSendStrategy implements
                 throw unexpectedAnswer(uri, notificationType, status);
             }
             if (logger.isInfoEnabled()) {
-                logger.info("Successfully notified {} with params {} (status {})", uri, params, status);
+                logger.info("Successfully notified {} with params {} (status {})",
+                        CallbackUrls.masked(uri), params, status);
             }
         } catch (HttpConnectException | HttpReadException | HttpWriteException e) {
             throw new NotificationException(e);
@@ -108,24 +108,13 @@ public abstract class AbstractHttpNotificationSendStrategy implements
      * @return the exception failing the notification, like a transport error does
      */
     private NotificationException unexpectedAnswer(String uri, String notificationType, int status) {
-        String url = withoutCredentials(uri);
+        String url = CallbackUrls.masked(uri);
         String hint = status == HttpURLConnection.HTTP_FORBIDDEN
                 ? " (check notificationSecret of the subsystem client)" : "";
         logger.warn("Notification {} to {} failed: the subsystem answered with status {}{}",
                 notificationType, url, status, hint);
         return new NotificationException("Notification " + notificationType + " to " + url
                 + " failed: the subsystem answered with status " + status + hint);
-    }
-
-    /** The callback URL without user info, query and fragment: they may carry credentials. */
-    private static String withoutCredentials(String uri) {
-        try {
-            URI parsed = new URI(uri);
-            return new URI(parsed.getScheme(), null, parsed.getHost(), parsed.getPort(), parsed.getPath(), null, null)
-                    .toString();
-        } catch (URISyntaxException e) {
-            return "(invalid callback URL)";
-        }
     }
 
     /**
@@ -141,19 +130,20 @@ public abstract class AbstractHttpNotificationSendStrategy implements
                     String token = auth == null ? null : auth.getSubsystemToken();
                     if (token == null || !token.startsWith(SubsystemTokenHashes.PREFIX)) {
                         logger.warn("Subsystem {} has no token, not sending a notification to {}",
-                                subsystem.getName(), uri);
+                                subsystem.getName(), CallbackUrls.masked(uri));
                         return null;
                     }
                     keys.add(token);
                 }
             }
         } catch (RuntimeException e) {
-            logger.error("Could not obtain the subsystem token for {}, not sending a notification", uri, e);
+            logger.error("Could not obtain the subsystem token for {}, not sending a notification",
+                    CallbackUrls.masked(uri), e);
             return null;
         }
         if (keys.size() != 1) {
             logger.warn("{} subsystem tokens for callback {}, not sending a notification",
-                    keys.isEmpty() ? "No" : "Different", uri);
+                    keys.isEmpty() ? "No" : "Different", CallbackUrls.masked(uri));
             return null;
         }
         return keys.iterator().next();

@@ -25,7 +25,7 @@ public class LogoutNotification extends AbstractNotification {
 
     @Override
     public String toString() {
-        return "LogoutNotification [for " + getCallbackUri() + "]: "
+        return "LogoutNotification [for " + CallbackUrls.masked(getCallbackUri()) + "]: "
                 + StringUtils.collectionToCommaDelimitedString(sessionIds);
     }
 }
