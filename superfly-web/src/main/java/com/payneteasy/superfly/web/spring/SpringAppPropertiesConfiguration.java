@@ -3,7 +3,7 @@ package com.payneteasy.superfly.web.spring;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.model.AuthSession;
-import com.payneteasy.superfly.spring.Policy;
+import com.payneteasy.superfly.spring.PolicyParameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,8 +77,9 @@ public class SpringAppPropertiesConfiguration {
         }
     }
 
+    // Parsed by the code that the policy conditions of superfly-service use: every component sees the same policy
     private String policyName() {
-        return choiceParameter("superfly-policy", Policy.NONE, Policy.values(), Policy::getIdentifier).getIdentifier();
+        return PolicyParameter.parse(parameterResolver.getParameter(PolicyParameter.NAME, null)).getIdentifier();
     }
 
     private String cryptoSecret() {
@@ -103,7 +104,8 @@ public class SpringAppPropertiesConfiguration {
     // Failed logins per IP per window; 0 disables the IP limit (the IP + username limit stays)
     private int loginIpLimit() {
         String value = envOrParameter("SUPERFLY_LOGIN_IP_LIMIT", "superfly-loginIpLimit");
-        return value == null ? 20 : Integer.parseInt(value.trim());
+        return value == null ? 20
+                : numberParameter("SUPERFLY_LOGIN_IP_LIMIT/superfly-loginIpLimit", value, Integer::parseInt);
     }
 
     private OTPType forceMultiFactorAuthMethod() {
@@ -111,13 +113,15 @@ public class SpringAppPropertiesConfiguration {
     }
 
     private Long maxLoginsFailed() {
-        return Long.parseLong(parameterResolver.getParameter("superfly-max-logins-failed", "6"));
+        return numberParameter("superfly-max-logins-failed",
+                parameterResolver.getParameter("superfly-max-logins-failed", "6"), Long::parseLong);
     }
 
     // Falls back to superfly-max-logins-failed when not set
     private Long maxOtpFailed() {
         String value = parameterResolver.getParameter("superfly-max-otp-failed", null);
-        return value == null || value.isBlank() ? maxLoginsFailed() : Long.parseLong(value.trim());
+        return value == null || value.isBlank()
+                ? maxLoginsFailed() : numberParameter("superfly-max-otp-failed", value, Long::parseLong);
     }
 
     private Boolean csrfLoginValidatorEnable() {
@@ -163,9 +167,22 @@ public class SpringAppPropertiesConfiguration {
         throw invalidValue(name, value, Arrays.stream(choices).map(code).collect(Collectors.joining(", ")));
     }
 
+    // Spaces around a number are ignored; garbage stops the start with a message that names the parameter.
+    private static <N> N numberParameter(String name, String value, Function<String, N> parser) {
+        try {
+            return parser.apply(value.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Parameter '" + name + "' has invalid value '" + shown(value) + "', expected an integer");
+        }
+    }
+
     private static IllegalArgumentException invalidValue(String name, String value, String allowed) {
-        String shown = value.length() > MAX_VALUE_IN_ERROR ? value.substring(0, MAX_VALUE_IN_ERROR) + "..." : value;
         return new IllegalArgumentException(
-                "Parameter '" + name + "' has invalid value '" + shown + "', allowed values: " + allowed);
+                "Parameter '" + name + "' has invalid value '" + shown(value) + "', allowed values: " + allowed);
+    }
+
+    private static String shown(String value) {
+        return value.length() > MAX_VALUE_IN_ERROR ? value.substring(0, MAX_VALUE_IN_ERROR) + "..." : value;
     }
 }
