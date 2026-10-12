@@ -17,14 +17,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * What the procedures that lock a user answer to their caller. login_locked reports the lock it has just made in
  * error_message, which is what the service audits as an automatic lock; ui_lock_user and ui_delete_user answer
- * OK. All three lock the user and end the sessions of that user the same way.
+ * OK. All three lock the user and end the sessions of that user the same way, and only the call that has changed
+ * the account from not locked to locked ends the sessions, creates the events and reports the lock.
  */
 public class UserLockProceduresTest extends AbstractDaoTest {
     // the database may be reused between runs (-Dsso.db.skipCreate=true), so the names are unique per run
@@ -43,6 +51,7 @@ public class UserLockProceduresTest extends AbstractDaoTest {
     private UserDao      userDao;
     private RoleDao      roleDao;
     private ActionDao    actionDao;
+    private DataSource   dataSource;
     private JdbcTemplate jdbc;
 
     @Autowired
@@ -72,6 +81,7 @@ public class UserLockProceduresTest extends AbstractDaoTest {
 
     @Autowired
     public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
         this.jdbc = new JdbcTemplate(dataSource);
     }
 
@@ -215,6 +225,81 @@ public class UserLockProceduresTest extends AbstractDaoTest {
         Assert.assertEquals(1, subsystemEvents("ACCOUNT_LOCK", user));
     }
 
+    @Test
+    public void lockingALockedUserChangesNothing() {
+        UserWithSessions user = userWithSessions("twice");
+
+        assertOkWithoutMessage(userDao.lockUser(user.userId));
+        assertOkWithoutMessage(userDao.lockUser(user.userId));
+        assertOkWithoutMessage(userDao.deleteUser(user.userId));
+
+        Assert.assertEquals("Y", userFlag(user, "is_account_locked"));
+        assertSessionsEnded(user);
+        Assert.assertEquals(1, subsystemEvents("ACCOUNT_LOCK", user));
+    }
+
+    @Test
+    public void racingFailedLoginsAtTheLimitLockTheUserOnce() throws Exception {
+        UserWithSessions user = userWithSessions("race");
+        RecordingLoggerSink sink = new RecordingLoggerSink();
+        UserServiceImpl service = new UserServiceImpl();
+        service.setUserDao(userDao);
+        service.setLoggerSink(sink);
+        failPasswordLogins(user, MAX_LOGINS_FAILED);
+
+        List<RoutineResult> results = callWhileTheUserRowIsHeld(user, 2,
+                () -> service.lockoutConditionnally(user.userName, MAX_LOGINS_FAILED, "PASSWORD"));
+
+        Assert.assertEquals(1, results.stream().filter(r -> LOCKED_MARKER.equals(r.getErrorMessage())).count());
+        Assert.assertEquals(Collections.singletonList("AUTO_LOCK_USER " + user.userName
+                + " reason=PASSWORD, maxLoginsFailed=" + MAX_LOGINS_FAILED), sink.records);
+        Assert.assertEquals("Y", userFlag(user, "is_account_locked"));
+        assertSessionsEnded(user);
+        Assert.assertEquals(1, subsystemEvents("ACCOUNT_LOCK", user));
+    }
+
+    /**
+     * Makes the calls at once, each on its own connection, while another transaction holds the row of the user:
+     * every call has found the account not locked before the first of them is let go to lock it.
+     */
+    private <T> List<T> callWhileTheUserRowIsHeld(UserWithSessions user, int calls, Callable<T> call) throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(calls);
+        try (Connection holder = dataSource.getConnection()) {
+            holder.setAutoCommit(false);
+            try (PreparedStatement hold = holder.prepareStatement("select user_id from users where user_id = ? for update")) {
+                hold.setLong(1, user.userId);
+                hold.execute();
+            }
+            List<Future<T>> futures = new ArrayList<>();
+            for (int i = 0; i < calls; i++) {
+                futures.add(executor.submit(call));
+            }
+            awaitCallsWaitingForTheRow(calls);
+            holder.rollback();
+
+            List<T> results = new ArrayList<>();
+            for (Future<T> future : futures) {
+                results.add(future.get(30, TimeUnit.SECONDS));
+            }
+            return results;
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    /**
+     * A thread that waits for a row lock in an update is in the state "updating", and the process list shows
+     * the statement of the procedure it executes; gives up waiting after 5 s.
+     */
+    private void awaitCallsWaitingForTheRow(int expected) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline
+                && count("select count(*) from information_schema.processlist"
+                        + " where state = 'updating' and info like 'update users%'") < expected) {
+            Thread.sleep(20);
+        }
+    }
+
     private void assertLockReported(RoutineResult result) {
         Assert.assertNotNull("Routine result cannot be null", result);
         Assert.assertTrue("Routine result must be OK", result.isOk());
@@ -324,7 +409,7 @@ public class UserLockProceduresTest extends AbstractDaoTest {
 
     /** Keeps what the service audits: the event, the resource and the details. */
     private static final class RecordingLoggerSink implements LoggerSink {
-        final List<String> records = new ArrayList<>();
+        final List<String> records = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public void info(Logger logger, String eventType, boolean success, String resourceIdentity) {
