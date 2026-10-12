@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -31,7 +32,9 @@ import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Client-certificate authentication of subsystem RPC: an unknown CN or a subsystem without a token gets the
@@ -68,6 +71,8 @@ public class X509RemotingAuthenticationTest {
 
     @After
     public void tearDown() {
+        // a filter called outside the chain leaves its authentication in the holder
+        SecurityContextHolder.clearContext();
         context.close();
     }
 
@@ -104,7 +109,7 @@ public class X509RemotingAuthenticationTest {
     }
 
     @Test
-    public void authenticationFailureBelowTheFilterIsNotSwallowed() throws Exception {
+    public void authenticationFailureInTheServletGets401() throws Exception {
         SubsystemAuth auth = new SubsystemAuth();
         auth.setSubsystemToken("stored-token-hash");
         expect(subsystemService.getSubsystemAuth("paynet-local")).andReturn(auth);
@@ -120,15 +125,50 @@ public class X509RemotingAuthenticationTest {
         assertEquals(401, response.getStatus());
     }
 
+    /**
+     * In the chain ExceptionTranslationFilter sits below this filter and answers such an exception itself, so the
+     * filter is called directly: an exception of the rest of the chain after a successful certificate check must
+     * reach the caller.
+     */
+    @Test
+    public void authenticationFailureBelowTheFilterIsNotSwallowed() throws Exception {
+        SubsystemAuth auth = new SubsystemAuth();
+        auth.setSubsystemToken("stored-token-hash");
+        expect(subsystemService.getSubsystemAuth("paynet-local")).andReturn(auth);
+        start();
+        Filter x509AuthenticationFilter = context.getBean("x509AuthenticationFilter", Filter.class);
+        BadCredentialsException downstream = new BadCredentialsException("rejected downstream");
+
+        try {
+            x509AuthenticationFilter.doFilter(request("paynet-local"), new MockHttpServletResponse(),
+                    (request, response) -> {
+                        throw downstream;
+                    });
+            fail("the exception of the rest of the chain was swallowed");
+        } catch (BadCredentialsException e) {
+            assertSame(downstream, e);
+        }
+    }
+
     private MockHttpServletResponse call(String cn) throws Exception {
         return call(cn, new MockFilterChain());
     }
 
     private MockHttpServletResponse call(String cn, MockFilterChain chain) throws Exception {
+        start();
+        securityFilterChain = context.getBean("springSecurityFilterChain", Filter.class);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        securityFilterChain.doFilter(request(cn), response, chain);
+        return response;
+    }
+
+    private void start() {
         replay(subsystemService);
         context.refresh();
-        securityFilterChain = context.getBean("springSecurityFilterChain", Filter.class);
+    }
 
+    private static MockHttpServletRequest request(String cn) {
         X509Certificate cert = niceMock(X509Certificate.class);
         expect(cert.getSubjectX500Principal()).andStubReturn(new X500Principal("CN=" + cn + ", O=Test"));
         replay(cert);
@@ -137,10 +177,7 @@ public class X509RemotingAuthenticationTest {
         request.setServletPath("/remoting");
         request.setPathInfo("/sso.service/getLastEventId");
         request.setAttribute("jakarta.servlet.request.X509Certificate", new X509Certificate[]{cert});
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
-        securityFilterChain.doFilter(request, response, chain);
-        return response;
+        return request;
     }
 
     private static void assertUnauthorizedJson(MockHttpServletResponse response) throws Exception {
