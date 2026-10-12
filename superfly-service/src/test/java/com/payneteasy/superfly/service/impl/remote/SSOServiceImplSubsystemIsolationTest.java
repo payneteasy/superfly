@@ -6,7 +6,6 @@ import com.payneteasy.superfly.api.UserDescription;
 import com.payneteasy.superfly.api.UserNotFoundException;
 import com.payneteasy.superfly.api.UserStatus;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
-import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.request.*;
 import com.payneteasy.superfly.model.UserWithStatus;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
@@ -103,15 +102,10 @@ public class SSOServiceImplSubsystemIsolationTest {
     }
 
     @Test
-    public void checkOtpForeignUserWithWellFormedCodeFailsLikeUnknownUser() throws Exception {
+    public void checkOtpForeignUserWithWellFormedCodeIsInvalidLikeUserWithoutKey() throws Exception {
         expectForeign();
         replayAll();
-        try {
-            ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false));
-            fail();
-        } catch (SsoDecryptException expected) {
-            assertTrue(expected.getMessage().contains(USER));
-        }
+        assertEquals(CheckOtpResult.Status.INVALID, ssoService.checkOtp(new CheckOtpRequest(USER, "123456", OTPType.GOOGLE_AUTH, false)).getStatus());
         verifyAll();
     }
 

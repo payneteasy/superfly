@@ -410,9 +410,10 @@ public class SSOServiceImpl implements SSOService {
 
     /**
      * What the underlying service does for a user that does not exist: never a status that only an existing
-     * user can get (locked, already used, clock skew).
+     * user can get (locked, already used, clock skew). A code is refused with INVALID, as it is for an
+     * existing user who has no key.
      */
-    private CheckOtpResult.Status checkOtpForUnknownUser(CheckOtpRequest request) throws SsoDecryptException {
+    private CheckOtpResult.Status checkOtpForUnknownUser(CheckOtpRequest request) {
         String code = request.getCode();
         if (request.isOtpOptional() && (code == null || code.trim().isEmpty())) {
             return CheckOtpResult.Status.SUCCESS;
@@ -420,9 +421,6 @@ public class SSOServiceImpl implements SSOService {
         // the real path fails on a missing type with the same NPE
         if (Objects.requireNonNull(request.getOtpType()) != OTPType.GOOGLE_AUTH) {
             return CheckOtpResult.Status.SUCCESS;
-        }
-        if (code != null && code.matches("^[0-9]{6}$")) {
-            throw new SsoDecryptException("GA master key for " + request.getUserName() + " is null");
         }
         return CheckOtpResult.Status.INVALID;
     }
