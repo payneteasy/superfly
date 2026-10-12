@@ -15,22 +15,41 @@ public class LoginSetupOTPStepPage extends AbstractLoginPage {
     @SpringBean
     private UserService userService;
 
+    private final String username;
+
     public LoginSetupOTPStepPage() {
         if (!(getLatestReadyAuthentication() instanceof LocalNeedOTPToken localNeedOTPToken)) {
             throw new RestartResponseException(currentStepPage());
         }
+        username = localNeedOTPToken.getName();
+        SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(getHttpSession(), username);
         String relativePath = getRequest().getPrefixToContextPath();
         String url = buildSuperflyHOTPSecurityCheckUrl(relativePath);
-        // shown only: the form sends the code, the key stays in the session
-        String key = SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(getHttpSession(),
-                localNeedOTPToken.getName());
 
         Form<Void> form = new Form<Void>("form");
-        form.add(new GoogleAuthSetupPanel("otp", "superfly", localNeedOTPToken.getName(), Model.of(key)));
+        // shown only, and read from the session on every render: the form sends the code, and a stored instance of
+        // this page shows nothing once the setup is over
+        form.add(new GoogleAuthSetupPanel("otp", "superfly", username, this::issuedKey));
         form.add(new AttributeModifier("action", Model.of(url)));
         form.add(createCsrfHiddenInput("_csrf"));
 
         addMessage(form);
+    }
+
+    @Override
+    protected void onConfigure() {
+        super.onConfigure();
+        if (issuedKey() == null) {
+            throw new RestartResponseException(currentStepPage());
+        }
+    }
+
+    /** @return the key of the setup in progress, or null if the login is not at the setup step of this user */
+    private String issuedKey() {
+        if (getLatestReadyAuthentication() instanceof LocalNeedOTPToken setup && setup.getName().equals(username)) {
+            return SuperflyInitOTPAuthenticationProcessingFilter.issuedKey(getHttpSession(), username);
+        }
+        return null;
     }
 
     protected String buildSuperflyHOTPSecurityCheckUrl(String relativePath) {

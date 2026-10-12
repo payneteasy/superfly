@@ -9,8 +9,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Filter for HOTP checking in Superfly webapp itself.
@@ -21,6 +26,20 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SuperflyLocalOTPAuthenticationProcessingFilter extends
         SuperflyOTPAuthenticationProcessingFilter {
     private CsrfValidator csrfValidator;
+
+    /**
+     * This filter comes before the password and the TOTP setup filters, so after the request it sees the login state
+     * that any of them has left.
+     */
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        try {
+            super.doFilter(request, response, chain);
+        } finally {
+            SuperflyInitOTPAuthenticationProcessingFilter.dropKeyUnlessSetupPending((HttpServletRequest) request);
+        }
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

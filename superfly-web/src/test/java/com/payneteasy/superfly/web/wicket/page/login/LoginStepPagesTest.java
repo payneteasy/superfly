@@ -19,7 +19,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.WebAttributes;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -99,6 +99,22 @@ public class LoginStepPagesTest extends AbstractPageTest {
 
         tester.startPage(LoginSetupOTPStepPage.class);
         assertTrue("a reload shows the same key", tester.getLastResponseAsString().contains(key));
+    }
+
+    @Test
+    public void storedSetupPageShowsNoKeyOnceTheLoginIsComplete() {
+        loginAt(setupStep());
+        LoginSetupOTPStepPage page = tester.startPage(LoginSetupOTPStepPage.class);
+        String key = SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(session(), "admin");
+        assertTrue(tester.getLastResponseAsString().contains(key));
+
+        loginAt(new FullAuthentication("admin", AuthorityUtils.createAuthorityList("ROLE_ADMIN")));
+        tester.startPage(page);
+
+        tester.assertRenderedPage(LoginPasswordStepPage.class);
+        String markup = tester.getLastResponseAsString();
+        assertFalse("the secret is not shown", markup.contains(key));
+        assertFalse("the QR code is not shown", markup.contains("data:image/png"));
     }
 
     @Test

@@ -128,12 +128,30 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends AbstractSingl
         return request.getParameter(otpParameter);
     }
 
-    private static String issuedKey(HttpSession session, String username) {
+    /** @return the key issued for the setup of the user, or null if there is none */
+    public static String issuedKey(HttpSession session, String username) {
         if (session != null && session.getAttribute(PENDING_KEY_ATTRIBUTE) instanceof PendingKey pending
                 && pending.username().equals(username)) {
             return pending.key();
         }
         return null;
+    }
+
+    /**
+     * Drops the issued key once the login of the session is no longer at the setup step of its user: the login is
+     * complete (for any user), has ended, or is at another step.
+     */
+    public static void dropKeyUnlessSetupPending(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || !(session.getAttribute(PENDING_KEY_ATTRIBUTE) instanceof PendingKey pending)) {
+            return;
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication latest = authentication instanceof CompoundAuthentication compound
+                ? compound.getLatestReadyAuthentication() : null;
+        if (!(latest instanceof LocalNeedOTPToken setup) || !setup.getName().equals(pending.username())) {
+            session.removeAttribute(PENDING_KEY_ATTRIBUTE);
+        }
     }
 
     private static boolean isSetUp(OtpUserDescription user, OTPType otpType) {

@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
+import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
 import com.payneteasy.superfly.service.LocalSecurityService;
@@ -25,10 +26,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -46,6 +50,7 @@ import static org.easymock.EasyMock.niceMock;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -218,6 +223,36 @@ public class AdminTotpRequiredByWebXmlTest {
         assertEquals("the key set up in the other browser stays", secondKey, store.otpKey);
         assertEquals(1, store.keysStored);
         assertConsoleClosed(first, "/login");
+    }
+
+    @Test
+    public void issuedKeyIsDroppedWhenThePartialLoginEnds() throws Exception {
+        Browser browser = passwordStep(startConsole(new AdminStore("ADMIN")));
+        String key = browser.setupPageKey();
+
+        assertEquals(302, browser.post("/j_superfly_password_security_check",
+                "j_username", USERNAME, "j_password", PASSWORD).getStatus());
+        assertEquals("the same user at the setup step again keeps the key", key, browser.setupPageKey());
+
+        MockHttpServletResponse failed = browser.post("/j_superfly_password_security_check",
+                "j_username", USERNAME, "j_password", "wrong");
+
+        assertTrue(failed.getRedirectedUrl(), failed.getRedirectedUrl().endsWith("/login"));
+        assertNotEquals("the key is not kept after the login has ended", key, browser.setupPageKey());
+    }
+
+    @Test
+    public void issuedKeyIsDroppedWhenAnyLoginCompletes() throws Exception {
+        Browser browser = new Browser(startConsole(new AdminStore("ADMIN").withTotpKey("EXISTINGKEY")));
+        String key = browser.setupPageKey();
+        browser.session.setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(new CompoundAuthentication(
+                new Authentication[]{UsernamePasswordAuthenticationToken.authenticated("other", null,
+                        AuthorityUtils.createAuthorityList("ROLE_ADMIN"))}, null)));
+
+        assertEquals(302, browser.post("/j_superfly_otp_security_check", "j_otp", VALID_CODE).getStatus());
+
+        assertConsoleOpen(browser);
+        assertNotEquals("the key is not kept after a login has completed", key, browser.setupPageKey());
     }
 
     @Test
