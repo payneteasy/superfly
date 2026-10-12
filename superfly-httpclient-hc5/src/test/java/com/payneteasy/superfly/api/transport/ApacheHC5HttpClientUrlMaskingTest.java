@@ -145,6 +145,48 @@ public class ApacheHC5HttpClientUrlMaskingTest {
     }
 
     @Test
+    public void hostWithNonAsciiLettersIsKept() {
+        assertMasked("http://m\u00fcnchen.example/cb", "http://m\u00fcnchen.example/cb");
+        assertMasked("http://callback-user:dummy-password@m\u00fcnchen.example:8080/cb?key=dummy-query-secret",
+                "http://m\u00fcnchen.example:8080/cb");
+    }
+
+    @Test
+    public void atSignInTheQueryAfterThePathIsNotUserInfo() {
+        assertMasked("https://subsystem.example/cb?email=user@subsystem.example", "https://subsystem.example/cb");
+        assertMasked("https://callback-user:dummy-password@subsystem.example/cb?email=user@subsystem.example",
+                "https://subsystem.example/cb");
+    }
+
+    /** A '/', '?' or '#' ends the authority, so the rest of the user info is taken for the host, path, query or fragment. */
+    @Test
+    public void userInfoWithASlashIsNotRepeated() {
+        assertMasked("https://svc:pa/ss@cb.example/notify", INVALID);
+        assertMasked("https://callback-user:dummy/password@subsystem.example/superfly-callback", INVALID);
+    }
+
+    @Test
+    public void userInfoWithAHashIsNotRepeated() {
+        assertMasked("https://svc:pa#ss@cb.example/n", INVALID);
+        assertMasked("https://callback-user:dummy#password@subsystem.example/superfly-callback", INVALID);
+        assertMasked("https://callback-user:1234#password@subsystem.example/superfly-callback", INVALID);
+        assertMasked("https://callback-user#password@subsystem.example/superfly-callback", INVALID);
+    }
+
+    @Test
+    public void userInfoWithAQuestionMarkIsNotRepeated() {
+        assertMasked("https://callback-user:dummy?password@subsystem.example/superfly-callback", INVALID);
+        assertMasked("https://callback-user:1234?password@subsystem.example/superfly-callback", INVALID);
+        assertMasked("https://callback-user?password@subsystem.example/superfly-callback", INVALID);
+    }
+
+    /** It cannot be told from user info with a '?' in it. */
+    @Test
+    public void atSignInTheQueryOfAUrlWithoutPathIsNotRepeated() {
+        assertMasked("https://subsystem.example?email=user@subsystem.example", INVALID);
+    }
+
+    @Test
     public void missingUrlIsShownAsNull() {
         assertEquals("null", ApacheHC5HttpClient.maskedUrl(null));
     }

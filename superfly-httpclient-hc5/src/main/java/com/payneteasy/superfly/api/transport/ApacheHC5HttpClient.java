@@ -43,6 +43,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * {@link IHttpClient} и {@link AutoCloseable} реализация поверх Apache HttpClient 5.
@@ -75,6 +76,9 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ApacheHC5HttpClient.class);
 
     private static final String INVALID_URL = "(invalid callback URL)";
+
+    /** The host and optional port of a registry-based authority, which URI#getHost() does not recognise. */
+    private static final Pattern HOST_AND_PORT = Pattern.compile("[\\p{L}\\p{N}._~-]+(?::[0-9]*)?");
 
     // ── connection pool defaults ──────────────────────────────────────────────
 
@@ -197,8 +201,9 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
      * <p>The same rule as {@code CallbackUrls} of superfly-service applies to the callback URL in the notification
      * logs; this module cannot use that class, so keep the two in line.
      *
-     * @return the URL to write to a message; {@code "(invalid callback URL)"} if it cannot be parsed or is not an
-     * absolute URL with a host, since repeating such a URL would repeat the parts to hide
+     * @return the URL to write to a message; {@code "(invalid callback URL)"} if it cannot be parsed, is not an
+     * absolute URL with a host, or has user info that cannot be told apart from the rest of the URL (it has a '/', '?'
+     * or '#'): repeating such a URL would repeat the parts to hide
      */
     static String maskedUrl(String url) {
         if (url == null) {
@@ -217,7 +222,16 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
         // User info is everything before the last '@': URI#getUserInfo() is null (and URI#getHost() too) for a
         // registry-based authority, which is what a host name with '_' (a docker-compose service name) parses to
         String hostAndPort = authority.substring(authority.lastIndexOf('@') + 1);
-        if (hostAndPort.isEmpty()) {
+        // A '/', '?' or '#' in the user info ends the authority there, and the rest of the user info lands in the host
+        // (a registry-based authority when the port is not a number), the path, the query or the fragment: it cannot
+        // be told from them and so cannot be removed. An IPv6 literal is never a registry-based authority
+        if (parsed.getHost() == null && !HOST_AND_PORT.matcher(hostAndPort).matches()) {
+            return INVALID_URL;
+        }
+        String authorityPart = parsed.getScheme() + "://" + authority;
+        int at = url.indexOf('@', authorityPart.length());
+        int slash = url.indexOf('/', authorityPart.length());
+        if (!url.startsWith(authorityPart) || (at >= 0 && (slash < 0 || at < slash))) {
             return INVALID_URL;
         }
         return parsed.getScheme() + "://" + hostAndPort + parsed.getRawPath();
