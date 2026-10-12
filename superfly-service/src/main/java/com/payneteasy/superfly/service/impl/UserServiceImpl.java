@@ -393,7 +393,7 @@ public class UserServiceImpl implements UserService {
     }
 
     // no transaction around the loop: each user is processed in its own transaction through the proxy,
-    // so the event of one user is committed at once, not at the end of the whole batch
+    // so a failure for one user does not roll back the users already processed
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void expirePasswords(int days) {
