@@ -174,6 +174,10 @@ the subsystem answered with status <N>` и одной строкой ERROR `... 
 (см. [Конфигурация](configuration.md#блокировка-и-приостановка-пользователя)). Процедуры: новая `int_end_user_sessions`,
 изменены `ui_lock_user`, `ui_suspend_user`, `login_locked` (автоблокировка и при `is_account_locked = NULL`).
 
+**Сброс пароля.** Сброс на новый пароль (админка, RPC `resetPassword` с паролем) завершает все сессии пользователя так же,
+как блокировка: после него вход только с новым паролем. Истечение срока пароля (ежедневная задача при политике `pcidss`)
+сессии не трогает. Изменена процедура `reset_password`.
+
 **Строгие значения параметров безопасности.** `superfly-mfa-enabled`, `superfly-csrf-login-validator-enable` и
 `SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY` принимают только `true` / `false`, `superfly-mfa-method-force` — `none` / `google_auth`,
 `superfly-policy` — `none` / `pcidss`; регистр и пробелы по краям не важны, пустое значение — значение по умолчанию (раньше
