@@ -10,6 +10,8 @@ create procedure exchange_subsystem_token(
     declare v_subsystem_name    varchar(32);
     declare v_sso_sess_id       int(10);
     declare v_ssys_id           int(10);
+    declare v_is_locked         varchar(1);
+    declare v_is_suspended      varchar(1);
     declare c_token_ttl_seconds int(10) default 30; -- must cover the browser redirect; keep <= delete_expired_tokens age
 
     -- the token is valid only for the calling subsystem, within its TTL and for a non-locked user;
@@ -29,6 +31,24 @@ create procedure exchange_subsystem_token(
     if v_user_id is null then
       commit; -- to save unauthorized_access INSERT
 
+      select null
+        from dual
+       where false;
+
+      leave main_sql;
+    end if;
+
+    -- the user row is locked before the token and the SSO session: ui_lock_user and ui_suspend_user lock the rows
+    -- in the order users, sessions, subsystem_tokens, sso_sessions, and the same order here keeps the exchange from
+    -- deadlocking with them. The flags are read again under the lock: a user locked meanwhile is refused
+    -- like an unknown token, and the token is kept
+    select coalesce(is_account_locked, 'N'), is_account_suspended
+      into v_is_locked, v_is_suspended
+      from users
+     where user_id = v_user_id
+       lock in share mode;
+
+    if v_is_locked is null or v_is_locked <> 'N' or v_is_suspended is null or v_is_suspended <> 'N' then
       select null
         from dual
        where false;
