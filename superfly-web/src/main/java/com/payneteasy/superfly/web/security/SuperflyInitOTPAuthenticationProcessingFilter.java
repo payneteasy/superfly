@@ -1,6 +1,8 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
+import com.payneteasy.superfly.model.ui.user.OtpUserDescription;
 import com.payneteasy.superfly.security.AbstractSingleStepAuthenticationProcessingFilter;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
@@ -85,6 +87,10 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends AbstractSingl
         }
 
         String username = localNeedOTPToken.getName();
+        // the key may have been set up meanwhile, e.g. in another browser: it is not replaced
+        if (isSetUp(localSecurityService.getOtpUserForDescription(username), localNeedOTPToken.getOtpType())) {
+            throw new BadCredentialsException("OTP initialization is not pending");
+        }
         String key      = issuedKey(request.getSession(false), username);
         if (key == null) {
             throw new BadCredentialsException("No OTP key has been issued");
@@ -128,6 +134,10 @@ public class SuperflyInitOTPAuthenticationProcessingFilter extends AbstractSingl
             return pending.key();
         }
         return null;
+    }
+
+    private static boolean isSetUp(OtpUserDescription user, OTPType otpType) {
+        return user.getOtpType() == otpType && user.isHasOtpMasterKey();
     }
 
     /** The same check as on the SSO setup page: six digits, ±1 time step. */

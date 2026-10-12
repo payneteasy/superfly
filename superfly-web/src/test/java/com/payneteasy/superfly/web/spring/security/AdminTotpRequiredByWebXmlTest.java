@@ -203,6 +203,24 @@ public class AdminTotpRequiredByWebXmlTest {
     }
 
     @Test
+    public void keySetUpInAnotherBrowserIsNotReplaced() throws Exception {
+        AdminStore store = new AdminStore("ADMIN");
+        Filter console = startConsole(store);
+        Browser first = passwordStep(console);
+        String firstKey = first.setupPageKey();
+        Browser second = passwordStep(console);
+        String secondKey = second.setupPageKey();
+        assertEquals(302, second.post("/j_superfly_otp_reset", "j_otp", codeOf(secondKey)).getStatus());
+
+        MockHttpServletResponse response = first.post("/j_superfly_otp_reset", "j_otp", codeOf(firstKey));
+
+        assertTrue(response.getRedirectedUrl(), response.getRedirectedUrl().endsWith("/login"));
+        assertEquals("the key set up in the other browser stays", secondKey, store.otpKey);
+        assertEquals(1, store.keysStored);
+        assertConsoleClosed(first, "/login");
+    }
+
+    @Test
     public void codeStepRequestDuringSetupEndsTheLoginWithoutServerError() throws Exception {
         AdminStore store = new AdminStore("ADMIN");
         Browser browser = passwordStep(startConsole(store));

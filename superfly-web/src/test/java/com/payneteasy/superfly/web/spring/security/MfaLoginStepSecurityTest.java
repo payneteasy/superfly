@@ -129,7 +129,7 @@ public class MfaLoginStepSecurityTest {
         UserForDescription user = new UserForDescription();
         user.setOtpTypeCode(OTPType.GOOGLE_AUTH.code());
         expect(localSecurityService.getOtpUserForDescription("admin")).andReturn(
-                new OtpUserDescription().setHasOtpMasterKey(true).setUserForDescription(user)).anyTimes();
+                new OtpUserDescription().setHasOtpMasterKey(false).setUserForDescription(user)).anyTimes();
         expect(localSecurityService.authenticate("admin", "pw")).andReturn(new String[]{"ADMIN"}).anyTimes();
         replay(localSecurityService);
 
