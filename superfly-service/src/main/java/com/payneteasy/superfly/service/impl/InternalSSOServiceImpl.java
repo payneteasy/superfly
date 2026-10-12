@@ -32,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
@@ -153,7 +155,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
-            logger.warn("No roles for user {}", username);
+            logger.warn("No session issued for user {} (bad credentials, no roles, or the account is locked or suspended)",
+                    forLog(username));
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
             ssoUser = null;
         }
@@ -196,7 +199,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
-            logger.warn("No roles for user '{}' during pseudo-login", username);
+            logger.warn("No session issued for user '{}' during pseudo-login (no roles, or the account is locked or suspended)",
+                    forLog(username));
             ssoUser = null;
         }
         return ssoUser;
@@ -357,24 +361,37 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         logger.debug("Authenticating by OTP type {} for {}", otp, username);
         Objects.requireNonNull(otp);
         CheckOtpResult.Status status;
+        boolean keyMissing = false;
         if (isAccountLocked(username)) {
             // a locked account gets no code checks: they would let the code be guessed without consequences
             logger.warn("OTP check of locked account {}", username);
             status = CheckOtpResult.Status.LOCKED;
         } else {
-            status = otp == OTPType.GOOGLE_AUTH
-                    ? hotpService.validateGoogleTimePassword(username, code)
-                    : CheckOtpResult.Status.SUCCESS;
-            if (status != CheckOtpResult.Status.SUCCESS) {
+            try {
+                status = otp == OTPType.GOOGLE_AUTH
+                        ? hotpService.validateGoogleTimePassword(username, code)
+                        : CheckOtpResult.Status.SUCCESS;
+            } catch (SsoDecryptException e) {
+                // Without a key there is nothing to guess: the code is refused, and the attempt is neither counted
+                // nor allowed to lock the account. A key that exists but cannot be decrypted is a failure of the
+                // configuration, not a wrong code: it stays an exception.
+                if (hasOtpMasterKey(username)) {
+                    throw e;
+                }
+                keyMissing = true;
+                status = CheckOtpResult.Status.INVALID;
+            }
+            if (status == CheckOtpResult.Status.SUCCESS) {
+                userService.clearHOTPLoginsFailed(username);
+            } else if (!keyMissing) {
                 // logged after the count: the attempt may have locked the account, and the result is then LOCKED
                 status = countFailedOtpAttempt(username, status);
                 logger.warn("OTP check failed {}: {}", username, status);
-            } else {
-                userService.clearHOTPLoginsFailed(username);
             }
         }
 
-        loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username,
+                "status=" + status + (keyMissing ? ", reason=no key" : ""));
         return status;
     }
 
@@ -456,7 +473,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             ssoUser = buildSSOUser(session);
         } else {
             if (session != null) {
-                logger.warn("No roles for user {}", session.getUsername());
+                logger.warn("No session issued for user {} (no roles, or the account is locked or suspended)",
+                        forLog(session.getUsername()));
             }
             ssoUser = null;
         }

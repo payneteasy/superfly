@@ -89,7 +89,10 @@ public class HOTPServiceImpl implements HOTPService {
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
+    // A caller may turn the exception (no key) into a result: passing it through this proxy must not mark the
+    // transaction it shares with the caller rollback-only, or the caller's commit would fail anyway.
     @Override
+    @Transactional(noRollbackFor = SsoDecryptException.class)
     public CheckOtpResult.Status validateGoogleTimePassword(String username, String password) throws SsoDecryptException {
         if (!isWellFormed(password)) {
             return CheckOtpResult.Status.INVALID;
