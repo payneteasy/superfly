@@ -44,6 +44,7 @@ public class RestApiSecurityRulesTest {
                     .enableMultiFactorAuth(false));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", mock(LocalSecurityService.class));
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService", mock(UserDetailsService.class));
             // В production его регистрирует @EnableWebMvc (WebConfig) в том же root-контексте.
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());

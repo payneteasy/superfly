@@ -7,6 +7,7 @@ import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.web.spring.security.ActiveAccounts;
 import com.payneteasy.superfly.web.spring.security.SpringSecurityConfiguration;
 import jakarta.servlet.Filter;
 import org.junit.After;
@@ -65,6 +66,7 @@ public class LoginRateLimitSecurityTest {
                     .enableMultiFactorAuth(true));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", localSecurityService);
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService", mock(UserDetailsService.class));
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());
         });

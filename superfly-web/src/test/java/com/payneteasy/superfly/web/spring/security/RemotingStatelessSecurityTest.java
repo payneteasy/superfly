@@ -48,6 +48,7 @@ public class RemotingStatelessSecurityTest {
                     .enableMultiFactorAuth(false));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", mock(LocalSecurityService.class));
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             UserDetailsService subsystems = name -> new User(name, SubsystemTokenHasher.hash("test-token"),
                     List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));
             beanFactory.registerSingleton("userDetailsService", subsystems);

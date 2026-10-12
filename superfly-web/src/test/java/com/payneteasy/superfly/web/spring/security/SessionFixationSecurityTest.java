@@ -63,6 +63,7 @@ public class SessionFixationSecurityTest {
                     .enableMultiFactorAuth(true));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", localSecurityService);
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService", mock(UserDetailsService.class));
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());
         });

@@ -11,6 +11,7 @@ import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
@@ -68,6 +69,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
 import java.util.List;
@@ -132,7 +134,8 @@ public class SpringSecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache,
+                                                   UserService userService) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
             .headers(headers -> {
                 alwaysSendHsts(headers);
@@ -199,14 +202,18 @@ public class SpringSecurityConfiguration {
         ;
         // Must run after ExceptionTranslationFilter (it turns the exception into the step-specific redirect)
         // and before AuthorizationFilter. Public paths are skipped, as they were security="none" in 1.7.x.
+        RequestMatcher publicPaths = new OrRequestMatcher(
+                antPathRequestMatcher("/favicon.ico"),
+                antPathRequestMatcher("/css/**"),
+                antPathRequestMatcher("/login*"),
+                antPathRequestMatcher("/sso/**"),
+                antPathRequestMatcher("/management/version.txt"));
+        http.addFilterBefore(new SkipMatchingRequestsFilter(insufficientAuthenticationHandlingFilter(), publicPaths),
+                AuthorizationFilter.class);
+        // The authentication restored from the session is checked against the current account status before
+        // any console page is served.
         http.addFilterBefore(new SkipMatchingRequestsFilter(
-                insufficientAuthenticationHandlingFilter(),
-                new OrRequestMatcher(
-                        antPathRequestMatcher("/favicon.ico"),
-                        antPathRequestMatcher("/css/**"),
-                        antPathRequestMatcher("/login*"),
-                        antPathRequestMatcher("/sso/**"),
-                        antPathRequestMatcher("/management/version.txt"))),
+                new ConsoleUserStatusFilter(userService, loggerSink, "/login"), publicPaths),
                 AuthorizationFilter.class);
 
         return http.build();

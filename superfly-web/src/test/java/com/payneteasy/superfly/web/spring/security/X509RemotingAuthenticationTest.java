@@ -59,6 +59,7 @@ public class X509RemotingAuthenticationTest {
             LocalSecurityService localSecurityService = niceMock(LocalSecurityService.class);
             replay(localSecurityService);
             beanFactory.registerSingleton("localSecurityService", localSecurityService);
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService",
                     new SubsystemUserDetailsService(subsystemService, loggerSink));
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());
