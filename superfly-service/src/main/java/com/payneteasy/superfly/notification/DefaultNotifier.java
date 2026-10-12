@@ -61,6 +61,10 @@ public class DefaultNotifier implements Notifier {
             } else {
                 throw new IllegalArgumentException("Unknown notification type: " + notification.getClass());
             }
+        } catch (NotificationException e) {
+            // a failed notification is an expected outcome: its message tells what went wrong, a stack trace adds nothing
+            log.error("Error while trying to send a {}, no more retries, dropping: {}",
+                      notification.getClass().getSimpleName(), e.getMessage());
         } catch (Exception e) {
             log.error("Error while trying to send a notification, no more retries, dropping: {}",
                       notification, e);

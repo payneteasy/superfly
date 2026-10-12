@@ -21,6 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -39,6 +42,9 @@ import java.util.Set;
  *
  * <p>Every notification is signed (see {@link NotificationSignatures}) with the stored token hash of the
  * subsystem owning the callback URI; a notification that cannot be signed is not sent.
+ *
+ * <p>A notification is delivered only if the subsystem answers with a 2xx status. Any other answer is logged
+ * as a warning and fails the notification with a {@link NotificationException}, like a transport error does.
  *
  * @author Roman Puchkovskiy
  */
@@ -84,12 +90,41 @@ public abstract class AbstractHttpNotificationSendStrategy implements
 
         try {
             HttpResponse response = httpClient.send(request, parameters);
+            int status = response.getStatusCode();
+            if (status < 200 || status >= 300) {
+                throw unexpectedAnswer(uri, notificationType, status);
+            }
             if (logger.isInfoEnabled()) {
-                logger.info("Successfully notified {} with params {} (status {})",
-                        uri, params, response.getStatusCode());
+                logger.info("Successfully notified {} with params {} (status {})", uri, params, status);
             }
         } catch (HttpConnectException | HttpReadException | HttpWriteException e) {
             throw new NotificationException(e);
+        }
+    }
+
+    /**
+     * Logs an answer of the subsystem other than 2xx.
+     *
+     * @return the exception failing the notification, like a transport error does
+     */
+    private NotificationException unexpectedAnswer(String uri, String notificationType, int status) {
+        String url = withoutCredentials(uri);
+        String hint = status == HttpURLConnection.HTTP_FORBIDDEN
+                ? " (check notificationSecret of the subsystem client)" : "";
+        logger.warn("Notification {} to {} failed: the subsystem answered with status {}{}",
+                notificationType, url, status, hint);
+        return new NotificationException("Notification " + notificationType + " to " + url
+                + " failed: the subsystem answered with status " + status + hint);
+    }
+
+    /** The callback URL without user info, query and fragment: they may carry credentials. */
+    private static String withoutCredentials(String uri) {
+        try {
+            URI parsed = new URI(uri);
+            return new URI(parsed.getScheme(), null, parsed.getHost(), parsed.getPort(), parsed.getPath(), null, null)
+                    .toString();
+        } catch (URISyntaxException e) {
+            return "(invalid callback URL)";
         }
     }
 
