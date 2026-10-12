@@ -15,6 +15,8 @@ create procedure int_get_user_actions(i_user_id int(10),
     declare v_is_otp_optional varchar(1);
     declare v_otp_code  varchar(32);
     declare v_otp_type_id int(10);
+    declare v_is_locked    varchar(1);
+    declare v_is_suspended varchar(1);
 
     set session group_concat_max_len   = 64 * 1028;
 
@@ -37,6 +39,23 @@ create procedure int_get_user_actions(i_user_id int(10),
          left join otp_types otp on u.otp_otp_type_id=otp.otp_type_id
      where     u.user_id = i_user_id;
 
+    -- The flags are read with a share lock on the user row: the committed state, not the snapshot of the transaction.
+    -- ui_lock_user and ui_suspend_user update this row before they end the sessions of the user, so no session
+    -- is inserted for a locked or suspended user, and a session inserted before them is seen by them.
+    -- When the row is not found the variables stay NULL: no session either.
+    select coalesce(is_account_locked, 'N'), is_account_suspended
+      into v_is_locked, v_is_suspended
+      from users
+     where user_id = i_user_id
+       lock in share mode;
+
+    if v_is_locked is null or v_is_locked <> 'N' or v_is_suspended is null or v_is_suspended <> 'N' then
+      select null
+        from dual
+       where false;
+
+      leave main_sql;
+    end if;
 
     if i_ignore_temp = 'Y' or v_temp <> 'Y' then
 
