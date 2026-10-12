@@ -37,6 +37,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -62,6 +69,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -222,7 +230,32 @@ public class SpringSecurityConfiguration {
 
     @Bean
     public X509AuthenticationFilter x509AuthenticationFilter() {
-        X509AuthenticationFilter filter = new X509AuthenticationFilter();
+        // With continueFilterChain=false the base filter rethrows after the failure handler has already
+        // written the 401, and nothing below it translates the exception: the container would answer 500.
+        // Only that rethrow is swallowed; exceptions from the rest of the chain still propagate.
+        X509AuthenticationFilter filter = new X509AuthenticationFilter() {
+            private static final String ANSWERED = "superfly.x509.failureAnswered";
+
+            @Override
+            protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                                      AuthenticationException failed)
+                    throws IOException, ServletException {
+                super.unsuccessfulAuthentication(request, response, failed);
+                request.setAttribute(ANSWERED, failed);
+            }
+
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                    throws IOException, ServletException {
+                try {
+                    super.doFilter(request, response, chain);
+                } catch (AuthenticationException e) {
+                    if (request.getAttribute(ANSWERED) != e) {
+                        throw e;
+                    }
+                }
+            }
+        };
         filter.setAuthenticationManager(authenticationManager);
         filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
         filter.setAuthenticationFailureHandler(new JsonAuthenticationFailureHandler());
