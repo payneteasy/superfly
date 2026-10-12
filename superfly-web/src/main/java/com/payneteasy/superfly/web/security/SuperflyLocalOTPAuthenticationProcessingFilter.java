@@ -4,6 +4,7 @@ import com.payneteasy.superfly.security.SuperflyOTPAuthenticationProcessingFilte
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,7 +31,10 @@ public class SuperflyLocalOTPAuthenticationProcessingFilter extends
     @Override
     protected Authentication createSimpleAuthRequest(
             Authentication authentication, String otp) {
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
+        // e.g. the TOTP key is not set up yet: the code of that step goes to the setup form
+        if (!(authentication instanceof UsernamePasswordAuthenticationToken token)) {
+            throw new BadCredentialsException("OTP check is not pending");
+        }
         return new LocalCheckOTPToken(authentication.getName(), otp, token.getAuthorities());
     }
 

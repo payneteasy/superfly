@@ -16,7 +16,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
+import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 
@@ -69,14 +71,29 @@ public abstract class AbstractLoginPage extends WebPage {
         return csrfToken;
     }
 
+    /**
+     * @return the last passed step of the login in progress, or null if there is none (no session, or the login is
+     * complete)
+     */
     protected Authentication getLatestReadyAuthentication() {
         HttpSession session = getHttpSession();
-        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-        if (context == null) {
-            return null;
+        if (session != null && session.getAttribute("SPRING_SECURITY_CONTEXT") instanceof SecurityContext context
+                && context.getAuthentication() instanceof CompoundAuthentication compoundAuthentication) {
+            return compoundAuthentication.getLatestReadyAuthentication();
         }
-        CompoundAuthentication compoundAuthentication = (CompoundAuthentication) context.getAuthentication();
-        return compoundAuthentication != null ? compoundAuthentication.getLatestReadyAuthentication() : null;
+        return null;
+    }
+
+    /** The page of the step that the login in progress is at, as the authentication entry point chooses it. */
+    protected Class<? extends AbstractLoginPage> currentStepPage() {
+        Authentication latest = getLatestReadyAuthentication();
+        if (latest instanceof LocalNeedOTPToken) {
+            return LoginSetupOTPStepPage.class;
+        }
+        if (latest instanceof UsernamePasswordAuthenticationToken) {
+            return LoginOTPStepPage.class;
+        }
+        return LoginPasswordStepPage.class;
     }
 
     private HttpSession getHttpSession() {

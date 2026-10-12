@@ -138,6 +138,19 @@ public class AdminTotpRequiredByWebXmlTest {
     }
 
     @Test
+    public void codeStepRequestDuringSetupEndsTheLoginWithoutServerError() throws Exception {
+        AdminStore store = new AdminStore("ADMIN");
+        Browser browser = passwordStep(startConsole(store));
+
+        MockHttpServletResponse response = browser.post("/j_superfly_otp_security_check", "j_otp", VALID_CODE);
+
+        assertEquals(302, response.getStatus());
+        assertTrue(response.getRedirectedUrl(), response.getRedirectedUrl().endsWith("/login"));
+        assertEquals(0, store.keysStored);
+        assertConsoleClosed(browser, "/login");
+    }
+
+    @Test
     public void userWithTotpKeyIsAskedForTheCodeAfterPassword() throws Exception {
         AdminStore store = new AdminStore("ADMIN").withTotpKey("EXISTINGKEY");
         Browser browser = passwordStep(startConsole(store));
@@ -265,6 +278,7 @@ public class AdminTotpRequiredByWebXmlTest {
         private final String[] actions;
         private OTPType        otpType = OTPType.NONE;
         private String         otpKey;
+        private int            keysStored;
 
         AdminStore(String... actions) {
             this.actions = actions;
@@ -295,6 +309,7 @@ public class AdminTotpRequiredByWebXmlTest {
 
         @Override
         public void persistOtpKey(OTPType type, String username, String key) {
+            keysStored++;
             otpType = type;
             otpKey = key;
         }
