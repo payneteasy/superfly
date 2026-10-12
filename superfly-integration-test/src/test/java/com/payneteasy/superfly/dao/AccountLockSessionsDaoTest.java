@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
  * Locking, suspending (also by the failed logins limit) and deleting a user end all sessions of that user the way
  * an SSO logout does: the SSO sessions and their subsystem tokens are deleted, and every subsystem session of the
  * user, including one opened without SSO, is marked expired, so the scheduler sends the logout notifications.
- * Unlocking restores nothing. Resetting the password to a new value ends the sessions the same way, while expiring
- * the password (a reset without a password, done by the daily task) leaves them.
+ * Unlocking restores nothing. Resetting the password to a new value ends the sessions the same way and writes the
+ * PASSWORD_RESET event, while expiring the password (a reset without a password, done by the daily task) leaves the
+ * sessions and writes no event.
  */
 public class AccountLockSessionsDaoTest extends AbstractDaoTest {
     // the database may be reused between runs (-Dsso.db.skipCreate=true), so the names are unique per run
@@ -207,7 +208,29 @@ public class AccountLockSessionsDaoTest extends AbstractDaoTest {
         assertSessionsAlive(user);
         // the SSO session still opens the subsystems: the password is changed at the next login
         issueToken(user.ssoSessions.get(0), "after-expiry");
-        Assert.assertEquals(1, subsystemEvents("PASSWORD_RESET", user));
+        // a subsystem may end the sessions of the user on this event, so only a reset writes it
+        Assert.assertEquals(0, events("PASSWORD_RESET", user.userName));
+    }
+
+    @Test
+    public void passwordResetOfAUserWithoutRolesWritesTheEventWithoutSubsystem() {
+        UIUserForCreate user = createUser("reset-no-roles");
+
+        assertRoutineResult(userDao.resetPassword(user.getId(), "new-password-hash"));
+
+        Assert.assertEquals(1, events("PASSWORD_RESET", user.getUsername()));
+        Assert.assertEquals(1, count("select count(*) from events e join event_types t on t.event_type_id = e.event_type_id"
+                + " where t.event_code = 'PASSWORD_RESET' and e.event_data = ? and e.subsystem_id is null",
+                user.getUsername()));
+    }
+
+    @Test
+    public void passwordExpiryOfAUserWithoutRolesWritesNoEvent() {
+        UIUserForCreate user = createUser("expiry-no-roles");
+
+        assertRoutineResult(userDao.resetPassword(user.getId(), null));
+
+        Assert.assertEquals(0, events("PASSWORD_RESET", user.getUsername()));
     }
 
     /**
@@ -215,16 +238,7 @@ public class AccountLockSessionsDaoTest extends AbstractDaoTest {
      * plus a subsystem session opened without SSO.
      */
     private UserSessions userWithSessions(String tag) {
-        UIUserForCreate user = new UIUserForCreate();
-        user.setUsername("ls-" + tag + "-" + RUN);
-        user.setPassword("abc");
-        user.setEmail(user.getUsername() + "@example.com");
-        user.setName("n");
-        user.setSurname("s");
-        user.setSecretQuestion("");
-        user.setSecretAnswer("");
-        user.setHotpSalt("DEADBEEF");
-        assertRoutineResult(userDao.createUser(user));
+        UIUserForCreate user = createUser(tag);
         assertRoutineResult(userDao.addSubsystemWithRole(user.getId(), roleId));
         assertRoutineResult(userDao.changeUserRoleActions(user.getId(), String.valueOf(roleActionId), ""));
 
@@ -250,6 +264,21 @@ public class AccountLockSessionsDaoTest extends AbstractDaoTest {
                 result.userId));
         assertSessionsAlive(result);
         return result;
+    }
+
+    /** A user without roles. */
+    private UIUserForCreate createUser(String tag) {
+        UIUserForCreate user = new UIUserForCreate();
+        user.setUsername("ls-" + tag + "-" + RUN);
+        user.setPassword("abc");
+        user.setEmail(user.getUsername() + "@example.com");
+        user.setName("n");
+        user.setSurname("s");
+        user.setSecretQuestion("");
+        user.setSecretAnswer("");
+        user.setHotpSalt("DEADBEEF");
+        assertRoutineResult(userDao.createUser(user));
+        return user;
     }
 
     private String issueToken(SSOSession ssoSession, String suffix) {
@@ -289,6 +318,12 @@ public class AccountLockSessionsDaoTest extends AbstractDaoTest {
         return count("select count(*) from events e join event_types t on t.event_type_id = e.event_type_id"
                 + " where t.event_code = ? and e.event_data = ? and e.subsystem_id = ?",
                 eventCode, user.userName, subsystem.getId());
+    }
+
+    /** Events of the user in any subsystem, including the ones written without a subsystem. */
+    private int events(String eventCode, String userName) {
+        return count("select count(*) from events e join event_types t on t.event_type_id = e.event_type_id"
+                + " where t.event_code = ? and e.event_data = ?", eventCode, userName);
     }
 
     private String userFlag(UserSessions user, String column) {
