@@ -1,10 +1,8 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
-import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.PolicyValidationException;
 import com.payneteasy.superfly.model.SSOSession;
 import com.payneteasy.superfly.model.SubsystemTokenData;
-import com.payneteasy.superfly.model.ui.user.UserForDescription;
 import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
@@ -65,6 +63,15 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         return super.getBean(type);
     }
 
+    /** The state left by the second factor of a login that has accepted the temporary password of "user". */
+    private static SSOLoginData loginDataAfterSecondFactor() {
+        SSOLoginData loginData = new SSOLoginData("test-subsystem", "/target");
+        loginData.setUsername("user");
+        loginData.setPasswordChangeRequired(true);
+        loginData.setPasswordChangeAllowed(true);
+        return loginData;
+    }
+
 //    public void testNoLoginData() {
 //        tester.startPage(new SSOChangePasswordPage("test-user"));
 //        tester.assertRenderedPage(SSOLoginErrorPage.class);
@@ -78,18 +85,13 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
         expectLastCall();
         userService.changeTempPassword("user", "password");
         expectLastCall();
-        UserForDescription user = new UserForDescription();
-        user.setUsername("user");
-        user.setOtpTypeCode(OTPType.NONE.code());
-        user.setOtpOptional(false);
-        expect(userService.getUserForDescription("user")).andReturn(user);
         expect(sessionService.createSSOSession("user"))
                 .andReturn(new SSOSession(1L, "super-session-id"));
         expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
                 .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
         replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
 
-        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(loginDataAfterSecondFactor());
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         WicketTester tester = this.tester;
@@ -114,13 +116,40 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
     }
 
     @Test
+    public void testStateEchoedAfterPasswordChange() throws PolicyValidationException {
+        String state = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE);
+        userService.validatePassword("user", "password");
+        expectLastCall();
+        userService.changeTempPassword("user", "password");
+        expectLastCall();
+        expect(sessionService.createSSOSession("user"))
+                .andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
+        replay(userService, sessionService, subsystemService, settingsService, csrfValidator);
+
+        SSOLoginData loginData = loginDataAfterSecondFactor();
+        loginData.setState(state);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(new SSOChangePasswordPage("user"));
+        FormTester form = tester.newFormTester("change-password-panel:form");
+        form.setValue("password", "password");
+        form.setValue("password2", "password");
+        form.submit();
+        tester.assertRedirectUrl("http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget&state=" + state);
+
+        verify(userService, sessionService, subsystemService, settingsService, csrfValidator);
+    }
+
+    @Test
     public void testMismatchingPassword() throws PolicyValidationException {
         expect(settingsService.getPolicy()).andReturn(Policy.NONE);
         userService.validatePassword("user", "password");
         replay(userService, settingsService, csrfValidator);
 
 
-        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(loginDataAfterSecondFactor());
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         FormTester form;
@@ -147,7 +176,7 @@ public class SSOChangePasswordPageTest extends AbstractPageTest {
 
 
 
-        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(loginDataAfterSecondFactor());
         tester.startPage(new SSOChangePasswordPage("user"));
         tester.assertRenderedPage(SSOChangePasswordPage.class);
         FormTester form = tester.newFormTester("change-password-panel:form");

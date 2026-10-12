@@ -8,7 +8,6 @@ create procedure ui_get_smtp_servers_list()
            host,
            port,
            username,
-           password,
            from_address,
            is_ssl
       from smtp_servers;
@@ -22,7 +21,6 @@ call save_routine_information('ui_get_smtp_servers_list',
                                         'host varchar',
                                         'port int',
                                         'username varchar',
-                                        'password varchar',
                                         'from_address varchar',
                                         'is_ssl varchar'
                               )

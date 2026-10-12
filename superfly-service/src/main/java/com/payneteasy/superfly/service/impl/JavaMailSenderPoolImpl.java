@@ -39,7 +39,7 @@ public class JavaMailSenderPoolImpl implements JavaMailSenderPool {
     private ConfiguredSender createSender(MessageServerKey key) {
         final UISmtpServer server;
         if (key.serverId() != null) {
-            server = smtpServerService.getSmtpServer(key.serverId());
+            server = smtpServerService.getSmtpServerWithPassword(key.serverId());
         } else if (key.subsystemIdentifier() != null) {
             server = smtpServerService.getSmtpServerBySubsystemIdentifier(key.subsystemIdentifier());
         } else {

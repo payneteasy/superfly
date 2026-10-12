@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.service.impl;
 
 import com.payneteasy.superfly.api.exceptions.BadPublicKeyException;
+import com.payneteasy.superfly.api.exceptions.UserExistsException;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.RoleGrantSpecification;
 import com.payneteasy.superfly.api.SSOAction;
@@ -70,11 +71,12 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new NullSaltSource());
+        expect(userService.isUserAccessibleFrom("user", "subsystem")).andReturn(true);
         userService.authenticate(eq("user"), eq("pass"), eq("pass"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);
-        internalSSOService.authenticate("user", "pass", null, null, null);
+        internalSSOService.authenticate("user", "pass", "subsystem", null, null);
         verify(userService);
     }
 
@@ -82,11 +84,12 @@ public class InternalSSOServiceImplTest {
     public void testPasswordEncodingWithPlainTextAndNonNullSalt() {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setSaltSource(new ConstantSaltSource("salt"));
+        expect(userService.isUserAccessibleFrom("user", "subsystem")).andReturn(true);
         userService.authenticate(eq("user"), eq("pass{salt}"), eq("pass{salt}"), anyObject(String.class), anyObject(String.class),
                 anyObject(String.class));
         expectLastCall().andReturn(null);
         replay(userService);
-        internalSSOService.authenticate("user", "pass", null, null, null);
+        internalSSOService.authenticate("user", "pass", "subsystem", null, null);
         verify(userService);
     }
 
@@ -96,8 +99,6 @@ public class InternalSSOServiceImplTest {
         encoder.setAlgorithm("md5");
         internalSSOService.setPasswordEncoder(encoder);
         internalSSOService.setSaltSource(new ConstantSaltSource("e2e4"));
-        expect(userService.getUserPasswordHistoryAndCurrentPassword("user")).andReturn(
-                Collections.<PasswordSaltPair>emptyList());
         expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
@@ -111,6 +112,25 @@ public class InternalSSOServiceImplTest {
         replay(userService);
         internalSSOService.registerUser("user", "secret", "email", "subsystem", new RoleGrantSpecification[]{}, "user",
                 "user", "question", "answer", null, "test organization", OTPType.NONE);
+        verify(userService);
+    }
+
+    @Test
+    public void testRegisterExistingUserDoesNotConsultPasswordHistory() throws Exception {
+        internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
+        // userService is a strict mock: any unexpected getUserPasswordHistoryAndCurrentPassword call fails the test
+        expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andReturn(
+                RoutineResult.duplicateResult());
+        replay(userService);
+        try {
+            internalSSOService.registerUser("admin", "current-or-old-password", "email.domain.com",
+                    "subsystem", new RoleGrantSpecification[]{}, "name", "surname",
+                    "secretQuestion", "secretAnswer",
+                    null, "test organization", OTPType.NONE);
+            fail();
+        } catch (UserExistsException e) {
+            // expected: same outcome as for any other password
+        }
         verify(userService);
     }
 
@@ -163,8 +183,6 @@ public class InternalSSOServiceImplTest {
         internalSSOService.setPasswordEncoder(new PlaintextPasswordEncoder());
         internalSSOService.setPublicKeyCrypto(new PGPCrypto());
 
-        expect(userService.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
-                Collections.<PasswordSaltPair>emptyList());
         expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
@@ -181,8 +199,6 @@ public class InternalSSOServiceImplTest {
 
         reset(userService);
 
-        expect(userService.getUserPasswordHistoryAndCurrentPassword("username")).andReturn(
-                Collections.<PasswordSaltPair>emptyList());
         expect(userService.registerUser(anyObject(UserRegisterRequest.class))).andAnswer(new IAnswer<RoutineResult>() {
             public RoutineResult answer() throws Throwable {
                 UserRegisterRequest user = (UserRegisterRequest) getCurrentArguments()[0];
@@ -303,6 +319,7 @@ public class InternalSSOServiceImplTest {
         authRole.setActions(Arrays.asList(action1, action2));
         session.setRoles(Collections.singletonList(authRole));
 
+        expect(userService.isUserAccessibleFrom("username", "subsystemIdentifier")).andReturn(true);
         expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(session);
         replay(userService);
 
@@ -320,6 +337,7 @@ public class InternalSSOServiceImplTest {
 
     @Test
     public void testPseudoAuthenticateNoSuchUser() {
+        expect(userService.isUserAccessibleFrom("username", "subsystemIdentifier")).andReturn(true);
         expect(userService.pseudoAuthenticate("username", "subsystemIdentifier")).andReturn(null);
         replay(userService);
 

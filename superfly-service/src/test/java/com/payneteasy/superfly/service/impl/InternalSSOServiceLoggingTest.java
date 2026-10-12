@@ -52,7 +52,6 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
     @Test
     public void testRegisterUser() throws Exception {
-        EasyMock.expect(userService.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
         userService.registerUser(anyObject(UserRegisterRequest.class));
         EasyMock.expectLastCall().andReturn(okResult());
         loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(true), eq("new-user"));
@@ -65,7 +64,6 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
     @Test
     public void testRegisterUserDuplicate() throws Exception {
-        EasyMock.expect(userService.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
         userService.registerUser(anyObject(UserRegisterRequest.class));
         EasyMock.expectLastCall().andReturn(duplicateResult());
         loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(false), eq("new-user"));
@@ -83,7 +81,6 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
 
     @Test
     public void testRegisterUserFail() throws Exception {
-        EasyMock.expect(userService.getUserPasswordHistoryAndCurrentPassword("new-user")).andReturn(Collections.<PasswordSaltPair>emptyList());
         userService.registerUser(anyObject(UserRegisterRequest.class));
         EasyMock.expectLastCall().andReturn(failureResult());
         loggerSink.info(anyObject(Logger.class), eq("REGISTER_USER"), eq(false), eq("new-user"));
@@ -104,26 +101,28 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         AuthSession session = new AuthSession("username", 1L);
         session.setRoles(Collections.singletonList(new AuthRole()));
 
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(true), eq("username"));
         EasyMock.replay(loggerSink, userService);
 
-        internalSSOService.authenticate("username", "password", null, null, null);
+        internalSSOService.authenticate("username", "password", "sub", null, null);
 
         EasyMock.verify(loggerSink, userService);
     }
 
     @Test
     public void testAuthenticateFail() throws Exception {
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(null);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
         EasyMock.replay(loggerSink, userService);
 
-        internalSSOService.authenticate("username", "password", null, null, null);
+        internalSSOService.authenticate("username", "password", "sub", null, null);
 
         EasyMock.verify(loggerSink);
     }
@@ -133,13 +132,14 @@ public class InternalSSOServiceLoggingTest extends AbstractServiceLoggingTest {
         AuthSession session = new AuthSession("username");
         session.setRoles(Collections.<AuthRole> emptyList());
 
+        EasyMock.expect(userService.isUserAccessibleFrom("username", "sub")).andReturn(true);
         EasyMock.expect(
                 userService.authenticate(eq("username"), eq("password"), eq("password"), anyObject(String.class), anyObject(String.class),
                         anyObject(String.class))).andReturn(session);
         loggerSink.info(anyObject(Logger.class), eq("REMOTE_LOGIN"), eq(false), eq("username"));
         EasyMock.replay(loggerSink, userService);
 
-        internalSSOService.authenticate("username", "password", null, null, null);
+        internalSSOService.authenticate("username", "password", "sub", null, null);
 
         EasyMock.verify(loggerSink);
     }

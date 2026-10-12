@@ -10,6 +10,7 @@ import org.eclipse.jetty.ee10.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.ee10.webapp.WebInfConfiguration;
 import org.eclipse.jetty.ee10.webapp.WebXmlConfiguration;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -160,6 +161,8 @@ public class SuperflyServer {
                 new EnvConfiguration(),
                 new PlusConfiguration()});
         context.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+        // Lax, not Strict: SSO sign-in arrives as a cross-site top-level GET and must still carry the session
+        context.getSessionHandler().setSameSite(HttpCookie.SameSite.LAX);
         // binds the datasource to java:comp/env of this webapp; web.xml declares the matching resource-ref
         new Resource(context, JNDI_DATASOURCE_NAME, createDataSource(config));
         return context;

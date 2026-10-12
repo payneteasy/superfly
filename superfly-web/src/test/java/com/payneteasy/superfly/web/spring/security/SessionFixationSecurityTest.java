@@ -9,6 +9,8 @@ import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
+import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import jakarta.servlet.Filter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -25,7 +27,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.niceMock;
 import static org.easymock.EasyMock.replay;
@@ -51,7 +55,8 @@ public class SessionFixationSecurityTest {
         UserForDescription user = new UserForDescription();
         user.setOtpTypeCode(OTPType.GOOGLE_AUTH.code());
         expect(localSecurityService.getOtpUserForDescription("admin")).andReturn(
-                new OtpUserDescription().setHasOtpMasterKey(true).setUserForDescription(user)).anyTimes();
+                new OtpUserDescription().setHasOtpMasterKey(false).setUserForDescription(user)).anyTimes();
+        expect(localSecurityService.authenticateUsingOTP(eq("admin"), anyString())).andReturn(true).anyTimes();
         replay(localSecurityService);
 
         context = new AnnotationConfigWebApplicationContext();
@@ -63,6 +68,7 @@ public class SessionFixationSecurityTest {
                     .enableMultiFactorAuth(true));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", localSecurityService);
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService", mock(UserDetailsService.class));
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());
         });
@@ -94,8 +100,9 @@ public class SessionFixationSecurityTest {
     @Test
     public void otpInitStepChangesSessionId() throws Exception {
         MockHttpServletRequest request = post("/j_superfly_otp_reset");
-        request.setParameter("j_key", "KEY");
         MockHttpSession session = session();
+        String key = SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(session, "admin");
+        request.setParameter("j_otp", String.format("%06d", new GoogleAuthenticator().getTotpPassword(key)));
         session.setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(new CompoundAuthentication(new Authentication[]{
                 new UsernamePasswordAuthenticationToken("admin", "pw"), new LocalNeedOTPToken("admin", OTPType.GOOGLE_AUTH)}, null)));
         request.setSession(session);

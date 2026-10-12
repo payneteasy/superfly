@@ -9,6 +9,7 @@ delete ra from role_actions ra join actions a on a.actn_id = ra.actn_actn_id whe
 
 delete from actions where action_name='action_temp_password';
 
-update users set hotp_salt = 'f81ead99b99b7f0a91a441621ab1d1248860848f' where user_name =  'admin'; /*login=admin, passwoerd=123admin123, hotp = 483200, 431177, 265271 and so on */
+-- random, so that the HOTP codes of the default admin are not predictable; an already customised salt is kept
+update users set hotp_salt = sha1(uuid()) where user_name = 'admin' and (hotp_salt is null or hotp_salt in ('', 'f81ead99b99b7f0a91a441621ab1d1248860848f'));
 
 commit;

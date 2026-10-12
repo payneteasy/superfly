@@ -11,6 +11,7 @@ import com.payneteasy.superfly.security.csrf.CsrfValidator;
 import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
+import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import com.payneteasy.superfly.web.security.SubsystemAuthenticationFilter;
 import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
@@ -36,9 +37,18 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -55,9 +65,13 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +98,17 @@ public class SpringSecurityConfiguration {
     }
 
     /**
+     * TLS is terminated by a reverse proxy, so the request seen here is plain http; the default writer would
+     * send nothing. Browsers ignore the header over http, so sending it always is harmless.
+     */
+    private static void alwaysSendHsts(HeadersConfigurer<HttpSecurity> headers) {
+        headers.httpStrictTransportSecurity(hsts -> hsts
+                .requestMatcher(AnyRequestMatcher.INSTANCE)
+                .maxAgeInSeconds(31536000)
+                .includeSubDomains(false));
+    }
+
+    /**
      * Subsystem RPC is authenticated by X-Subsystem-* headers on every request. It must not create an
      * HttpSession: otherwise the returned JSESSIONID would keep ROLE_SUBSYSTEM without the headers.
      */
@@ -91,6 +116,7 @@ public class SpringSecurityConfiguration {
     @Order(1)
     public SecurityFilterChain remotingSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher(antPathRequestMatcher("/remoting/sso.service/**"))
+            .headers(SpringSecurityConfiguration::alwaysSendHsts)
             .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("ROLE_SUBSYSTEM"))
             // RPC clients get a status, not a redirect to the login form.
             .exceptionHandling(httpSecurity -> httpSecurity.authenticationEntryPoint(
@@ -108,16 +134,19 @@ public class SpringSecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectProvider<SubsystemOriginCache> originCache,
+                                                   UserService userService) throws Exception {
         http.securityMatcher("/**")  // Обрабатываем все пути
-            .headers(headers -> headers
-                // X-Content-Type-Options, X-Frame-Options: DENY, HSTS enabled by Spring Security defaults.
+            .headers(headers -> {
+                alwaysSendHsts(headers);
+                headers
+                // X-Content-Type-Options, X-Frame-Options: DENY by Spring Security defaults.
                 // CSP: unsafe-inline required for Wicket/jQuery inline scripts; all assets served locally.
                 // Subsystem origins are added to form-action/style-src (login redirects, custom login CSS).
                 .addHeaderWriter(new SubsystemCspHeaderWriter(() -> subsystemUrls(originCache)))
                 // Keeps SSO tokens and target URLs out of Referer on outgoing navigation.
-                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN))
-            )
+                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicy.SAME_ORIGIN));
+            })
             .authorizeHttpRequests(
                     auth ->
                             auth
@@ -128,6 +157,10 @@ public class SpringSecurityConfiguration {
                                                      antPathRequestMatcher("/sso/check/check-otp/**"))
                                     .permitAll()
                                     .requestMatchers(antPathRequestMatcher("/sso/check/**"))
+                                    .denyAll()
+                                    // SSO pages are mounted or reached through page instances, never by class name;
+                                    // the SSO Wicket app refuses non-SSO pages too (defense in depth).
+                                    .requestMatchers(antPathRequestMatcher("/sso/wicket/bookmarkable/**"))
                                     .denyAll()
                                     .requestMatchers(antPathRequestMatcher("/favicon.ico"),
                                                      antPathRequestMatcher("/css/**"),
@@ -148,7 +181,9 @@ public class SpringSecurityConfiguration {
                 securityContext.requireExplicitSave(false);
             })
             .logout(logout -> logout
-                    .logoutUrl("/j_spring_security_logout")
+                    // logout changes state, so it is accepted only as POST
+                    .logoutRequestMatcher(PathPatternRequestMatcher.withDefaults()
+                            .matcher(HttpMethod.POST, "/j_spring_security_logout"))
                     .logoutSuccessHandler(logoutSuccessHandler()))
             // CSRF disabled here intentionally: state-changing REST endpoints use token-based auth
             // (X-Subsystem-Token or Authorization: Bearer), not cookies. Wicket pages are protected by
@@ -167,14 +202,18 @@ public class SpringSecurityConfiguration {
         ;
         // Must run after ExceptionTranslationFilter (it turns the exception into the step-specific redirect)
         // and before AuthorizationFilter. Public paths are skipped, as they were security="none" in 1.7.x.
+        RequestMatcher publicPaths = new OrRequestMatcher(
+                antPathRequestMatcher("/favicon.ico"),
+                antPathRequestMatcher("/css/**"),
+                antPathRequestMatcher("/login*"),
+                antPathRequestMatcher("/sso/**"),
+                antPathRequestMatcher("/management/version.txt"));
+        http.addFilterBefore(new SkipMatchingRequestsFilter(insufficientAuthenticationHandlingFilter(), publicPaths),
+                AuthorizationFilter.class);
+        // The authentication restored from the session is checked against the current account status before
+        // any console page is served.
         http.addFilterBefore(new SkipMatchingRequestsFilter(
-                insufficientAuthenticationHandlingFilter(),
-                new OrRequestMatcher(
-                        antPathRequestMatcher("/favicon.ico"),
-                        antPathRequestMatcher("/css/**"),
-                        antPathRequestMatcher("/login*"),
-                        antPathRequestMatcher("/sso/**"),
-                        antPathRequestMatcher("/management/version.txt"))),
+                new ConsoleUserStatusFilter(userService, loggerSink, "/login"), publicPaths),
                 AuthorizationFilter.class);
 
         return http.build();
@@ -198,7 +237,32 @@ public class SpringSecurityConfiguration {
 
     @Bean
     public X509AuthenticationFilter x509AuthenticationFilter() {
-        X509AuthenticationFilter filter = new X509AuthenticationFilter();
+        // With continueFilterChain=false the base filter rethrows after the failure handler has already
+        // written the 401, and nothing below it translates the exception: the container would answer 500.
+        // Only that rethrow is swallowed; exceptions from the rest of the chain still propagate.
+        X509AuthenticationFilter filter = new X509AuthenticationFilter() {
+            private static final String ANSWERED = "superfly.x509.failureAnswered";
+
+            @Override
+            protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                                      AuthenticationException failed)
+                    throws IOException, ServletException {
+                super.unsuccessfulAuthentication(request, response, failed);
+                request.setAttribute(ANSWERED, failed);
+            }
+
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                    throws IOException, ServletException {
+                try {
+                    super.doFilter(request, response, chain);
+                } catch (AuthenticationException e) {
+                    if (request.getAttribute(ANSWERED) != e) {
+                        throw e;
+                    }
+                }
+            }
+        };
         filter.setAuthenticationManager(authenticationManager);
         filter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
         filter.setAuthenticationFailureHandler(new JsonAuthenticationFailureHandler());

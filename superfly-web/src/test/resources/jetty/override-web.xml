@@ -16,4 +16,13 @@
         <param-name>superfly-policy</param-name>
         <param-value>none</param-value>
     </context-param>
+    <!-- local development: no second factor; the production web.xml requires TOTP -->
+    <context-param>
+        <param-name>superfly-mfa-enabled</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>superfly-mfa-method-force</param-name>
+        <param-value>none</param-value>
+    </context-param>
 </web-app>

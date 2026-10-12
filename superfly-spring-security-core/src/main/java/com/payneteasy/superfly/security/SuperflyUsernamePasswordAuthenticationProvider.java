@@ -4,6 +4,7 @@ import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
+import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.api.request.AuthenticateRequest;
 import com.payneteasy.superfly.api.request.CheckOtpRequest;
 import com.payneteasy.superfly.common.utils.StringUtils;
@@ -17,6 +18,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
 
 /**
  * {@link AuthenticationProvider} which uses Superfly password authentication
@@ -159,8 +162,15 @@ public class SuperflyUsernamePasswordAuthenticationProvider implements Authentic
 
             if (receivedSecondFactory && otpType != OTPType.NONE) {
                 log.debug("User <{}> has otp type <{}> and is optional, second factory provided", ssoUserName, otpType);
-                CheckOtpResult.Status otpStatus =
-                        ssoService.checkOtp(new CheckOtpRequest(ssoUser, authRequest.getSecondFactory())).getStatus();
+                CheckOtpResult.Status otpStatus;
+                try {
+                    otpStatus = ssoService.checkOtp(new CheckOtpRequest(ssoUser, authRequest.getSecondFactory())).getStatus();
+                } catch (SsoDecryptException e) {
+                    // a server that cannot check the code against the key of the user (e.g. there is none) reports it
+                    // as an exception: the code is refused like a wrong one, the request does not fail
+                    log.warn("Otp check of user <{}> failed: {}", forLog(ssoUserName), forLog(e.getMessage()));
+                    throw new BadOTPValueException("Otp check failed!", e);
+                }
                 if (otpStatus == CheckOtpResult.Status.SUCCESS) {
                     return createAuthentication(ssoUser);
                 } else {

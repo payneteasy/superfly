@@ -11,6 +11,7 @@ import com.payneteasy.superfly.api.SSOService;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.client.SSOClientConfig;
 import com.payneteasy.superfly.api.client.SSOHttpServiceApiClient;
+import com.payneteasy.superfly.api.client.SSOLoginState;
 import com.payneteasy.superfly.api.serialization.ApiSerializationManager;
 import com.payneteasy.superfly.security.filters.internal.SecurityFilterFlow;
 import com.payneteasy.superfly.security.spring.SecuredBeanPostProcessor;
@@ -22,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -157,7 +160,7 @@ public class ExternalFormSecurityFilter implements Filter {
         if(flow.getPath().equals("/check-token") || flow.getPath().equals("/j_superfly_sso_security_check")) {
             try {
                 validateExternalToken(request);
-                response.sendRedirect(request.getParameter("targetUrl"));
+                response.sendRedirect(getSafeTargetUrl(request));
             } catch (Exception e) {
                 LOG.error("Could not validate token", e);
                 showBadTokenPage(response, "Token validation failed");
@@ -165,7 +168,7 @@ public class ExternalFormSecurityFilter implements Filter {
             return;
         }
 
-        redirectToLoginPage(request.getRequestURI(), response);
+        redirectToLoginPage(request, response);
     }
 
     public boolean processLogoutUrl(String path, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -177,11 +180,54 @@ public class ExternalFormSecurityFilter implements Filter {
         return false;
     }
 
+    /**
+     * Returns the targetUrl parameter if it is a path inside this application,
+     * otherwise the context root, so the filter can't redirect to a foreign site.
+     */
+    static String getSafeTargetUrl(HttpServletRequest aRequest) {
+        String targetUrl = aRequest.getParameter("targetUrl");
+        if (isLocalPath(targetUrl)) {
+            return targetUrl;
+        }
+        LOG.warn("Ignoring non-local targetUrl, redirecting to the context root");
+        return aRequest.getContextPath() + "/";
+    }
+
+    static boolean isLocalPath(String aUrl) {
+        if (!isLocalPathOnce(aUrl)) {
+            return false;
+        }
+        try {
+            // a once more decoded value must stay local too
+            return isLocalPathOnce(URLDecoder.decode(aUrl, StandardCharsets.UTF_8));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static boolean isLocalPathOnce(String aUrl) {
+        if (aUrl == null || !aUrl.startsWith("/") || aUrl.startsWith("//") || aUrl.startsWith("/\\")) {
+            return false;
+        }
+        for (int i = 0; i < aUrl.length(); i++) {
+            char c = aUrl.charAt(i);
+            // browsers ignore tabs and line breaks, so '/\t/host' would become '//host'
+            if (c < 0x20 || c == 0x7f) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void showBadTokenPage(HttpServletResponse aResponse, String aMessage) throws IOException {
         aResponse.getWriter().println(aMessage);
     }
 
     private void validateExternalToken(HttpServletRequest aRequest) {
+        if (!consumeLoginState(aRequest)) {
+            LOG.warn("SSO login state is missing or does not match the session, the subsystem token is not checked");
+            throw new IllegalStateException("SSO login state mismatch");
+        }
         String subsystemToken = aRequest.getParameter("subsystemToken");
         if(subsystemToken == null) {
             throw new IllegalStateException("No 'subsystemToken' in paraters");
@@ -194,7 +240,23 @@ public class ExternalFormSecurityFilter implements Filter {
 
         SecurityContext context = createContextFromUser(ssoUser);
         LOG.info("Got security context: {}", context);
+        // the authenticated session must get a new id
+        if (aRequest.getSession(false) != null) {
+            aRequest.changeSessionId();
+        }
         SecurityContextStore.setToSession(context, aRequest);
+    }
+
+    /** The state is one-time: it is removed from the session whatever the outcome. */
+    private static boolean consumeLoginState(HttpServletRequest aRequest) {
+        String actual = aRequest.getParameter(SSOLoginState.PARAMETER);
+        HttpSession session = aRequest.getSession(false);
+        if (session == null) {
+            return false;
+        }
+        Object expected = session.getAttribute(SSOLoginState.SESSION_ATTRIBUTE);
+        session.removeAttribute(SSOLoginState.SESSION_ATTRIBUTE);
+        return expected instanceof String && SSOLoginState.matches((String) expected, actual);
     }
 
     private SecurityContext createContextFromUser(SSOUser aUser) {
@@ -206,9 +268,13 @@ public class ExternalFormSecurityFilter implements Filter {
         return new SecurityContext(aUser.getName(), actions);
     }
 
-    private void redirectToLoginPage(String aUrl, HttpServletResponse aResponse) throws IOException {
-        String formUrl = loginFormUrl + URLEncoder.encode(aUrl, StandardCharsets.UTF_8);
-        LOG.debug("Sending redirect to external form to {}", formUrl);
+    private void redirectToLoginPage(HttpServletRequest aRequest, HttpServletResponse aResponse) throws IOException {
+        String state = SSOLoginState.generate();
+        aRequest.getSession(true).setAttribute(SSOLoginState.SESSION_ATTRIBUTE, state);
+        // state goes after the encoded targetUrl, so the targetUrl value is not affected
+        String formUrl = SSOLoginState.appendTo(
+                loginFormUrl + URLEncoder.encode(aRequest.getRequestURI(), StandardCharsets.UTF_8), state);
+        LOG.debug("Sending redirect to external form for {}", aRequest.getRequestURI());
         aResponse.sendRedirect(formUrl);
     }
 

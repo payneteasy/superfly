@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 /**
  * Builds the Content-Security-Policy value: the base policy plus subsystem origins in form-action and style-src.
  * Only a strictly validated {@code scheme://host[:port]} ever reaches the header, so a hostile URL
@@ -80,13 +82,7 @@ final class CspPolicyBuilder {
     }
 
     private static String skip(String url, String reason) {
-        logger.warn("Subsystem URL is not added to CSP ({}): {}", reason, sanitize(url));
+        logger.warn("Subsystem URL is not added to CSP ({}): {}", reason, forLog(url, 200));
         return null;
-    }
-
-    // The URL comes from the database; keep control characters out of the log.
-    private static String sanitize(String url) {
-        String s = url.replaceAll("[\\p{Cntrl}]", "?");
-        return s.length() > 200 ? s.substring(0, 200) + "..." : s;
     }
 }

@@ -92,7 +92,7 @@ public class ListUsersPage extends BasePage {
         filtersForm.add(subsystemDropdown);
 
         // data provider + sortability
-        String[] fieldNames = {"userId", "username", "password", "locked", "loginsFailed", "lastLoginDate"};
+        String[] fieldNames = {"userId", "username", "locked", "loginsFailed", "lastLoginDate"};
 
         SortableDataProvider<UIUserForList, String> usersDataProvider = new IndexedSortableDataProvider<UIUserForList>(fieldNames) {
             public Iterator<? extends UIUserForList> iterator(long first, long count) {

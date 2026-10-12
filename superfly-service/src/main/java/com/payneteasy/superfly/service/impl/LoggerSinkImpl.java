@@ -7,6 +7,8 @@ import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.service.UserInfoService;
 import org.springframework.stereotype.Service;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 public class LoggerSinkImpl implements LoggerSink {
 
@@ -33,27 +35,22 @@ public class LoggerSinkImpl implements LoggerSink {
         // for easy log parsing
         // user:paynet-local, event:REMOTE_LOGIN, resource:admin, result:success[, details:...][, ip:10.0.0.1]
         StringBuilder message = new StringBuilder();
-        message.append("user:").append(sanitize(usernameFormatted))
-                .append(", event:").append(sanitize(eventType))
-                .append(", resource:").append(sanitize(resourceIdentity))
+        message.append("user:").append(forLog(usernameFormatted))
+                .append(", event:").append(forLog(eventType))
+                .append(", resource:").append(forLog(resourceIdentity))
                 .append(", result:").append(success ? "success" : "failure");
         if (details != null) {
-            message.append(", details:").append(sanitize(details));
+            message.append(", details:").append(forLog(details));
         }
         String ip = userInfoService.getRemoteAddress();
         if (ip != null) {
-            message.append(", ip:").append(sanitize(ip));
+            message.append(", ip:").append(forLog(ip));
         }
         if (success) {
             logger.info(message.toString());
         } else {
             logger.error(message.toString());
         }
-    }
-
-    // values come from requests and user input: a line break would let the sender forge a log record
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\p{Cntrl}\\u0085\\u2028\\u2029]", "_");
     }
 
 }

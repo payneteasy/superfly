@@ -38,6 +38,17 @@ create function int_check_user_password(
             )
       values (i_user_name, now(), i_ip_address, i_session_info);
     else
+      -- history rows holding the same legacy hash stand for the current password: rehash them with it
+      -- (must run before users is updated, it relies on users still holding the legacy hash)
+      if i_legacy_password is not null then
+        update user_history uh
+               inner join users u on u.user_id = uh.user_user_id
+           set uh.user_password = i_user_password
+         where u.user_id = v_user_id
+               and u.user_password = i_legacy_password
+               and uh.user_password = i_legacy_password;
+      end if;
+
       update users u
          set u.last_login_date = now(), u.logins_failed = null, u.completed = 'Y',
              u.user_password = case when u.user_password = i_legacy_password then i_user_password else u.user_password end

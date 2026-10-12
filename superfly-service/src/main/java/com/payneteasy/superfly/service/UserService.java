@@ -400,6 +400,22 @@ public interface UserService {
 
     boolean userHasRolesInSubsystem(String username, String subsystemName);
 
+    /**
+     * A subsystem may sign in and read only users that have a role in it; a role in the local (admin UI)
+     * subsystem does not matter here.
+     *
+     * @return true if the user is reachable from the subsystem; false also for null arguments
+     */
+    boolean isUserAccessibleFrom(String username, String subsystemIdentifier);
+
+    /**
+     * A subsystem may change (password, OTP, profile, roles) only users that are accessible from it and have
+     * no role in the local (admin UI) subsystem: administrators of Superfly are changed in Superfly only.
+     *
+     * @return true if the subsystem may change the user; false also for null arguments
+     */
+    boolean isUserManageableFrom(String username, String subsystemIdentifier);
+
     String getUserSalt(String userName);
 
     void updateUserSalt(String username, String salt);

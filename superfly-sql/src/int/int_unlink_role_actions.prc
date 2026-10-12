@@ -6,6 +6,14 @@ create procedure int_unlink_role_actions(i_role_id int(10), i_actions_list text
   begin
     declare v_sql_core   text;
 
+    if i_actions_list is null or i_actions_list = '' then
+      leave main_sql;
+    end if;
+
+    if i_actions_list not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid action list';
+    end if;
+
     set v_sql_core   =
           concat('delete ura ',
                  '  from     user_role_actions ura ',

@@ -13,7 +13,6 @@ import javax.persistence.Column;
 public class UIUserForList implements Serializable {
     private long id;
     private String username;
-    private String password;
     private boolean accountLocked;
     private int loginsFailed;
     private Date lastLoginDate;
@@ -37,15 +36,6 @@ public class UIUserForList implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    @Column(name = "user_password")
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     @Column(name = "is_account_locked")

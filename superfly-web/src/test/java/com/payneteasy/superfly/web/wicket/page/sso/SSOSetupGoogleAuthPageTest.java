@@ -2,6 +2,8 @@ package com.payneteasy.superfly.web.wicket.page.sso;
 
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.model.SSOSession;
+import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.UserLoginStatus;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UserForDescription;
@@ -12,6 +14,7 @@ import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
 import com.payneteasy.superfly.spisupport.HOTPService;
+import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.wicket.page.AbstractPageTest;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.apache.wicket.markup.html.basic.Label;
@@ -27,6 +30,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
+    private static final String LANDING =
+            "http://some.host.test/landing-url?subsystemToken=abcdef&targetUrl=%2Ftarget";
+
     private UserService userService;
     private HOTPService hotpService;
     private SessionService sessionService;
@@ -87,6 +93,12 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
         loginData.setUsername("known-user");
         loginData.setGoogleAuthSetupRequired(setupRequired);
         return loginData;
+    }
+
+    private void expectToken() {
+        expect(sessionService.createSSOSession("known-user")).andReturn(new SSOSession(1L, "super-session-id"));
+        expect(subsystemService.issueSubsystemTokenIfCanLogin(1L, "test-subsystem"))
+                .andReturn(new SubsystemTokenData("abcdef", "http://some.host.test/landing-url"));
     }
 
     private String shownSecret() {
@@ -194,13 +206,37 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
     }
 
     @Test
+    public void testStateEchoedAfterSetup() throws Exception {
+        String state = "Ab0_-cdefghijklmnopqrstuvwxyz0123456789ABCDE";
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString())).andReturn(CheckOtpResult.Status.SUCCESS);
+        expectToken();
+        // the code that confirms the key is the second factor: the OTP check is not called again
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        loginData.setState(state);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        form.submit();
+
+        tester.assertRedirectUrl(LANDING + "&state=" + state);
+
+        verify(hotpService, internalSSOService, sessionService, subsystemService);
+    }
+
+    @Test
     public void testSetupSavesKeyWithValidCode() throws Exception {
         expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
         hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
         // records the confirmation code's step (anti-replay), strict order: after the key is saved
         Capture<String> recordedCode = newCapture();
         expect(hotpService.validateGoogleTimePassword(eq("known-user"), capture(recordedCode))).andReturn(CheckOtpResult.Status.SUCCESS);
-        replay(userService, hotpService, csrfValidator, subsystemService);
+        expectToken();
+        replay(userService, hotpService, sessionService, csrfValidator, subsystemService);
 
         SSOLoginData loginData = loginData(true);
         tester.getSession().setSsoLoginData(loginData);
@@ -211,10 +247,102 @@ public class SSOSetupGoogleAuthPageTest extends AbstractPageTest {
         form.setValue("code", code);
         form.submit();
 
-        tester.assertRenderedPage(SSOLoginHOTPPage.class);
+        tester.assertRedirectUrl(LANDING);
         assertFalse(loginData.isGoogleAuthSetupRequired());
         assertEquals(code, recordedCode.getValue());
-        verify(hotpService);
+        verify(hotpService, sessionService, subsystemService);
+    }
+
+    @Test
+    public void testSetupWithTemporaryPasswordOpensThePasswordChange() throws Exception {
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        expect(settingsService.getPolicy()).andReturn(Policy.NONE).anyTimes();
+        hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString())).andReturn(CheckOtpResult.Status.SUCCESS);
+        // no token and no OTP check: the password is changed first, the token is issued after the change
+        replay(userService, hotpService, internalSSOService, sessionService, settingsService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        loginData.setPasswordChangeRequired(true);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        form.submit();
+
+        tester.assertRenderedPage(SSOChangePasswordPage.class);
+        assertFalse(loginData.isGoogleAuthSetupRequired());
+        assertTrue(loginData.isPasswordChangeAllowed());
+        verify(hotpService, internalSSOService, sessionService, subsystemService);
+    }
+
+    @Test
+    public void testCodeNotTakenByTheStoredKeyIsAskedAtTheOtpPage() throws Exception {
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString()))
+                .andReturn(CheckOtpResult.Status.ALREADY_USED);
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        form.submit();
+
+        // no login is completed with a code that the key refused
+        tester.assertRenderedPage(SSOLoginHOTPPage.class);
+        assertFalse(loginData.isGoogleAuthSetupRequired());
+        verify(hotpService, internalSSOService, sessionService, subsystemService);
+    }
+
+    @Test
+    public void testSetupIsRefusedBeforeThePasswordStep() {
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        loginData.setUsername(null);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
+        verify(userService, hotpService, internalSSOService, sessionService, subsystemService);
+    }
+
+    @Test
+    public void testFormSubmittedAfterTheSetupWasCompletedIsRefused() {
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        // the flag is cleared when the setup of this login is completed
+        loginData.setGoogleAuthSetupRequired(false);
+        form.submit();
+
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
+        verify(userService, hotpService, internalSSOService, sessionService, subsystemService);
+    }
+
+    @Test
+    public void testFormSubmittedAfterThePasswordStepWasResetIsRefused() {
+        replay(userService, hotpService, internalSSOService, sessionService, csrfValidator, subsystemService);
+
+        SSOLoginData loginData = loginData(true);
+        tester.getSession().setSsoLoginData(loginData);
+        tester.startPage(SSOSetupGoogleAuthPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("code", validCode());
+        // a failed password attempt in another tab drops the username of the login
+        loginData.setUsername(null);
+        form.submit();
+
+        tester.assertRenderedPage(SSOLoginErrorPage.class);
+        assertFalse(loginData.isGoogleAuthSetupRequired());
+        verify(userService, hotpService, internalSSOService, sessionService, subsystemService);
     }
 
     @Test

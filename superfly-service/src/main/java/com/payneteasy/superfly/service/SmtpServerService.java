@@ -15,12 +15,30 @@ import java.util.List;
 public interface SmtpServerService {
     List<UISmtpServerForList> listSmtpServers();
 
+    /**
+     * Returns a server for display and editing, without its password.
+     */
     UISmtpServer getSmtpServer(long id);
 
+    /**
+     * Returns a server with its decrypted password, for sending mail and for an explicit password view.
+     */
+    UISmtpServer getSmtpServerWithPassword(long id);
+
+    /**
+     * Returns the server of a subsystem with its decrypted password, for sending mail.
+     */
     UISmtpServer getSmtpServerBySubsystemIdentifier(String subsystemIdentifier);
 
+    /**
+     * Creates a server; the password is stored encrypted and cleared in the passed object.
+     */
     RoutineResult createSmtpServer(UISmtpServer server);
 
+    /**
+     * Updates a server; an empty password keeps the stored one. The password is stored encrypted and cleared in
+     * the passed object.
+     */
     RoutineResult updateSmtpServer(UISmtpServer server);
 
     RoutineResult deleteSmtpServer(long id);

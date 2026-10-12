@@ -37,10 +37,13 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * {@link IHttpClient} и {@link AutoCloseable} реализация поверх Apache HttpClient 5.
@@ -71,6 +74,11 @@ import java.util.concurrent.TimeUnit;
 public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApacheHC5HttpClient.class);
+
+    private static final String INVALID_URL = "(invalid callback URL)";
+
+    /** The host and optional port of a registry-based authority, which URI#getHost() does not recognise. */
+    private static final Pattern HOST_AND_PORT = Pattern.compile("[\\p{L}\\p{N}._~-]+(?::[0-9]*)?");
 
     // ── connection pool defaults ──────────────────────────────────────────────
 
@@ -139,7 +147,7 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
         String url = request.getUrl();
         long startMs = System.currentTimeMillis();
 
-        LOG.debug("send: method={} url={} timeouts={}", request.getMethod(), url, formatTimeouts(params));
+        LOG.debug("send: method={} url={} timeouts={}", request.getMethod(), maskedUrl(url), formatTimeouts(params));
 
         ClassicHttpRequest hcRequest = buildHcRequest(request);
         HttpClientContext context = buildContext(params);
@@ -154,7 +162,7 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
                 long elapsed = System.currentTimeMillis() - startMs;
                 logPoolStats();
                 LOG.debug("send: status={} reason={} bodyLen={} elapsed={}ms url={}",
-                        status, reason, body.length, elapsed, url);
+                        status, reason, body.length, elapsed, maskedUrl(url));
 
                 return new HttpResponse(status, reason, headers, body);
             });
@@ -162,20 +170,20 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
             return response;
 
         } catch (ConnectTimeoutException e) {
-            LOG.warn("send: connect timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
-            throw new HttpConnectException("Connect timeout to " + url, e);
+            LOG.warn("send: connect timeout after {}ms url={}", System.currentTimeMillis() - startMs, maskedUrl(url));
+            throw new HttpConnectException("Connect timeout to " + maskedUrl(url), e);
 
         } catch (SocketTimeoutException e) {
-            LOG.warn("send: response timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
-            throw new HttpReadException("Response timeout from " + url, e);
+            LOG.warn("send: response timeout after {}ms url={}", System.currentTimeMillis() - startMs, maskedUrl(url));
+            throw new HttpReadException("Response timeout from " + maskedUrl(url), e);
 
         } catch (IOException e) {
             if (isConnectFailure(e)) {
-                LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
-                throw new HttpConnectException("Connection failed to " + url, e);
+                LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, maskedUrl(url), e.getMessage());
+                throw new HttpConnectException("Connection failed to " + maskedUrl(url), e);
             }
-            LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
-            throw new HttpReadException("I/O error communicating with " + url, e);
+            LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, maskedUrl(url), e.getMessage());
+            throw new HttpReadException("I/O error communicating with " + maskedUrl(url), e);
         }
     }
 
@@ -184,6 +192,49 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
                 || e instanceof UnknownHostException
                 || e instanceof NoRouteToHostException
                 || e instanceof ConnectTimeoutException;
+    }
+
+    /**
+     * The URL without user info, query and fragment, as it is written to exception messages: they may carry
+     * credentials. The scheme, the host, the port and the path are kept.
+     *
+     * <p>The same rule as {@code CallbackUrls} of superfly-service applies to the callback URL in the notification
+     * logs; this module cannot use that class, so keep the two in line.
+     *
+     * @return the URL to write to a message; {@code "(invalid callback URL)"} if it cannot be parsed, is not an
+     * absolute URL with a host, or has user info that cannot be told apart from the rest of the URL (it has a '/', '?'
+     * or '#'): repeating such a URL would repeat the parts to hide
+     */
+    static String maskedUrl(String url) {
+        if (url == null) {
+            return "null";
+        }
+        URI parsed;
+        try {
+            parsed = new URI(url);
+        } catch (URISyntaxException e) {
+            return INVALID_URL;
+        }
+        String authority = parsed.getRawAuthority();
+        if (parsed.getScheme() == null || authority == null) {
+            return INVALID_URL;
+        }
+        // User info is everything before the last '@': URI#getUserInfo() is null (and URI#getHost() too) for a
+        // registry-based authority, which is what a host name with '_' (a docker-compose service name) parses to
+        String hostAndPort = authority.substring(authority.lastIndexOf('@') + 1);
+        // A '/', '?' or '#' in the user info ends the authority there, and the rest of the user info lands in the host
+        // (a registry-based authority when the port is not a number), the path, the query or the fragment: it cannot
+        // be told from them and so cannot be removed. An IPv6 literal is never a registry-based authority
+        if (parsed.getHost() == null && !HOST_AND_PORT.matcher(hostAndPort).matches()) {
+            return INVALID_URL;
+        }
+        String authorityPart = parsed.getScheme() + "://" + authority;
+        int at = url.indexOf('@', authorityPart.length());
+        int slash = url.indexOf('/', authorityPart.length());
+        if (!url.startsWith(authorityPart) || (at >= 0 && (slash < 0 || at < slash))) {
+            return INVALID_URL;
+        }
+        return parsed.getScheme() + "://" + hostAndPort + parsed.getRawPath();
     }
 
     /** SSL is pool-wide here; silently ignoring per-request SSL settings would weaken the caller's intended TLS checks. */

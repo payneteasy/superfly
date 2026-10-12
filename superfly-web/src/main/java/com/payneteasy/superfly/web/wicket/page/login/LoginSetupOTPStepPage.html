@@ -10,6 +10,10 @@
                 <div class="col-12 col-sm-5 col-md-4 m-auto">
                     <h2 class="mb-4">Initializing Google Authenticator</h2>
                     <div wicket:id="otp"></div>
+                    <div class="form-group">
+                        <label class='form-label' for="j_otp">One-time password value from the app</label>
+                        <input class='form-control' name="j_otp" id="j_otp" type="password" autocomplete="off" value="" maxlength="6">
+                    </div>
                     <input wicket:id="_csrf" type="hidden" name="_csrf"  />
                     <div wicket:id="reason" class='reason'>The one-time password value you entered is incorrect.</div>
                     <div class="button-row">

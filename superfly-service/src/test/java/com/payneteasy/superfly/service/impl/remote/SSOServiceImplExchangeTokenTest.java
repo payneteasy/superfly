@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl.remote;
 import com.payneteasy.superfly.api.SSOUser;
 import com.payneteasy.superfly.api.request.ExchangeSubsystemTokenRequest;
 import com.payneteasy.superfly.service.InternalSSOService;
+import com.payneteasy.superfly.service.LoggerSink;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class SSOServiceImplExchangeTokenTest {
     @Before
     public void setUp() {
         internal = createStrictMock(InternalSSOService.class);
-        ssoService = new SSOServiceImpl(internal, null, null, null, null);
+        ssoService = new SSOServiceImpl(internal, null, null, null, null, createNiceMock(LoggerSink.class));
     }
 
     @Test

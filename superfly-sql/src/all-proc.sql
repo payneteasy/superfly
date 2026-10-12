@@ -32,6 +32,14 @@ create table mysql_routines_return_arguments (
 
 \. get/get_users_with_expired_passwords.prc
 
+\. get/get_subsystem_auth.prc
+
+\. get/get_subsystem_private_key.prc
+
+\. get/get_subsystems_with_plain_private_key.prc
+
+\. get/get_smtp_servers_with_plain_password.prc
+
 \. create/create_collections.prc
 
 \. int/int_users_list.prc
@@ -84,6 +92,10 @@ create table mysql_routines_return_arguments (
 
 \. int/int_create_event.prc
 
+\. int/int_end_user_sessions.prc
+
+\. int/int_lock_user.prc
+
 \. ui_copy/ui_copy_action_properties.prc
 
 \. ui_filter/ui_filter_subsystems.prc
@@ -121,6 +133,10 @@ create table mysql_routines_return_arguments (
 \. save/save_actions.prc
 
 \. save/update_user_salt.prc
+
+\. save/encrypt_subsystem_private_key.prc
+
+\. save/encrypt_smtp_server_password.prc
 
 \. ui_get/ui_get_groups_list.prc
 

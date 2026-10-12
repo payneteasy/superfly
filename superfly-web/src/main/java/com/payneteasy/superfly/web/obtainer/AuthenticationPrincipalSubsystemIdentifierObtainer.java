@@ -10,6 +10,8 @@ import com.payneteasy.superfly.api.exceptions.SsoAuthException;
 import com.payneteasy.superfly.service.impl.remote.SubsystemIdentifierObtainer;
 import com.payneteasy.superfly.web.security.SecurityUtils;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 /**
  * Obtains subsystem identifier: uses hint when provided, otherwise falls back
  * to the authenticated principal in the SecurityContext (set by SubsystemAuthenticationFilter
@@ -33,7 +35,7 @@ public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
                 String authenticated = getUsername(authentication);
                 if (!hint.equals(authenticated)) {
                     log.warn("Subsystem {} tried to use foreign subsystem identifier {}",
-                            sanitize(authenticated), sanitize(hint));
+                            forLog(authenticated), forLog(hint));
                     throw new SsoAuthException("Subsystem identifier does not match the authenticated subsystem");
                 }
             }
@@ -51,11 +53,6 @@ public class AuthenticationPrincipalSubsystemIdentifierObtainer implements
         } else {
             return principal.toString();
         }
-    }
-
-    // hint comes from the request body: strip line breaks to prevent log injection
-    private static String sanitize(String value) {
-        return value == null ? null : value.replaceAll("[\\r\\n\\t]", "_");
     }
 
 }

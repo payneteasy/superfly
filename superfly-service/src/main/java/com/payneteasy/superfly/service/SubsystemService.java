@@ -3,8 +3,10 @@ package com.payneteasy.superfly.service;
 import java.util.List;
 
 import com.payneteasy.superfly.model.RoutineResult;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.model.SubsystemTokenData;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 import com.payneteasy.superfly.service.impl.remote.check.KeyPairData;
@@ -60,7 +62,7 @@ public interface SubsystemService {
      * @param subsystemId    ID of the subsystem
      * @return subsystem or null if no such subsystem
      */
-    UISubsystem getSubsystem(long subsystemId);
+    UISubsystemView getSubsystem(long subsystemId);
 
     /**
      * Returns a subsystem by its name.
@@ -69,6 +71,25 @@ public interface SubsystemService {
      * @return subsystem or null if no such subsystem
      */
     UISubsystem getSubsystemByName(String subsystemName);
+
+    /**
+     * Returns the data subsystem authentication needs, including the subsystem token.
+     * The UI lookups ({@link #getSubsystem}, {@link #getSubsystemByName}) never return it.
+     *
+     * @param subsystemName    name of the subsystem
+     * @return auth data or null if no such subsystem
+     */
+    SubsystemAuth getSubsystemAuth(String subsystemName);
+
+    /**
+     * Returns the decrypted private key of a subsystem; only remote auth should call it,
+     * and must not keep the result longer than one request.
+     *
+     * @param subsystemName    name of the subsystem
+     * @return PEM key or null if the subsystem has none
+     * @throws IllegalStateException if the stored key cannot be decrypted
+     */
+    String getSubsystemPrivateKey(String subsystemName);
 
     /**
      * Tries to obtain a subsystem token. If user identified
@@ -83,14 +104,16 @@ public interface SubsystemService {
     SubsystemTokenData issueSubsystemTokenIfCanLogin(long ssoSessionId, String subsystemIdentifier);
 
     /**
+     * Generates a new main token and puts its hash into the subsystem; the hash is persisted by
+     * create/update. The raw token is returned for a one-time display and is not stored anywhere.
      *
-     * @return main token for subsystem
+     * @return raw main token for the subsystem
      */
-    String generateMainSubsystemToken();
+    String generateMainSubsystemToken(UISubsystem subsystem);
 
     /**
      *
-     * @return key pair data for subsystem
+     * @return key pair data for subsystem; the private key is already encrypted for storage
      */
     KeyPairData generateKeyPair(RemoteAuthEncryptionAlgorithm algorithm);
 }

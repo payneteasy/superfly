@@ -9,6 +9,8 @@ import com.payneteasy.superfly.security.csrf.CsrfValidatorImpl;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
 import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
+import com.payneteasy.superfly.web.security.SuperflyInitOTPAuthenticationProcessingFilter;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import jakarta.servlet.Filter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -61,6 +63,7 @@ public class MfaLoginStepSecurityTest {
                     .enableMultiFactorAuth(true));
             beanFactory.registerSingleton("loggerSink", mock(LoggerSink.class));
             beanFactory.registerSingleton("localSecurityService", localSecurityService);
+            beanFactory.registerSingleton("userService", ActiveAccounts.userService());
             beanFactory.registerSingleton("userDetailsService", mock(UserDetailsService.class));
             beanFactory.registerSingleton("mvcHandlerMappingIntrospector", new HandlerMappingIntrospector());
         });
@@ -116,21 +119,24 @@ public class MfaLoginStepSecurityTest {
 
     @Test
     public void otpInitStepPersistsKey() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        String key = SuperflyInitOTPAuthenticationProcessingFilter.pendingKey(session, "admin");
+        String code = String.format("%06d", new GoogleAuthenticator().getTotpPassword(key));
         reset(localSecurityService);
-        localSecurityService.persistOtpKey(OTPType.GOOGLE_AUTH, "admin", "KEY");
+        localSecurityService.persistOtpKey(OTPType.GOOGLE_AUTH, "admin", key);
         expectLastCall().once();
+        expect(localSecurityService.authenticateUsingOTP("admin", code)).andReturn(true).once();
         UserForDescription user = new UserForDescription();
         user.setOtpTypeCode(OTPType.GOOGLE_AUTH.code());
         expect(localSecurityService.getOtpUserForDescription("admin")).andReturn(
-                new OtpUserDescription().setHasOtpMasterKey(true).setUserForDescription(user)).anyTimes();
+                new OtpUserDescription().setHasOtpMasterKey(false).setUserForDescription(user)).anyTimes();
         expect(localSecurityService.authenticate("admin", "pw")).andReturn(new String[]{"ADMIN"}).anyTimes();
         replay(localSecurityService);
 
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/j_superfly_otp_reset");
         request.setServletPath("/j_superfly_otp_reset");
-        request.setParameter("j_key", "KEY");
+        request.setParameter("j_otp", code);
         request.setParameter("_csrf", "token");
-        MockHttpSession session = new MockHttpSession();
         session.setAttribute("SPRING_SECURITY_CONTEXT", new SecurityContextImpl(new CompoundAuthentication(new Authentication[]{
                 new UsernamePasswordAuthenticationToken("admin", "pw"), new LocalNeedOTPToken("admin", OTPType.GOOGLE_AUTH)}, null)));
         session.setAttribute(CsrfValidatorImpl.class.getName().concat(".CSRF_TOKEN"), "token");

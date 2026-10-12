@@ -2,6 +2,7 @@ package com.payneteasy.superfly.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
 
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 
@@ -10,6 +11,8 @@ public abstract class AbstractSingleStepAuthenticationProcessingFilter extends
 
     protected AbstractSingleStepAuthenticationProcessingFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
+        // a new session id on login; can be replaced with setSessionAuthenticationStrategy()
+        setSessionAuthenticationStrategy(new ChangeSessionIdAuthenticationStrategy());
     }
 
     protected CompoundAuthentication getCompoundAuthenticationOrNewOne(Authentication authentication) {

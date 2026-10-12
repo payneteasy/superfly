@@ -7,35 +7,47 @@ create procedure ui_change_actions_log_level(i_actn_list_log_on text,
   begin
     declare v_sql_core   text;
 
-    set v_sql_core   =
-          concat('update actions ',
-                 '   set log_action    = "Y" ',
-                 ' where actn_id in (',
-                 coalesce(i_actn_list_log_on, '-1'),
-                 ') '
-          );
+    if i_actn_list_log_on is not null and i_actn_list_log_on <> '' and i_actn_list_log_on not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid action list';
+    end if;
 
-    set @v_ddl_statement   = v_sql_core;
+    if i_actn_list_log_off is not null and i_actn_list_log_off <> '' and i_actn_list_log_off not regexp '^[0-9]+(,[0-9]+)*$' then
+      signal sqlstate '45000' set message_text = 'invalid action list';
+    end if;
 
-    prepare v_stmt from @v_ddl_statement;
-    execute v_stmt;
+    if i_actn_list_log_on is not null and i_actn_list_log_on <> '' then
+      set v_sql_core   =
+            concat('update actions ',
+                   '   set log_action    = "Y" ',
+                   ' where actn_id in (',
+                   coalesce(i_actn_list_log_on, '-1'),
+                   ') '
+            );
 
-    deallocate prepare v_stmt;
+      set @v_ddl_statement   = v_sql_core;
 
-    set v_sql_core   =
-          concat('update actions ',
-                 '   set log_action    = "N" ',
-                 ' where actn_id in (',
-                 coalesce(i_actn_list_log_off, '-1'),
-                 ') '
-          );
+      prepare v_stmt from @v_ddl_statement;
+      execute v_stmt;
 
-    set @v_ddl_statement   = v_sql_core;
+      deallocate prepare v_stmt;
+    end if;
 
-    prepare v_stmt from @v_ddl_statement;
-    execute v_stmt;
+    if i_actn_list_log_off is not null and i_actn_list_log_off <> '' then
+      set v_sql_core   =
+            concat('update actions ',
+                   '   set log_action    = "N" ',
+                   ' where actn_id in (',
+                   coalesce(i_actn_list_log_off, '-1'),
+                   ') '
+            );
 
-    deallocate prepare v_stmt;
+      set @v_ddl_statement   = v_sql_core;
+
+      prepare v_stmt from @v_ddl_statement;
+      execute v_stmt;
+
+      deallocate prepare v_stmt;
+    end if;
 
     select 'OK' status, null error_message;
   end

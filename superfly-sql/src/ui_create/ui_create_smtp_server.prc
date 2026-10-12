@@ -4,7 +4,7 @@ create procedure ui_create_smtp_server(i_server_name varchar(32),
                                        i_host varchar(64),
                                        i_port int(10),
                                        i_username varchar(64),
-                                       i_password varchar(64),
+                                       i_password varchar(255),
                                        i_from_address varchar(64),
                                        i_is_ssl varchar(1),
                                        out o_ssrv_id int(10)

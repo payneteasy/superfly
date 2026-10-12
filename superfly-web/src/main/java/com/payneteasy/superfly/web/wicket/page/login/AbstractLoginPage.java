@@ -16,7 +16,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 
 import com.payneteasy.superfly.security.exception.BadOTPValueException;
+import com.payneteasy.superfly.web.security.LocalNeedOTPToken;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 
@@ -47,22 +49,54 @@ public abstract class AbstractLoginPage extends WebPage {
     @SpringBean
     protected CsrfValidator csrfValidator;
 
+    /** Issued when the form is first rendered, not when the page is constructed. */
+    private String csrfToken;
+
     protected Component createCsrfHiddenInput(String markupId) {
-        String token = csrfValidator.persistTokenIntoSession(getHttpSession());
-        return new HiddenField<>(markupId, Model.of(token)).add(new AttributeModifier("name", "_csrf"));
+        return new HiddenField<String>(markupId, new Model<String>()) {
+            @Override
+            protected void onBeforeRender() {
+                // a form component shows the value it was submitted with, which may not be the token of the session
+                clearInput();
+                setModelObject(currentCsrfToken());
+                super.onBeforeRender();
+            }
+        }.add(new AttributeModifier("name", "_csrf"));
     }
 
+    private String currentCsrfToken() {
+        if (csrfToken == null) {
+            csrfToken = csrfValidator.persistTokenIntoSession(getHttpSession());
+        }
+        return csrfToken;
+    }
+
+    /**
+     * @return the last passed step of the login in progress, or null if there is none (no session, or the login is
+     * complete)
+     */
     protected Authentication getLatestReadyAuthentication() {
         HttpSession session = getHttpSession();
-        SecurityContext context = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
-        if (context == null) {
-            return null;
+        if (session != null && session.getAttribute("SPRING_SECURITY_CONTEXT") instanceof SecurityContext context
+                && context.getAuthentication() instanceof CompoundAuthentication compoundAuthentication) {
+            return compoundAuthentication.getLatestReadyAuthentication();
         }
-        CompoundAuthentication compoundAuthentication = (CompoundAuthentication) context.getAuthentication();
-        return compoundAuthentication != null ? compoundAuthentication.getLatestReadyAuthentication() : null;
+        return null;
     }
 
-    private HttpSession getHttpSession() {
+    /** The page of the step that the login in progress is at, as the authentication entry point chooses it. */
+    protected Class<? extends AbstractLoginPage> currentStepPage() {
+        Authentication latest = getLatestReadyAuthentication();
+        if (latest instanceof LocalNeedOTPToken) {
+            return LoginSetupOTPStepPage.class;
+        }
+        if (latest instanceof UsernamePasswordAuthenticationToken) {
+            return LoginOTPStepPage.class;
+        }
+        return LoginPasswordStepPage.class;
+    }
+
+    protected HttpSession getHttpSession() {
         ServletWebRequest servletWebRequest = (ServletWebRequest) getRequest();
         HttpServletRequest request = servletWebRequest.getContainerRequest();
 

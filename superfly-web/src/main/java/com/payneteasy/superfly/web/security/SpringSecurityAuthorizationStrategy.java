@@ -29,6 +29,10 @@ public class SpringSecurityAuthorizationStrategy implements IAuthorizationStrate
 
     @Override
     public <T extends IRequestableComponent> boolean isInstantiationAuthorized(Class<T> componentClass) {
+        // @Secured is @Inherited, so this also covers annotated superclasses
+        if (componentClass.isAnnotationPresent(Secured.class)) {
+            return SecurityUtils.isComponentVisible(componentClass);
+        }
         return true;
     }
 

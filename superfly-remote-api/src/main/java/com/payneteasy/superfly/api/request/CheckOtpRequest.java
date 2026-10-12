@@ -13,7 +13,9 @@ import java.io.Serializable;
 public class CheckOtpRequest implements Serializable {
     private String userName;
     private String code;
+    /** Ignored by the server: the OTP type of the user is taken from the database. */
     private OTPType otpType;
+    /** Ignored by the server: the flag of the user is taken from the database. */
     private boolean isOtpOptional;
 
     public CheckOtpRequest(SSOUser ssoUser, String code) {

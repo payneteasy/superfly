@@ -16,9 +16,13 @@ create procedure ui_clone_user(i_new_user_name varchar(32),
 
     insert into users
           (
-             user_name, user_password, email, salt, hotp_salt, is_password_temp, create_date, public_key, completed
+             user_name, user_password, email, is_account_locked, name, surname, secret_question, secret_answer,
+             salt, hotp_salt, is_password_temp, create_date, public_key, completed
           )
-    values (i_new_user_name, i_new_user_password, i_new_user_email, i_new_user_salt, i_new_hotp_salt, i_is_password_temp , now(), i_public_key, 'Y');
+    -- personal data, the secret answer and the state flags of the template user are not copied;
+    -- is_account_locked has no column default, so it is set here as ui_create_user does
+    values (i_new_user_name, i_new_user_password, i_new_user_email, 'N', '', '', '', '',
+            i_new_user_salt, i_new_hotp_salt, i_is_password_temp, now(), i_public_key, 'Y');
 
     set v_user_id   = last_insert_id();
     set o_user_id   = v_user_id;

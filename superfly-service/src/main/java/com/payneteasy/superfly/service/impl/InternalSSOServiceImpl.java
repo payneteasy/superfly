@@ -3,6 +3,7 @@ package com.payneteasy.superfly.service.impl;
 import com.payneteasy.superfly.api.*;
 import com.payneteasy.superfly.api.exceptions.*;
 import com.payneteasy.superfly.api.request.GetEventsRequest;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.lockout.LockoutStrategy;
 import com.payneteasy.superfly.model.UserRegisterRequest;
@@ -31,11 +32,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class InternalSSOServiceImpl implements InternalSSOService {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalSSOServiceImpl.class);
+    // hashes the password of a name that cannot exist: such a name must not reach the database even for the salt
+    private static final String IMPOSSIBLE_USER_SALT = "impossible-user";
 
     private       UserService          userService;
     private       ActionService        actionService;
@@ -129,7 +134,17 @@ public class InternalSSOServiceImpl implements InternalSSOService {
     public SSOUser authenticate(String username, String password, String subsystemIdentifier, String userIpAddress,
                                 String sessionInfo) {
         SSOUser ssoUser;
-        String  salt = saltSource.getSalt(username);
+        boolean possible = UserNames.isPossible(username);
+        String  salt = possible ? saltSource.getSalt(username) : IMPOSSIBLE_USER_SALT;
+        if (!possible || !isUserAccessibleFrom(username, subsystemIdentifier)) {
+            // same hashing cost as a regular attempt, but the failed-login counter is not touched
+            if (password != null) {
+                passwordEncoder.encode(password, salt);
+                legacyPasswordEncoder.encode(password, salt);
+            }
+            logDenied("authenticate", subsystemIdentifier, username);
+            return null;
+        }
         // null password is an ordinary failed attempt, not an exception
         AuthSession session = userService.authenticate(username,
                 password == null ? Pbkdf2PasswordEncoder.NEVER_MATCHING_HASH : passwordEncoder.encode(password, salt),
@@ -140,7 +155,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
-            logger.warn("No roles for user {}", username);
+            logger.warn("No session issued for user {} (bad credentials, no roles, or the account is locked or suspended)",
+                    forLog(username));
             lockoutStrategy.checkLoginsFailed(username, LockoutType.PASSWORD);
             ssoUser = null;
         }
@@ -149,26 +165,61 @@ public class InternalSSOServiceImpl implements InternalSSOService {
 
     @Override
     public CheckOtpResult.Status checkOtp(OTPType otpType, boolean isOtpOptional, String username, String code) {
-        // isOtpOptional comes from the caller; a configured key makes OTP mandatory anyway
-        if (isOtpOptional && (code == null || code.trim().isEmpty()) && !hasOtpMasterKey(username)) {
-            return CheckOtpResult.Status.SUCCESS;
+        // the type and the optional flag come from the database: what the caller sends must not weaken the check
+        UserForDescription stored = userService.getUserForDescription(username);
+        // an unknown user gets the strictest check
+        OTPType storedType = stored == null || stored.getOtpType() == null ? OTPType.GOOGLE_AUTH : stored.getOtpType();
+        boolean storedOptional = stored != null && stored.isOtpOptional();
+        if (storedType != otpType || storedOptional != isOtpOptional) {
+            logger.debug("OTP settings of the request differ from the stored ones for {}: requested type {}, optional {}; "
+                    + "stored type {}, optional {}", username, otpType, isOtpOptional, storedType, storedOptional);
         }
-        return authenticateByOtpType(otpType, username, code);
+        boolean keyConfigured = hasOtpMasterKey(username);
+        boolean otpSkipped = storedOptional && (code == null || code.trim().isEmpty());
+        // a configured key makes OTP mandatory anyway
+        if ((otpSkipped || storedType == OTPType.NONE) && !keyConfigured) {
+            CheckOtpResult.Status status = isAccountLocked(username) ? CheckOtpResult.Status.LOCKED : CheckOtpResult.Status.SUCCESS;
+            // nothing was checked, so the failed attempts counter must stay as it is
+            loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+            return status;
+        }
+        return authenticateByOtpType(OTPType.GOOGLE_AUTH, username, code);
     }
 
     @Override
     public SSOUser pseudoAuthenticate(String username, String subsystemIdentifier) {
         SSOUser     ssoUser;
+        if (!UserNames.isPossible(username) || !isUserAccessibleFrom(username, subsystemIdentifier)) {
+            logDenied("pseudoAuthenticate", subsystemIdentifier, username);
+            return null;
+        }
         AuthSession session = userService.pseudoAuthenticate(username, subsystemIdentifier);
         boolean     ok      = session != null && session.getSessionId() != null;
         loggerSink.info(logger, "REMOTE_PSEUDO_LOGIN", ok, username);
         if (ok) {
             ssoUser = buildSSOUser(session);
         } else {
-            logger.warn("No roles for user '{}' during pseudo-login", username);
+            logger.warn("No session issued for user '{}' during pseudo-login (no roles, or the account is locked or suspended)",
+                    forLog(username));
             ssoUser = null;
         }
         return ssoUser;
+    }
+
+    @Override
+    public boolean isUserAccessibleFrom(String username, String subsystemIdentifier) {
+        return userService.isUserAccessibleFrom(username, subsystemIdentifier);
+    }
+
+    @Override
+    public boolean isUserManageableFrom(String username, String subsystemIdentifier) {
+        return userService.isUserManageableFrom(username, subsystemIdentifier);
+    }
+
+    // the security log only: the failed-login counter and unauthorised_access are left alone
+    private void logDenied(String method, String subsystemIdentifier, String username) {
+        loggerSink.info(logger, "SUBSYSTEM_ACCESS_DENIED", false, username,
+                "method=" + method + ", subsystem=" + subsystemIdentifier);
     }
 
     private SSOUser buildSSOUser(AuthSession session) {
@@ -239,6 +290,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                              RoleGrantSpecification[] roleGrants, String name, String surname, String secretQuestion,
                              String secretAnswer, String publicKey, String organization, OTPType otpType) throws UserExistsException, PolicyValidationException,
             BadPublicKeyException, MessageSendException {
+        if (!UserNames.isPossible(username)) {
+            loggerSink.info(logger, "REGISTER_USER", false, username);
+            throw new SsoUserException("Username must be from 1 to " + UserNames.MAX_LENGTH + " characters long");
+        }
 
         UserRegisterRequest registerUser = new UserRegisterRequest();
         registerUser.setUsername(username);
@@ -256,9 +311,10 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         registerUser.setOrganization(organization);
         registerUser.setOtpTypeCode(otpType.code());
 
-        // validate password policy
-        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder, userService
-                .getUserPasswordHistoryAndCurrentPassword(username)));
+        // validate password policy against an empty history: a new user has none, and an existing user's
+        // history must not leak through the validation result (register_user.prc recreates incomplete users)
+        policyValidation.validate(new PasswordCheckContext(password, legacyPasswordEncoder,
+                Collections.<PasswordSaltPair>emptyList()));
 
         validatePublicKey(publicKey);
 
@@ -305,24 +361,37 @@ public class InternalSSOServiceImpl implements InternalSSOService {
         logger.debug("Authenticating by OTP type {} for {}", otp, username);
         Objects.requireNonNull(otp);
         CheckOtpResult.Status status;
+        boolean keyMissing = false;
         if (isAccountLocked(username)) {
             // a locked account gets no code checks: they would let the code be guessed without consequences
             logger.warn("OTP check of locked account {}", username);
             status = CheckOtpResult.Status.LOCKED;
         } else {
-            status = otp == OTPType.GOOGLE_AUTH
-                    ? hotpService.validateGoogleTimePassword(username, code)
-                    : CheckOtpResult.Status.SUCCESS;
-            if (status != CheckOtpResult.Status.SUCCESS) {
+            try {
+                status = otp == OTPType.GOOGLE_AUTH
+                        ? hotpService.validateGoogleTimePassword(username, code)
+                        : CheckOtpResult.Status.SUCCESS;
+            } catch (SsoDecryptException e) {
+                // Without a key there is nothing to guess: the code is refused, and the attempt is neither counted
+                // nor allowed to lock the account. A key that exists but cannot be decrypted is a failure of the
+                // configuration, not a wrong code: it stays an exception.
+                if (hasOtpMasterKey(username)) {
+                    throw e;
+                }
+                keyMissing = true;
+                status = CheckOtpResult.Status.INVALID;
+            }
+            if (status == CheckOtpResult.Status.SUCCESS) {
+                userService.clearHOTPLoginsFailed(username);
+            } else if (!keyMissing) {
                 // logged after the count: the attempt may have locked the account, and the result is then LOCKED
                 status = countFailedOtpAttempt(username, status);
                 logger.warn("OTP check failed {}: {}", username, status);
-            } else {
-                userService.clearHOTPLoginsFailed(username);
             }
         }
 
-        loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
+        loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username,
+                "status=" + status + (keyMissing ? ", reason=no key" : ""));
         return status;
     }
 
@@ -404,7 +473,8 @@ public class InternalSSOServiceImpl implements InternalSSOService {
             ssoUser = buildSSOUser(session);
         } else {
             if (session != null) {
-                logger.warn("No roles for user {}", session.getUsername());
+                logger.warn("No session issued for user {} (no roles, or the account is locked or suspended)",
+                        forLog(session.getUsername()));
             }
             ssoUser = null;
         }

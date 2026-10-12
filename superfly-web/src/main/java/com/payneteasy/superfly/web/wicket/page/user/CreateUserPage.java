@@ -1,6 +1,7 @@
 package com.payneteasy.superfly.web.wicket.page.user;
 
 import com.payneteasy.superfly.api.OTPType;
+import com.payneteasy.superfly.common.utils.UserNames;
 import com.payneteasy.superfly.crypto.PublicKeyCrypto;
 import com.payneteasy.superfly.model.ui.role.UIRoleForList;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForFilter;
@@ -35,6 +36,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.apache.wicket.validation.validator.StringValidator;
 import org.springframework.security.access.annotation.Secured;
 
 import java.util.*;
@@ -88,6 +90,7 @@ public class CreateUserPage extends BasePage {
         add(form);
 
         LabelTextFieldRow<String> userName = new LabelTextFieldRow<String>(user,"username","user.create.username",true);
+        userName.getTextField().add(StringValidator.maximumLength(UserNames.MAX_LENGTH));
         form.add(userName);
 
         LabelTextFieldRow<String> email = new LabelTextFieldRow<String>(user, "email", "user.create.email", true);

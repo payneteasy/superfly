@@ -6,6 +6,7 @@ import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
 import com.payneteasy.superfly.web.wicket.page.SessionAccessorPage;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.HiddenField;
@@ -28,6 +29,9 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
 
     @SpringBean
     protected CsrfValidator csrfValidator;
+
+    /** Issued when the form is first rendered, not when the page is constructed. */
+    private String csrfToken;
 
     protected BaseSSOPage() {
         SSOLoginData loginData = getSession().getSsoLoginData();
@@ -65,9 +69,34 @@ public abstract class BaseSSOPage extends SessionAccessorPage {
         }
     }
 
+    /**
+     * Gives the HTTP session a new id once the user has passed an authentication step.
+     * {@code Session.changeSessionId()} calls {@code HttpServletRequest.changeSessionId()}, which keeps
+     * the session attributes (CSRF token, Wicket session and its pages), and updates the id cached by
+     * Wicket. {@code Session.replaceSession()} is not suitable: it invalidates the HTTP session and
+     * loses those attributes. Without a bound session there is no id to change.
+     */
+    protected static void renewSessionId(Page page) {
+        page.getSession().changeSessionId();
+    }
+
     protected Component createCsrfHiddenInput(String markupId) {
-        String token = csrfValidator.persistTokenIntoSession(getHttpSession());
-        return new HiddenField<>(markupId, Model.of(token)).add(new AttributeModifier("name", "_csrf"));
+        return new HiddenField<String>(markupId, new Model<String>()) {
+            @Override
+            protected void onBeforeRender() {
+                // a form component shows the value it was submitted with, which may not be the token of the session
+                clearInput();
+                setModelObject(currentCsrfToken());
+                super.onBeforeRender();
+            }
+        }.add(new AttributeModifier("name", "_csrf"));
+    }
+
+    private String currentCsrfToken() {
+        if (csrfToken == null) {
+            csrfToken = csrfValidator.persistTokenIntoSession(getHttpSession());
+        }
+        return csrfToken;
     }
 
     protected boolean validateCsrfToken() {

@@ -63,13 +63,13 @@
          provided deps on the libraries themselves. The suppressions below clear those residual
          findings with the justification "provided, not shipped transitively, not the EE10 runtime".
          Each is VERSION-PINNED so it cannot mask the in-line EE10 stack:
-           - spring-core is pinned 5.3.x (spring-core 6.2.19 is clean — must stay visible).
+           - spring-core is pinned 5.3.x (6.2.19 has its own version-pinned entry below).
            - spring-security is pinned 5.8.x: CVE-2026-22746 / -22748 also affect EE10
              spring-security (fixed in 6.5.10); a cve-only suppress would hide a regression there.
          ============================================================================ -->
 
     <!-- Spring Framework 5.3.x jars (EE8 provided): not exported transitively; not the EE10 runtime
-         (Spring Framework 6.2.19 carries none of these). dependency-check attributes these Spring
+         (Spring Framework 6.2.x findings are handled by the separate 6.2.19 entry). dependency-check attributes these Spring
          Framework CVEs to whichever 5.3.x jar matches the spring_framework CPE (spring-core AND the
          transitive spring-jcl), so the gav is broadened to org.springframework:spring-*:5.3.x.
          Pinned to 5.3 and to the org.springframework groupId so the in-line 6.x stack and the
@@ -77,8 +77,8 @@
     <suppress>
         <notes><![CDATA[
         Spring Framework 5.3.x jars (EE8): provided in superfly-spring-security-ee8, not exported
-        transitively to consumers and not part of the EE10 server runtime (Spring Framework 6.2.19
-        is unaffected). Covers spring-core and its transitive spring-jcl, both flagged against the
+        transitively to consumers and not part of the EE10 server runtime (Spring Framework 6.2.x
+        findings have their own entry). Covers spring-core and its transitive spring-jcl, both flagged against the
         same spring_framework CPE at 5.3.39. Version-pinned to 5.3 so the in-line 6.x stack is not masked.
         ]]></notes>
         <gav regex="true">^org\.springframework:spring-.*:5\.3\..*$</gav>
@@ -88,6 +88,36 @@
         <cve>CVE-2026-22740</cve>
         <cve>CVE-2026-22741</cve>
         <cve>CVE-2026-22745</cve>
+        <cve>CVE-2026-41838</cve>
+        <cve>CVE-2026-41839</cve>
+        <cve>CVE-2026-41840</cve>
+        <cve>CVE-2026-41841</cve>
+        <cve>CVE-2026-41842</cve>
+        <cve>CVE-2026-41843</cve>
+        <cve>CVE-2026-41844</cve>
+        <cve>CVE-2026-41845</cve>
+        <cve>CVE-2026-41846</cve>
+        <cve>CVE-2026-41847</cve>
+        <cve>CVE-2026-41848</cve>
+        <cve>CVE-2026-41849</cve>
+        <cve>CVE-2026-41850</cve>
+        <cve>CVE-2026-41851</cve>
+        <cve>CVE-2026-41852</cve>
+        <cve>CVE-2026-41853</cve>
+        <cve>CVE-2026-41855</cve>
+        <cve>CVE-2026-47884</cve>
+        <cve>CVE-2026-47886</cve>
+        <cve>CVE-2026-47887</cve>
+        <cve>CVE-2026-47888</cve>
+        <cve>CVE-2026-47891</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59281</cve>
+        <cve>CVE-2026-59282</cve>
+        <cve>CVE-2026-59283</cve>
+        <cve>CVE-2026-59313</cve>
+        <cve>CVE-2026-59314</cve>
     </suppress>
 
     <!-- spring-security 5.8.x (EE8 provided): not exported transitively; not the EE10 runtime.
@@ -103,6 +133,14 @@
         <gav regex="true">^org\.springframework\.security:spring-security-.*:5\.8\..*$</gav>
         <cve>CVE-2026-22746</cve>
         <cve>CVE-2026-22748</cve>
+        <cve>CVE-2026-40988</cve>
+        <cve>CVE-2026-41003</cve>
+        <cve>CVE-2026-41694</cve>
+        <cve>CVE-2026-41706</cve>
+        <cve>CVE-2026-47838</cve>
+        <cve>CVE-2026-47842</cve>
+        <cve>CVE-2026-59270</cve>
+        <cve>CVE-2026-59276</cve>
     </suppress>
 
     <!-- jQuery bundled inside wicket-core 8.x (EE8 provided). The bundled JS is attributed to the
@@ -122,5 +160,60 @@
         <cve>CVE-2020-11022</cve>
         <cve>CVE-2020-11023</cve>
         <vulnerabilityName regex="true">^jquery issue:.*$</vulnerabilityName>
+    </suppress>
+
+    <!-- ============================================================================
+         EE10 server and client stack: findings for features Superfly does not use.
+
+         Spring Framework 6.2.19 and Spring Security 6.5.11 are the latest releases of these lines
+         on Maven Central; the fixed 6.2.20 / 6.5.12 are not published there. Each CVE below needs
+         a feature that is neither on the server classpath nor used by any module: WebFlux, RSocket,
+         WebSocket, XsltView, Server-Sent Events and functional routes, UrlHandlerFilter,
+         UrlFileNameViewController, JSP form tags, FreeMarker, Content-Disposition built from
+         input, SpEL evaluated from request data (SpEL is used only in configuration), implicit
+         data binding of request parameters (every controller parameter is @RequestBody,
+         @PathVariable or @RequestHeader), embedded LDAP, DPoP, WebAuthn, AesBytesEncryptor, CSRF,
+         HTTP Basic and remember-me (both chains disable CSRF and HTTP Basic; secrets are compared
+         by Superfly's own providers).
+         PINNED to the exact versions, so any upgrade shows the findings again. Revisit when one of
+         the listed features is introduced.
+         ============================================================================ -->
+    <suppress>
+        <notes><![CDATA[
+        Spring Framework 6.2.19 (EE10): the affected features are not used by Superfly; the fixed
+        release is not published on Maven Central. Pinned to 6.2.19.
+        ]]></notes>
+        <gav regex="true">^org\.springframework:spring-.*:6\.2\.19$</gav>
+        <cve>CVE-2026-47883</cve>
+        <cve>CVE-2026-47884</cve>
+        <cve>CVE-2026-47885</cve>
+        <cve>CVE-2026-47886</cve>
+        <cve>CVE-2026-47887</cve>
+        <cve>CVE-2026-47888</cve>
+        <cve>CVE-2026-47889</cve>
+        <cve>CVE-2026-47890</cve>
+        <cve>CVE-2026-47891</cve>
+        <cve>CVE-2026-47892</cve>
+        <cve>CVE-2026-47893</cve>
+        <cve>CVE-2026-59280</cve>
+        <cve>CVE-2026-59281</cve>
+        <cve>CVE-2026-59282</cve>
+        <cve>CVE-2026-59283</cve>
+        <cve>CVE-2026-59313</cve>
+        <cve>CVE-2026-59314</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+        Spring Security 6.5.11 (EE10): embedded LDAP, DPoP, WebAuthn, AesBytesEncryptor and the
+        CSRF/Basic/remember-me components are not used by Superfly; the fixed release is not
+        published on Maven Central. Pinned to 6.5.11.
+        ]]></notes>
+        <gav regex="true">^org\.springframework\.security:spring-security-.*:6\.5\.11$</gav>
+        <cve>CVE-2026-41707</cve>
+        <cve>CVE-2026-47841</cve>
+        <cve>CVE-2026-47842</cve>
+        <cve>CVE-2026-59270</cve>
+        <cve>CVE-2026-59276</cve>
     </suppress>
 </suppressions>

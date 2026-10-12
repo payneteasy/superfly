@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.spring.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.common.SuperflyProperties;
 import com.payneteasy.superfly.service.LocalSecurityService;
 import com.payneteasy.superfly.service.LoggerSink;
@@ -39,7 +40,7 @@ public class SecurityAuditWiringTest {
         loggerSink = createMock(LoggerSink.class);
         UserDetailsService userDetailsService = createMock(UserDetailsService.class);
         expect(userDetailsService.loadUserByUsername("billing"))
-                .andStubReturn(new User("billing", "valid-token", List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM"))));
+                .andStubReturn(new User("billing", SubsystemTokenHasher.hash("valid-token"), List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM"))));
         replay(userDetailsService);
 
         context = new AnnotationConfigApplicationContext();

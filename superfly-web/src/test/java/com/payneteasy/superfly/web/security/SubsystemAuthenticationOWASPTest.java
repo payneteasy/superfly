@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.security;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -253,7 +254,7 @@ public class SubsystemAuthenticationOWASPTest {
     // ── helpers ───────────────────────────────────────────────────────────────
 
     private static UserDetails user(String username, String password) {
-        return new User(username, password != null ? password : "",
+        return new User(username, password != null ? SubsystemTokenHasher.hash(password) : "",
                 password != null,
                 true, true, true,
                 List.of(new SimpleGrantedAuthority("ROLE_SUBSYSTEM")));

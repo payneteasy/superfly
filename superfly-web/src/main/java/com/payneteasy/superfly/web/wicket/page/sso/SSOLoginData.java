@@ -11,11 +11,17 @@ public class SSOLoginData implements Serializable {
     private String subsystemTitle;
     private String subsystemUrl;
     private String username;
+    // one-time value from the subsystem, returned to it together with the subsystem token
+    private String state;
 
     private String otpTypeCode;
     private boolean isOtpOptional;
     // set only after the password step for a user who must enrol Google Auth for the first time
     private boolean googleAuthSetupRequired;
+    // set by the password step when it accepts a temporary password: the login ends with a password change
+    private boolean passwordChangeRequired;
+    // set when such a login has passed the second factor (or needs none): the password may be changed now
+    private boolean passwordChangeAllowed;
 
     public SSOLoginData() {
     }
@@ -65,6 +71,14 @@ public class SSOLoginData implements Serializable {
         this.username = username;
     }
 
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public String getOtpTypeCode() {
         return otpTypeCode;
     }
@@ -87,6 +101,22 @@ public class SSOLoginData implements Serializable {
 
     public void setGoogleAuthSetupRequired(boolean googleAuthSetupRequired) {
         this.googleAuthSetupRequired = googleAuthSetupRequired;
+    }
+
+    public boolean isPasswordChangeRequired() {
+        return passwordChangeRequired;
+    }
+
+    public void setPasswordChangeRequired(boolean passwordChangeRequired) {
+        this.passwordChangeRequired = passwordChangeRequired;
+    }
+
+    public boolean isPasswordChangeAllowed() {
+        return passwordChangeAllowed;
+    }
+
+    public void setPasswordChangeAllowed(boolean passwordChangeAllowed) {
+        this.passwordChangeAllowed = passwordChangeAllowed;
     }
 
     @Override

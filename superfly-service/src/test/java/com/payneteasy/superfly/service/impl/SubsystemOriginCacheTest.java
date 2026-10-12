@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.payneteasy.superfly.dao.SubsystemDao;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.ui.subsystem.UISubsystemView;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystemForList;
 
 public class SubsystemOriginCacheTest {
@@ -75,7 +76,7 @@ public class SubsystemOriginCacheTest {
     private void expectLoad(String landing, String subsystemUrl, String css) {
         UISubsystemForList item = new UISubsystemForList();
         item.setId(7L);
-        UISubsystem subsystem = new UISubsystem();
+        UISubsystemView subsystem = new UISubsystemView();
         subsystem.setLandingUrl(landing);
         subsystem.setSubsystemUrl(subsystemUrl);
         subsystem.setLoginFormCssUrl(css);

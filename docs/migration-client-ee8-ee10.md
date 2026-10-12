@@ -36,11 +36,11 @@
 
 Порядок обновления сервера:
 
-1. **БД.** При обновлении с 1.7-36/37/38 запустите миграции начиная с R1.7.4 — она идемпотентна и добавляет `events.subsystem_id`, индекс и внешний ключ:
+1. **БД.** При обновлении с 1.7-36/37/38 запустите миграции начиная с R2.0.0 (она идемпотентна; `events.subsystem_id` из R1.7.4 в этих релизах уже есть):
 
    ```bash
    cd superfly-sql/mi
-   version_from=R1.7.4 bash all_mi.sh
+   version_from=R2.0.0 bash all_mi.sh
    ```
 
    Скрипты подключаются переменными `SSO_DB_*` (см. [Установка и запуск](getting-started.md#обновление-существующей-базы)). Миграции теперь прерываются на первой ошибке — не игнорируйте ненулевой код возврата. Хранимые процедуры переустанавливаются отдельно (`superfly-sql/src/all-proc.sh`); после смены курсора `getEvents` это обязательно — сигнатура `ui_get_events` теперь `(i_last_event_id bigint, i_limit int, i_subsystem_name varchar(32))`.
@@ -314,7 +314,7 @@ Spring Security 5.8.x, Wicket 8 + встроенный старый jQuery) на
 <dependency>
     <groupId>org.apache.wicket</groupId>
     <artifactId>wicket</artifactId>
-    <version>8.18.0</version>
+    <version>8.19.0</version>
     <type>pom</type>
 </dependency>
 ```

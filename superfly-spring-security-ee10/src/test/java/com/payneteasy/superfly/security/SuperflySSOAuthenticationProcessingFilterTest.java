@@ -1,11 +1,13 @@
 package com.payneteasy.superfly.security;
 
+import com.payneteasy.superfly.api.client.SSOLoginState;
 import com.payneteasy.superfly.security.authentication.CompoundAuthentication;
 import com.payneteasy.superfly.security.authentication.SSOAuthenticationRequest;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordAuthRequestInfoAuthenticationToken;
 import com.payneteasy.superfly.security.authentication.UsernamePasswordCheckedToken;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import jakarta.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -81,6 +83,13 @@ public class SuperflySSOAuthenticationProcessingFilterTest extends
         expect(request.getPathInfo()).andReturn("/j_superfly_sso_security_check").anyTimes();
         expect(request.getParameter("subsystemToken")).andReturn("abcdef").anyTimes();
         expect(request.getParameter("targetUrl")).andReturn("/my-target").anyTimes();
+        // the login state is in the session; the session id strategy is not exercised here
+        HttpSession stateSession = createNiceMock(HttpSession.class);
+        expect(stateSession.getAttribute(SSOLoginState.SESSION_ATTRIBUTE)).andReturn("state-1234567890abcdef").anyTimes();
+        replay(stateSession);
+        expect(request.getParameter("state")).andReturn("state-1234567890abcdef").anyTimes();
+        expect(request.getSession(false)).andReturn(stateSession).anyTimes();
+        expect(request.isRequestedSessionIdValid()).andReturn(false).anyTimes();
         expect(request.getSession(anyBoolean())).andReturn(null).anyTimes();
         expect(request.getSession()).andReturn(session).anyTimes();
         expect(request.getRemoteAddr()).andReturn("192.168.0.4").anyTimes();

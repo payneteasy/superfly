@@ -19,14 +19,13 @@ insert into actions
 
 insert into users
       (
-         comp_comp_id, user_name, user_password,salt, is_account_locked, logins_failed, last_login_date, email,name,surname,secret_question,secret_answer,hotp_salt,create_date
+         comp_comp_id, user_name, user_password,salt, is_account_locked, logins_failed, last_login_date, email,name,surname,secret_question,secret_answer,hotp_salt,create_date,is_password_temp
 
       ) values
-    (null, 'admin', '0d7d1771e08bc48f6fe90b14a89c505d344a0f6f1a54de3b10a93466cb235f96','3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f', 'N', 0, null,'pci@example.org','name','surname','','','',now())
+    (null, 'admin', '0d7d1771e08bc48f6fe90b14a89c505d344a0f6f1a54de3b10a93466cb235f96','3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f', 'N', 0, null,'pci@example.org','name','surname','','','',now(),'Y')
 
-  on duplicate key update user_password='0d7d1771e08bc48f6fe90b14a89c505d344a0f6f1a54de3b10a93466cb235f96',
-                              salt='3caffd7f8d4519cdd110ce3089431e7214635f4ff3f9235a94e3227e9b831e0f',
-                          email='pci@example.org',name='name',surname='surname',
+  -- the password is set by the insert only: a re-run must not reset it to the default one
+  on duplicate key update email='pci@example.org',name='name',surname='surname',
                           secret_question='',secret_answer=''
 
 ;

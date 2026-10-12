@@ -28,8 +28,14 @@ public class ChangePasswordPage extends BasePage {
     @SpringBean
     protected CsrfValidator csrfValidator;
 
+    /** Issued when the form is first rendered; dropped when the session rejects it, so the next render issues a new one. */
+    private String csrfToken;
+
     public ChangePasswordPage(PageParameters params) {
         super(ListUsersPage.class, params);
+
+        // the change-password panel shows the page messages itself, a second panel would show them twice
+        getFeedbackPanel().setVisible(false);
 
         add(new ChangePasswordPanel("change-password-panel") {
             @Override
@@ -62,8 +68,22 @@ public class ChangePasswordPage extends BasePage {
     }
 
     protected Component createCsrfHiddenInput(String markupId) {
-        String token = csrfValidator.persistTokenIntoSession(getHttpSession());
-        return new HiddenField<>(markupId, Model.of(token)).add(new AttributeModifier("name", "_csrf"));
+        return new HiddenField<String>(markupId, new Model<String>()) {
+            @Override
+            protected void onBeforeRender() {
+                // a form component shows the value it was submitted with, which may be the rejected token
+                clearInput();
+                setModelObject(currentCsrfToken());
+                super.onBeforeRender();
+            }
+        }.add(new AttributeModifier("name", "_csrf"));
+    }
+
+    private String currentCsrfToken() {
+        if (csrfToken == null) {
+            csrfToken = csrfValidator.persistTokenIntoSession(getHttpSession());
+        }
+        return csrfToken;
     }
 
     protected boolean validateCsrfToken() {
@@ -71,6 +91,7 @@ public class ChangePasswordPage extends BasePage {
             csrfValidator.validateToken(getHttpServletRequest());
             return true;
         } catch (Exception e) {
+            csrfToken = null;
             if (e instanceof CsrfLoginTokenException) {
                 error(((CsrfLoginTokenException)e).getPublicMsg());
             } else {

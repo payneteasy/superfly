@@ -1,9 +1,10 @@
 package com.payneteasy.superfly.service.impl.remote.check;
 
+import com.payneteasy.superfly.utils.SubsystemTokenHasher;
 import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.SSOUser;
-import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
+import com.payneteasy.superfly.model.SubsystemAuth;
 import com.payneteasy.superfly.service.InternalSSOService;
 import com.payneteasy.superfly.service.RemoteAuthCryptoService;
 import com.payneteasy.superfly.service.RemoteAuthService.RemoteAuthException;
@@ -38,8 +39,9 @@ public class RemoteAuthServiceImplTest {
         internalSSOService = niceMock(InternalSSOService.class);
         cryptoService = niceMock(RemoteAuthCryptoService.class);
 
-        expect(subsystemService.getSubsystemByName(BILLING)).andStubReturn(subsystem(BILLING));
-        expect(subsystemService.getSubsystemByName(CRM)).andStubReturn(subsystem(CRM));
+        expect(subsystemService.getSubsystemAuth(BILLING)).andStubReturn(subsystem(BILLING));
+        expect(subsystemService.getSubsystemAuth(CRM)).andStubReturn(subsystem(CRM));
+        expect(subsystemService.getSubsystemPrivateKey(anyString())).andStubReturn("private-key");
         expect(cryptoService.decryptPassword(anyString(), anyString(), anyObject())).andStubReturn("password");
         expect(cryptoService.decryptOtp(eq("good-otp-enc"), anyString(), anyObject())).andStubReturn("123456");
         expect(cryptoService.decryptOtp(eq("bad-otp-enc"), anyString(), anyObject())).andStubReturn("000000");
@@ -194,6 +196,54 @@ public class RemoteAuthServiceImplTest {
                 .getSessionToken();
     }
 
+    @Test
+    public void configuredKeyMakesOtpRequiredForStoredTypeNone() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
+                .andStubReturn(noOtpUser());
+        expect(internal.hasOtpMasterKey(USER)).andStubReturn(true);
+        expect(internal.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "123456")).andStubReturn(CheckOtpResult.Status.SUCCESS);
+        expect(internal.authenticateByOtpType(OTPType.GOOGLE_AUTH, USER, "000000")).andStubReturn(CheckOtpResult.Status.INVALID);
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertTrue(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+        String token = checkPassword(BILLING);
+        assertEquals("BAD_USER_OR_PASSWORD_OR_OTP", checkOtp(BILLING, token, "bad-otp-enc"));
+        assertEquals("SUCCESS", checkOtp(BILLING, token, "good-otp-enc"));
+    }
+
+    @Test
+    public void configuredKeyMakesOptionalOtpRequired() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        SSOUser user = otpUser();
+        user.setOtpOptional(true);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString())).andStubReturn(user);
+        expect(internal.hasOtpMasterKey(USER)).andStubReturn(true);
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertTrue(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+    }
+
+    @Test
+    public void storedTypeNoneWithoutKeyDoesNotRequireOtp() throws Exception {
+        InternalSSOService internal = niceMock(InternalSSOService.class);
+        expect(internal.authenticate(eq(USER), eq("password"), anyString(), anyString(), anyString()))
+                .andStubReturn(noOtpUser());
+        replay(internal);
+        service = new RemoteAuthServiceImpl(subsystemService, internal, cryptoService);
+
+        assertFalse(service.checkPassword(BILLING, USER, "password-enc", token(BILLING), "127.0.0.1", "test").isOtpRequired());
+    }
+
+    private static SSOUser noOtpUser() {
+        SSOUser user = new SSOUser(USER, Map.of(), Map.of());
+        user.setOtpType(OTPType.NONE);
+        user.setOtpOptional(false);
+        return user;
+    }
+
     private String checkOtp(String subsystemName, String sessionToken, String otpEncrypted) throws RemoteAuthException {
         return service.checkOtp(subsystemName, USER, otpEncrypted, sessionToken, token(subsystemName));
     }
@@ -211,11 +261,10 @@ public class RemoteAuthServiceImplTest {
         return subsystemName + "-bearer";
     }
 
-    private static UISubsystem subsystem(String name) {
-        UISubsystem subsystem = new UISubsystem();
+    private static SubsystemAuth subsystem(String name) {
+        SubsystemAuth subsystem = new SubsystemAuth();
         subsystem.setName(name);
-        subsystem.setSubsystemToken(token(name));
-        subsystem.setPrivateKey("private-key");
+        subsystem.setSubsystemToken(SubsystemTokenHasher.hash(token(name)));
         subsystem.setEncryptionAlgorithm(RemoteAuthEncryptionAlgorithm.RSA.name());
         return subsystem;
     }

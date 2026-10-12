@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -21,21 +20,20 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The pending OTP master key (R1.7.8) and its procedures: the pending key never touches master_key until it is
+ * The pending OTP master key (R2.0.0) and its procedures: the pending key never touches master_key until it is
  * confirmed, and the confirmation is a compare-and-set that loses to a concurrent reset. Plain JDBC against a
  * database prepared by create_test_database.sh; the URL can be overridden with -Dsso.db.url=jdbc:mysql://host:port/db.
  */
 public class OtpPendingMasterKeyProcedureTest {
 
     private static final String USER = "otp-pending-user";
-    private static final Path MIGRATION = Paths.get("..", "superfly-sql", "mi", "R1.7.8", "R1.7.8_SSO.sql");
+    private static final Path MIGRATION = Paths.get("..", "superfly-sql", "mi", "R2.0.0", "R2.0.0_SSO.sql");
 
     private Connection conn;
 
     @Before
     public void setUp() throws Exception {
-        conn = DriverManager.getConnection(
-                System.getProperty("sso.db.url", "jdbc:mysql://localhost/ssotest"), "sso", "123sso123");
+        conn = TestDatabase.connect();
         cleanup();
         long roleId = queryLong("select min(role_id) from roles");
         try (CallableStatement cs = conn.prepareCall("{call ui_create_user(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}")) {

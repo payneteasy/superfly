@@ -5,8 +5,8 @@ import org.junit.Assert;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
@@ -28,55 +28,32 @@ public abstract class AbstractDaoTest extends AbstractJUnit4SpringContextTests {
     }
 
     private static void createDb() throws IOException, InterruptedException {
-        Process proc = Runtime.getRuntime().exec(new String[]{"src/test/sh/create_test_database.sh"}, new String[]{});
-        Thread stdout = new LoggerThread(proc.getInputStream(), new PrintingLoggerSink("STD: "));
-        Thread stderr = new LoggerThread(proc.getErrorStream(), new PrintingLoggerSink("ERR: "));
-        stdout.start();
-        stderr.start();
-        stdout.join();
-        stderr.join();
+        if (Boolean.getBoolean("sso.db.skipCreate")) {
+            return;
+        }
+        // surefire sets basedir to the module directory; the script paths are relative to it
+        File moduleDir = new File(System.getProperty("basedir", ".")).getAbsoluteFile();
+        ProcessBuilder builder = new ProcessBuilder("src/test/sh/create_test_database.sh");
+        builder.directory(moduleDir);
+        builder.redirectErrorStream(true);
+        Process proc = builder.start();
+        StringBuilder output = new StringBuilder();
+        try (Scanner scanner = new Scanner(proc.getInputStream(), StandardCharsets.UTF_8)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                System.out.println("DB: " + line);
+                output.append(line).append('\n');
+            }
+        }
         int returnCode = proc.waitFor();
         if (returnCode != 0) {
-            throw new IllegalStateException("Return code from create_test_database.sh is not 0 but " + returnCode);
+            throw new IllegalStateException("Return code from create_test_database.sh is not 0 but " + returnCode
+                    + ":\n" + output);
         }
     }
 
     protected void assertRoutineResult(RoutineResult result) {
         Assert.assertNotNull("Routine result cannot be null", result);
         Assert.assertTrue("Routine result must be OK", result.isOk());
-    }
-
-    private static class LoggerThread extends Thread {
-        private final Scanner scanner;
-        private final LoggerSink loggerSink;
-
-        public LoggerThread(InputStream is, LoggerSink loggerSink) {
-            this.scanner = new Scanner(is, StandardCharsets.UTF_8);
-            this.loggerSink = loggerSink;
-        }
-
-        public void run() {
-            String line;
-            while (scanner.hasNextLine()) {
-                line = scanner.nextLine();
-                loggerSink.log(line);
-            }
-        }
-    }
-
-    private static interface LoggerSink {
-        void log(String line);
-    }
-
-    private static class PrintingLoggerSink implements LoggerSink {
-        private final String prefix;
-
-        public PrintingLoggerSink(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public void log(String line) {
-            System.out.println(prefix + line);
-        }
     }
 }

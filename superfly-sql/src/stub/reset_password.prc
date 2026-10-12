@@ -35,19 +35,24 @@ main_sql:
              u.logins_failed = null,
              u.hotp_logins_failed = 0
        where u.user_id = i_user_id;
-    end if;
 
-    open cur;
-    read_loop: loop
-        fetch cur into v_subsys_id;
-        if done then leave read_loop; end if;
-        call int_create_event('PASSWORD_RESET', v_user_name, v_subsys_id);
-        set v_count = v_count + 1;
-    end loop;
-    close cur;
+      -- a reset ends the sessions of the user, as a lock does; expiry (above) keeps them: the daily
+      -- task must not log everybody out, and the next login asks for a new password anyway
+      call int_end_user_sessions(i_user_id);
 
-    if v_count = 0 then
-        call int_create_event('PASSWORD_RESET', v_user_name, null);
+      -- a subsystem may end the sessions of the user on this event, so only a reset sends it
+      open cur;
+      read_loop: loop
+          fetch cur into v_subsys_id;
+          if done then leave read_loop; end if;
+          call int_create_event('PASSWORD_RESET', v_user_name, v_subsys_id);
+          set v_count = v_count + 1;
+      end loop;
+      close cur;
+
+      if v_count = 0 then
+          call int_create_event('PASSWORD_RESET', v_user_name, null);
+      end if;
     end if;
 
     select 'OK' status, null error_message;

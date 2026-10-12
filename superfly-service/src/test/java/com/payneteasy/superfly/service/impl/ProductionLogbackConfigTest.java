@@ -23,6 +23,21 @@ public class ProductionLogbackConfigTest {
 
     @Test
     public void lineBreaksInMessageDoNotSplitTheRecord() throws Exception {
+        String output = logThroughProductionPattern("bob\r\n2026-01-01 INFO forged\tx");
+        String[] lines = output.split("\\R");
+        assertEquals(output, 1, lines.length);
+        assertTrue(lines[0], lines[0].endsWith("Login failed. No session for user <bob_2026-01-01 INFO forged_x>"));
+    }
+
+    @Test
+    public void otherControlCharactersAndLineSeparatorsAreReplaced() throws Exception {
+        String output = logThroughProductionPattern("bob\u001b[2K\u0000\u0085x\u2028y\u2029z");
+        String[] lines = output.split("\\R");
+        assertEquals(output, 1, lines.length);
+        assertTrue(lines[0], lines[0].endsWith("Login failed. No session for user <bob_[2K_x_y_z>"));
+    }
+
+    private static String logThroughProductionPattern(String username) throws Exception {
         LoggerContext context = new LoggerContext();
         context.setMDCAdapter(new LogbackMDCAdapter());
         JoranConfigurator configurator = new JoranConfigurator();
@@ -41,12 +56,9 @@ public class ProductionLogbackConfigTest {
         root.detachAppender(console);
         root.addAppender(capture);
 
-        context.getLogger("test").warn("Login failed. No session for user <{}>", "bob\r\n2026-01-01 INFO forged\tx");
+        context.getLogger("test").warn("Login failed. No session for user <{}>", username);
 
-        String output = out.toString(StandardCharsets.UTF_8);
-        String[] lines = output.split("\\R");
-        assertEquals(output, 1, lines.length);
-        assertTrue(lines[0], lines[0].endsWith("Login failed. No session for user <bob_2026-01-01 INFO forged_x>"));
         context.stop();
+        return out.toString(StandardCharsets.UTF_8);
     }
 }

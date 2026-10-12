@@ -42,14 +42,16 @@
                         servers</a></li>
                 </ul>
 
-                <form class="form-inline my-2 my-lg-0">
+                <div class="form-inline my-2 my-lg-0">
                 <!--USER INFO  -->
                 <div wicket:id="user-container">
                     <span wicket:id="user-name" class="text-white">Admin</span>
                     <span class="text-muted px-1">|</span>
-                    <a class="btn btn-sm btn-danger" href="j_spring_security_logout"><i class="icon-off"></i> Logout</a>
+                    <form class="d-inline" method="post" action="j_spring_security_logout">
+                        <button type="submit" class="btn btn-sm btn-danger"><i class="icon-off"></i> Logout</button>
+                    </form>
                 </div>
-                </form>
+                </div>
             </div>
         </div>
     </nav>

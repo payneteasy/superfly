@@ -3,7 +3,9 @@ delimiter $$
 create procedure ui_delete_user(i_user_id int(10))
  main_sql:
   begin
-	call ui_lock_user(i_user_id);
+	declare v_locked_now tinyint;
+	call int_lock_user(i_user_id, v_locked_now);
+	select 'OK' status, null error_message;
   end
 $$
 delimiter ;
