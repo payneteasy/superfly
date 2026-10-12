@@ -58,3 +58,8 @@ delete uh
 
 -- SMTP server passwords are stored as CryptoService ciphertext ("v2:" + base64), which does not fit varchar(64)
 call run_install_command('alter table smtp_servers modify column password varchar(255)', '42S21');
+
+-- account lock flag: NULL becomes 'N'
+-- ui_clone_user did not set the flag, so the users cloned before have no value; a new user is created with 'N'
+update users set is_account_locked = 'N' where is_account_locked is null;
+commit;
