@@ -199,6 +199,8 @@ public class AuditEventsTest {
 
     @Test
     public void autoLockIsAudited() {
+        // the DAO is mocked here; that login_locked really answers this to the call that locked the account
+        // is checked on the database by UserLockProceduresTest in superfly-integration-test
         EasyMock.expect(userDao.lockoutConditionnally("bob", 5L, "PASSWORD"))
                 .andReturn(new RoutineResult("OK", "ACCOUNT_LOCKED"));
         EasyMock.replay(userDao);

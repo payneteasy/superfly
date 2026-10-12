@@ -20,7 +20,7 @@ main_sql:
      into v_user_id, v_is_account_locked, v_logins_failed from users u where u.user_name = i_user_name;
       if v_user_id is not null and coalesce(v_is_account_locked, 'N') <> 'Y' and coalesce(v_logins_failed,0) >= i_max_logins_failed
             then
-            call ui_lock_user(v_user_id);
+            call int_lock_user(v_user_id);
             set v_locked_now = 'ACCOUNT_LOCKED'; -- lets the service audit the automatic lock
       end if;
     select 'OK' status, v_locked_now error_message;
