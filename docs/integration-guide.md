@@ -15,6 +15,11 @@
 | Wicket 8 (javax) | `superfly-wicket-ee8` |
 | Без Spring Security | `superfly-client-ee10` или `superfly-client-ee8` |
 
+> **Клиенты 1.x с сервером 2.0 не работают.** Сервер принимает от подсистем только JSON API
+> (`/remoting/sso.service/<метод>`), прежний транспорт клиентов 1.x (Spring HttpInvoker) удалён. Клиент каждой подсистемы
+> обновляют до 2.0 в одном окне с сервером — см. «Совместимость клиентов» в
+> [заметках к релизу 2.0](releasing.md#заметки-к-релизу-20).
+
 ## Быстрый старт (Jakarta EE 10 + Spring Security)
 
 ### 1. Добавить зависимость
@@ -59,6 +64,22 @@
 HMAC-SHA256 с ключом `sha256:` + hex(SHA-256(токен)) от каноничной строки: все параметры с префиксом `superfly`, кроме
 подписи, по имени, `name=value` (значения через `,`), строки через `\n`. Формат совпадает с hotfix 1.7, отличается только ключ.
 
+**Ответ подсистемы на уведомление.** Сервер считает уведомление доставленным только при ответе `2xx` (INFO
+`Successfully notified <URL> ... (status N)`). Любой другой ответ, в том числе `302` (редиректы сервер не выполняет), —
+отказ: WARN `Notification <TYPE> to <URL> failed: the subsystem answered with status <N>` (`<TYPE>` — `LOGOUT` или
+`USERS_CHANGED`, `<URL>` — callback-URL без user info, query и fragment; для `403` в конец добавляется
+`(check notificationSecret of the subsystem client)`) и одна строка ERROR `Error while trying to send a
+LogoutNotification, no more retries, dropping: ...` (для `USERS_CHANGED` — `UsersChangedNotification`) без стектрейса.
+Повторов нет: после первой попытки уведомление отбрасывается.
+
+- `403` — подпись отвергнута. Проверьте, что `notificationSecret` клиента равен токену подсистемы. Причину клиент пишет в
+  свой лог: WARN `Rejected Superfly notification from <адрес>: <причина>` (`MISSING_SIGNATURE`, `BAD_TIMESTAMP`,
+  `EXPIRED_TIMESTAMP` — часы сервера и подсистемы расходятся больше чем на 5 минут, `BAD_SIGNATURE`; если токен не задан —
+  `the subsystem token to verify it is not configured`).
+- `302` — callback-URL (`callback_information` подсистемы) не обслуживается фильтром уведомлений клиента: запрос дошёл до
+  приложения и ушёл в редирект на страницу входа. Проверьте маппинг фильтра (`SuperflyLogoutFilter` /
+  `LogoutNotificationSinkFilter`) и IP allow-list, если он задан.
+
 **Блокировка и приостановка завершают сессии.** Когда пользователя блокируют (в том числе автоматически по лимиту
 неудачных попыток) или приостанавливают, Superfly завершает все его сессии, как при SSO-logout: SSO-сессии удаляются,
 его сессии в подсистемах (в том числе открытые через `authenticate` без SSO) истекают, и в течение минуты подсистема с
@@ -93,12 +114,14 @@ HMAC-SHA256 с ключом `sha256:` + hex(SHA-256(токен)) от канон
   `ExternalFormSecurityFilter` делает это сам. Spring Security-приложения должны использовать entry point
   `com.payneteasy.superfly.security.SuperflySSOLoginUrlAuthenticationEntryPoint` (ee8/ee10) с тем же URL входа вместо
   `LoginUrlAuthenticationEntryPoint`: со стандартным entry point `state` не создаётся и каждый SSO-вход отклоняется.
-  Сервер принимает `state` формата `[A-Za-z0-9_-]{16,128}`; клиенты без `state` (1.7) работают как раньше.
+  Сервер принимает `state` формата `[A-Za-z0-9_-]{16,128}`; запрос входа без `state` (как и с `state` другого формата — он
+  отбрасывается) сервер обслуживает как раньше и `state` не возвращает. `state` передаёт и проверяет клиент 2.0; клиенты 1.x
+  с сервером 2.0 не работают совсем (см. [заметки к релизу 2.0](releasing.md#заметки-к-релизу-20)).
   `targetUrl=no-target` редиректит на landing URL без токена и без `state` — для входа клиентом 2.0 не годится.
   Ожидающий `state` в сессии один: вход, начатый в другой вкладке, отменяет предыдущий (тот повторит редирект на вход).
 - После успешного входа (processing-фильтры клиента и обмен токена в `ExternalFormSecurityFilter`) session id меняется,
-  атрибуты сессии сохраняются. Сервер Superfly тоже меняет session id после проверки пароля, после смены пароля
-  и перед выдачей токена.
+  атрибуты сессии сохраняются. Сервер Superfly тоже меняет session id после проверки пароля (в том числе временного),
+  после смены пароля и перед выдачей токена.
 - `targetUrl` после обмена токена принимается только как локальный путь приложения (`/...`); иначе — редирект на корень контекста.
 - Исключённые пути (`ExcludedPaths`) сравниваются по целым сегментам нормализованного пути: `/static` покрывает `/static`
   и `/static/x`, но не `/staticX`; пути с `..` выше корня или закодированным `/` не исключаются.
