@@ -104,7 +104,7 @@ public class SSOLoginHOTPPage extends BaseSSOPage {
     }
 
     private void onHOTPChecked(SSOLoginData loginData) {
-        SSOUtils.onSuccessfulLogin(loginData.getUsername(),
+        SSOUtils.onSecondFactorPassed(loginData.getUsername(),
                 this, loginData, sessionService, subsystemService);
     }
 

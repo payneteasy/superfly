@@ -230,6 +230,11 @@ public class SSOLoginPasswordPageTest extends AbstractPageTest {
         expectLastCall().anyTimes();
         expect(userService.checkUserCanLoginWithThisPassword("known-user", "expired-password", "test-subsystem"))
                 .andReturn(UserLoginStatus.TEMP_PASSWORD);
+        // a user without OTP changes the temporary password right away
+        UserForDescription userForDescription = EasyMock.createNiceMock(UserForDescription.class);
+        expect(userForDescription.getOtpType()).andReturn(OTPType.NONE).anyTimes();
+        replay(userForDescription);
+        expect(userService.getUserForDescription("known-user")).andReturn(userForDescription).anyTimes();
         replay(userService, csrfValidator);
 
         tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));

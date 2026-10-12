@@ -80,7 +80,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
         switch (loginStatus) {
             case SUCCESS:
                 renewSessionId(this);
-                onPasswordChecked(loginBean, loginData);
+                onPasswordChecked(loginBean, loginData, false);
                 break;
             case FAILED:
                 // Clear SSO session and cookie after failed authentication
@@ -91,18 +91,21 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 break;
             case TEMP_PASSWORD:
                 renewSessionId(this);
-                getRequestCycle().setResponsePage(new SSOChangePasswordPage(loginBean.getUsername()));
+                // the second factor is asked as for a regular password, the password is changed after it
+                onPasswordChecked(loginBean, loginData, true);
                 break;
         }
     }
 
-    private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData) {
+    private void onPasswordChecked(LoginBean loginBean, SSOLoginData loginData, boolean temporaryPassword) {
         loginData.setUsername(loginBean.getUsername());
         UserForDescription userDescription = userService.getUserForDescription(loginData.getUsername());
         
         loginData.setOtpTypeCode(userDescription.getOtpTypeCode());
         loginData.setOtpOptional(userDescription.isOtpOptional());
         loginData.setGoogleAuthSetupRequired(false);
+        loginData.setPasswordChangeRequired(temporaryPassword);
+        loginData.setPasswordChangeAllowed(false);
 
         OTPType otpType = userDescription.getOtpType();
         switch (otpType) {
@@ -112,7 +115,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 if (hasKey) {
                     getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
                 } else if (userDescription.isOtpOptional()) {
-                    SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                    SSOUtils.onSecondFactorPassed(loginBean.getUsername(),
                             this, loginData, sessionService, subsystemService);
                 } else {
                     loginData.setGoogleAuthSetupRequired(true);
@@ -121,7 +124,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 break;
             case NONE:
             default:
-                SSOUtils.onSuccessfulLogin(loginBean.getUsername(),
+                SSOUtils.onSecondFactorPassed(loginBean.getUsername(),
                         this, loginData, sessionService, subsystemService);
         }
 

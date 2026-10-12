@@ -34,7 +34,12 @@ public class SSOFormCsrfTokenTest extends AbstractPageTest {
         settingsService = createNiceMock(SettingsService.class);
         expect(settingsService.getPolicy()).andStubReturn(Policy.NONE);
         replay(userService, settingsService);
-        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        // the change page belongs to a login that has accepted the temporary password and passed the second factor
+        SSOLoginData loginData = new SSOLoginData("test-subsystem", "/target");
+        loginData.setUsername("user");
+        loginData.setPasswordChangeRequired(true);
+        loginData.setPasswordChangeAllowed(true);
+        tester.getSession().setSsoLoginData(loginData);
     }
 
     @Override

@@ -111,6 +111,23 @@ public class SSOUtils {
         return ssoSessionId;
     }
 
+    /**
+     * Continues a login that has passed the second factor or needs none. A temporary password accepted by
+     * the password step is changed now, as in the admin console; the token is issued after the change.
+     */
+    public static void onSecondFactorPassed(String username,
+            SessionAccessorPage page,
+            SSOLoginData loginData, SessionService sessionService,
+            SubsystemService subsystemService) {
+        if (loginData.isPasswordChangeRequired()) {
+            BaseSSOPage.renewSessionId(page);
+            loginData.setPasswordChangeAllowed(true);
+            page.getRequestCycle().setResponsePage(new SSOChangePasswordPage(username));
+        } else {
+            onSuccessfulLogin(username, page, loginData, sessionService, subsystemService);
+        }
+    }
+
     public static void onSuccessfulLogin(String username,
             SessionAccessorPage page,
             SSOLoginData loginData, SessionService sessionService,
