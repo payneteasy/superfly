@@ -47,9 +47,26 @@ public abstract class AbstractLoginPage extends WebPage {
     @SpringBean
     protected CsrfValidator csrfValidator;
 
+    /** Issued when the form is first rendered, not when the page is constructed. */
+    private String csrfToken;
+
     protected Component createCsrfHiddenInput(String markupId) {
-        String token = csrfValidator.persistTokenIntoSession(getHttpSession());
-        return new HiddenField<>(markupId, Model.of(token)).add(new AttributeModifier("name", "_csrf"));
+        return new HiddenField<String>(markupId, new Model<String>()) {
+            @Override
+            protected void onBeforeRender() {
+                // a form component shows the value it was submitted with, which may not be the token of the session
+                clearInput();
+                setModelObject(currentCsrfToken());
+                super.onBeforeRender();
+            }
+        }.add(new AttributeModifier("name", "_csrf"));
+    }
+
+    private String currentCsrfToken() {
+        if (csrfToken == null) {
+            csrfToken = csrfValidator.persistTokenIntoSession(getHttpSession());
+        }
+        return csrfToken;
     }
 
     protected Authentication getLatestReadyAuthentication() {
