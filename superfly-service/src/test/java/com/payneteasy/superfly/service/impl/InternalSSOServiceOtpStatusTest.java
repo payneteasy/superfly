@@ -206,15 +206,38 @@ public class InternalSSOServiceOtpStatusTest {
     }
 
     @Test
-    public void optionalOtpWithoutKeySucceedsWithoutChecks() {
+    public void optionalOtpWithoutKeySucceedsWithoutCheckingTheCode() {
         EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored(USER, OTPType.GOOGLE_AUTH, true));
         EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null);
+        // only the lock is looked up: hotpService and lockoutStrategy have no expectations
+        expectLockLookup(USER, USER, false);
         replayAll();
 
         assertEquals(Status.SUCCESS, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
 
         verifyAll();
     }
+
+    @Test
+    public void optionalOtpWithoutKeyOfLockedAccountIsLocked() {
+        // the suspension of an account sets the lock flag too, so a suspended account is a locked one here
+        EasyMock.expect(userService.getUserForDescription(USER)).andReturn(stored(USER, OTPType.GOOGLE_AUTH, true));
+        EasyMock.expect(userService.getOtpMasterKeyByUsername(USER)).andReturn(null);
+        expectLockLookup(USER, USER, true);
+        LoggerSink loggerSink = EasyMock.createStrictMock(LoggerSink.class);
+        loggerSink.info(EasyMock.anyObject(org.slf4j.Logger.class), EasyMock.eq("REMOTE_OTP_CHECK"), EasyMock.eq(false),
+                EasyMock.eq(USER), EasyMock.eq("status=LOCKED"));
+        service.setLoggerSink(loggerSink);
+        // hotpService and lockoutStrategy have no expectations, the failure counter is not touched
+        EasyMock.replay(loggerSink);
+        replayAll();
+
+        assertEquals(Status.LOCKED, service.checkOtp(OTPType.GOOGLE_AUTH, true, USER, ""));
+
+        verifyAll();
+        EasyMock.verify(loggerSink);
+    }
+
     @Test
     public void failureLogCarriesTheStatusAfterTheLockout() {
         expectLockLookup(USER, USER, false);

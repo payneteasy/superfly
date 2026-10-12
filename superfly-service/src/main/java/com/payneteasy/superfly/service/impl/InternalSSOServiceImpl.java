@@ -172,11 +172,9 @@ public class InternalSSOServiceImpl implements InternalSSOService {
                     + "stored type {}, optional {}", username, otpType, isOtpOptional, storedType, storedOptional);
         }
         boolean keyConfigured = hasOtpMasterKey(username);
+        boolean otpSkipped = storedOptional && (code == null || code.trim().isEmpty());
         // a configured key makes OTP mandatory anyway
-        if (storedOptional && (code == null || code.trim().isEmpty()) && !keyConfigured) {
-            return CheckOtpResult.Status.SUCCESS;
-        }
-        if (storedType == OTPType.NONE && !keyConfigured) {
+        if ((otpSkipped || storedType == OTPType.NONE) && !keyConfigured) {
             CheckOtpResult.Status status = isAccountLocked(username) ? CheckOtpResult.Status.LOCKED : CheckOtpResult.Status.SUCCESS;
             // nothing was checked, so the failed attempts counter must stay as it is
             loggerSink.info(logger, "REMOTE_OTP_CHECK", status == CheckOtpResult.Status.SUCCESS, username, "status=" + status);
