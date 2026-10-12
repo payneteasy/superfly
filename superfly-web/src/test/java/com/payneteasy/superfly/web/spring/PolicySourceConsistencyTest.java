@@ -121,9 +121,11 @@ public class PolicySourceConsistencyTest {
     }
 
     @Test
-    public void blankSystemPropertyIsTheDefaultForEveryComponent() {
-        assertEveryComponentUses("none", "", "pcidss");
-        assertEveryComponentUses("none", "  ", "pcidss");
+    public void blankSystemPropertyIsNotSetForEveryComponent() {
+        assertEveryComponentUses("pcidss", "", "pcidss");
+        assertEveryComponentUses("pcidss", "  ", "pcidss");
+        assertEveryComponentUses("none", "", "none");
+        assertEveryComponentUses("none", "  ", null);
     }
 
     @Test
@@ -149,7 +151,7 @@ public class PolicySourceConsistencyTest {
     }
 
     private static String expectedPolicy(String systemProperty, String contextParameter) {
-        String effective = systemProperty != null ? systemProperty : contextParameter;
+        String effective = systemProperty != null && !systemProperty.isBlank() ? systemProperty : contextParameter;
         return effective == null || effective.isBlank() ? "none" : effective.strip().toLowerCase(Locale.ROOT);
     }
 

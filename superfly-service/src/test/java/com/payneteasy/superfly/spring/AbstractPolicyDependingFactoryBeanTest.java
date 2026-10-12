@@ -46,6 +46,16 @@ public class AbstractPolicyDependingFactoryBeanTest {
     }
 
     @Test
+    public void blankSystemPropertyIsNotSetAndYieldsToTheContextParameter() {
+        for (String blank : List.of("", "   ")) {
+            parameter.systemProperty(blank);
+
+            assertEquals("'" + blank + "'", Policy.PCIDSS, policy(webEnvironment("pcidss"), null));
+            assertEquals("'" + blank + "'", Policy.NONE, policy(webEnvironment(null), null));
+        }
+    }
+
+    @Test
     public void noneWhenThePolicyIsNotSetAnywhere() {
         assertEquals(Policy.NONE, policy(webEnvironment(null), null));
     }

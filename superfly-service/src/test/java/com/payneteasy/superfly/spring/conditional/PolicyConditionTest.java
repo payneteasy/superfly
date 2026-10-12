@@ -62,6 +62,17 @@ public class PolicyConditionTest {
     }
 
     @Test
+    public void blankSystemPropertyIsNotSetAndYieldsToTheContextParameter() {
+        for (String blank : List.of("", "   ")) {
+            parameter.systemProperty(blank);
+
+            assertEquals("'" + blank + "'", PCIDSS_SELECTED, selected(webEnvironment("pcidss")));
+            assertEquals("'" + blank + "'", List.of(PCIDSSLockoutStrategy.class), strategies(webEnvironment("pcidss")));
+            assertEquals("'" + blank + "'", NONE_SELECTED, selected(webEnvironment(null)));
+        }
+    }
+
+    @Test
     public void noneWhenThePolicyIsNotSetAnywhere() {
         assertEquals(NONE_SELECTED, selected(webEnvironment(null)));
         assertEquals(List.of(NoneLockoutStrategy.class), strategies(webEnvironment(null)));

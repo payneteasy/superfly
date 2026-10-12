@@ -24,6 +24,8 @@ public class ApplicationParameterResolver {
         // 1. Пытаемся получить значение из системных свойств
         return Optional
                 .ofNullable(System.getProperty(paramName))
+                // An empty or blank value is the same as no value: the next source decides
+                .filter(value -> !value.isBlank())
                 // 2. Если не найдено, пытаемся получить из контекста
                 .orElseGet(() -> Optional
                         .ofNullable(servletContext.getInitParameter(paramName))

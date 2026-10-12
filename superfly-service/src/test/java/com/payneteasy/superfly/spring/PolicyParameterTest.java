@@ -84,11 +84,14 @@ public class PolicyParameterTest {
     }
 
     @Test
-    public void blankSystemPropertyIsStillTheValueAsInTheWebResolver() {
-        parameter.systemProperty("");
+    public void blankSystemPropertyIsNotSetAndYieldsToTheContextParameter() {
+        for (String blank : List.of("", "   ", "\t")) {
+            parameter.systemProperty(blank);
 
-        assertEquals("", PolicyParameter.rawValue(webEnvironment("pcidss")));
-        assertEquals(Policy.NONE, PolicyParameter.parse(PolicyParameter.rawValue(webEnvironment("pcidss"))));
+            assertEquals("'" + blank + "'", "pcidss", PolicyParameter.rawValue(webEnvironment("pcidss")));
+            assertNull("'" + blank + "'", PolicyParameter.rawValue(webEnvironment(null)));
+            assertNull("'" + blank + "'", PolicyParameter.rawValue(null));
+        }
     }
 
     @Test

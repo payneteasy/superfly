@@ -27,13 +27,14 @@ public final class PolicyParameter {
 
     /**
      * Returns the raw value in the order of ApplicationParameterResolver of superfly-web: the system property wins
-     * over the context parameter; {@code null} when neither is set. {@link Environment#getProperty} is not used on
-     * purpose: it consults the context parameters before the system properties and maps the environment variable
-     * SUPERFLY_POLICY to the name, which no other reader of this parameter does.
+     * over the context parameter (an empty or blank system property is not set); {@code null} when neither is set.
+     * {@link Environment#getProperty} is not used on purpose: it consults the context parameters before the system
+     * properties and maps the environment variable SUPERFLY_POLICY to the name, which no other reader of this
+     * parameter does.
      */
     public static String rawValue(Environment environment) {
         String systemProperty = System.getProperty(NAME);
-        if (systemProperty != null) {
+        if (systemProperty != null && !systemProperty.isBlank()) {
             return systemProperty;
         }
         if (environment instanceof ConfigurableEnvironment configurable) {
