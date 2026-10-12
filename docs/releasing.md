@@ -113,37 +113,52 @@ Jetty; запуск — `java -jar` с переменными окружения
 
    Обновление с 1.7: `version_from=R2.0.0 bash all_mi.sh`, затем `all-proc.sh`. На стендах, где уже применялись
    промежуточные миграции 2.0, тоже достаточно `version_from=R2.0.0` — все шаги идемпотентны.
-2. Переустановка процедур (`superfly-sql/src/all-proc.sh`): новые `get_otp_pending_master_key_by_user_name`,
-   `save_otp_pending_master_key`, `confirm_otp_pending_master_key`; изменена `get_user_password_history_and_current_password`
-   (текущий пароль, в том числе временный, затем собственные пароли пользователя от новых к старым); изменена `save_google_auth_master_key` (теперь также очищает
-   `otp_pending_master_key`); новые `get_subsystem_auth`, `get_subsystem_private_key`, `get_subsystems_with_plain_private_key`,
-   `encrypt_subsystem_private_key`; `ui_get_subsystem*` больше не отдают токен и приватный ключ; новые
-   `get_smtp_servers_with_plain_password`, `encrypt_smtp_server_password`; изменены `ui_get_users_list` (без хэша пароля),
-   `ui_create_subsystem`/`ui_edit_subsystem_properties` (подсистема без SMTP-сервера), `ui_clone_user` (клон получает флаги
-   состояния нового пользователя: не заблокирован, не приостановлен, без неудачных входов и ключей OTP),
-   `int_check_user_password` (старые хэши в истории заменяются при входе),
-   SMTP-процедуры `ui_create_smtp_server`/`ui_edit_smtp_server`/`ui_get_smtp_servers_list` и процедуры привязки
-   ролей/групп/действий (`int_link_*`, `int_unlink_*`, `ui_change_actions_log_level`: проверка списков id); процедуры
-   блокировки и приостановки — в абзаце «Блокировка и приостановка» ниже.
-   Новое приложение со старыми процедурами не стартует.
+2. Переустановка процедур (`superfly-sql/src/all-proc.sh`): скрипт ставит все процедуры заново, выборочно ставить не нужно.
+   Новое приложение со старыми процедурами не стартует, а без новых `int_end_user_sessions` и `int_lock_user` блокировка,
+   приостановка и сброс пароля не завершают сессии. Относительно 1.7-38:
+   - новые: `get_otp_pending_master_key_by_user_name`, `save_otp_pending_master_key`, `confirm_otp_pending_master_key`,
+     `save_google_auth_master_key_if_unchanged`, `save_otp_last_used_step` (TOTP); `get_subsystem_auth`,
+     `get_subsystem_private_key`, `get_subsystems_with_plain_private_key`, `encrypt_subsystem_private_key` (токен и приватный
+     ключ подсистемы); `get_smtp_servers_with_plain_password`, `encrypt_smtp_server_password` (пароли SMTP);
+     `int_user_has_roles_in_subsystem`, `ui_get_last_event_id`; `int_end_user_sessions` (завершает SSO-сессии пользователя и
+     его сессии в подсистемах); `int_lock_user` (блокирует учётную запись; сессии завершает и `ACCOUNT_LOCK` создаёт только
+     вызов, который её заблокировал, о чём сообщает OUT-параметром `o_locked_now`; результата не возвращает);
+   - изменены с новым поведением: `get_user_password_history_and_current_password` (текущий пароль, в том числе временный,
+     затем собственные пароли пользователя от новых к старым), `save_google_auth_master_key` (теперь также очищает
+     `otp_pending_master_key`), `int_check_user_password` (старые хэши в истории заменяются при входе), `ui_get_subsystem`,
+     `ui_get_subsystem_by_name` (больше не отдают токен и приватный ключ), `ui_get_users_list` (без хэша пароля),
+     `ui_create_subsystem`, `ui_edit_subsystem_properties` (подсистема без SMTP-сервера), `ui_create_smtp_server`,
+     `ui_edit_smtp_server`, `ui_get_smtp_servers_list`, `ui_clone_user` (клон получает флаги состояния нового
+     пользователя: не заблокирован, не приостановлен, без неудачных входов и ключей OTP), процедуры привязки ролей, групп и
+     действий `int_link_*`, `int_unlink_*` и `ui_change_actions_log_level` (проверка списков id), `ui_lock_user`,
+     `ui_suspend_user`, `ui_delete_user`, `login_locked` (блокировка, приостановка и удаление завершают сессии;
+     автоблокировка работает и при `is_account_locked = NULL`; `login_locked` возвращает `ACCOUNT_LOCKED` только вызову, который
+     заблокировал учётную запись), `reset_password` (сброс на новый пароль завершает сессии, истечение пароля не пишет
+     `PASSWORD_RESET`), `int_get_user_actions` (сессия подсистемы не выдаётся заблокированному и приостановленному
+     пользователю), `exchange_subsystem_token` (сначала берёт блокировку строки пользователя);
+   - прочие изменённые: `authenticate`, `change_temp_password`, `create_subsystem_token_if_can_login`, `delete_expired_tokens`,
+     `get_user_login_status`, `increment_hotp_logins_failed`, `int_create_event`, `int_group_actions_list`, `int_groups_list`,
+     `int_role_actions_list`, `int_role_groups_list`, `int_roles_list`, `int_user_actions_list`, `int_user_roles_list`,
+     `int_user_roles_list_count`, `int_users_list`, `register_user`, `touch_sessions`, `ui_filter_dyn_groups`,
+     `ui_filter_dyn_roles`, `ui_get_actions_list`, `ui_get_actions_list_with_group`, `ui_get_events`, `ui_get_groups_list`,
+     `ui_get_roles_list`, `ui_unlock_suspended_user`, `ui_unlock_user`.
 3. Первый старт приложения шифрует приватные ключи подсистем и пароли SMTP-серверов (`SUPERFLY_CRYPTO_SECRET`, формат `v2:`);
-   до него remote-auth принимает ключи в открытом виде с WARN в логе. Откат на 1.7 после этого ломает отправку почты; в
-   целом откат — только дампом, снятым до миграции (см. «Перед выкаткой»).
+   до него remote-auth принимает ключи в открытом виде с WARN в логе. После него откат на 1.7 — только из дампа (см.
+   «Перед выкаткой»).
 
 **Совместимость клиентов.** Сервер 2.0 принимает от подсистем только JSON API `/remoting/sso.service/<метод>` (клиент 2.0:
 `superfly-client-core` + `superfly-client-ee8` / `superfly-client-ee10`, транспорт — `SSOHttpServiceApiClient`). Прежний
 транспорт клиентов 1.x — Spring HttpInvoker на `/remoting/sso.service`, как и Hessian/XRemoting-эндпоинты
 (`/remoting/sso.hessian.service`, `/remoting/oauth2.hessian.service`, `/remoting/basic.hessian.service`,
 `/remoting/sso.xremoting.service`) — удалён, поэтому клиенты 1.x с сервером 2.0 не работают: ни вход, ни обмен токена, ни
-события. Все подсистемы обновляют клиент до 2.0 в одном окне с сервером. Перед выкаткой составьте список подсистем и
-проверьте версию клиента каждой: `select subsystem_name, subsystem_url, callback_information from subsystems;`.
-Подключение клиента 2.0 — в [Руководстве по интеграции](integration-guide.md#выбор-артефакта).
+события. Все подсистемы обновляют клиент до 2.0 в одном окне с сервером; список подсистем и проверка версий клиентов — в
+«Перед выкаткой». Подключение клиента 2.0 — в [Руководстве по интеграции](integration-guide.md#выбор-артефакта).
 
 **Вход в админку.** TOTP обязателен для каждого пользователя админ-консоли: в `web.xml` заданы `superfly-mfa-enabled=true` и
 `superfly-mfa-method-force=google_auth` (параметры и порядок их переопределения — в [Конфигурации](configuration.md#вход-в-админ-консоль)).
 После обновления каждый пользователь при первом входе настраивает TOTP (ключ и QR-код на странице входа; ключ сохраняется,
 только когда введён верный код из приложения-аутентификатора); `admin` с временным паролем сначала настраивает TOTP, затем меняет пароль и входит заново.
-Предупредите администраторов заранее: без приложения-аутентификатора войти нельзя. Если TOTP потерял единственный
+Без приложения-аутентификатора войти нельзя. Если TOTP потерял единственный
 администратор, ключ сбрасывается в БД: `call save_google_auth_master_key('admin', null);` (после блокировки неверными кодами
 ещё `call ui_unlock_user((select user_id from users where user_name = 'admin'));`). Глобального отключения OTP нет.
 
@@ -174,18 +189,24 @@ the subsystem answered with status <N>` и одной строкой ERROR `... 
 **Блокировка и приостановка.** Блокировка (админка, удаление пользователя, автоблокировка) и приостановка завершают все
 сессии пользователя, как SSO-logout: SSO-сессии и токены подсистем удаляются, сессии подсистем (и открытые без SSO)
 истекают, подсистемы с callbacks получают logout-уведомление, сессия в админ-консоли завершается на следующем её запросе
-(состояние учётной записи читается при каждом запросе к консоли); разблокировка их не возвращает — только вход с паролем
-(см. [Конфигурация](configuration.md#блокировка-и-приостановка-пользователя)). Процедуры: новая `int_end_user_sessions`,
-изменены `ui_lock_user`, `ui_suspend_user`, `login_locked` (автоблокировка и при `is_account_locked = NULL`).
+(состояние учётной записи читается при каждом запросе к консоли); разблокировка их не возвращает — только вход с паролем.
+Повторная блокировка или удаление уже заблокированного пользователя ничего не делает (ни событий, ни завершения сессий), из
+одновременных неудачных входов автоблокировкой считается один. Заблокированному и приостановленному пользователю сессия
+подсистемы не выдаётся: `authenticate`, `pseudoAuthenticate` (раньше флаги не проверял, теперь отвечает `null`) и обмен
+токена отказывают. Подробности — в [Конфигурации](configuration.md#блокировка-и-приостановка-пользователя).
 
-**Сброс пароля.** Сброс на новый пароль (админка, RPC `resetPassword` с паролем) завершает все сессии пользователя так же,
-как блокировка: после него вход только с новым паролем. Истечение срока пароля (ежедневная задача при политике `pcidss`)
-сессии не трогает. Изменена процедура `reset_password`.
+**Сброс пароля.** Сброс на новый пароль (админка, RPC `resetPassword` с паролем) делает пароль временным, снимает блокировку
+и счётчики неудачных входов и завершает SSO-сессии и сессии подсистем пользователя, как блокировка (подсистемы с callbacks
+получают logout-уведомление); сессию админ-консоли сброс не завершает — её завершают блокировка, приостановка и удаление.
+Событие `PASSWORD_RESET` пишется при таком сбросе, по записи на подсистему. Истечение срока пароля (ежедневная задача при
+политике `pcidss`, а также `resetPassword` без пароля) только помечает пароль временным: сессии, блокировка и счётчики не
+меняются, а `PASSWORD_RESET` больше не пишется (раньше истечение писало его и снимало блокировку): подсистемы, которые
+реагировали на это событие при истечении пароля, его не получат.
 
 **Строгие значения параметров безопасности.** `superfly-mfa-enabled`, `superfly-csrf-login-validator-enable` и
 `SUPERFLY_CRYPTO_LEGACY_DEFAULT_KEY` принимают только `true` / `false`, `superfly-mfa-method-force` — `none` / `google_auth`,
-`superfly-policy` — `none` / `pcidss`; регистр и пробелы по краям не важны, пустое значение — значение по умолчанию (раньше
-пустое значение читалось как `false`, теперь для `superfly-mfa-enabled` и `superfly-csrf-login-validator-enable` это `true`).
+`superfly-policy` — `none` / `pcidss`; регистр и пробелы по краям не важны, пустое значение в `web.xml` — значение по умолчанию
+(раньше пустое значение читалось как `false`, теперь для `superfly-mfa-enabled` и `superfly-csrf-login-validator-enable` это `true`).
 Значения вроде `1`, `0`, `yes`, `no`, `on`, `off` и опечатки раньше молча читались как `false` или как значение по умолчанию,
 теперь они останавливают старт с сообщением, где названы параметр и допустимые значения: проверьте конфигурацию (`web.xml`,
 `-D`, окружение, compose) до обновления. Пустое значение `-D` считается незаданным: действует значение из `web.xml`, затем
@@ -202,7 +223,8 @@ the subsystem answered with status <N>` и одной строкой ERROR `... 
 
 **API.** `SSOService.checkOtp` возвращает `CheckOtpResult` вместо `boolean`, HTTP-тело — `{"status":"..."}`; добавлен
 `confirmOtpMasterKey`; `resetGoogleAuthMasterKey` теперь сохраняет pending-ключ (см. [API](api.md#checkotp)).
-Клиентов и сервер обновляйте вместе.
+Пользователь без ключа получает от `checkOtp` статус `INVALID`, а не `SsoDecryptException`: исключение остаётся только для
+ключа, который не расшифровывается. Клиенты и сервер обновляйте вместе.
 
 **SPI.** В `HOTPService` (`superfly-spi-support`) добавлен метод `confirmGoogleAuthMasterKey`, а `validateGoogleTimePassword`
 возвращает `CheckOtpResult.Status`: сторонние реализации не скомпилируются без доработки.
