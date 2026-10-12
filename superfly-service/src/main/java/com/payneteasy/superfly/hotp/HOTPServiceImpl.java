@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.function.LongSupplier;
 
+import static com.payneteasy.superfly.common.utils.LogSanitizer.forLog;
+
 @Service
 @Transactional
 public class HOTPServiceImpl implements HOTPService {
@@ -100,10 +102,18 @@ public class HOTPServiceImpl implements HOTPService {
         int verificationCode = Integer.parseInt(password);
         String masterKeyEncrypt = userService.getOtpMasterKeyByUsername(username);
         if (masterKeyEncrypt == null) {
-            logger.error("GA master key for " + username + " is null");
+            // not a failure of the server: a user without a key is an ordinary case that the caller answers
+            logger.debug("GA master key for {} is null", forLog(username));
             throw new SsoDecryptException("GA master key for " + username + " is null");
         }
-        String masterKey = decrypt(masterKeyEncrypt);
+        String masterKey;
+        try {
+            masterKey = decrypt(masterKeyEncrypt);
+        } catch (SsoDecryptException e) {
+            // the key exists but cannot be decrypted: a failure of the configuration, not a wrong code
+            logger.error("Cannot decrypt the OTP master key of user {}", forLog(username));
+            throw e;
+        }
         long matchedStep = findMatchedStep(masterKey, verificationCode, WINDOW_SIZE);
         if (matchedStep < 0) {
             return statusOfUnmatchedCode(username, masterKey, verificationCode);
