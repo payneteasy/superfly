@@ -143,7 +143,7 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
         String url = request.getUrl();
         long startMs = System.currentTimeMillis();
 
-        LOG.debug("send: method={} url={} timeouts={}", request.getMethod(), url, formatTimeouts(params));
+        LOG.debug("send: method={} url={} timeouts={}", request.getMethod(), maskedUrl(url), formatTimeouts(params));
 
         ClassicHttpRequest hcRequest = buildHcRequest(request);
         HttpClientContext context = buildContext(params);
@@ -158,7 +158,7 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
                 long elapsed = System.currentTimeMillis() - startMs;
                 logPoolStats();
                 LOG.debug("send: status={} reason={} bodyLen={} elapsed={}ms url={}",
-                        status, reason, body.length, elapsed, url);
+                        status, reason, body.length, elapsed, maskedUrl(url));
 
                 return new HttpResponse(status, reason, headers, body);
             });
@@ -166,19 +166,19 @@ public class ApacheHC5HttpClient implements IHttpClient, AutoCloseable {
             return response;
 
         } catch (ConnectTimeoutException e) {
-            LOG.warn("send: connect timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
+            LOG.warn("send: connect timeout after {}ms url={}", System.currentTimeMillis() - startMs, maskedUrl(url));
             throw new HttpConnectException("Connect timeout to " + maskedUrl(url), e);
 
         } catch (SocketTimeoutException e) {
-            LOG.warn("send: response timeout after {}ms url={}", System.currentTimeMillis() - startMs, url);
+            LOG.warn("send: response timeout after {}ms url={}", System.currentTimeMillis() - startMs, maskedUrl(url));
             throw new HttpReadException("Response timeout from " + maskedUrl(url), e);
 
         } catch (IOException e) {
             if (isConnectFailure(e)) {
-                LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
+                LOG.warn("send: connect error after {}ms url={} error={}", System.currentTimeMillis() - startMs, maskedUrl(url), e.getMessage());
                 throw new HttpConnectException("Connection failed to " + maskedUrl(url), e);
             }
-            LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, url, e.getMessage());
+            LOG.warn("send: read/write error after {}ms url={} error={}", System.currentTimeMillis() - startMs, maskedUrl(url), e.getMessage());
             throw new HttpReadException("I/O error communicating with " + maskedUrl(url), e);
         }
     }

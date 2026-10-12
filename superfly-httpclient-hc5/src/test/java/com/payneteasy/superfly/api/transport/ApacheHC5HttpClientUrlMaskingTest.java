@@ -16,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,7 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * The URL in the error messages of the transport is written without user info, query and fragment.
+ * The URL in the error messages and in the log lines of the transport is written without user info, query and
+ * fragment.
  *
  * <p>The cases of the masking tests are those of {@code CallbackUrlsTest} (superfly-service), whose rule this
  * module repeats: keep the two in line.
@@ -221,6 +223,60 @@ public class ApacheHC5HttpClientUrlMaskingTest {
             assertTrue(e.getMessage(), e.getMessage().endsWith(" http://10.255.255.1:81/superfly-callback"));
             assertNothingHidden(e.getMessage());
         }
+    }
+
+    @Test
+    public void logLinesOfAFailedRequestNameTheMaskedUrl() throws Exception {
+        int freePort = freePort();
+        String masked = "http://localhost:" + freePort + "/superfly-callback";
+        RecordingSlf4jProvider.LINES.clear();
+
+        try {
+            send("http://" + USER_INFO + "localhost:" + freePort + "/superfly-callback" + EXTRAS);
+        } catch (HttpConnectException | HttpReadException e) {
+            // the message of the failure is covered by the tests above
+        }
+
+        List<String> debug = transportLines("DEBUG");
+        assertEquals(debug.toString(), 1, debug.size());
+        assertTrue(debug.get(0), debug.get(0).startsWith("send: method=POST url=" + masked + " timeouts="));
+        List<String> warn = transportLines("WARN");
+        assertEquals(warn.toString(), 1, warn.size());
+        assertTrue(warn.get(0), warn.get(0).contains(" url=" + masked + " error="));
+        assertNothingHidden(debug.get(0));
+        assertNothingHidden(warn.get(0));
+    }
+
+    @Test
+    public void logLineOfAnAnsweredRequestNamesTheMaskedUrl() throws Exception {
+        server.createContext("/answer", exchange -> {
+            exchange.sendResponseHeaders(204, -1);
+            exchange.close();
+        });
+        RecordingSlf4jProvider.LINES.clear();
+
+        try (ApacheHC5HttpClient client = ApacheHC5HttpClient.builder().build()) {
+            client.send(HttpRequest.builder().url("http://localhost:" + serverPort + "/answer" + EXTRAS)
+                            .method(HttpMethod.POST).build(),
+                    HttpRequestParameters.builder().timeouts(new HttpTimeouts(1_000, 1_000)).build());
+        }
+
+        List<String> debug = transportLines("DEBUG");
+        assertEquals(debug.toString(), 2, debug.size());
+        assertTrue(debug.get(1), debug.get(1).startsWith("send: status=204 "));
+        assertTrue(debug.get(1), debug.get(1).endsWith(" url=http://localhost:" + serverPort + "/answer"));
+        assertNothingHidden(debug.get(0));
+        assertNothingHidden(debug.get(1));
+    }
+
+    /** The lines of the given level the transport writes about a request. */
+    private static List<String> transportLines(String level) {
+        return RecordingSlf4jProvider.LINES.stream()
+                .filter(line -> line.level().equals(level)
+                        && line.logger().equals(ApacheHC5HttpClient.class.getName())
+                        && line.message().startsWith("send: "))
+                .map(RecordingSlf4jProvider.Line::message)
+                .collect(Collectors.toList());
     }
 
     private static int freePort() throws IOException {

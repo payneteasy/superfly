@@ -70,7 +70,9 @@ HMAC-SHA256 с ключом `sha256:` + hex(SHA-256(токен)) от канон
 `USERS_CHANGED`, `<URL>` — callback-URL без user info, query и fragment; для `403` в конец добавляется
 `(check notificationSecret of the subsystem client)`) и одна строка ERROR `Error while trying to send a
 LogoutNotification, no more retries, dropping: ...` (для `USERS_CHANGED` — `UsersChangedNotification`) без стектрейса.
-Повторов нет: после первой попытки уведомление отбрасывается.
+Повторов нет: после первой попытки уведомление отбрасывается. Во всех строках лога уведомлений и в сообщениях и
+строках лога HTTP-транспорта (`ApacheHC5HttpClient`) URL callback-а пишется без user info, query и fragment: остаются
+схема, хост, порт и путь; URL, который не разбирается, заменяется на `(invalid callback URL)`.
 
 - `403` — подпись отвергнута. Проверьте, что `notificationSecret` клиента равен токену подсистемы. Причину клиент пишет в
   свой лог: WARN `Rejected Superfly notification from <адрес>: <причина>` (`MISSING_SIGNATURE`, `BAD_TIMESTAMP`,
