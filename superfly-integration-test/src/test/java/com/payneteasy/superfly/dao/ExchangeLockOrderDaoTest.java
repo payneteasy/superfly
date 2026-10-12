@@ -6,9 +6,11 @@ import com.payneteasy.superfly.model.ui.role.UIRole;
 import com.payneteasy.superfly.model.ui.subsystem.UISubsystem;
 import com.payneteasy.superfly.model.ui.user.UIUserForCreate;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -30,13 +32,15 @@ import java.util.concurrent.TimeUnit;
  * ui_suspend_user use (user, sessions, tokens, SSO sessions). Every call runs in a transaction that stays open until
  * the call returns, as in the service layer, and the exchange is stopped right after it took the token by a lock on
  * its SSO session that the test holds. Lock waits are recognized in information_schema.innodb_trx, which needs
- * the PROCESS privilege (the database user of dev-env.sh has it).
+ * the PROCESS privilege (the database user of dev-env.sh has it); without the privilege the tests are skipped.
  */
 public class ExchangeLockOrderDaoTest extends AbstractDaoTest {
     // the database may be reused between runs (-Dsso.db.skipCreate=true), so the names are unique per run
     private static final String RUN     = Long.toString(System.currentTimeMillis(), 36);
     private static final String ACTION  = "lock-order-action";
     private static final long   TIMEOUT_SECONDS = 10;
+    // ER_SPECIFIC_ACCESS_DENIED_ERROR: what innodb_trx answers to a user without the PROCESS privilege
+    private static final int    ACCESS_DENIED_ERROR_CODE = 1227;
 
     private static UISubsystem subsystem;
     private static long        roleId;
@@ -81,6 +85,7 @@ public class ExchangeLockOrderDaoTest extends AbstractDaoTest {
 
     @Before
     public void setUp() {
+        requireProcessPrivilege();
         if (subsystem != null) {
             return;
         }
@@ -206,6 +211,19 @@ public class ExchangeLockOrderDaoTest extends AbstractDaoTest {
 
     private int count(String sql, Object... args) {
         return jdbc.queryForObject(sql, Integer.class, args);
+    }
+
+    /** The tests observe lock waits in information_schema.innodb_trx: without the PROCESS privilege they are skipped. */
+    private void requireProcessPrivilege() {
+        try {
+            count("select count(*) from information_schema.innodb_trx");
+        } catch (DataAccessException e) {
+            if (e.getCause() instanceof SQLException
+                    && ((SQLException) e.getCause()).getErrorCode() == ACCESS_DENIED_ERROR_CODE) {
+                Assume.assumeNoException("needs PROCESS privilege to observe lock waits", e);
+            }
+            throw e;
+        }
     }
 
     /** Waits until the transaction of the connection waits for a lock; fails if the call ends before that. */
