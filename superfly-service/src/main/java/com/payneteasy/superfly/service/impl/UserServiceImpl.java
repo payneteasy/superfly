@@ -699,6 +699,14 @@ public class UserServiceImpl implements UserService {
         if (userForDescription == null) {
             return false;
         }
+        // A locked or suspended account gets no code check, so the failed OTP counter stays as it is.
+        // A missing row means the user is gone: refused the same way.
+        UIUserDetails accountState = getUser(userForDescription.getUserId());
+        if (accountState == null || accountState.isAccountLocked() || accountState.isAccountSuspended()) {
+            logger.warn("OTP check of locked or suspended account {}", forLog(username));
+            loggerSink.info(logger, "REMOTE_OTP_CHECK", false, username, "status=" + CheckOtpResult.Status.LOCKED);
+            return false;
+        }
         boolean ok = false;
         switch (userForDescription.getOtpType()) {
             case GOOGLE_AUTH:
