@@ -30,6 +30,7 @@ public class ExchangeSubsystemTokenDaoTest extends AbstractDaoTest {
     private static UISubsystem      foreignSubsystem;
     private static UIUserForCreate  user;
     private static SSOSession       ssoSession;
+    private static int              ssoSessionCount = 0;
 
     @Autowired
     public void setSessionDao(SessionDao sessionDao) {
@@ -63,9 +64,15 @@ public class ExchangeSubsystemTokenDaoTest extends AbstractDaoTest {
 
     @Before
     public void setUp() {
-        if (created) {
-            return;
+        if (!created) {
+            createSubsystemAndUser();
+            created = true;
         }
+        // a new SSO session for every test: locking the user ends all SSO sessions of the user
+        ssoSession = sessionDao.createSSOSession(user.getUsername(), "exchange-session-" + (++ssoSessionCount));
+    }
+
+    private void createSubsystemAndUser() {
         subsystem = createSubsystem("subsystem-for-exchange");
         foreignSubsystem = createSubsystem("foreign-subsystem-for-exchange");
 
@@ -89,9 +96,6 @@ public class ExchangeSubsystemTokenDaoTest extends AbstractDaoTest {
         userDao.createUser(user);
         userDao.addSubsystemWithRole(user.getId(), role.getRoleId());
         userDao.changeUserRoleActions(user.getId(), "1,2,3,4,5,6,7,8,9,10", "");
-
-        ssoSession = sessionDao.createSSOSession(user.getUsername(), "exchange-session");
-        created = true;
     }
 
     private UISubsystem createSubsystem(String name) {

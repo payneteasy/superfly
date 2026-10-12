@@ -92,6 +92,8 @@ create table mysql_routines_return_arguments (
 
 \. int/int_create_event.prc
 
+\. int/int_end_user_sessions.prc
+
 \. ui_copy/ui_copy_action_properties.prc
 
 \. ui_filter/ui_filter_subsystems.prc
