@@ -20,6 +20,7 @@ cd superfly
 ```
 
 Веб-интерфейс — `http://localhost:8085/superfly/`, логин `admin` / `123admin123`; при первом входе система потребует сменить пароль.
+`./dev-env.sh app` использует override-web.xml с выключенной MFA; production `web.xml` требует TOTP.
 Для базы нужен Docker, для `app` — ещё JDK 21; Maven берётся из `mvnw`. Образ Docker и `compose.yml` — в [Установке и запуске](docs/getting-started.md#docker-образ).
 
 Обновляетесь с прошлой версии? Breaking changes и шаги обновления БД — в [миграции EE8 / EE10](docs/migration-client-ee8-ee10.md#breaking-changes).
