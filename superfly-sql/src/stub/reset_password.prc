@@ -35,6 +35,10 @@ main_sql:
              u.logins_failed = null,
              u.hotp_logins_failed = 0
        where u.user_id = i_user_id;
+
+      -- a reset ends the sessions of the user, as a lock does; expiry (above) keeps them: the daily
+      -- task must not log everybody out, and the next login asks for a new password anyway
+      call int_end_user_sessions(i_user_id);
     end if;
 
     open cur;

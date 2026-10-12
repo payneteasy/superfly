@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
  * Locking, suspending (also by the failed logins limit) and deleting a user end all sessions of that user the way
  * an SSO logout does: the SSO sessions and their subsystem tokens are deleted, and every subsystem session of the
  * user, including one opened without SSO, is marked expired, so the scheduler sends the logout notifications.
- * Unlocking restores nothing.
+ * Unlocking restores nothing. Resetting the password to a new value ends the sessions the same way, while expiring
+ * the password (a reset without a password, done by the daily task) leaves them.
  */
 public class AccountLockSessionsDaoTest extends AbstractDaoTest {
     // the database may be reused between runs (-Dsso.db.skipCreate=true), so the names are unique per run
@@ -173,6 +174,40 @@ public class AccountLockSessionsDaoTest extends AbstractDaoTest {
         for (String token : user.unusedTokens) {
             Assert.assertNull(userDao.exchangeSubsystemToken(token, subsystem.getName()));
         }
+    }
+
+    @Test
+    public void passwordResetEndsAllSessionsOfTheUserOnly() {
+        UserSessions user = userWithSessions("reset");
+        UserSessions other = userWithSessions("reset-other");
+
+        assertRoutineResult(userDao.resetPassword(user.userId, "new-password-hash"));
+
+        Assert.assertEquals("Y", userFlag(user, "is_password_temp"));
+        assertSessionsEnded(user);
+        for (SSOSession ssoSession : user.ssoSessions) {
+            Assert.assertNull(subsystemDao.issueSubsystemTokenIfCanLogin(ssoSession.getId(), subsystem.getName(),
+                    "TOK-" + ssoSession.getIdentifier() + "-after-reset"));
+        }
+        for (String token : user.unusedTokens) {
+            Assert.assertNull(userDao.exchangeSubsystemToken(token, subsystem.getName()));
+        }
+        assertSessionsAlive(other);
+        Assert.assertEquals(1, subsystemEvents("PASSWORD_RESET", user));
+        Assert.assertEquals(0, subsystemEvents("PASSWORD_RESET", other));
+    }
+
+    @Test
+    public void passwordExpiryKeepsAllSessionsOfTheUser() {
+        UserSessions user = userWithSessions("expiry");
+
+        assertRoutineResult(userDao.resetPassword(user.userId, null));
+
+        Assert.assertEquals("Y", userFlag(user, "is_password_temp"));
+        assertSessionsAlive(user);
+        // the SSO session still opens the subsystems: the password is changed at the next login
+        issueToken(user.ssoSessions.get(0), "after-expiry");
+        Assert.assertEquals(1, subsystemEvents("PASSWORD_RESET", user));
     }
 
     /**
