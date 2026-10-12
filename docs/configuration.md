@@ -145,7 +145,7 @@ user:admin, event:CHANGE_USER_OTP_OPTIONAL, resource:bob, result:success, detail
 | `event` | Тип события (таблица ниже) |
 | `resource` | Над кем/чем: имя пользователя, id, имя подсистемы или SMTP-сервера |
 | `result` | `success` (уровень INFO) или `failure` (уровень ERROR) |
-| `details` | Необязательно. Что именно изменено (`role=..., subsystem=...`, `otpOptional=...`); секретов здесь не бывает; для `REMOTE_OTP_CHECK` — `status=<SUCCESS/INVALID/ALREADY_USED/CLOCK_SKEW/LOCKED>` |
+| `details` | Необязательно. Что именно изменено (`role=..., subsystem=...`, `otpOptional=...`); секретов здесь не бывает; для `REMOTE_OTP_CHECK` — `status=<SUCCESS/INVALID/ALREADY_USED/CLOCK_SKEW/LOCKED>`, для кода пользователя без ключа — `status=INVALID, reason=no key` |
 | `ip` | Необязательно. Адрес клиента запроса; нет у событий вне HTTP-запроса. За reverse proxy при `JETTY_TRUST_FORWARDED` — реальный адрес клиента |
 
 Значения очищаются от управляющих символов (CR, LF, TAB, `\u0085`, ` `, ` ` → `_`), чтобы введённый пользователем
@@ -213,7 +213,9 @@ your device and enter a new code.»; блокировка (`LOCKED`) — «The a
 этих текстов считается неудачной попыткой (см. [Ограничение попыток входа](#ограничение-попыток-входа-rate-limit)).
 
 **Блокировка по OTP.** Каждая неудачная проверка OTP (`INVALID`, `CLOCK_SKEW`, `ALREADY_USED`, в том числе при
-`confirmOtpMasterKey`) увеличивает счётчик `hotp_logins_failed`. Порог задаёт параметр `superfly-max-otp-failed`:
+`confirmOtpMasterKey`) увеличивает счётчик `hotp_logins_failed`. Исключение — код из 6 цифр
+пользователя без ключа: подбирать нечего, поэтому он получает `INVALID` (в `REMOTE_OTP_CHECK` — `reason=no key`), и счётчик
+не растёт. Порог задаёт параметр `superfly-max-otp-failed`:
 
 | Параметр | По умолчанию | Описание |
 |----------|-------------|---------|
