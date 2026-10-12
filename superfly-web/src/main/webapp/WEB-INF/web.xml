@@ -41,15 +41,16 @@
         <param-value>pcidss</param-value> <!-- none or pcidss -->
     </context-param>
 
-    <!-- multi-factor authentication -->
+    <!-- multi-factor authentication: access of every administrator to the console requires a TOTP code
+         (PCI DSS 8.4.1); a user without a TOTP key sets one up at the login -->
     <context-param>
         <param-name>superfly-mfa-enabled</param-name>
-        <param-value>false</param-value>
+        <param-value>true</param-value>
     </context-param>
     <!-- Force users to use this MFA method, if superfly-mfa-enabled = true -->
     <context-param>
         <param-name>superfly-mfa-method-force</param-name>
-        <param-value>none</param-value> <!-- none or google_auth -->
+        <param-value>google_auth</param-value> <!-- none or google_auth -->
     </context-param>
 
     <context-param>
