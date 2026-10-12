@@ -90,6 +90,7 @@ public class SSOLoginPasswordPage extends BaseSSOPage {
                 errorMessageLabel.setVisible(true);
                 break;
             case TEMP_PASSWORD:
+                renewSessionId(this);
                 getRequestCycle().setResponsePage(new SSOChangePasswordPage(loginBean.getUsername()));
                 break;
         }

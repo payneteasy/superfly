@@ -48,8 +48,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * The HTTP session id changes after the password step and after a password change, while the
- * following OTP form still works.
+ * The HTTP session id changes after the password step (also when it accepts a temporary password) and
+ * after a password change, while the following password change and OTP forms still work.
  * <p>
  * Wicket's MockHttpServletRequest.changeSessionId() invalidates the session and drops all its
  * attributes, unlike a servlet container. Here the container request is wrapped so that the id
@@ -145,6 +145,44 @@ public class SSOSessionIdChangeTest {
         tester.assertRenderedPage(SSOLoginHOTPPage.class);
         String idAfterChange = tester.getHttpSession().getId();
         assertNotEquals("session id must change after the password change", idBeforeChange, idAfterChange);
+
+        submitOtpAndAssertRedirect(idAfterChange);
+        verify(userService, sessionService, subsystemService, internalSSOService);
+    }
+
+    @Test
+    public void testSessionIdChangesAfterTemporaryPasswordAndChangePasswordFormStillWorks() {
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "temp-password", "test-subsystem"))
+                .andReturn(UserLoginStatus.TEMP_PASSWORD);
+        userService.validatePassword("known-user", "new-password");
+        expectLastCall();
+        userService.changeTempPassword("known-user", "new-password");
+        expectLastCall();
+        expect(userService.getUserForDescription("known-user")).andReturn(googleAuthUser()).anyTimes();
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn("key").anyTimes();
+        expectOtpAndToken();
+        replay(userService, sessionService, subsystemService, internalSSOService, settingsService);
+
+        startWithLoginData(SSOLoginPasswordPage.class);
+        String idBeforePassword = tester.getHttpSession().getId();
+        FormTester form = tester.newFormTester("form");
+        form.setValue("username", "known-user");
+        form.setValue("password", "temp-password");
+        submitWithCsrf(form);
+
+        tester.assertRenderedPage(SSOChangePasswordPage.class);
+        String idAfterTempPassword = tester.getHttpSession().getId();
+        assertNotEquals("session id must change after the temporary password is accepted",
+                idBeforePassword, idAfterTempPassword);
+
+        FormTester changeForm = tester.newFormTester("change-password-panel:form");
+        changeForm.setValue("password", "new-password");
+        changeForm.setValue("password2", "new-password");
+        submitWithCsrf(changeForm);
+
+        tester.assertRenderedPage(SSOLoginHOTPPage.class);
+        String idAfterChange = tester.getHttpSession().getId();
+        assertNotEquals("session id must change after the password change", idAfterTempPassword, idAfterChange);
 
         submitOtpAndAssertRedirect(idAfterChange);
         verify(userService, sessionService, subsystemService, internalSSOService);
