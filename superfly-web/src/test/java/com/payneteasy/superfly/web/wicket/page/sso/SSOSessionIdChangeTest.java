@@ -13,8 +13,11 @@ import com.payneteasy.superfly.service.SessionService;
 import com.payneteasy.superfly.service.SettingsService;
 import com.payneteasy.superfly.service.SubsystemService;
 import com.payneteasy.superfly.service.UserService;
+import com.payneteasy.superfly.spisupport.HOTPService;
 import com.payneteasy.superfly.spring.Policy;
 import com.payneteasy.superfly.web.security.ratelimit.LoginAttemptLimiter;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.util.tester.FormTester;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +30,9 @@ import static org.junit.Assert.assertNotEquals;
 
 /**
  * The HTTP session id changes after the password step (also when it accepts a temporary password), after the
- * second factor that precedes a password change and after the password change, while the following forms still
- * work. The pages run in a {@link ContainerLikeTester}: the session keeps its attributes when its id changes.
+ * second factor that precedes a password change (a code, or the setup of a TOTP key confirmed by a code) and
+ * after the password change, while the following forms still work. The pages run in a
+ * {@link ContainerLikeTester}: the session keeps its attributes when its id changes.
  */
 public class SSOSessionIdChangeTest {
 
@@ -40,6 +44,7 @@ public class SSOSessionIdChangeTest {
     private SessionService sessionService;
     private SubsystemService subsystemService;
     private InternalSSOService internalSSOService;
+    private HOTPService hotpService;
     private SettingsService settingsService;
 
     @Before
@@ -49,11 +54,13 @@ public class SSOSessionIdChangeTest {
         sessionService = createMock(SessionService.class);
         subsystemService = createMock(SubsystemService.class);
         internalSSOService = createMock(InternalSSOService.class);
+        hotpService = createMock(HOTPService.class);
         settingsService = createNiceMock(SettingsService.class);
         beans.put(UserService.class, userService);
         beans.put(SessionService.class, sessionService);
         beans.put(SubsystemService.class, subsystemService);
         beans.put(InternalSSOService.class, internalSSOService);
+        beans.put(HOTPService.class, hotpService);
         beans.put(SettingsService.class, settingsService);
         beans.put(CsrfValidator.class, new CsrfValidatorImpl(true));
 
@@ -158,6 +165,82 @@ public class SSOSessionIdChangeTest {
         verify(userService, sessionService, subsystemService, internalSSOService);
     }
 
+    @Test
+    public void testSessionIdChangesAfterGoogleAuthSetupAndNoOtpIsAskedAgain() throws Exception {
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "password", "test-subsystem"))
+                .andReturn(UserLoginStatus.SUCCESS);
+        expect(userService.getUserForDescription("known-user")).andReturn(googleAuthUser()).anyTimes();
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        expectKeySetUp();
+        expectToken();
+        replay(userService, sessionService, subsystemService, internalSSOService, hotpService, settingsService);
+
+        startWithLoginData(SSOLoginPasswordPage.class, loginDataWithTitle());
+        FormTester form = tester.newFormTester("form");
+        form.setValue("username", "known-user");
+        form.setValue("password", "password");
+        tester.submitWithCsrf(form);
+
+        tester.assertRenderedPage(SSOSetupGoogleAuthPage.class);
+        String idBeforeSetup = tester.getHttpSession().getId();
+        FormTester setupForm = tester.newFormTester("form");
+        setupForm.setValue("code", setupConfirmationCode());
+        tester.submitWithCsrf(setupForm);
+
+        // the code that confirms the key is the second factor: the token is issued without another OTP form
+        tester.assertRedirectUrl(LANDING);
+        assertNotEquals("session id must change after the key is set up", idBeforeSetup,
+                tester.getHttpSession().getId());
+        verify(userService, sessionService, subsystemService, internalSSOService, hotpService);
+    }
+
+    @Test
+    public void testSessionIdChangesAfterGoogleAuthSetupAndPasswordChangeWithTemporaryPassword() throws Exception {
+        expect(userService.checkUserCanLoginWithThisPassword("known-user", "temp-password", "test-subsystem"))
+                .andReturn(UserLoginStatus.TEMP_PASSWORD);
+        expect(userService.getUserForDescription("known-user")).andReturn(googleAuthUser()).anyTimes();
+        expect(userService.getOtpMasterKeyByUsername("known-user")).andReturn(null).anyTimes();
+        expectKeySetUp();
+        userService.validatePassword("known-user", "new-password");
+        expectLastCall();
+        userService.changeTempPassword("known-user", "new-password");
+        expectLastCall();
+        expectToken();
+        replay(userService, sessionService, subsystemService, internalSSOService, hotpService, settingsService);
+
+        startWithLoginData(SSOLoginPasswordPage.class, loginDataWithTitle());
+        FormTester form = tester.newFormTester("form");
+        form.setValue("username", "known-user");
+        form.setValue("password", "temp-password");
+        tester.submitWithCsrf(form);
+
+        tester.assertRenderedPage(SSOSetupGoogleAuthPage.class);
+        String idBeforeSetup = tester.getHttpSession().getId();
+        FormTester setupForm = tester.newFormTester("form");
+        setupForm.setValue("code", setupConfirmationCode());
+        tester.submitWithCsrf(setupForm);
+
+        tester.assertRenderedPage(SSOChangePasswordPage.class);
+        String idAfterSetup = tester.getHttpSession().getId();
+        assertNotEquals("session id must change after the key is set up", idBeforeSetup, idAfterSetup);
+
+        FormTester changeForm = tester.newFormTester("change-password-panel:form");
+        changeForm.setValue("password", "new-password");
+        changeForm.setValue("password2", "new-password");
+        tester.submitWithCsrf(changeForm);
+
+        tester.assertRedirectUrl(LANDING);
+        assertNotEquals("session id must change after the password change", idAfterSetup,
+                tester.getHttpSession().getId());
+        verify(userService, sessionService, subsystemService, internalSSOService, hotpService);
+    }
+
+    private void expectKeySetUp() throws Exception {
+        hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
+        expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString()))
+                .andReturn(CheckOtpResult.Status.SUCCESS);
+    }
+
     private void expectOtp() {
         expect(internalSSOService.authenticateByOtpType(OTPType.GOOGLE_AUTH, "known-user", "111111"))
                 .andReturn(CheckOtpResult.Status.SUCCESS);
@@ -179,10 +262,27 @@ public class SSOSessionIdChangeTest {
     }
 
     private void startWithLoginData(Class<? extends BaseSSOPage> pageClass) {
+        startWithLoginData(pageClass, new SSOLoginData("test-subsystem", "/target"));
+    }
+
+    private void startWithLoginData(Class<? extends BaseSSOPage> pageClass, SSOLoginData loginData) {
         tester.getSession().bind();
-        tester.getSession().setSsoLoginData(new SSOLoginData("test-subsystem", "/target"));
+        tester.getSession().setSsoLoginData(loginData);
         tester.startPage(pageClass);
         tester.assertRenderedPage(pageClass);
+    }
+
+    /** The setup page shows the subsystem title in the label of the key. */
+    private static SSOLoginData loginDataWithTitle() {
+        SSOLoginData loginData = new SSOLoginData("test-subsystem", "/target");
+        loginData.setSubsystemTitle("The Subsystem (tm)");
+        return loginData;
+    }
+
+    /** The code that the authenticator app would show for the key on the setup page. */
+    private String setupConfirmationCode() {
+        Label key = (Label) tester.getLastRenderedPage().get("form:otp:refreshable:key");
+        return String.format("%06d", new GoogleAuthenticator().getTotpPassword((String) key.getDefaultModelObject()));
     }
 
     /** The state left by the second factor of a login that has accepted a temporary password. */

@@ -111,7 +111,6 @@ public class SSOTemporaryPasswordLoginTest {
         hotpService.persistOtpKey(eq(OTPType.GOOGLE_AUTH), eq("known-user"), anyString());
         expect(hotpService.validateGoogleTimePassword(eq("known-user"), anyString()))
                 .andReturn(CheckOtpResult.Status.SUCCESS);
-        expectOtpCode();
         expectPasswordChange();
         expectToken();
         replayAll();
@@ -123,9 +122,7 @@ public class SSOTemporaryPasswordLoginTest {
         FormTester setupForm = tester.newFormTester("form");
         setupForm.setValue("code", setupConfirmationCode());
         tester.submitWithCsrf(setupForm);
-        tester.assertRenderedPage(SSOLoginHOTPPage.class);
-
-        submitOtp("111111");
+        // the code that confirms the key is the second factor: no other code is asked before the password change
         tester.assertRenderedPage(SSOChangePasswordPage.class);
 
         submitNewPassword();

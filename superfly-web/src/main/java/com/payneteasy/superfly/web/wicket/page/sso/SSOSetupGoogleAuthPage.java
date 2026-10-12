@@ -1,5 +1,6 @@
 package com.payneteasy.superfly.web.wicket.page.sso;
 
+import com.payneteasy.superfly.api.CheckOtpResult;
 import com.payneteasy.superfly.api.OTPType;
 import com.payneteasy.superfly.api.exceptions.SsoDecryptException;
 import com.payneteasy.superfly.service.InternalSSOService;
@@ -69,8 +70,9 @@ public class SSOSetupGoogleAuthPage extends BaseSSOPage {
     }
 
     private void doSetup(SSOLoginData loginData, String secret, String code) {
-        // the flag may be stale (e.g. another session has enrolled a key in the meantime)
-        if (!loginData.isGoogleAuthSetupRequired()
+        // the flag may be stale (e.g. another session has enrolled a key in the meantime), and a failed password
+        // attempt in another tab has dropped the username: the password step is not in effect any more
+        if (!loginData.isGoogleAuthSetupRequired() || loginData.getUsername() == null
                 || StringUtils.hasLength(userService.getOtpMasterKeyByUsername(loginData.getUsername()))) {
             loginData.setGoogleAuthSetupRequired(false);
             throw new RestartResponseException(new SSOLoginErrorPage(new Model<>("No login data found")));
@@ -79,17 +81,24 @@ public class SSOSetupGoogleAuthPage extends BaseSSOPage {
             showError("One-time password value did not match.");
             return;
         }
+        CheckOtpResult.Status status;
         try {
             hotpService.persistOtpKey(OTPType.GOOGLE_AUTH, loginData.getUsername(), secret);
-            // The confirmation code was already checked against the secret above; this call only records its
-            // time step so that a peeked code cannot be replayed as the login OTP. Its result is irrelevant.
-            hotpService.validateGoogleTimePassword(loginData.getUsername(), code);
+            // The confirmation code was already checked against the secret above; the check against the stored key
+            // records its time step, so the code is not accepted again, and tells whether the key took the code.
+            status = hotpService.validateGoogleTimePassword(loginData.getUsername(), code);
         } catch (SsoDecryptException e) {
             showError("Please try again");
             return;
         }
         loginData.setGoogleAuthSetupRequired(false);
-        getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+        if (status == CheckOtpResult.Status.SUCCESS) {
+            // the code that confirms the new key is the second factor of this login: no second code is asked
+            SSOUtils.onSecondFactorPassed(loginData.getUsername(), this, loginData, sessionService, subsystemService);
+        } else {
+            // the key is stored but did not take the code (its step was used already, for example): ask for a code
+            getRequestCycle().setResponsePage(new SSOLoginHOTPPage());
+        }
     }
 
     private static boolean isValidCode(String secret, String code) {
