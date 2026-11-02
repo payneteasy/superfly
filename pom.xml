@@ -735,7 +735,7 @@
                 <!--Justification: Update Guava to the latest version for performance improvements and bug fixes -->
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>32.0.0-jre</version>
+                <version>33.7.1-jre</version>
             </dependency>
             <dependency>
                 <!--Justification: Provides standard annotations used in Java applications -->
