@@ -13,6 +13,6 @@ create table smtp_servers(
 ) engine = innodb;
 
 call run_install_command('alter table subsystems add column ssrv_ssrv_id int(10)', '42S21');
-call run_install_command('alter table subsystems add foreign key fk_subsystems_smtp_servers foreign key (ssrv_ssrv_id) references smtp_servers (ssrv_id)', '42S21');
+call run_install_command('alter table subsystems add constraint fk_subsystems_smtp_servers foreign key (ssrv_ssrv_id) references smtp_servers (ssrv_id)', '42S21');
 
 commit;
